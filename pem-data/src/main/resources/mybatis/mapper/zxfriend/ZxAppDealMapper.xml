@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AssetsTransferMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="deal_id" jdbcType="BIGINT" property="dealId" />
+    <result column="deal_user_id" jdbcType="VARCHAR" property="dealUserId" />
+    <result column="deal_money" jdbcType="DECIMAL" property="dealMoney" />
+    <result column="deal_money_mark" jdbcType="VARCHAR" property="dealMoneyMark" />
+    <result column="deal_date" jdbcType="TIMESTAMP" property="dealDate" />
+    <result column="update_deal_date" jdbcType="TIMESTAMP" property="updateDealDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    deal_id, deal_user_id, deal_money, deal_money_mark, deal_date,update_deal_date
+  </sql>
+
+  <!-- 资产转让信息列表查询 -->
+  <select id="queryAssetsTransferList" parameterType="java.util.Map" resultType="java.util.Map">
+    select 
+    <include refid="Base_Column_List" />
+    from zx_app_deal
+    <where>
+        <if test="transferType != null and transferType != '' and transferType == '1'">
+          deal_money_mark = '2'
+        </if>
+        <if test="transferType != null and transferType != '' and transferType == '2'">
+          deal_user_id = #{memberAccount,jdbcType=VARCHAR}
+        </if>
+    </where>
+    <if test="transferType != null and transferType != '' and transferType == '1'">
+      ORDER BY deal_date DESC
+    </if>
+    <if test="transferType != null and transferType != '' and transferType == '2'">
+      ORDER BY  deal_money_mark desc, deal_date desc
+    </if>
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 资产转让信息列表统计 -->
+  <select id="queryAssetsTransferCount" parameterType="java.util.Map" resultType="int">
+    select
+        COUNT(1)
+    from zx_app_deal
+    <where>
+      <if test="transferType != null and transferType != '' and transferType == '1'">
+        deal_money_mark = '2'
+      </if>
+      <if test="transferType != null and transferType != '' and transferType == '2'">
+        deal_user_id = #{memberAccount,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from zx_app_deal
+    where deal_id = #{dealId,jdbcType=BIGINT}
+  </delete>
+
+  <!-- 资产转让交易记录新增 -->
+  <insert id="saveDealInfo" parameterType="java.util.Map">
+    insert into zx_app_deal
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="dealId != null">
+        deal_id,
+      </if>
+      <if test="dealUserId != null">
+        deal_user_id,
+      </if>
+      <if test="dealMoney != null">
+        deal_money,
+      </if>
+      <if test="dealMoneyMark != null">
+        deal_money_mark,
+      </if>
+        deal_date,
+        update_deal_date,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="dealId != null">
+        #{dealId,jdbcType=BIGINT},
+      </if>
+      <if test="dealUserId != null">
+        #{dealUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="dealMoney != null">
+        #{dealMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="dealMoneyMark != null">
+        #{dealMoneyMark,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+        NOW(),
+    </trim>
+  </insert>
+
+  <!-- 资产转让交易记录修改 -->
+  <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
+    update zx_app_deal
+    <set>
+      <if test="dealUserId != null">
+        deal_user_id = #{dealUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="dealMoney != null">
+        deal_money = #{dealMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="dealMoneyMark != null">
+        deal_money_mark = #{dealMoneyMark,jdbcType=VARCHAR},
+      </if>
+      <if test="dealDate != null">
+        deal_date = #{dealDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where deal_id = #{dealId,jdbcType=BIGINT}
+  </update>
+
+  <!-- 资产转让信息列表查询 -->
+  <select id="queryNewAssetsTransferList" parameterType="java.util.Map" resultType="java.util.Map">
+    select
+    <include refid="Base_Column_List" />
+    from zx_app_deal
+    <where>
+        deal_user_id = #{memberAccount,jdbcType=VARCHAR}
+        <if test="dealMoneyMark != null and dealMoneyMark != ''">
+          AND deal_money_mark = '2'
+        </if>
+    </where>
+      ORDER BY update_deal_date DESC
+  </select>
+
+</mapper>

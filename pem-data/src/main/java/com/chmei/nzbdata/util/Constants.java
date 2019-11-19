@@ -72,5 +72,7 @@ public final class Constants {
 	public static final String D = "D";
 	public static final String S = "S";
 	public static final String N = "N";
+
+	public static final double TRANSFER_MONEY = 100; // 转让固定金额100
   	
 }

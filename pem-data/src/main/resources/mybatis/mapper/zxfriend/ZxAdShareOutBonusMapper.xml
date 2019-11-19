@@ -145,6 +145,7 @@
     <where>
       a.ad_share_out_bonus_info_user_id = #{memberAccount}
     </where>
+    ORDER BY ad_share_out_bonus_info_id DESC
   </select>
 
   <!-- 新增申请分红表 -->

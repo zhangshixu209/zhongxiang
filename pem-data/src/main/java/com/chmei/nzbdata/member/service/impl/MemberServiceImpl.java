@@ -10,6 +10,7 @@ import com.chmei.nzbdata.member.service.IMemberService;
 import com.chmei.nzbdata.util.StringUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.swagger.client.model.NewPassword;
 import io.swagger.client.model.Nickname;
 import io.swagger.client.model.RegisterUsers;
 import io.swagger.client.model.User;
@@ -211,7 +212,8 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
             if (count > 0) {
                 String memberPwd = (String) params.get("memberPwd");
                 if (StringUtil.isNotEmpty(memberPwd)){ // 修改登录密码, 需要同时修改环信密码
-                    String newPassword = (String) params.get("newPassword"); // 不加密密码
+                    NewPassword newPassword = new NewPassword(); // 不加密密码
+                    newPassword.setNewpassword((String) params.get("newPassword"));
                     // 调用环信修改IM用户密码接口
                     Object result = easemobIMUsers.modifyIMUserPasswordWithAdminToken(memberAccount, newPassword);
                     LOGGER.info("newPassword============:"+gson.toJson(result));
