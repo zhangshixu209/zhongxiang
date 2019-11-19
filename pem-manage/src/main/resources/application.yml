@@ -1,0 +1,188 @@
+#java -cp druid-1.1.6.jar com.alibaba.druid.filter.config.ConfigTools <password>
+reportmanage:
+  session-timeout: 1800 #180000 2天
+  login-need-msg: 0  #1表示需要发送短信验证码0则反之
+  sms-expire-seconds: 300
+
+idgenerator:
+  generators:
+    idGenerator:
+      base-time: 2018-09-06 00:00:00.000
+      node-num: 0
+    antherOne:
+      base-time: 2018-01-01 00:00:00.000
+      node-num: 1
+
+httpinvoker:
+  httpcomponents:
+    httpcomponentsHttpInvoker:
+      connection-request-timeout: 60000
+      connect-timeout: 60000
+      read-timeout: 120000
+      max-conn-per-route: 256
+      max-conn-total: 2560
+      max-idle-time: 1200
+  okhttp3:
+    okhttp3HttpInvoker:
+      connect-timeout: 60000
+      read-timeout: 120000
+      write-timeout: 60000
+
+server:
+  display-name: pem-manage
+  port: ${port:8080}
+  context-path: /pem-manage
+  connection-timeout: 20000
+  session:
+    timeout: 1800
+  tomcat:
+    accesslog:
+      enabled: true
+      directory: access-logs
+      rename-on-rotate: true
+    #    basedir: ../tomcat
+    max-http-post-size: 52428800 #50MB
+    max-connections: 10000
+    min-spare-threads: 10
+    max-threads: 200
+    uri-encoding: UTF-8
+    accept-count: 100
+
+shiro:
+  enabled: false
+  web:
+    enabled: false
+  annotations:
+    enabled: false
+
+dubbo:
+  application:
+    id: pem-manage
+    name: pem-manage
+    qos-enable: false
+  registry:
+    id: pem-manage-registry
+    client: curator
+    protocol: zookeeper
+    address: 127.0.0.1:2181
+  protocol:
+    id: pem-manage-protocol
+    name: dubbo
+    port: 20881
+  scan:
+    base-packages: com.chmei.**.dubbo.provider,com.chmei.**.dubbo.consumer
+
+spring:
+  application:
+    name: pem-manage
+  mandatory-file-encoding: UTF-8
+  http:
+    converters:
+      preferred-json-mapper: jackson
+    encoding:
+      charset: UTF-8
+      force: true
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+    joda-date-time-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: NON_NULL
+  mvc:
+    date-format: yyyy-MM-dd HH:mm:ss
+    servlet:
+      load-on-startup: 0
+    throw-exception-if-no-handler-found: true
+  resources:
+    static-locations:
+      - context:/
+      - classpath:/META-INF/resources/
+      - classpath:/resources/
+      - classpath:/static/
+      - classpath:/public/
+      - file:D:/
+  thymeleaf:
+    cache: false
+    encoding: UTF-8
+    mode: HTML
+    prefix: classpath:/templates/
+    suffix: .html
+  redis:
+    host: localhost
+    password:
+    database: 2
+    port: 6379
+    timeout: 3000
+    pool:
+      max-active: 10000
+      max-idle: 100
+#    cluster:
+#      nodes: host:port,host:port,host:port
+#      max-redirects: 5
+
+#org/springframework/boot/logging/logback/*.xml，在spring-boot-version.jar里面。
+logging:
+  config: classpath:logback/logback-spring.xml
+  path: ../tomcat/logs
+  file: pem-manage.log
+  level:
+    root: INFO
+    com.chmei: DEBUG
+
+#静态资源对外暴露的访问路径
+fileUpload:
+  #url拼接路径
+  file-url-path: /image/
+  #映射文件路径
+  static-access-path: /api/image/**
+  #文件上传目录（注意Linux和Windows上的目录结构不同）
+  #uploadFolder: /home/cmtest/uploadFiles/
+  upload-folder: D:/uploadFiles/
+
+---
+spring:
+  profiles: test
+  resources:
+    static-locations:
+      - context:/
+      - classpath:/META-INF/resources/
+      - classpath:/resources/
+      - classpath:/static/
+      - classpath:/public/
+      - file:/home/cmtest/uploadFiles/
+  redis:
+    host: 127.0.0.1
+    password: qazWSXedcRFV
+    port: 6379
+    database: 2
+#静态资源对外暴露的访问路径
+fileUpload:
+  uploadFolder: /home/cmtest/uploadFiles/
+logging:
+  path: ./../pem_log/manage
+
+---
+spring:
+  profiles: prod
+  resources:
+    static-locations:
+      - context:/
+      - classpath:/META-INF/resources/
+      - classpath:/resources/
+      - classpath:/static/
+      - classpath:/public/
+      - file:/home/lymanage/cm_uploadFiles/
+  redis:
+    host: 127.0.0.1
+    password: 1qaz!QAZ
+    port: 6379
+    database: 2
+
+#静态资源对外暴露的访问路径
+fileUpload:
+  uploadFolder: /home/lymanage/cm_uploadFiles/
+
+logging:
+  path: ./../pem_log/manage

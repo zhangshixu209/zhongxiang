@@ -1,0 +1,142 @@
+#closeBtn{
+	border-width: 5px;
+}
+/*信息*/
+#infoBox{
+	padding: 10px 20px;
+}
+.pf-avatar{
+	margin-right: 20px;
+	position: relative;
+}
+.pf-avatar-img{
+	width: 100px;
+    height: 100px;
+    display: inline-block;
+    background-color: #eee;
+    text-align: center;
+}
+.pf-edit-avatar{
+	position: absolute;
+    bottom: 0;
+    color: #fff;
+    background-color: rgba(0,0,0,0.5);
+    width: 100%;
+    text-align: center;
+    height: 28px;
+    line-height: 28px;
+}
+.info-list li div{
+	/*margin-right: 26px;*/
+}
+.address-detail{
+    margin-left: 65px;
+}
+.info-list li div.info-list-item{
+	margin-right: 10px;
+}
+.info-list span{
+	display: inline-block;
+	padding: 3px 0;
+}
+
+/*认证信息*/
+.realnameInfoBox{
+	border-top: 1px solid #eee;
+	border-bottom: 1px solid #eee;
+}
+.accountNumInfo span{
+	display: inline-block;
+	padding: 5px 0;
+}
+.submit-box{
+	text-align: center;
+}
+.realname-info{
+	margin-bottom: 10px;
+}
+.info-list{
+	margin: -5px;
+}
+.info-list li .label {
+    margin-right: 5px;
+    width: 80px;
+ 	text-align: right;
+    margin-top: 4px;
+    display: inline-block;
+}
+.info-list input,.info-list select,.infoBox input{
+    height: 30px;
+    background-color: #fff;
+    border: 1px solid #eee;
+}
+.infoBox input{
+	margin-right: 20px;
+}
+.info-list .sex,.info-list .age{
+	width: 80px;
+}
+.basicInfoBox{
+	margin: 0;
+}
+.info-list .status{
+    width: 200px;
+}
+#realnameInfoAfter{
+	position: relative;
+	padding-bottom: 10px;
+}
+
+.infoWrap{
+	padding-left: 38px;
+	margin-bottom: 10px;
+}
+
+body{
+	background-color: inherit;
+}
+/*.label 需保留在当前页面*/
+.label{ 
+	background-color: inherit!important; 
+	color: #6b6565;
+}
+.label-warning, .badge-warning {
+    background-color: #f89406!important;
+    color: #fff;
+}
+.conter1{
+	padding: 0;
+}
+.sideboxp1{
+	margin-left: 0;
+}
+.seatCore-container .sidep1{
+	width: 100%;
+}
+.widget-body{
+	min-height: 270px;
+}
+.w-box {
+    box-shadow: 0 2px 4px rgba(0,0,0,.2);
+}
+.task-box-warp, .taskDeta-box-warp, .wt1{
+	width: auto;
+}
+.titlep0 {
+    margin: 10px 0;
+    font-size: 18px;
+}
+textarea{
+	width: inherit;
+	height: inherit;
+	resize: auto;
+}
+.btnbox{
+	height: 60px;
+	float: inherit;
+	padding-top: 20px;
+	text-align: right;
+}
+.btnbox button{
+	float: inherit;
+}

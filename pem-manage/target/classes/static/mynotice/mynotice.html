@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>我的公告</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="Content-Type" content="textml; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Expires" content="0">
+		<link href="../assets/ace/css/bootstrap.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../assets/ace/css/font-awesome.min.css" />
+		<!--[if IE 7]>
+		  <link rel="stylesheet" href="assets/ace/css/font-awesome-ie7.min.css" />
+		<![endif]-->
+
+		<link rel="stylesheet" href="../assets/ace/css/ace.min.css" />
+		<link rel="stylesheet" href="../assets/ace/css/ace-rtl.min.css" />
+		<link rel="stylesheet" href="../assets/ace/css/ace-skins.min.css" />
+		<!--[if IE 8]>
+			<link rel="stylesheet" href="assets/ace/css/ace-ie.min.css" />
+		<![endif]-->
+		<!--<link rel="stylesheet" href="../css/login/css/base.css?v=#scriptversion#" />-->
+		<link rel="stylesheet" href="../css/login/css/index02.css?v=#scriptversion#" />
+		<link rel="stylesheet" href="../css/login/css/bgs.css?v=#scriptversion#" />
+		<link rel="stylesheet" href="../assets/css/detil.css?v=#scriptversion#" />
+		<script src="../assets/js/ace-extra.min.js"></script>
+		<!--[if lt IE 9]>
+		    <script src="../assets/ace/js/html5shiv.js"></script>
+		    <script src="../assets/ace/js/respond.min.js"></script>
+		<![endif]-->
+		<link rel="stylesheet" href="../css/pd/detailPop.css?v=#scriptversion#" />
+		<link rel="stylesheet" href="../assets/css/admin_common.css?v=#scriptversion#" />
+	</head>
+	<style type="text/css">
+		body {
+			background-color: inherit;
+			min-height: 100vh;
+		}
+		.ke-container.ke-container-default{
+		  	width: 500px!important;
+		}
+		.noticeTheme_wrap .ke-container.ke-container-default{ 
+		  	width: 450px!important; 
+		}
+		.layui-layer-page .layui-layer-content {
+		    overflow: unset!important;
+		}
+		p.detailTitle {
+    	float: left;
+		}
+		p.detailTitle label{
+			margin-bottom: 0;
+		}
+		p.detailTitle span{
+			vertical-align: middle;
+		}
+		p.detailTitle .numtext{
+			vertical-align: bottom;
+		}
+		.ke-container.ke-container-default{
+			border: none;
+		}
+		.titleInfo{
+				font-weight: 600;
+				color: black;
+				text-align: center;
+				height: 50px;
+				line-height: 50px;
+				font-size: 22px;
+				margin: 0;
+			}
+	</style>
+
+	<body>
+		<!--<div class="page-header">
+			<h1>
+			 	<small>
+					公告管理 <small><i class="icon-double-angle-right"></i> 我的公告</small>
+				</small>
+			</h1>
+		</div>-->
+		<form class="container-fluid shh searchForm">
+			<div class="row">
+				<div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
+					<label class="text-right w100s" for="noticeNum">公告编号</label>
+					<input type="text" class="howlong" id="code" name="code" maxlength="50">
+				</div>
+				<div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
+					<label class="text-right w100s" for="noticeNmae">公告名称</label>
+					<input type="text" class="howlong" id="name" name="name" maxlength="50">
+				</div>
+				<div class="form-group col-xs-6 col-sm-4 col-md-6 newshh">
+					<label class="text-right w80s" for="">发布时间</label>
+					<input type="text" class=""
+						   onFocus="WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endTime\')||\'%y-%M-%d\'}'})" id="beginTime" name="beginTime">
+					<b>-</b>
+					<input type="text" class=""
+						   onFocus="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'beginTime\')}', maxDate:'%y-%M-%d'})"  id="endTime" name="endTime">
+				</div>
+				<div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
+					<label class="text-right w100s" for="isSee">是否已阅</label>
+					<select class="howlong" id="isSee" name="isSee">
+						<option value="" selected>全部</option>
+						<option value="0">否</option>
+						<option value="1">是</option>
+					</select>
+				</div> 
+			</div>
+			<div class="row">
+				<p class="col-xs-12 pull-right chaxunss">
+					<button type="button" class="btn btn-danger btn-xs" id="userSearch">查询</button>
+					<button type="reset" class="btn btn-danger btn-xs">重置</button>
+				</p>
+			</div>
+		</form>
+		<hr class="dotted">
+		<div class="container-fluid shh">
+			<div class="row">
+				<!--查询列表-->
+				<div class="col-xs-12">
+					<div class="table-responsive">
+						<table id="sample-table-1" class="table table-striped table-bordered table-hover">
+							<thead>
+								<tr>
+									<!--<th class="center">
+										&lt;!&ndash;选择&ndash;&gt;
+										<label>
+											<input type="checkbox" class="ace" name="" value="" />
+											<span class="lbl"></span>
+										</label>
+									</th>-->
+									<th>公告编号</th>
+									<th>公告主题</th>
+									<th>公告分类</th>
+									<th>紧急程度</th>
+									<th>公告发布人</th>
+									<th>公告发布部门</th>
+									<th>是否已阅</th>
+									<th>发布时间</th>
+									<th>操作</th>
+								</tr>
+							</thead>
+							<tbody id="J_tabletpl">
+							</tbody>
+						</table>
+					</div>
+					<div class="page-box clearfix martop10">
+		                <ul style="float: right;" id="pagination"></ul>
+		                <span style="float: right" class="totalNum" id="totalNum"></span>
+		            </div>
+				</div>
+			</div>
+		</div>
+		<script src="http://libs.baidu.com/jquery/2.0.3/jquery.min.js"></script>
+		<!--[if IE]>
+		<script src="http://libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
+
+		<![endif]-->
+		<script type="text/javascript">
+			window.jQuery || document.write("<script src='../assets/ace/js/jquery-2.0.3.min.js'>" + "<" + "script>");
+		</script>
+		<script type="text/javascript">
+			if("ontouchend" in document) document.write("<script src='../assets/ace/js/jquery.mobile.custom.min.js'>" + "<" + "script>");
+		</script>
+		<script src="../assets/lib/wdatepicker/WdatePicker.js?v=#scriptversion#"></script>
+		<script src="../assets/ace/js/bootstrap.min.js"></script>
+		<script src="../assets/ace/js/typeahead-bs2.min.js"></script>
+		<script src="../assets/ace/js/ace-elements.min.js"></script>
+		<script src="../assets/ace/js/ace.min.js"></script>
+		<script src="../assets/ace/js/ace-extra.min.js"></script>
+		<!--[if lte IE 8]>
+		  <script src="../assets/ace/js/excanvas.min.js"></script>
+		<![endif]-->
+		<!-- 表格拖拽插件 -->
+        <script src="../assets/lib/colResizable-1.6.js"></script>
+		<script src="../assets/lib/paginator/bootstrap-paginator.js"></script>
+		<script type="text/javascript" src="../assets/js/admin_common.js?v=#scriptversion#"></script>
+		<script src='../assets/lib/kindeditor/kindeditor-all.js'></script>
+		<script src='../assets/lib/kindeditor/plugins/image/image.js'></script>
+		<script src='../assets/lib/kindeditor/plugins/insertfile/insertfile.js'></script>
+		<script src='../assets/lib/kindeditor/lang/zh-CN.js'></script>
+		<script src="../assets/lib/handlebars/1.3.0/handlebars.js"></script>
+		<script src="../assets/lib/layer/layer.min.js"></script>
+		<script src="../assets/lib/common.js?v=#scriptversion#"></script>
+		<script src="../js/mynotice/mynotice.js?v=#scriptversion#"></script>
+		<!-- 公告数据查询 -->
+		<script id="noticeList" type="text/x-handlebars-template">
+			{{#if items}} 
+				{{#each items}}
+					<tr>
+						<!--<td class="center">
+							<label>
+								<input type="checkbox"  class="ace" name="taskbox" id="checkedId" data-id="{{id}}" value="{{id}}"/>
+								<span class="lbl"></span>
+							</label>
+						</td>-->
+						<td>{{code}}</td>
+						<td><a class="name noticeName" href="javascript:;" onclick="queryNotceiDetail('{{id}}')">{{name}}</a></td>
+						<td>{{noticeTypeName}}</td>
+						<td>{{instancyLevelName}}</td>
+						<td>{{publishName}}</td>
+						<td>{{publishDepartment}}</td>
+						<td>{{isReadName isRead}}</td>
+						<td>{{publishTime}}</td>
+						<td>
+							<a href="javascript:;" class="a_blue_click" onclick="queryDetil('{{id}}')">查看详情</a>
+						</td>
+					</tr>
+				{{/each}} 
+			{{else}}
+				<tr>
+					<td colspan="9" style="text-align: center">无数据</td>
+				</tr>
+			{{/if}}
+		</script>
+
+		<!--点击公告主题查看详情-->
+		<script id="T_noticeDeatil" type="text/x-handlebars-template">
+			<div class="popup_outline">
+				<div class="container noticeTheme_wrap pt10">
+						<div class="row">
+									<h3 class="titleInfo">{{item.name}}</h3>
+									<div class="col-sm-8 promport5"></div>
+						</div>
+					<div class="row">
+							<div class="rwbh" style="width: 390px;margin:auto;">
+									<p class="detailTitle">
+										<label style="" class="text-right" style="" >发布人:</label>
+										<span class="" id="">{{item.publishName}}</span>
+										<!-- ({{item.publishDepartmentName}}) -->
+									</p>
+									<p class="detailTitle" style="margin-left: 50px;">
+										<label class="text-right" for="">发布时间:</label>
+										<span class="numtext" id="">{{item.publishTime}}</span>
+									</p>
+							</div>
+					</div>
+					<div class="row" style="height:260px;width:450px;margin:auto;">
+							<div class="col-md-12 col-xs-12 col-sm-12 newshh">
+								<textarea name="" id="editor" cols="30" rows="10"></textarea>
+							</div>
+					</div>
+					<div class="row">
+						<div class="rwbh" style="width: 426px;margin:auto;margin-top:5px;">
+							<p class="detailTitle">
+								<label class="text-right" for="">总人数:</label>
+								<span class="peopleNum numtext" id="">{{item.sendTotal}}</span>
+							</p>
+							<p class="detailTitle" style="margin-left: 20px;">
+								<label class="text-right" for="">已阅读:</label>
+								<span class="peopleNum numtext" id="">{{readTotalCount}}</span>
+							</p>
+							<p class="detailTitle" style="margin-left: 20px;">
+								<label class="text-right" for="">未阅读:</label>
+								<span class="peopleNum numtext" id="">{{unReadCount}}</span>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="btnrongqi btnWrap">
+				<button class="btn btn-danger ml10 nofloat" id="close">我知道了</button>
+			</div>
+		</script>
+
+		<!--查看已读/未读/阅读情况-->
+		<script id="T_readNoticeDetil" type="text/x-handlebars-template">
+			<!--查询列表-->
+			<div class="col-xs-12">
+				<div class="table-responsive">
+					<table id="sample-table-2" class="table table-striped table-bordered table-hover">
+						<thead>
+						<tr>
+							<th>阅读人</th>
+							<th>部门</th>
+							<th>阅读时间</th>
+							<th>备注</th>
+						</tr>
+						</thead>
+
+						<tbody id="J_tabletpl2">
+						</tbody>
+					</table>
+				</div>
+				<!-- /.table-responsive -->
+				<!--分页开始-->
+				<div class="page-box clearfix">
+					<ul style="float: right;" id="pagination2"></ul>
+					<span style="float: right" class="totalNum" id="totalNum2"></span>
+				</div>
+				<!-- 分页结束 -->
+			</div>
+		</script>
+
+		<!--查看已读/未读/阅读情况展示列表-->
+		<script id="T_noticetpl" type="text/x-handlebars-template">
+			{{#if items}} {{#each items}}
+			<tr>
+				<td>{{userName}}</td>
+				<td>{{department}}</td>
+				<td>{{readTime}}</td>
+				<td>{{remarkName remark}}</td>
+			</tr>
+			{{/each}} {{else}}
+			<tr>
+				<td colspan="13" style="text-align: center">无数据</td>
+			</tr>
+			{{/if}}
+		</script>
+	</body>
+</html>

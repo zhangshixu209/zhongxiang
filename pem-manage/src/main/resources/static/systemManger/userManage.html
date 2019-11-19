@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>系统管理-用户管理</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="Content-Type" content="textml; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Expires" content="0">
+		<link href="../assets/ace/css/bootstrap.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../assets/ace/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../assets/ace/css/ace.min.css" />
+		<link rel="stylesheet" href="../assets/ace/css/ace-rtl.min.css" />
+		<!-- <link rel="stylesheet" href="../assets/ace/css/ace-skins.min.css" /> -->
+		<link rel="stylesheet" type="text/css" href="../assets/css/admin_common.css?v=#scriptversion#" />
+		<link rel="stylesheet" type="text/css" href="../assets/lib/ztree/css/zTreeStyle/zTreeStyle.css" />
+		<!-- <link rel="stylesheet" type="text/css" href="../assets/lib/ztree/css/metroStyle/metroStyle.css" /> -->
+		<!--详情弹窗样式-->
+		<link rel="stylesheet" href="../css/pd/detailPop.css?v=#scriptversion#" />
+		<link rel="stylesheet" type="text/css" href="../assets/css/webuploader.css" />
+		<style>
+			.ztree{margin-left: -20px;}
+			.deptZtree{
+			    z-index: 99999;
+			    position: fixed;
+			    background: white;
+			    border: 1px solid #ADADAD;
+			}
+		</style>
+	</head>
+	<body>
+		<!-- <div class="page-header">
+			<h1>
+				系统管理 <small><i class="icon-double-angle-right"></i> 用户管理</small>
+			</h1>
+		</div> -->
+		<form class="container-fluid shh">
+			<div class="row">
+				<div class="col-xs-6 col-sm-4 col-md-3 newshh">
+					<label class="col-md-5 ui-text" for="">工号</label>
+					<input type="text" class="col-md-7" id="mobile" name="mobile" maxlength="50">
+				</div>
+				<div class="col-xs-6 col-sm-4 col-md-3 newshh">
+					<label class="col-md-5 ui-text" for="">姓名</label>
+					<input type="text" class="col-md-7" id="realName" name="realName" maxlength="50">
+				</div>
+				<div class="col-xs-6 col-sm-4 col-md-3 newshh zTreeDemoBackground left">
+                    <label class="col-md-5 ui-text" for="">部门</label>
+                    <input style="display: none" class="col-md-7" id="H_userDepartment" />
+                    <input type="text" class="col-md-7" readonly="readonly" onclick="showMenu();" 
+                           id="S_userDepartment" name="userDepartment" />
+                </div>
+			</div>
+			<div class="row">
+				<p class="col-md-12 pull-right chaxunss">
+					<button type="button" class="btn btn-danger" id="userSearch">查询</button>
+					<button type="reset" class="btn btn-danger">重置</button>
+				</p>
+			</div>
+			<div id="menuContent" class="menuContent deptZtree" style="display:none; position: absolute;">
+                <ul id="treeDemo" class="ztree" style="margin-top:0;width:auto;height:300px;padding-left:20px;overflow:auto;"></ul>
+            </div>
+		</form>
+		<hr class="dotted">
+		<div class="container-fluid shh">
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-12">
+					<p class="pull-right buttonList"  id="buttonList">
+						<button class="btn btn-xs btn-danger resetenable" attribute="0" id="resetDisenable">禁用</button>
+						<button class="btn btn-xs btn-danger resetenable" attribute="1" id="resetEnable">启用</button>
+						<button class="btn btn-xs btn-danger" id="resetAdminPwd">重置密码</button>
+						<button class="btn btn-xs btn-danger" id="guan">配置角色</button>
+						<button class="btn btn-xs btn-danger" id="delAdmin">删除</button>
+						<button class="btn btn-xs btn-danger" id="editAdmin">编辑</button>
+						<button class="btn btn-xs btn-danger" id="addAdmin">新增</button>
+						<button class="btn btn-xs btn-danger" id="batch_add">批量新增</button>
+					</p>
+				</div>
+				<!--查询列表-->
+				<div class="col-xs-12 col-sm-12 col-md-12">
+					<div class="table-responsive table-no-scroll" >
+					   <table id="sample-table-23"  class="fancyTable table table-striped table-bordered table-hover">
+			                <thead>
+			                    <tr>
+			                        <th class="center">选择</th>
+			                        <th>用户姓名</th>
+			                        <th>性别</th>
+			                        <th>部门</th>
+			                        <th>工号</th>
+			                        <th>身份证号</th>
+			                        <th>注册时间</th>
+			                        <th>账号状态</th>
+			                    </tr>
+			                </thead>
+			                <tbody id="usersHtml" class="usersHtml">
+			                </tbody>
+			            </table>
+			            </div>
+			            <div class="page-box clearfix martop10">    
+			                <ul style="float: right;" id="pagination"></ul>
+			                <span style="float: right" class="totalNum" id="totalNum"></span>
+			            </div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- basic scripts -->
+		<script src="http://libs.baidu.com/jquery/2.0.3/jquery.min.js"></script>
+		<script src="../assets/js/admin_common.js?v=#scriptversion#"></script>
+		<script src="../assets/lib/handlebars/1.3.0/handlebars.js"></script>
+		<script src="../assets/ace/js/typeahead-bs2.min.js"></script>
+		<script src="../assets/ace/js/fuelux/data/fuelux.tree-sampledata.js"></script>
+		<script src="../assets/ace/js/fuelux/fuelux.tree.min.js"></script>
+		<script src="../assets/lib/paginator/bootstrap-paginator.js"></script>
+		<script src="../assets/lib/layer/layer.min.js"></script>
+		<!-- 表格拖拽插件 -->
+        <script src="../assets/lib/colResizable-1.6.js"></script>
+		<script src="../assets/lib/jquery.fixedheadertable.min.js?v=#scriptversion#"></script>
+		<script src="../assets/lib/common.js?v=#scriptversion#"></script>
+		<script src="../assets/ace/js/jquery.validate.min.js"></script>
+		<script src="../assets/lib/ztree/js/jquery.ztree.all.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../assets/lib/ztree/js/jquery.ztree.core.min.js" type="text/javascript" charset="utf-8"></script> 
+		<script type="text/javascript" src="../assets/lib/ztree/js/jquery.ztree.excheck.js"></script>
+		<script src="../assets/lib/easyui/jquery.easyui.min.js"></script>
+		<!-- 上传控件 -->
+        <script src="../assets/js/webuploader.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../assets/lib/validate_extends.js"></script>
+		<script src="../js/right/department_tree.js?v=#scriptversion#" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/right/userManage.js?v=#scriptversion#" type="text/javascript" charset="utf-8"></script>
+		
+		<!--列表信息 固定头部 模板-->
+		
+		<!--添加管理员弹框-->
+		<script id="tianjiaAdmin" type="text/x-handlebars-template">
+			<form id="addAdminForm" name="addAdminForm" class="form-inline shhform">
+				<div class="container administrators">
+					<div class="row">
+						<div class="col-md-6 col-xs-12 col-sm-6 newshh">
+							<label for="" class="col-md-5 col-xs-5 col-sm-5 newshh ui-text">
+								<span class="red f12"> * </span>
+								<span class="">用户姓名：</span>
+							</label>
+							<input required chinaName="true" type="text" class="col-md-7" name="userName" id="userName" placeholder="">
+						</div>
+						<div class="col-md-6 col-xs-12 col-sm-6 newshh">
+							<label for="" class="col-md-5 ui-text">
+								<span class="red f12"> * </span>
+								<span class="">工号(手机)：</span>
+							</label>
+							<input required mobile="true" type="text" class="col-md-7" name="loginId" id="loginId" placeholder="" maxlength="11">
+						</div>
+						<div class="col-md-6 col-xs-12 col-sm-6 newshh">
+							<label for="" class="col-md-5 ui-text">
+								<span class="red f12"> * </span>
+								<span class="">身份证号：</span>
+							</label>
+							<input required IdVerificationDate="true" type="text" class="col-md-7" name="extend1" id="extend1"  maxlength="22">
+						</div>
+						<div class="col-md-6 col-xs-12 col-sm-6 newshh">
+							<label for="" class="col-md-5 ui-text">
+								<span class="red f12"> * </span>
+								<span class="">性&nbsp;&nbsp;别：</span>
+							</label>
+							<label class="radio-inline col-md-1">
+								  <input checked required class="hufeid" type="radio" name="sex" id="sex1" value="0">
+								  <span class="radio-name">男</span>
+							</label>
+							<label class="radio-inline col-md-1">
+								  <input required class="hufeid" type="radio" name="sex" id="sex2" value="1"> 
+								  <span class="radio-name">女</span>
+							</label>
+						</div>
+						<div class="col-md-6 col-xs-12 col-sm-6 newshh">
+							<label for="" class="col-md-5 ui-text">
+								<span class="red f12"> * </span>
+								<span class="">登录密码：</span>
+							</label>
+							<input autocomplete="new-password" required isNumAndChar="true" type="password" class="col-md-7" name="loginPw" id="loginPw"  maxlength="20">
+						</div>
+						<div class="col-md-6 newshh">
+							<label for="" class="col-md-5 ui-text">
+								<span class="red f12"> * </span>
+								<span class="">状&nbsp;&nbsp;态：</span>
+							</label>
+							<label class="radio-inline col-md-3">
+								<input required class="hufeid" type="radio" name="validStsCd" id="validStsCd1" value="1" checked> 
+								<span class="radio-name">有效</span>
+							</label>
+							<label class="radio-inline col-md-3">
+								<input required class="hufeid" type="radio" name="validStsCd" id="validStsCd2" value="0"> 
+								<span class="radio-name">无效</span>
+							</label>
+						</div>
+						<div class="col-md-6 col-xs-12 col-sm-6 newshh" style="height:auto;">
+							<label for="" class="col-md-5 ui-text">
+								<span class="red f12"> * </span>
+								<span class="">部&nbsp;&nbsp;门：</span>
+							</label>
+							<div class="col-md-7" style="height: auto;">
+                                <input  type="hidden" name="userDepartment" id="userDepartment" value="{{userDepartment}}">
+                                <input  type="hidden" name="userDepartmentName" id="userDepartmentName">
+								<ul id="departmentTree" class="ztree"></ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="btnrongqi">
+					<button type="button" class="btn ml10 nofloat closess" id="">取消</button>
+					<button class="btn btn-danger ml10 nofloat" id="saveBtnInAddAdmin">保存</button>
+				</div>
+			</form>
+		</script>
+		<!--编辑管理员弹框-->
+		<script id="bianjiAdmin" type="text/x-handlebars-template">
+			<form id="editAdminForm" name="editAdminForm" class="form-inline shhform">
+				<div class="container administrators">
+					<div class="row">
+						<div class="col-md-6 newshh">
+							<label for="" class="col-md-5 ui-text">
+								<span class="red f12"> * </span>
+								<span class="">用户姓名：</span>
+							</label>
+							<input required chinaName="true" type="text" class="col-md-7" name="userName" id="userName" value="{{userName}}">
+							<input type="hidden" id="id" name="id" value="{{id}}">
+						</div>
+						<div class="col-md-6 newshh">
+							<label for="" class="col-md-5 ui-text">
+								<span class="red f12"> * </span>
+								<span class="">工号(手机)：</span>
+							</label>
+							<input required mobile="true" type="text" class="col-md-7" name="loginId" id="loginId" value="{{loginId}}" maxlength="11">
+						</div>
+						<div class="col-md-6 newshh">
+							<label for="" class="col-md-5 ui-text">
+								<span class="red f12"> * </span>
+								<span class="">身份证号：</span>
+							</label>
+							<input type="text" required IdVerificationDate="true" class="col-md-7" name="extend1" id="extend1"  maxlength="22" value={{extend1}}>
+						</div>
+						<div class="col-md-6 newshh">
+							<label for="" class="col-md-5 ui-text">
+								<span class="red f12"> * </span>
+								<span class="">性&nbsp;&nbsp;别：</span>
+							</label>
+							<label class="radio-inline col-md-1">
+								<input checked required class="hufeid" type="radio" name="sex" id="sex1" value="0" {{#if (eq sex 0)}}checked{{/if}}> 
+								<span class="radio-name">男</span>
+							</label>
+							<label class="radio-inline  col-md-1">
+								<input required class="hufeid" type="radio" name="sex" id="sex2" value="1" {{#if (eq sex 1)}}checked{{/if}}> 
+								<span class="radio-name">女</span>
+							</label>
+						</div>
+						<div class="col-md-6 newshh">
+							<label for="" class="col-md-5 ui-text">
+								<span class="red f12"> * </span>
+								<span class="">登录密码：</span>
+							</label>
+							<input autocomplete="new-password" type="password" class="col-md-7" name="loginPw" id="loginPw" placeholder="留空则不修改" maxlength="20">
+						</div>
+						<div class="col-md-6 newshh">
+							<label for="" class="col-md-5 ui-text">
+								<span class="red f12"> * </span>
+								<span class="">状&nbsp;&nbsp;态：</span>
+							</label>
+							<label class="radio-inline col-md-3">
+								<input required class="hufeid" type="radio" name="validStsCd" id="validStsCd1" value="1" {{#if (eq validStsCd 1)}}checked{{/if}}> 
+								<span class="radio-name">有效</span>
+							</label>
+							<label class="radio-inline col-md-3">
+								<input required class="hufeid" type="radio" name="validStsCd" id="validStsCd2" value="0" {{#if (eq validStsCd 0)}}checked{{/if}}>
+								<span class="radio-name">无效</span>
+							</label>
+						</div>
+						<div class="col-md-6 newshh" style="height:auto;">
+							<label for="" class="col-md-5 ui-text">
+								<span class="red f12"> * </span>
+								<span class="">部&nbsp;&nbsp;门：</span>
+							</label>
+							<div class="col-md-7" style="height: auto;">
+                                <input  type="hidden" name="userDepartment" id="userDepartment" value="{{userDepartment}}">
+                                <input  type="hidden" name="userDepartmentName" id="userDepartmentName">
+								<div id="departmentTree" class="ztree"></div>
+							</div>
+                        </div>
+					</div>
+				</div>
+				<div class="btnrongqi">
+					<button type="button" class="btn ml10 nofloat closess" id="">取消</button>
+					<button class="btn btn-danger ml10 nofloat" id="saveBtnInEditAdmin">保存</button>
+				</div>
+			</form>
+		</script>
+		<!--关联角色弹框-->
+		<script id="guanlian" type="text/x-handlebars-template">
+			<form id="roleForm" name="roleForm" class="form-inline shhform">
+				<div class="container">
+					<div class="col-md-6 newshh">
+						<label for="" class="col-md-5 ui-text">角色名称：</label>
+						<input type="text" id="roleName" class="col-md-7" name="roleName" placeholder="">
+						<input type="hidden" name="userId" id="userId" value="{{userId}}">
+					</div>
+					<div class="col-md-6 newshh">
+						<button style="margin-top: 4px;float: left;" class="btn btn-danger ml10 nofloat" id="queryBtnInRole">查询</button>
+					</div>
+					<div class="col-xs-12">
+						<div class="table-responsive">
+							<table id="sample-table-1" class="table table-striped table-bordered table-hover mar-bottom-0">
+								<thead>
+									<tr>
+										<th class="center"><label><span class="lbl">选择</span></label></th>
+										<th>角色名称</th>
+										<th>角色描述</th>
+										<th>授予/撤销</th>
+									</tr>
+								</thead>
+								<tbody id="rolesHtml">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<!-- <div class="btnrongqi">
+					<button class="btn btn-danger ml10 nofloat" id="closeBtnInRole">关闭</button>
+				</div> -->
+			</form>
+		</script>
+		<!-- 角色列表模板 -->
+		<script id="template_role_list" type="text/x-handlebars-template">
+			{{#if items}} {{#each items}}
+			<tr>
+				<td class="center checkItem">
+					<label>
+					<input type="checkbox" class="ace roleId" />
+					<span class="lbl"></span>
+				</label>
+				</td>
+				<td class="center">{{name}}</td>
+				<td class="center">{{desc}}</td>
+				<td class="center">
+					<button name="addRemoveBtnInRoleList" roleId="{{id}}" userId="{{userId}}" ruId="{{ruId}}" class="btn ml10 nofloat{{#if (eq ruId 0)}} btn-danger{{/if}}" id="close">
+						{{#if (eq ruId 0)}}授予{{else}}撤销{{/if}}
+					</button>
+				</td>
+			</tr>
+			{{/each}} {{else}}
+			<tr>
+				<td colspan="8" style="text-align: center">无数据</td>
+			</tr>
+			{{/if}}
+		</script>
+		<!-- 管理员列表模板 -->
+		<script id="template_admin_list" type="text/x-handlebars-template">
+			{{#if items}} {{#each items}}
+			<tr>
+				<td class="center checkItem">
+					<label>
+					<input value="{{id}}"  validStsCd="{{formatterValidSt validStsCd}}" type="checkbox" class="ace roleId" />
+					<span class="lbl"></span>
+				</label>
+				</td>
+				<td class="center">{{userName}}</td>
+				<td class="center">{{formatterSex sex}}</td>
+				<td class="center">{{userDepartment}}</td>
+				<td class="center">{{loginId}}</td>
+                <td class="center">{{credNum}}</td>
+				<td class="center">{{crtTime}}</td>
+				<td class="center">{{formatterValidStsCd validStsCd}}</td>
+			</tr>
+			{{/each}} {{else}}
+			<tr>
+				<td colspan="9" style="text-align: center">无数据</td>
+			</tr>
+			{{/if}}
+		</script>
+		<!-- 省/市/县 -->
+		<script id="area_temp_list" type="text/x-handlebars-template">
+			<option value="">{{viewcont}}</option>
+			{{#each items}}
+			<option value="{{areaCode}}">{{areaName}}</option>
+			{{/each}}
+		</script>
+		
+		<!--任务归属地查询模板-->
+		<script id="template_group_Search" type="text/x-handlebars-template">
+			{{#each items}}
+			<option value="{{areaCode}}">{{areaName}}</option>
+			{{/each}}
+		</script>
+		
+		<!-- 批量导入用户信息 -->
+        <script id="T_importUserInfo" type="text/x-handlebars-template">
+        <div class="">
+            <form class="clearfix" id="importUserForm" name="importUserForm" style="padding-top:18px;">
+                <div class="col-sm-12 hr-2">
+                    <div class="col-sm-6">
+                        <label class="col-sm-5 text-right" for="">添加附件：</label>
+                        <div class="pdiv">
+                            <div id="filePicker">上传附件</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ndiv annexName file-list">
+                    <input type="hidden" id="filePaths" name="filePaths"/>
+                </div>
+                <div class="col-sm-12">
+                    <div class="col-sm-6">
+                        <label class="col-sm-5 text-right" style="margin-left:-6px;">下载导入模板:</label>
+                        <div class="clearfix">
+                            <label class="col-sm-6"><a class="normalLink" id="J_download" href="JXH_IMPORT_USER.xlsx">下载模板</a></label>
+                        </div>
+                    </div>
+                    <div class="col-sm-8 promport"></div>
+                </div>
+				<div class="col-sm-12" style="padding-left:20px;color:red;">
+                                                      初始化默认密码 ：<span style="padding-left: 20px;">[123456]</span>
+                </div>
+                <input type="hidden" id="I_dtNum" name="dtNum" value="" />
+                <input type="hidden" id="I_dataBasees" name="dataBasees" value="" />
+            </form> 
+        </div>
+        <div class="btnrongqi btnWrap" style="margin-top: 90px;">
+            <button class="btn" id="cancel" onclick="doCancel()">取消</button>
+            <button id="ctlBtn" class="btn btn-danger ml10 nofloat" >导入</button>
+        </div>
+        </script>
+	</body>
+</html>

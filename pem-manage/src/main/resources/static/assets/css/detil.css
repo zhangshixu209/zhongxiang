@@ -1,0 +1,35 @@
+.table.details tbody tr td{
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+.table.details tbody tr td.alignLeft{
+	text-align: left;
+}
+.table.details tbody tr td.alignRight{
+	text-align: right;
+	background-color: #f9f9f9;
+}
+.table-striped>tbody>tr:nth-child(odd)>td, .table-striped>tbody>tr:nth-child(odd)>th{
+/* 	background-color: inherit; */
+}
+.table.details tbody .col-sm-2{
+	position: inherit;
+}
+
+.padd010{
+	padding: 10px;
+}
+.starBgcolor ,.starBgcolor:hover{
+	background-color: #E44848;
+	color: #fff;
+    padding: 3px 5px;
+    text-decoration: none;
+}
+.webuploader-pick{
+    margin: -4px;
+    padding: 0 5px;
+}
+.wswb{
+	white-space: inherit!important;
+	word-break: break-all;
+}

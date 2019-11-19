@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>利用EasyUI实现多选下拉框</title>
+    	<link rel="stylesheet" type="text/css" href="assets/lib/easyui/themes/default/easyui.css" />
+    	<style>
+    		*{
+    			padding:0;
+    			margin:0; 
+    			list-style:none;
+    		}
+    		.clearfix:after{
+    			display: block;
+    			clear: both;
+    			content: "";
+    		}
+    		.clearfix{
+    			zoom: 1;
+    		}
+    		.fl{float: left;}
+    		.fr{float: right;}
+    		.cheackboxs{
+    			width: 600px;
+    		}
+    		.easyui-combotree-inputwrap{
+    			width: 150px;
+    		}
+    		.easyui-combotree-inputwrap input{
+    			width: 100%;
+			    height: 28px;
+				vertical-align: -webkit-baseline-middle;
+    		}
+    	</style>
+	</head>
+	<body>
+		<div class="cheackboxs clearfix">
+			<div class="easyui-combotree-wrap fl">
+				<table>
+					<td align="right" style="width: 90px;">学术荣誉：</td>  
+			        <td >  
+			              <input id="xsry" name="xsry"  style="width: 150px;"  class="easyui-combobox" >  
+			        </td> 
+		        </table>
+			</div>
+			<div class="easyui-combotree-inputwrap fl"></div>
+		</div>
+		
+		<script src="http://libs.baidu.com/jquery/2.0.3/jquery.min.js"></script>
+	    <script type="text/javascript" src="assets/lib/easyui/jquery.easyui.min.js"></script>
+	    <script type="text/javascript">
+	        $(function(){  
+			    //初始化多选复选框  
+		     	initCombobox('xsry','XSRY_CD');//学术荣誉的字典编码是XSRY_CD  
+	     	});
+		    //参数：id  控件id   code 字典编码  
+		    function initCombobox(id,code){  
+                var value = "";  
+                //加载下拉框复选框  
+                $('#'+id).combobox({  
+//                  url:'${base}/ht/getComboboxData.action?dictionaryCode='+code, //后台获取下拉框数据的url  
+//                  method:'post',  
+                    panelHeight:200,//设置为固定高度，combobox出现竖直滚动条  
+                    valueField:'CODE',  
+                    textField:'NAME',  
+                    multiple:true,  
+                    data: [{"NAME":"省级名医","CODE":"sjmy"},{"NAME":"市级名医","CODE":"市级名医"}],
+                    formatter: function (row) { //formatter方法就是实现了在每个下拉选项前面增加checkbox框的方法  
+                        var opts = $(this).combobox('options');  
+                        return '<input type="checkbox" class="combobox-checkbox">' + row[opts.textField]  
+                    },  
+                    onLoadSuccess: function () {  //下拉框数据加载成功调用  
+                        var opts = $(this).combobox('options');  
+                        var target = this;  
+                        var values = $(target).combobox('getValues');//获取选中的值的values  
+                        $.map(values, function (value) {  
+                            var el = opts.finder.getEl(target, value);  
+                            el.find('input.combobox-checkbox')._propAttr('checked', true);   
+                        })  
+                    },  
+                    onSelect: function (row) { //选中一个选项时调用  
+                        var opts = $(this).combobox('options');  
+                        //获取选中的值的values  
+                        $("#"+id).val($(this).combobox('getValues'));  
+                       	//设置选中值所对应的复选框为选中状态  
+                        var el = opts.finder.getEl(this, row[opts.valueField]);  
+                        el.find('input.combobox-checkbox')._propAttr('checked', true);  
+//                      console.log(1);
+//						$('<input type="text"/>').appendTo($('.easyui-combotree-inputwrap'));
+                    },  
+                    onUnselect: function (row) {//不选中一个选项时调用  
+                        var opts = $(this).combobox('options');  
+                        //获取选中的值的values  
+                        $("#"+id).val($(this).combobox('getValues'));  
+                        var el = opts.finder.getEl(this, row[opts.valueField]);  
+                        el.find('input.combobox-checkbox')._propAttr('checked', false);  
+//                      console.log(0);
+//						$('.easyui-combotree-inputwrap').empty();
+                    },
+                    onChange: function() {
+                    	//获取下拉中的数据
+        				var data = $(this).combobox("getData");
+		                var arr = $(this).combobox('getValues');
+		                console.log(data, arr, arr.length);
+		                var str = '';
+		                $.each(arr, function(){  
+		                	str += '<input type="text"/>';
+						}); 
+						$('.easyui-combotree-inputwrap').html(str);
+		            } 
+                });  
+        	}
+			
+			
+	    </script>
+	</body>
+</html>

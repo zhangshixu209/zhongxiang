@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>角色管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="textml; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+	<meta http-equiv="Pragma" content="no-cache">  
+	<meta http-equiv="Cache-Control" content="no-cache">  
+	<meta http-equiv="Expires" content="0">
+    <link href="../assets/ace/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/ace/css/font-awesome.min.css" />
+    <!--[if IE 7]>
+	  	<link rel="stylesheet" href="../assets/ace/css/font-awesome-ie7.min.css" />
+	<![endif]-->
+	<script src="../assets/ace/js/ace-extra.min.js"></script>
+	<!--<link rel="stylesheet" href="../assets/css/bootstrap-datetimepicker.min.css" />-->
+    <link rel="stylesheet" href="../assets/ace/css/ace.min.css" />
+    <link rel="stylesheet" href="../assets/ace/css/ace-rtl.min.css" />
+    <link rel="stylesheet" href="../assets/ace/css/ace-skins.min.css" />
+	<link rel="stylesheet" type="text/css" href="../assets/css/admin_common.css?v=#scriptversion#"/>
+	<link rel="stylesheet" type="text/css" href="../assets/css/detil.css?v=#scriptversion#"/>
+	<!--[if lte IE 8]>
+		  <link rel="stylesheet" href="../assets/ace/css/ace-ie.min.css" />
+		<![endif]-->
+	<!--[if lt IE 9]>
+	    <script src="../assets/ace/jsml5shiv.js"></script>
+	    <script src="../assets/ace/js/respond.min.js"></script>
+	<![endif]-->
+	<link rel="stylesheet" type="text/css" href="../assets/lib/ztree/css/zTreeStyle/zTreeStyle.css"/>
+</head>
+<style type="text/css">
+	.treeRow{
+		margin-top: 10px;
+	}
+	
+	.wid-tree{
+		height: 500px;
+		overflow-y: scroll;
+	}
+	.w-box{
+	    box-shadow: 0 2px 4px rgba(0,0,0,.2);
+	}
+	.widget-main.marCenter{
+		padding: 20px;
+	}
+	.common-name{
+		height: 50px;
+	    font-size: 16px;
+	}
+	.common-description{
+		min-height: 50px;
+	    font-size: 16px;
+	}
+	.name-span{
+	    display: inline-block;
+	    width: 150px;
+	    text-align: right;
+	}
+	.name-ms{
+		width: 60%;
+		display: inline-flex;
+	}
+	table{
+	    border-collapse: collapse;
+	    border-spacing: 0;
+	    width: 100%;
+	    text-align: center;
+	}
+	.speer th {
+	    background-color: #E44848;
+	    color: #fff;
+	    text-align: center;
+	}
+	.speer td {
+		border: 1px solid #eee;
+	    padding: 5px;
+	}
+</style>
+<body>
+    <!-- <div class="page-header">
+        <h1>
+            系统管理
+            <small>
+			<i class="icon-double-angle-right"></i>
+			角色管理
+			</small>
+        </h1>
+    </div> -->
+	<div class="page-content">
+		<div class="row">
+	        <div class="col-sm-12 hr8">
+	        	<select class="col-sm-1 w110" id="sysTypeCd">
+	                <option value="1" selected="selected">平台管理端</option>
+	                <option value="3">发包方端</option>
+	            </select>
+	            <label class="col-sm-1 text-right w100" for="">角色名称</label>
+	            <input type="text" id="roleName" class="col-sm-1 mr15">
+	            <p class="pull-left">
+	            	<button id="searchBtn" mo="AC6DE0E19D0E824524EA1740FB16D006" class="hideBtn btn-color btn btn-danger">查询</button>
+		            <button class="btn-color btn btn-danger hideBtn" mo="A92C78A0946F49859144863A7661A4B4" id="roleAddBtn">添加角色</button>
+					<button class="btn-color btn btn-danger hideBtn" mo="183B1CD97C27DCD0E4538A6BC70D8629" id="roleRightBtn">权限配置</button>
+					<button class="btn-color btn btn-danger hideBtn" mo="201ACC92936A4DBAB7011744C42183C8" id="roleAdminBtn">关联管理端用户</button>
+<!-- 					<button class="btn-color btn btn-danger hideBtn" mo="AC8BED0B5AF04C1EBBA415B553AECD10" id="erRoleAdminBtn">关联发包方用户</button> -->
+					<button class="btn-color btn btn-danger hideBtn" mo="1861C8314763AB87F089C3A8B07BB3CB" id="showRoleDetailBtn">查看详情</button>
+					<button class="btn-color btn btn-danger hideBtn" mo="47B10C1052D06E206E82672FC9391A05" id="roleEditBtn">编辑</button>
+					<button class="btn-color btn btn-danger hideBtn" mo="99F5E774DE47EBC22A5F56864298E6C7" id="roleDelBtn">删除</button>
+	            </p>
+	        </div>
+		</div>
+		<div class="row">
+		    <!--查询列表-->
+			<div class="col-xs-12">
+				<div class="table-responsive">
+					<table class="table table-striped table-bordered table-hover">
+						<thead>
+							<tr>
+								<th class="center">选择</th>
+								<th class="center">角色名称</th>
+								<th class="center">创建人</th>
+								<th class="center">创建时间</th>
+								<th class="center">修改时间</th>
+							</tr>
+						</thead>
+						<tbody id="tableBodyHtml">
+						</tbody>
+					</table>
+				</div>
+				<div class="page-box" style="width: 97%;margin:0 auto" >
+						<span style="float:left" class="pagination" id="totalNum" ></span>
+						<ul style="float: right;" id="pagination"></ul>
+				</div>
+			</div>
+	    </div>
+ 	</div>
+	<script src="http://libs.baidu.com/jquery/2.0.3/jquery.min.js"></script>
+	<!--[if IE]>
+	<script src="http://libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
+	<![endif]-->
+    <script type="text/javascript ">
+        window.jQuery || document.write("<script src='../assets/ace/js/jquery-2.0.3.min.js'>" + "< " + "script> ");
+    </script>
+    <script type="text/javascript">
+        if ("ontouchend" in document) document.write("<script src='../assets/ace/js/jquery.mobile.custom.min.js'>" + "<" + "script>");
+    </script>
+    <script src="../assets/ace/js/bootstrap.min.js"></script>
+    <script src="../assets/ace/js/typeahead-bs2.min.js"></script>
+	<script src="../assets/ace/js/fuelux/data/fuelux.tree-sampledata.js"></script>
+	<script src="../assets/ace/js/fuelux/fuelux.tree.min.js"></script>
+    <script src="../assets/ace/js/ace.min.js"></script>
+    <script src="../assets/ace/js/ace-elements.min.js"></script>
+	<script src="../assets/lib/layer/layer.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../assets/lib/handlebars/1.3.0/handlebars.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../assets/lib/common.js?v=#scriptversion#" type="text/javascript" charset="utf-8"></script>
+	<script src="../assets/ace/js/jquery.validate.min.js"></script>
+	<script src="../assets/lib/validate_extends.js"></script>
+	<script src="../assets/lib/paginator/bootstrap-paginator.js"></script>
+	<script src="../assets/lib/ztree/js/jquery.ztree.all.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../assets/lib/ztree/js/jquery.ztree.core.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" src="../assets/lib/ztree/js/jquery.ztree.excheck.js"></script>
+	<script src="../js/common/right_button.js?v=#scriptversion#" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" src="../js/right/roleManage.js?v=#scriptversion#"></script>
+	<!--角色信息-->
+	<script id="template_role" type="text/x-handlebars-template">
+		<form id="roleForm" name="roleForm">
+			<div class="col-sm-12 hr-4">
+                <label class="col-sm-3 text-right" for="">系统端</label>
+                <div class="col-sm-8">
+				    <div class="clearfix">
+						<select class="col-sm-4 w180" name="sysTypeCd" {{#if id}}disabled="disabled"{{/if}}>
+		                	<option value="1" {{#if (eq sysTypeCd 1)}}selected="selected"{{/if}}>平台管理端</option>
+		                	<option value="3" {{#if (eq sysTypeCd 3)}}selected="selected"{{/if}}>发包方端</option>
+		          		</select>
+				    </div>
+				</div>
+            </div>
+			<div class="col-sm-12 hr-4">
+                <label class="col-sm-3 text-right" for=""><span class="red f12"> * </span>角色名称</label>
+                <div class="col-sm-8">
+				    <div class="clearfix">
+		                <input type="text" class="col-sm-8" value="{{roleName}}" name="roleName" maxlength="30">
+				    </div>
+				</div>
+            </div>
+            <div class="col-sm-12 hr-4">
+                <label class="col-sm-3 text-right" for="">角色描述</label>
+                <div class="col-sm-8">
+				    <div class="clearfix">
+				    	<textarea class="" cols="40" rows="5" name="description" maxlength="100" placeholder="最多支持100个字">{{description}}</textarea>
+				    </div>
+				</div>
+            </div>
+			
+        </form>
+	</script>
+	<!--角色配置-->
+	<script id="template_btn2" type="text/x-handlebars-template">
+		<div class="col-sm-12">
+			<div class="widget-box" style="border-bottom: none;">
+				<div class="widget-body" style="border: none;">
+					<div class="widget-main padding-8 wid-tree" style="overflow-y: inherit;">
+						<div id="tree1" class="ztree"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</script>
+		<!--关联用户-->
+	<script id="admin_template" type="text/x-handlebars-template">
+		<div class="row" style="margin-left: 0;">
+	        <div class="col-sm-12 hr8">
+	            <label class="col-sm-1 text-right w100" for="">用户名</label>
+	            <input type="text" id="userName" class="col-sm-2">
+	            <label class="col-sm-1 text-right w100" for="">手机号</label>
+	            <input type="text" id="loginId" class="col-sm-2">
+	            <button id="searchAdminBtn" class="btn-color btn btn-danger ml10">查询</button>
+	        </div>
+		</div>
+		<div class="row" style="margin-left: 0;">
+		    <!--查询列表-->
+			<div class="col-xs-12">
+				<div class="table-responsive">
+					<table class="table table-striped table-bordered table-hover">
+						<thead>
+							<tr>
+								<th class="center">
+									选择
+								</th>
+								<th class="center">用户名</th>
+								<th class="center">手机号</th>
+							</tr>
+						</thead>
+						<tbody id="admin_list_html">
+						</tbody>
+					</table>
+				</div>
+				<div class="page-box" style="width: 97%;margin:0 auto" >
+						<span style="float:left" class="pagination" id="totalNum2" ></span>
+						<ul style="float: right;" id="pagination2"></ul>
+				</div>
+			</div>
+	    </div>
+	</script>
+	
+	<script id="admin_list_template" type="text/x-handlebars-template">
+	{{#if items}}
+	{{#each items}}
+	<tr>
+        <td class="center">
+            <label>
+				<input type="checkbox" {{#if (eq hasState 1)}}checked="checked"{{/if}} class="ace adminId" value="{{id}}"/>
+				<span class="lbl"></span>
+			</label>
+        </td>
+        <td class="center">{{userName}}</td>
+        <td class="center">{{loginId}}</td>
+    </tr>
+	{{/each}}
+	{{else}}
+	<tr>
+		<td colspan="9" style="text-align: center">无数据</td>
+	</tr>
+	{{/if}}
+	</script>
+	
+	
+	<script id="er_admin_template" type="text/x-handlebars-template">
+		<div class="row">
+	        <div class="col-sm-12 hr8">
+	            <label class="col-sm-1 text-right w100" for="">姓名</label>
+	            <input type="text" id="realName" class="col-sm-2">
+	            <label class="col-sm-1 text-right w100" for="">手机号</label>
+	            <input type="text" id="mobile" class="col-sm-2">
+	            <button id="searchErAdminBtn" class="btn-color btn btn-danger ml10">查询</button>
+	        </div>
+		</div>
+		<div class="row">
+		    <!--查询列表-->
+			<div class="col-xs-12">
+				<div class="table-responsive">
+					<table class="table table-striped table-bordered table-hover">
+						<thead>
+							<tr>
+								<th class="center">
+									选择
+								</th>
+								<th class="center">姓名</th>
+								<th class="center">手机号</th>
+								<th class="center">发包商</th>
+							</tr>
+						</thead>
+						<tbody id="er_admin_list_html">
+						</tbody>
+					</table>
+				</div>
+				<div class="page-box" style="width: 97%;margin:0 auto" >
+						<span style="float:left" class="pagination" id="totalNum4" ></span>
+						<ul style="float: right;" id="pagination4"></ul>
+				</div>
+			</div>
+	    </div>
+	</script>
+	
+	
+	<script id="er_admin_list_template" type="text/x-handlebars-template">
+	{{#if items}}
+	{{#each items}}
+	<tr>
+        <td class="center">
+            <label>
+				<input type="checkbox" {{#if (eq hasState 1)}}checked="checked"{{/if}} class="ace er_adminId" value="{{erUserId}}"/>
+				<span class="lbl"></span>
+			</label>
+        </td>
+        <td class="center">{{realName}}</td>
+        <td class="center">{{mobile}}</td>
+		<td class="center">{{orgName}}</td>
+    </tr>
+	{{/each}}
+	{{else}}
+	<tr>
+		<td colspan="9" style="text-align: center">无数据</td>
+	</tr>
+	{{/if}}
+	</script>
+	<!--角色详情-->
+	<script id="template_deali" type="text/x-handlebars-template">
+		<div class="padd010">
+			<table id="sample-table-1" class="table table-striped table-bordered details" date-type='false'>
+				<tbody>
+					<tr>
+						<td class="col-sm-1 alignRight">角色名称：</td>
+						<td class="col-sm-2 alignLeft">{{item.roleName}}</td>
+						<td class="col-sm-1 alignRight">创建人：</td>
+						<td class="col-sm-2 alignLeft">{{item.crtName}}</td>
+					</tr>
+					<tr>
+						<td class="col-sm-1 alignRight">创建时间：</td>
+						<td class="col-sm-2 alignLeft">{{item.crtTime}}</td>
+						<td class="col-sm-1 alignRight">修改时间：</td>
+						<td class="col-sm-2 alignLeft">{{item.modfTime}}</td>
+					</tr>
+					<tr>
+						<td class="col-sm-1 alignRight">角色描述：</td>
+						<td colspan="3" class="alignLeft">{{item.description}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<p class="padd010 speer">关联用户列表</p>
+		<div class="padd010 speer">
+			<table date-type='false'>
+				<thead>
+					<tr>
+						<th class="center">用户名 </th>
+						<th class="center">手机号{{systype}}</th>
+						{{#if (eq item.sysTypeCd 3)}}<th class="center" >组织</th>{{/if}}
+					</tr>
+				</thead>
+    		 	<tbody id="ruleUserHtml">
+
+            	</tbody>
+	   		</table>
+	   		<div class="page-box" style="width: 97%;margin:0 auto" >
+				{{#if (eq item.sysTypeCd 1)}}
+					<span style="float:left" class="pagination" id="totalNum3" ></span>
+					<ul style="float: right;" id="pagination3"></ul>						
+				{{/if}}
+				{{#if (eq item.sysTypeCd 3)}}
+					<span style="float:left" class="pagination" id="totalNum5" ></span>
+					<ul style="float: right;" id="pagination5"></ul>
+				{{/if}}
+         	</div>
+		</div>
+	</script>
+	<script id="template_role_list" type="text/x-handlebars-template">
+	{{#if items}}
+	{{#each items}}
+	<tr>
+		<td class="center checkItem">
+			<label>
+				<input value="{{id}}" attr="{{sysTypeCd}}" type="checkbox"  {{#if (eq isinner 0)}} disabled="disabled"{{/if}} class="ace roleId" />
+				<span class="lbl"></span>
+			</label>
+		</td>
+	    <td class="center">{{roleName}}{{isRoot}}</td>
+	    <td class="center">{{crtName}}</td>
+	    <td class="center">{{crtTime}}</td>
+	    <td class="center">{{modfTime}}</td>
+	</tr>
+	{{/each}}
+	{{else}}
+		<tr>
+			<td colspan="9" style="text-align: center">无数据</td>
+		</tr>
+	{{/if}}
+	</script>
+	
+	<script id="template_role_user_list" type="text/x-handlebars-template">
+	{{#if items}}
+	{{#each items}}
+		<tr>
+	 		<td>{{userName}}</td>
+	 		<td>{{loginId}}</td>
+		</tr>
+	{{/each}}
+	{{else}}
+		<tr>
+			<td colspan="9" style="text-align: center">无数据</td>
+		</tr>
+	{{/if}}
+	</script>
+	
+	<script id="template_role_er_user_list" type="text/x-handlebars-template">
+	{{#if items}}
+	{{#each items}}
+		<tr>
+	 		<td>{{realName}}</td>
+	 		<td>{{mobile}}</td>
+			<td>{{orgName}}</td>
+		</tr>
+	{{/each}}
+	{{else}}
+		<tr>
+			<td colspan="9" style="text-align: center">无数据</td>
+		</tr>
+	{{/if}}
+	</script>
+</body>
+</html>

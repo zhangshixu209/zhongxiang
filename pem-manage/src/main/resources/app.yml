@@ -1,0 +1,26 @@
+# 项目相关配置
+zhx:
+  # 名称
+  name: ZhongXiang
+  # 版本
+  version: 1.1.0
+  # 版权年份
+  copyrightYear: 2019
+  # 文件上传
+  profile: /usr/local/src/profile/
+  # profile: E:/profile/
+  # 获取ip地址开关
+  addressEnabled: true
+  # 获取服务线上请求路径
+  url: http://47.92.38.52
+  # 配置群组ID
+  # 红包群组
+  redPacket: 82955057823745
+  # 图文红包群组
+  redPacketImg: 82955116544002
+  # 链接红包群组
+  redPacketLink: 82955171069953
+  # 视频红包群组
+  redPacketVideo: 82955213012993
+  # 任务红包群组
+  redPacketTask: 82955242373121

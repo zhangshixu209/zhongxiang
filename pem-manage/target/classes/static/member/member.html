@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>会员管理</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="Content-Type" content="textml; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Expires" content="0">
+		<link href="../assets/ace/css/bootstrap.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../assets/ace/css/font-awesome.min.css" />
+		<!--[if IE 7]>
+		  <link rel="stylesheet" href="assets/ace/css/font-awesome-ie7.min.css" />
+		<![endif]-->
+
+		<link rel="stylesheet" href="../assets/ace/css/ace.min.css" />
+		<link rel="stylesheet" href="../assets/ace/css/ace-rtl.min.css" />
+		<link rel="stylesheet" href="../assets/ace/css/ace-skins.min.css" />
+		<!--[if IE 8]>
+			<link rel="stylesheet" href="assets/ace/css/ace-ie.min.css" />
+		<![endif]-->
+		<!--<link rel="stylesheet" href="../css/login/css/base.css?v=#scriptversion#" />-->
+		<link rel="stylesheet" href="../css/login/css/index02.css?v=#scriptversion#" />
+		<link rel="stylesheet" href="../css/login/css/bgs.css?v=#scriptversion#" />
+		<link rel="stylesheet" href="../assets/css/detil.css?v=#scriptversion#" />
+		<script src="../assets/js/ace-extra.min.js"></script>
+		<!--[if lt IE 9]>
+		    <script src="../assets/ace/js/html5shiv.js"></script>
+		    <script src="../assets/ace/js/respond.min.js"></script>
+		<![endif]-->
+		<link rel="stylesheet" href="../css/pd/detailPop.css?v=#scriptversion#" />
+		<link rel="stylesheet" href="../assets/css/admin_common.css?v=#scriptversion#" />
+	</head>
+	<style type="text/css">
+		body {
+			background-color: inherit;
+			min-height: 100vh;
+		}
+		.ke-container.ke-container-default{
+		  	width: 500px!important;
+		}
+		.noticeTheme_wrap .ke-container.ke-container-default{ 
+		  	width: 450px!important; 
+		}
+		.layui-layer-page .layui-layer-content {
+		    overflow: unset!important;
+		}
+		p.detailTitle {
+    	float: left;
+		}
+		p.detailTitle label{
+			margin-bottom: 0;
+		}
+		p.detailTitle span{
+			vertical-align: middle;
+		}
+		p.detailTitle .numtext{
+			vertical-align: bottom;
+		}
+		.mValidate {
+			padding-left: 15px;
+			padding-top: 3px;
+		}
+	</style>
+
+	<body>
+		<form class="container-fluid shh searchForm">
+			<div class="row">
+				<div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
+					<label class="text-right w100s" for="">会员手机号</label>
+					<input type="text" class="howlong" id="memberAccount" name="memberAccount" maxlength="50">
+				</div>
+				<div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
+					<label class="text-right w100s" for="">会员昵称</label>
+					<input type="text" class="howlong" id="nickname" name="nickname" maxlength="50">
+				</div>
+				<div class="form-group col-xs-6 col-sm-4 col-md-6 newshh">
+					<label class="text-right w80s" for="">注册时间</label>
+					<input type="text" class=""
+						   onFocus="WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endTime\')||\'%y-%M-%d\'}'})" id="beginTime" name="beginTime">
+					<b>-</b>
+					<input type="text" class=""
+						   onFocus="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'beginTime\')}', maxDate:'%y-%M-%d'})"  id="endTime" name="endTime">
+				</div>
+				<div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
+					<label class="text-right w100s" for="">会员状态</label>
+					<select class="howlong" id="status" name="status">
+						<option value="" selected>全部</option>
+						<option value="1">正常</option>
+						<option value="2">警告</option>
+						<option value="3">冻结</option>
+					</select>
+				</div> 
+			</div>
+			<div class="row">
+				<p class="col-xs-12 pull-right chaxunss">
+					<button type="button" class="btn btn-danger btn-xs" id="J_search">查询</button>
+					<button type="reset" class="btn btn-danger btn-xs">重置</button>
+				</p>
+			</div>
+		</form>
+		<hr class="dotted">
+		<div class="container-fluid shh">
+			<div class="row">
+				<div class="col-sm-12">
+					<p class="pull-right buttonList"  id="buttonList">
+						<button id="recharge_btn" class="btn-color btn btn-danger btn-xs" mo="">充值</button>
+					</p>
+				</div>
+			</div>
+			<div class="row">
+				<!--查询列表-->
+				<div class="col-xs-12">
+					<div class="table-responsive">
+						<table id="sample-table-1" class="table table-striped table-bordered table-hover">
+							<thead>
+								<tr>
+									<th class="center">
+										选择
+									</th>
+									<th>账号</th>
+									<th>昵称</th>
+									<th>推荐人</th>
+									<th>实名信息</th>
+									<th>团队人数</th>
+									<th>累计充值</th>
+									<th>累计分红</th>
+									<th>累计提现</th>
+									<th>钱包余额</th>
+									<th>广告费</th>
+									<th>注册日期</th>
+									<th>被投诉记录</th>
+									<th>状态</th>
+								</tr>
+							</thead>
+							<tbody id="J_tabletpl">
+							</tbody>
+						</table>
+					</div>
+					<div class="page-box clearfix martop10">
+		                <ul style="float: right;" id="pagination"></ul>
+		                <span style="float: right" class="totalNum" id="totalNum"></span>
+		            </div>
+				</div>
+			</div>
+		</div>
+		<script src="http://libs.baidu.com/jquery/2.0.3/jquery.min.js"></script>
+		<!--[if IE]>
+		<script src="http://libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
+
+		<![endif]-->
+		<script type="text/javascript">
+			window.jQuery || document.write("<script src='../assets/ace/js/jquery-2.0.3.min.js'>" + "<" + "script>");
+		</script>
+		<script type="text/javascript">
+			if("ontouchend" in document) document.write("<script src='../assets/ace/js/jquery.mobile.custom.min.js'>" + "<" + "script>");
+		</script>
+		<script src="../assets/ace/js/jquery.validate.min.js"></script>
+		<script src="../assets/lib/validate_extends.js"></script>
+		<script src="../assets/lib/wdatepicker/WdatePicker.js?v=#scriptversion#"></script>
+		<script src="../assets/ace/js/bootstrap.min.js"></script>
+		<script src="../assets/ace/js/typeahead-bs2.min.js"></script>
+		<script src="../assets/ace/js/ace-elements.min.js"></script>
+		<script src="../assets/ace/js/ace.min.js"></script>
+		<script src="../assets/ace/js/ace-extra.min.js"></script>
+		<!--[if lte IE 8]>
+		  <script src="../assets/ace/js/excanvas.min.js"></script>
+		<![endif]-->
+		<!-- 表格拖拽插件 -->
+        <script src="../assets/lib/colResizable-1.6.js"></script>
+		<script src="../assets/lib/paginator/bootstrap-paginator.js"></script>
+		<script type="text/javascript" src="../assets/js/admin_common.js?v=#scriptversion#"></script>
+		<script src='../assets/lib/kindeditor/kindeditor-all.js'></script>
+		<script src='../assets/lib/kindeditor/plugins/image/image.js'></script>
+		<script src='../assets/lib/kindeditor/plugins/insertfile/insertfile.js'></script>
+		<script src='../assets/lib/kindeditor/lang/zh-CN.js'></script>
+		<script src="../assets/lib/handlebars/1.3.0/handlebars.js"></script>
+		<script src="../assets/lib/layer/layer.min.js"></script>
+		<script src="../assets/lib/common.js?v=#scriptversion#"></script>
+		<script src="../js/member/member.js?v=#scriptversion#"></script>
+		<!-- 公告数据查询 -->
+		<script id="T_tabletpl" type="text/x-handlebars-template">
+			{{#if items}} 
+				{{#each items}}
+					<tr>
+						<td class="center">
+							<label>
+								<input type="checkbox"  class="ace" name="taskbox" id="checkedId" data-id="{{id}}" value="{{id}}"/>
+								<span class="lbl"></span>
+							</label>
+						</td>
+						<td>{{memberAccount}}</td>
+						<td>{{nickname}}</td>
+						<td>{{recomNickname}}</td>
+						<td><a class="name noticeName" href="javascript:;" onclick="queryRealNameDetail('{{memberAccount}}')">{{realName}}</a></td>
+						<td>{{teamNum}}</td>
+						<td>{{rechargeTotal}}</td>
+						<td>{{bonusTotal}}</td>
+						<td>{{cashTotal}}</td>
+						<td>{{walletBalance}}</td>
+						<td>{{advertisingFee}}</td>
+						<td>{{crtTime}}</td>
+						<td><a class="name noticeName" href="javascript:;" onclick="queryMemberComplaintRecord('{{memberAccount}}','{{complaintTotal}}')">{{complaintTotal}}</a></td>
+						<td>{{statusCd status}}</td>
+					</tr>
+				{{/each}} 
+			{{else}}
+				<tr>
+					<td colspan="14" style="text-align: center">无数据</td>
+				</tr>
+			{{/if}}
+		</script>
+
+		<!--查看实名认证信息-->
+		<script id="T_realNameInfo" type="text/x-handlebars-template">
+			<div class="popup_outline">
+				<form class="clearfix" id="realNameInfoForm" name="realNameInfoForm" style="padding-top:18px;">
+					<input type="hidden" value="{{id}}" name="id">
+					<div class="col-sm-12">
+						<label class="col-sm-3 text-right" for="">用户真实姓名：</label>
+						<div class="col-sm-8">
+							<div class="clearfix">
+								<label class="col-sm-8 too-long" for="">{{realName}}</label>
+							</div>
+						</div>
+						<div class="col-sm-8 promport"></div>
+					</div>
+					<div class="col-sm-12">
+						<label class="col-sm-3 text-right" for="">性别：</label>
+						<div class="col-sm-8">
+							<div class="clearfix">
+								<label class="col-sm-8 too-long" for="">{{sexCd sex}}</label>
+							</div>
+						</div>
+						<div class="col-sm-8 promport"></div>
+					</div>
+					<div class="col-sm-12">
+						<label class="col-sm-3 text-right" for="">年龄：</label>
+						<div class="col-sm-8">
+							<div class="clearfix">
+								<label class="col-sm-8 too-long" for="">{{ageCd birthday}}</label>
+							</div>
+						</div>
+						<div class="col-sm-8 promport"></div>
+					</div>
+					<div class="col-sm-12">
+						<label class="col-sm-3 text-right" for="">身份证号码：</label>
+						<div class="col-sm-8">
+							<div class="clearfix">
+								<label class="col-sm-8 too-long" for="">{{cardNum}}</label>
+							</div>
+						</div>
+						<div class="col-sm-8 promport"></div>
+					</div>
+				</form>
+			</div>
+		</script>
+
+		<!--会员被投诉记录弹框-->
+		<script id="D_complaintRecord" type="text/x-handlebars-template">
+			<form id="complaintRecordForm" name="complaintRecordForm" class="form-inline shhform">
+				<div class="container">
+					<div class="row">
+						<div class="form-group col-xs-6 col-sm-4 col-md-6 newshh">
+							<input type="hidden" id="D_memberAccount" value="{{memberAccount}}" />
+							<label class="text-right w10s" for="">投诉状态</label>
+							<select class="howlong" id="complaintStatus" name="complaintStatus">
+								<option value="" selected>全部</option>
+								<option value="1001">待处理</option>
+								<option value="1002">已忽略</option>
+								<option value="1003">警告</option>
+								<option value="1004">冻结</option>
+								<option value="1005">解冻</option>
+							</select>
+						</div>
+						<div class="col-sm-4 newshh">
+							<button style="margin-top: 4px;float: left;" class="btn btn-danger ml10 nofloat" id="queryBtnInRole">查询</button>
+						</div>
+					</div>
+					<div class="col-xs-12">
+						<div class="table-responsive">
+							<table id="sample-table-2" class="table table-striped table-bordered table-hover mar-bottom-0">
+								<thead>
+								<tr>
+									<!--<th class="center"><label><span class="lbl">选择</span></label></th> -->
+									<th>账号</th>
+									<th>昵称</th>
+									<th>投诉人</th>
+									<th>投诉时间</th>
+									<th>投诉原因</th>
+									<th>投诉状态</th>
+								</tr>
+								</thead>
+								<tbody id="J_complaintRecord">
+								</tbody>
+							</table>
+						</div>
+						<div class="page-box" style="width: 97%;margin:0 auto">
+							<ul style="float: right;" id="pagination2"></ul>
+							<span style="float:right;" class="totalNum" id="totalNum2"></span>
+						</div>
+					</div>
+				</div>
+			</form>
+		</script>
+		<!-- 角色列表模板 -->
+		<script id="T_complaintRecord" type="text/x-handlebars-template">
+			{{#if items}} {{#each items}}
+			<tr>
+				<td class="center">{{memberAccount}}</td>
+				<td class="center">{{memberNickname}}</td>
+				<td class="center">{{complainant}}</td>
+				<td class="center">{{complaintTime}}</td>
+				<td class="center">{{complaintRemark}}</td>
+				<td class="center">{{complaintCd status}}</td>
+			</tr>
+			{{/each}} {{else}}
+			<tr>
+				<td colspan="6" style="text-align: center">无数据</td>
+			</tr>
+			{{/if}}
+		</script>
+
+		<!-- 会员后台充值 -->
+		<script id="T_rechargeTpl" type="text/x-handlebars-template">
+			<div class="popup_outline">
+				<form class="clearfix" id="memberRechargeForm" name="memberRechargeForm" style="padding-top:18px;">
+					<input type="hidden" value="{{id}}" id="memberId" name="id">
+					<input type="hidden" value="" id="walletBalance" name="walletBalance">
+					<input type="hidden" value="" id="advertisingFee" name="advertisingFee">
+					<div class="col-sm-12">
+						<label class="col-sm-3 text-right" for="">用户账号：</label>
+						<div class="col-sm-8">
+							<div class="clearfix">
+								<label class="col-sm-8 too-long" for="">{{memberAccount}}</label>
+							</div>
+						</div>
+						<div class="col-sm-8 promport"></div>
+					</div>
+					<div class="col-sm-12">
+						<label class="col-sm-3 text-right" for="">用户昵称：</label>
+						<div class="col-sm-8">
+							<div class="clearfix">
+								<label class="col-sm-8 too-long" for="">{{nickname}}</label>
+							</div>
+						</div>
+						<div class="col-sm-8 promport"></div>
+					</div>
+					<div class="col-sm-12">
+						<label class="col-sm-3 text-right" for="">钱包余额：</label>
+						<div class="col-sm-8">
+							<div class="clearfix">
+								<label class="col-sm-8 too-long" id="O_walletBalance">{{walletBalance}}</label>
+							</div>
+						</div>
+						<div class="col-sm-8 promport"></div>
+					</div>
+					<div class="col-sm-12">
+						<label class="col-sm-3 text-right" for="">广告费：</label>
+						<div class="col-sm-8">
+							<div class="clearfix">
+								<label class="col-sm-8 too-long" id="O_advertisingFee">{{advertisingFee}}</label>
+							</div>
+						</div>
+						<div class="col-sm-8 promport"></div>
+					</div>
+					<div class="col-sm-12">
+						<label class="col-sm-3 text-right" for=""><span class="red f12"> * </span>充值类型：</label>
+						<div class="col-sm-8">
+							<div class="clearfix">
+								<select class="howlong" required="true" style="width: 165px;" id="rechargeType" name="rechargeType">
+									<option value="">请选择</option>
+									<option value="1">钱包余额</option>
+									<option value="2">广告费</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-sm-8 promport"></div>
+					</div>
+					<div class="col-sm-12">
+						<label class="col-sm-3 text-right" for=""><span class="red f12"> * </span>充值金额：</label>
+						<div class="col-sm-8">
+							<div class="clearfix">
+								<input required="true" type="text" class="col-sm-5"
+									   value="" id="rechargeAmount" name="rechargeAmount" maxlength="60">
+							</div>
+						</div>
+						<div class="col-sm-8 promport"></div>
+					</div>
+				</form>
+			</div>
+			<div class="btnrongqi btnWrap">
+				<button class="btn"  onclick="doCancel()">取消</button>
+				<button class="btn btn-danger ml10 nofloat"  onclick="saveMemberRechargeInfo();">保存</button>
+			</div>
+		</script>
+	</body>
+</html>

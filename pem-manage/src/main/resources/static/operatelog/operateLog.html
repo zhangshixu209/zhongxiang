@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8" />
+		<title>系统管理-操作日志</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="Content-Type" content="textml; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Expires" content="0">
+		<link href="../assets/ace/css/bootstrap.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../assets/ace/css/font-awesome.min.css" />
+		<!--[if IE 7]>
+	  	<link rel="stylesheet" href="../assets/ace/css/font-awesome-ie7.min.css" />
+		<![endif]-->
+		<link rel="stylesheet" href="../assets/ace/css/ace.min.css" />
+		<link rel="stylesheet" href="../assets/ace/css/ace-rtl.min.css" />
+		<link rel="stylesheet" href="../assets/ace/css/ace-skins.min.css" />
+		<link rel="stylesheet" type="text/css" href="../assets/css/admin_common.css?v=#scriptversion#" />
+		<!--[if lte IE 8]>
+		  <link rel="stylesheet" href="../assets/ace/css/ace-ie.min.css" />
+		<![endif]-->
+		<!--[if lt IE 9]>
+	    <script src="../assets/ace/js/html5shiv.js"></script>
+	    <script src="../assets/ace/js/respond.min.js"></script>
+	<![endif]-->
+		<!--详情弹窗样式-->
+		<link rel="stylesheet" href="../css/pd/detailPop.css?v=#scriptversion#" />
+	</head>
+	<style type="text/css">
+		.nofloat {
+			float: inherit;
+		}
+		
+		.template_monitor .table-striped>tbody>tr:nth-child(odd)>td,
+		.table-striped>tbody>tr:nth-child(odd)>th {
+			background-color: inherit;
+		}
+		
+		.cfcbgcolor {
+			background-color: #cfc;
+		}
+		.selectfont{
+		    font: 400 13.3333px Arial;
+		}
+	</style>
+
+	<body>
+		<!-- <div class="page-header">
+			<h1>
+			系统管理 <small><i class="icon-double-angle-right"></i> 操作日志</small>
+		</h1>
+		</div> -->
+		<form class="container-fluid shh searchForm">
+			<div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
+				<label class="text-right w100s" for="">日志编号</label>
+				<input type="text" class="howlong" id="logNum" name="logNum" placeholder=""/>
+			</div>
+			<div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
+				<label class="text-right w100s" for="">操作人</label>
+				<input type="text" class="howlong" id="crtUserName" name="crtUserName" placeholder=""/>
+			</div>
+			<div class="form-group col-xs-6 col-sm-4 col-md-6 newshh">
+                <label class="text-right w80s" for="">执行操作时间</label>
+                <input type="text" class=""
+                            onFocus="WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endTime\')||\'%y-%M-%d\'}'})" id="startTime" name="startTime">
+                <b>-</b>            
+                <input type="text" class=""
+                            onFocus="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startTime\')}', maxDate:'%y-%M-%d'})"  id="endTime" name="endTime">
+            </div>
+            <!-- <div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
+                <label class="text-right w100s" for="">操作类型</label>
+                <select  class="howlong" id="operateTypeCd" name="operateTypeCd">
+                </select>
+            </div> -->
+			<div class="row">
+                <p class="col-md-12 pull-right chaxunss">
+                    <button type="button" class="btn btn-danger" id="J_search">查询</button>
+                    <button type="reset" class="btn btn-danger">重置</button>
+                </p>
+            </div>
+		</form>
+		<hr class="dotted">
+		<div class="container-fluid shh">
+			<div class="row">
+			    <div class="col-sm-12">
+					<p class="pull-right" id="buttonList">
+						<!-- <button type="button" class="btn btn-xs btn-danger" id="export_btn">导出到excel</button> -->
+						<!-- <button class="btn btn-xs btn-danger" id="chuang">创建工资任务</button> -->
+					</p>
+				</div> 
+				<!--查询列表-->
+				<div class="col-xs-12">
+					<div class="table-responsive">
+						<table id="sample-table-1" class="table table-striped table-bordered table-hover">
+							<thead>
+								<tr>
+									<!-- <th class="center">选择</th> -->
+									<!--<th>职场ID</th>-->
+									<th>日志编号</th>
+									<th>操作页面</th>
+									<th>操作</th>
+									<th>执行操作时间</th>
+									<th>操作人</th>
+								</tr>
+							</thead>
+
+							<tbody id="J_tabletpl">
+							</tbody>
+						</table>
+					</div>
+					<!-- /.table-responsive -->
+					<!--分页开始-->
+					<div class="page-box clearfix">    
+                        <ul style="float: right;" id="pagination"></ul>
+                        <span style="float: right" class="totalNum" id="totalNum"></span>
+                    </div>
+					<!-- 分页结束 -->
+
+				</div>
+			</div>
+		</div>
+		<!--/.row-->
+		<!-- basic scripts -->
+		<script src="http://libs.baidu.com/jquery/2.0.3/jquery.min.js"></script>
+		<!--[if IE]>
+			<script src="http://libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
+		<![endif]-->
+		<script type="text/javascript ">
+			window.jQuery || document.write("<script src='../assets/ace/js/jquery-2.0.3.min.js'>" + "<" + "script> ");
+		</script>
+		<!--[if IE]>
+		<script type="text/javascript">
+		 window.jQuery || document.write("<script src='../assets/ace/js/jquery-1.10.2.min.js'>"+"<"+"script>");
+		</script>
+		<![endif]-->
+
+		<script type="text/javascript">
+			if("ontouchend" in document)
+				document.write("<script src='../assets/ace/js/jquery.mobile.custom.min.js'>" + "<" + "script>");
+		</script>
+		<script src="../assets/ace/js/bootstrap.min.js"></script>
+		<script src="../assets/ace/js/typeahead-bs2.min.js"></script>
+		<!-- page specific plugin scripts -->
+		<!--[if lte IE 8]>
+		  <script src="../assets/ace/js/excanvas.min.js"></script>
+		<![endif]-->
+		<script src="../assets/lib/wdatepicker/WdatePicker.js?v=#scriptversion#"></script>
+		<script src="../assets/js/admin_common.js?v=#scriptversion#"></script>
+		<!-- ace scripts -->
+		<script src="../assets/ace/js/ace-elements.min.js"></script>
+		<script src="../assets/ace/js/ace.min.js"></script>
+		<script src="../assets/lib/handlebars/1.3.0/handlebars.js"></script>
+		<script src="../assets/lib/layer/layer.min.js"></script>
+		<!-- 表格拖拽插件 -->
+        <script src="../assets/lib/colResizable-1.6.js"></script>
+		<script src="../assets/lib/paginator/bootstrap-paginator.js"></script>
+		<script src="../assets/lib/handlebars/1.3.0/handlebars.js"></script>
+		<script src="../assets/lib/layer/layer.min.js"></script>
+		<script src="../assets/lib/common.js?v=#scriptversion#"></script>
+		<script src="../assets/ace/js/jquery.validate.min.js"></script>
+		<script src="../assets/lib/validate_extends.js"></script>
+		<script src="../js/common/right_button.js?v=#scriptversion#" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/operatelog/operateLog.js?v=#scriptversion#" type="text/javascript" charset="utf-8"></script>
+
+		<!-- 职场名称 下拉 -->
+		<script id="T_predicWorkplaceName" type="text/x-handlebars-template">
+			<option value="">全部</option>
+			{{#each items}}
+			<option value="{{workplaceId}}">{{workplaceName}}</option>
+			{{/each}}
+		</script>
+		<script id="T_tabletpl" type="text/x-handlebars-template">
+			{{#if items}} {{#each items}}
+			<tr workplaceId={{workplaceId}}>
+				<!-- <td class="center">
+					<label>
+							<input type="checkbox" class="ace" name="taskbox" value="{{taskNo}}" state="{{payStatus}}"/>
+							<span class="lbl"></span>
+						</label>
+				</td> -->
+				<td>{{logNum}}</td>
+				<td>{{operatePageCd operatePage}}</td>
+				<td>{{operateTypeCd operateType}}</td>
+				<td>{{execOperateTime}}</td>
+				<td>{{crtUserName}}</td>
+			</tr>
+			{{/each}} {{else}}
+			<tr>
+				<td colspan="6" style="text-align: center">无数据</td>
+			</tr>
+			{{/if}}
+		</script>
+	</body>
+
+</html>

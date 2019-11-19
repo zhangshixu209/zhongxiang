@@ -1,0 +1,48 @@
+/*修改密码*/
+.revisePs-box{
+	text-align: center;
+}
+.revisePs-list{
+	width: 600px;
+	margin: 0 auto;
+	/*text-align: center*/;
+	padding-top: 30px;
+	padding-left: 20px;
+}
+.revisePs-list div{
+	margin-bottom: 5px;
+}
+.revisePs-box .revisePs-key{
+	display: inline-block;
+	width: 80px;
+	line-height: 30px;
+	margin-right: 10px;
+	text-align: right;
+}
+.revisePs-list .code{
+	width: 100px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 3px;
+    margin-left: 10px;
+}
+#codeImage {
+    display: inline-block;
+    vertical-align: bottom;
+    border: none;
+    background-color: #DFDFDF;
+    cursor: pointer;
+    color: #999999;
+    font-size: 14px;
+    text-align: center;
+}
+input[type='button'].button {
+    border: 1px solid #cc1414;
+    background-color: #fff;
+    color: #cc1414;
+}
+ input[type='button'].button:hover {
+    color: #fff;
+    background-color: #cc1414;
+}

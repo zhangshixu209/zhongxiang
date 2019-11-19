@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>权限管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="textml; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+	<meta http-equiv="Pragma" content="no-cache">  
+	<meta http-equiv="Cache-Control" content="no-cache">  
+	<meta http-equiv="Expires" content="0">	
+    <link href="../assets/ace/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/ace/css/font-awesome.min.css" />
+    <!--[if IE 7]>
+	  	<link rel="stylesheet" href="../assets/ace/css/font-awesome-ie7.min.css" />
+	<![endif]-->
+	<script src="../assets/ace/js/ace-extra.min.js"></script>
+	<!--<link rel="stylesheet" href="../assets/css/bootstrap-datetimepicker.min.css" />-->
+    <link rel="stylesheet" href="../assets/ace/css/ace.min.css" />
+    <link rel="stylesheet" href="../assets/ace/css/ace-rtl.min.css" />
+    <link rel="stylesheet" href="../assets/ace/css/ace-skins.min.css" />
+	<link rel="stylesheet" type="text/css" href="../assets/css/admin_common.css?v=#scriptversion#"/>
+	<!--[if lte IE 8]>
+		  <link rel="stylesheet" href="../assets/ace/css/ace-ie.min.css" />
+		<![endif]-->
+	<!--[if lt IE 9]>
+	    <script src="../assets/ace/jsml5shiv.js"></script>
+	    <script src="../assets/ace/js/respond.min.js"></script>
+	<![endif]-->
+	<link rel="stylesheet" type="text/css" href="../assets/lib/ztree/css/zTreeStyle/zTreeStyle.css"/>
+</head>
+<style type="text/css">
+	.treeRow{
+		margin-top: 10px;
+	}
+	.name-btn{
+	}
+	.wid-tree{
+		height: 500px;
+		overflow-y: scroll;
+	}
+	.w-box{
+	    box-shadow: 0 2px 4px rgba(0,0,0,.2);
+	}
+	.widget-main.marCenter{
+		padding: 20px;
+	}
+	.common-name{
+		min-height: 50px;
+	}
+	.name-span{
+	    display: inline-block;
+	    width: 150px;
+	    text-align: right;
+	}
+	.name-ms{
+		width: 60%;
+		display: inline-flex;
+	}
+</style>
+<body>
+    <!-- <div class="page-header">
+        <h1>
+            系统管理
+            <small>
+			<i class="icon-double-angle-right"></i>
+			权限管理
+			</small>
+        </h1>
+    </div> -->
+	<div class="page-content">
+		<div class="col-sm-12">
+			<select class="col-sm-1 w150 mr15" id="sysTypeCd">
+                <option value="1" selected="selected">平台管理端</option>
+            </select>
+            <p class="pull-left">
+	            <button id="queryRightBtn" mo="040DD0011E014BB58166612C985BF8B5" class="btn-color btn btn-danger ml10 hideBtn">查询</button>
+				<button id="addRightBtn" mo="040DD0011E014BB58166612C985BF8B5" class="btn-color btn btn-danger ml10 hideBtn">添加</button>
+				<button class="btn-color btn btn-danger ml10 hideBtn" mo="A376C9D881D0EF1F91A380216AB9CA91" id="updRightBtn">1编辑</button>
+				<button class="btn-color btn btn-danger ml10 hideBtn" mo="AEF0B533F23464F29FC284B9230014D8" id="delRightBtn">删除</button>
+				<input type="hidden" id="parentId"><!-- 添加该字段表示父节点Id,修改删除表示选中节点Id -->
+				<input type="hidden" id="p_parentId">
+		    </p>
+		</div>
+		<div class="row treeRow">
+			<div class="col-sm-4">
+				<div class="widget-box w-box">
+					<div class="widget-body">
+						<div class="widget-main padding-8 wid-tree">
+							<div id="tree1" class="ztree"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-7">
+				<div class="col-sm-12">
+					<div class="widget-box w-box">
+						<div class="widget-body">
+							<div class="widget-main padding-8 wid-tree marCenter" id="viewRightHtml">
+								<div class="common-name">
+									<span class="name-span">权限名称：</span><span></span>
+								</div>
+								<div class="common-name">
+									<span class="name-span">权限类型：</span><span></span>
+								</div>
+								<div class="common-name">
+									<span class="name-span">URL参数：</span><span></span>
+								</div>
+								<div class="common-name">
+									<span class="name-span">权限代码：</span><span></span>
+								</div>
+								<div class="common-name">
+									<span class="name-span">URL校验参数：</span><span></span>
+								</div>
+								<div class="common-name">
+									<span class="name-span">菜单排序序号：</span><span></span>
+								</div>
+								<div class="common-name">
+									<span class="name-span">权限描述：</span><span class="name-ms"></span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+	   </div>
+ 	</div>
+	<script src="http://libs.baidu.com/jquery/2.0.3/jquery.min.js"></script>
+	<!--[if IE]>
+	<script src="http://libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
+	<![endif]--> 	
+    <script type="text/javascript ">
+        window.jQuery || document.write("<script src='../assets/ace/js/jquery-2.0.3.min.js'>" + "< " + "script> ");
+    </script>
+    <script type="text/javascript">
+        if ("ontouchend" in document) document.write("<script src='../assets/ace/js/jquery.mobile.custom.min.js'>" + "<" + "script>");
+    </script>
+    <script src="../assets/ace/js/bootstrap.min.js"></script>
+    <script src="../assets/ace/js/typeahead-bs2.min.js"></script>
+	<script src="../assets/ace/js/fuelux/data/fuelux.tree-sampledata.js"></script>
+	<script src="../assets/ace/js/fuelux/fuelux.tree.min.js"></script>
+    <script src="../assets/ace/js/ace.min.js"></script>
+    <script src="../assets/ace/js/ace-elements.min.js"></script>
+	<script src="../assets/lib/layer/layer.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../assets/lib/handlebars/1.3.0/handlebars.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../assets/lib/common.js?v=#scriptversion#" type="text/javascript" charset="utf-8"></script>
+	<script src="../assets/ace/js/jquery.validate.min.js"></script>
+	<script src="../assets/lib/validate_extends.js"></script>
+	<script src="../assets/lib/ztree/js/jquery.ztree.all.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../assets/lib/ztree/js/jquery.ztree.core.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/common/right_button.js?v=#scriptversion#" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/right/right.js?v=#scriptversion#" type="text/javascript" charset="utf-8"></script>
+	<script id="template_group_Search" type="text/x-handlebars-template">
+		<form id="rightForm" name="rightForm">
+			<div class="col-sm-12 hr-4">
+                <label class="col-sm-3 text-right" for="">系统端</label>
+                <div class="col-sm-8">
+				    <div class="clearfix">
+						<select class="col-sm-8 w180" name="sysTypeCd" id="add_sysTypeCd" disabled="disabled">
+		                	<option value="1" {{#if (eq sysTypeCd 1)}}selected="selected"{{/if}}>平台管理端</option>
+		                	<option value="3" {{#if (eq sysTypeCd 3)}}selected="selected"{{/if}}>发包方端</option>
+		          		</select>
+				    </div>
+				</div>
+            </div>
+            <div class="col-sm-12 hr-4">
+                <label class="col-sm-3 text-right" for=""><span class="red f12"> * </span>权限名称</label>
+                <div class="col-sm-8">
+			    	<div class="clearfix">
+                		<input type="text" class="col-sm-8" value="{{name}}" name="name" maxlength="30">
+			    	</div>
+				</div>
+            </div>
+            <div class="col-sm-12 hr-4">
+            	<label class="control-label col-sm-3 text-right" >权限类型</label>
+                <div class="radio-inline">
+                    <label>
+						<input name="typeCd" type="radio" value="menu" {{#if (eq typeCd 'menu')}}checked{{/if}} class="ace">
+						<span class="lbl">菜单</span>
+					</label>
+                </div>
+                <div class="radio-inline">
+                    <label>
+						<input name="typeCd" type="radio" autocomplete="off" {{#if (eq typeCd 'button')}}checked{{/if}} value="button" class="ace">
+						<span class="lbl">按钮</span>
+					</label>
+                </div>
+                <div class="radio-inline">
+                    <label>
+						<input name="typeCd" type="radio" autocomplete="off" {{#if (eq typeCd 'link')}}checked{{/if}} value="link" class="ace">
+						<span class="lbl">链接</span>
+					</label>
+                </div>
+            </div>
+            <div class="col-sm-12 hr-4">
+                <label class="col-sm-3 text-right" for="">URL参数</label>
+                <div class="col-sm-8">
+				    <div class="clearfix">
+	                <input type="text" class="col-sm-8" value="{{urlAddr}}" name="urlAddr" maxlength="250">
+				    </div>
+				</div>
+            </div>
+            <div class="col-sm-12 hr-4">
+            	<label class="control-label col-sm-3 text-right" >URL校验参数：</label>
+                <div class="radio-inline">
+                    <label>
+						<input name="tsvldUrlParaFlag" type="radio" value="0" {{#if (eq tsvldUrlParaFlag 0)}}checked{{/if}}  class="ace">
+						<span class="lbl">校验</span>
+					</label>
+                </div>
+                <div class="radio-inline">
+                    <label>
+						<input name="tsvldUrlParaFlag" type="radio"  {{#if (eq tsvldUrlParaFlag 1)}}checked{{/if}} autocomplete="off" value="1" class="ace">
+						<span class="lbl">不校验</span>
+					</label>
+                </div>
+            </div>
+            <div class="col-sm-12 hr-4">
+                <label class="col-sm-3 text-right" for=""><span class="red f12"> * </span>菜单排序序号</label>
+                <div class="col-sm-8">
+				    <div class="clearfix">
+		                <input type="text" class="col-sm-8" maxlength="3" value="{{orderLevel}}" name="orderLevel">
+				    </div>
+				</div>
+            </div>
+            <div class="col-sm-12 hr-4">
+                <label class="col-sm-3 text-right" for="">权限描述</label>
+                <div class="col-sm-8">
+				    <div class="clearfix">
+				    	<textarea class="" cols="40" rows="5" name="description" placeholder="最多支持120个字" maxlength="120">{{description}}</textarea>
+				    </div>
+				</div>
+            </div>
+        </form>
+	</script>
+	
+<script id="rightView" type="text/x-handlebars-template">
+								<div class="common-name">
+									<span class="name-span">权限名称：</span><span class="name-ms">{{name}}</span>
+								</div>
+								<div class="common-name">
+									<span class="name-span">权限类型：</span><span>{{formatterTypeCd typeCd}}</span>
+								</div>
+								<div class="common-name">
+									<span class="name-span">URL参数：</span><span class="name-ms">{{urlAddr}}</span>
+								</div>
+								<div class="common-name">
+									<span class="name-span">权限代码：</span><span>{{mo}}</span>
+								</div>
+								<div class="common-name">
+									<span class="name-span">URL校验参数：</span><span>{{formatterState tsvldUrlParaFlag}}</span>
+								</div>
+								<div class="common-name">
+									<span class="name-span">菜单排序序号：</span><span>{{orderLevel}}</span>
+								</div>
+								<div class="common-name">
+									<span class="name-span">权限描述：</span><span class="name-ms">{{description}}</span>
+								</div>
+</script>
+</body>
+</html>

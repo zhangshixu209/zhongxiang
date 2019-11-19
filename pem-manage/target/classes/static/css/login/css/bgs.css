@@ -1,0 +1,25 @@
+/*雪碧图*/
+.icon-arrow-down{background:url(../../../img/login/img/allbgs.png) no-repeat 0px 0px;height:5px;padding-left:11px;}
+.icon-pull-down{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -5px;height:5px;padding-left:11px;}
+.icon-arrow-open-down{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -10px;height:7px;padding-left:9px;}
+.icon-triangle{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -17px;height:9px;padding-left:7px;}
+.icon-up-down{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -20px;height:10px;padding-left:9px;}
+.icon-msg{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -36px;height:14px;padding-left:19px;}
+.icon_calendar{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -50px;height:14px;padding-left:18px;}
+.icon-phone{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -64px;height:16px;padding-left:18px;}
+.icon-task-seat{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -80px;height:16px;padding-left:18px;}
+.icon-data-seat{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -96px;height:16px;padding-left:18px;}
+.icon-play-seat{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -112px;height:16px;padding-left:18px;}
+.icon-password-modify{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -128px;height:16px;padding-left:15px;}
+.icon-modify{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -144px;height:16px;padding-left:18px;}
+.icon-back-seat{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -160px;height:16px;padding-left:18px;}
+.icon-order-seat{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -176px;height:16px;padding-left:16px;}
+.icon-password{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -192px;height:24px;padding-left:22px;}
+.icon-search{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -216px;height:17px;padding-left:19px;}
+.icon-identifying{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -233px;height:24px;padding-left:24px;}
+.icon-user{background:url(../../../img/login/img/allbgs.png) no-repeat 0px -257px;height:24px;padding-left:23px;}
+
+/*新图标*/
+.user_ico{background:url(../../../img/login/img/login_all_ico.png) no-repeat 0px 0px;height:20px;padding-left:19px;}
+.password_ico{background:url(../../../img/login/img/login_all_ico.png) no-repeat 0px -20px;height:20px;padding-left:19px;}
+.code_ico{background:url(../../../img/login/img/login_all_ico.png) no-repeat 0px -40px;height:20px;padding-left:18px;}

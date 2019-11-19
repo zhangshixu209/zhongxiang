@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8" />
+		<title>系统管理-组织机构管理</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="Content-Type" content="textml; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Expires" content="0">
+		<link href="../assets/ace/css/bootstrap.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../assets/ace/css/font-awesome.min.css" />
+		<!--[if IE 7]>
+        <link rel="stylesheet" href="../assets/ace/css/font-awesome-ie7.min.css"/>
+        <![endif]-->
+		<link rel="stylesheet" href="../assets/ace/css/ace.min.css" />
+		<link rel="stylesheet" href="../assets/ace/css/ace-rtl.min.css" />
+		<link rel="stylesheet" href="../assets/ace/css/ace-skins.min.css" />
+		<link rel="stylesheet" type="text/css" href="../assets/css/admin_common.css?v=#scriptversion#" />
+		<!--[if lte IE 8]>
+        <link rel="stylesheet" href="../assets/ace/css/ace-ie.min.css"/>
+        <![endif]-->
+		<!--[if lt IE 9]>
+        <script src="../assets/ace/js/html5shiv.js"></script>
+        <script src="../assets/ace/js/respond.min.js"></script>
+        <![endif]-->
+		<!--详情弹窗样式-->
+		<link rel="stylesheet" href="../css/pd/detailPop.css?v=#scriptversion#" />
+		<link rel="stylesheet" type="text/css" href="../assets/lib/ztree/css/zTreeStyle/zTreeStyle.css" />
+		<link rel="stylesheet" type="text/css" href="../assets/lib/ztree/css/metroStyle/metroStyle.css" />
+	</head>
+	<style type="text/css">
+		.nofloat {
+			float: inherit;
+		}
+		
+		.template_monitor .table-striped>tbody>tr:nth-child(odd)>td,
+		.table-striped>tbody>tr:nth-child(odd)>th {
+			background-color: inherit;
+		}
+		
+		.cfcbgcolor {
+			background-color: #cfc;
+		}
+		.reportvalidate{
+		    position: absolute;
+		    top: 5px;
+		    font-size: 12px;
+		    left: 308px;
+		}
+		 .ztree *{
+            font-size: 14px;
+        }
+        .ztree li span.button.center_open,
+        .ztree li span.button.roots_open,
+        .ztree li span.button.root_open,
+        .ztree li span.button.bottom_open{
+            background-image: url(../assets/lib/ztree/css/zTreeStyle/img/bihe.png);
+            background-position: 0;
+        } 
+        .ztree li span.button.center_close,
+        .ztree li span.button.roots_close,
+        .ztree li span.button.root_close,
+        .ztree li span.button.bottom_close{
+            background-image: url(../assets/lib/ztree/css/zTreeStyle/img/zhankai.png);
+            background-position: 0;
+        }
+        .ztree li a{
+            height: 22px;
+        }
+        .hh100{
+            height: 100%;
+        }
+        .emptyTree{
+            display: none;
+            font-size: 30px;
+            margin-left: -70px;
+            margin-top: 100px;
+        }
+        .ztree li span {
+		    line-height: 20px;
+		}
+		.ztree li a input.rename {
+		    height: 20px;
+		    width: 98px;
+		}
+		.ztree li a.curSelectedNode{
+			border: 1px #FFB951 solid;
+		}
+		.ztree li span.button.ico_open,.ztree li span.button.ico_close,.ztree li span.button.ico_docu{
+			display:none;
+		}
+		
+	</style>
+
+	<body>
+	    <div style="font-weight:bold;font-size:15px;">公司部门组织架构管理</div>
+		<hr class="dotted">
+		<div class="container-fluid shh">
+			<div class="row">
+				<!--查询树列表-->
+				<div class="col-sm-2 menu_left hh100">
+                    <div class="tree_box">
+                        <span class="emptyTree">暂无组织机构，请联系管理员添加！</span>
+                        <ul id="treeDemo" class="ztree setbackground"></ul>
+                    </div>
+				</div>
+			</div>
+		</div>
+		<!--/.row-->
+		<!-- basic scripts -->
+		<script src="http://libs.baidu.com/jquery/2.0.3/jquery.min.js"></script>
+		<!--[if IE]>
+			<script src="http://libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
+		<![endif]-->
+		<script type="text/javascript ">
+			window.jQuery || document.write("<script src='../assets/ace/js/jquery-2.0.3.min.js'>" + "<" + "script> ");
+		</script>
+		<!--[if IE]>
+		<script type="text/javascript">
+		 window.jQuery || document.write("<script src='../assets/ace/js/jquery-1.10.2.min.js'>"+"<"+"script>");
+		</script>
+		<![endif]-->
+
+		<script type="text/javascript">
+			if("ontouchend" in document)
+				document.write("<script src='../assets/ace/js/jquery.mobile.custom.min.js'>" + "<" + "script>");
+		</script>
+		<script src="../assets/ace/js/bootstrap.min.js"></script>
+		<script src="../assets/ace/js/typeahead-bs2.min.js"></script>
+		<!-- page specific plugin scripts -->
+		<!--[if lte IE 8]>
+        <script src="../assets/ace/js/excanvas.min.js"></script>
+        <![endif]-->
+		<script src="../assets/lib/wdatepicker/WdatePicker.js?v=#scriptversion#"></script>
+		<script src="../assets/js/admin_common.js?v=#scriptversion#"></script>
+		<!-- ace scripts -->
+		<script src="../assets/ace/js/ace-elements.min.js"></script>
+		<script src="../assets/ace/js/ace.min.js"></script>
+		<script src="../assets/lib/layer/layer.min.js"></script>
+		<script src="../assets/lib/common.js?v=#scriptversion#"></script>
+		<script src="../assets/ace/js/jquery.validate.min.js"></script>
+		<script src="../assets/lib/validate_extends.js"></script>
+		<script src="../assets/lib/ztree/js/jquery.ztree.all.min.js" type="text/javascript" charset="utf-8"></script>
+	    <script src="../assets/lib/ztree/js/jquery.ztree.core.min.js" type="text/javascript" charset="utf-8"></script>
+	    <script src="../assets/lib/ztree/js/jquery.ztree.excheck.min.js" type="text/javascript" charset="utf-8"></script>
+	    <script src="../assets/lib/ztree/js/jquery.ztree.exedit.min.js" type="text/javascript" charset="utf-8"></script>
+	    <script src="../assets/lib/easyui/jquery.easyui.min.js"></script>
+		<script src="../js/common/right_button.js?v=#scriptversion#" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/organiza/organizaManageNew.js?v=#scriptversion#" type="text/javascript" charset="utf-8"></script>
+	</body>
+
+</html>
