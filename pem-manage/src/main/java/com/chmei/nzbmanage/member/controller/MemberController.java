@@ -51,7 +51,7 @@ public class MemberController extends BaseController {
             Map<String, Object> map = BeanUtil.convertBean2Map(memberForm);
             outputDTO = getOutputDTO(map, "memberService", "saveMemberInfo");
         } catch (Exception e) {
-            LOGGER.error("新增失败", e);
+            LOGGER.error("新增失败!", e);
             outputDTO = new OutputDTO("1", "系统错误");
         }
         return outputDTO;
