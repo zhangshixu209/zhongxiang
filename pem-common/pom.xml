@@ -43,7 +43,7 @@
 		<commons-io.version>2.6</commons-io.version>
 		<commons-math3.version>3.6.1</commons-math3.version>
 		<commons-pool2.version>2.5.0</commons-pool2.version>
-		<netty-all.version>4.1.12.Final</netty-all.version>
+		<netty-all.version>4.1.42.Final</netty-all.version>
 		<guava.version>22.0</guava.version>
 		<junit.version>4.12</junit.version>
 		<hamcrest-junit.version>2.0.0.0</hamcrest-junit.version>
@@ -411,7 +411,7 @@
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
-			<version>4.1.12.Final</version>
+			<version>4.1.42.Final</version>
 		</dependency>
 
 		<dependency>
