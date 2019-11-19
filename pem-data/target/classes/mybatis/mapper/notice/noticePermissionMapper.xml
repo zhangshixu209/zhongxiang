@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- @author wangteng  公告权限sql-->
+<mapper namespace="noticePermissionMapper">
+    <!--插入公告权限信息-->
+    <insert id="insertNoticePermissionMessageInfo" parameterType="map">
+        INSERT INTO
+            r_notice_permission
+          (
+            notice_id,
+            crt_id,
+            status
+          )
+        VALUES
+        <foreach collection="list" index="index" item="item" separator=",">
+          (
+            #{item.noticeId},
+            #{item.crtId},
+            #{item.status}
+          )
+        </foreach>
+    </insert>
+
+    <!--修改公告权限信息-->
+    <update id="updateNoticePermissionStatus">
+        UPDATE
+          r_notice_permission
+         SET
+          status=#{permissionStatus}
+        WHERE
+          notice_id=#{id}
+    </update>
+
+    <!--删除公告权限信息-->
+    <delete id="deleteNoticeMessageInfo">
+      DELETE FROM
+        r_notice_permission
+      WHERE
+        notice_id =#{notice.id}
+    </delete>
+
+    <!--删除公告权限信息传入的参数不同-->
+    <delete id="deleteNoticePermissionMessageInfo">
+      DELETE FROM
+        r_notice_permission
+      WHERE
+        notice_id =#{id}
+    </delete>
+
+    <!--根据公告id查询公告权限信息-->
+    <select id="queryNoticePermissionByNoticeId" resultType="map">
+    SELECT
+      rnp.crt_id as userId,
+      tua.user_name as userName,
+      tua.user_department_id as departmentId,
+      ro.organiza_name AS  department,
+      '' as readTime,
+      0 as remark
+    FROM
+      r_notice_permission rnp
+    LEFT JOIN
+      t_u_admin tua
+    ON
+      rnp.crt_id  = tua.id
+    LEFT JOIN
+      r_organiza ro
+    ON
+       tua.user_department_id = ro.organiza_id
+    WHERE
+      rnp.notice_id =#{id}
+        <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+            LIMIT ${start},${limit}
+        </if>
+    </select>
+
+    <!--单条公告已读列表查询-->
+    <select id="readOneNoticeList" resultType="map">
+      SELECT
+	    tua.id as userId,
+	    tua.user_name as userName,
+	    rnr.read_time as readTime,
+	    rnr.`status` as remark,
+	    tua.user_department_id as departmentId,
+	    ro.organiza_name AS department
+      FROM
+	    r_notice_read rnr
+      LEFT JOIN
+	    t_u_admin tua
+      ON
+	    rnr.crt_id = tua.id
+	  LEFT JOIN
+	    r_organiza ro
+	  ON
+	    ro.organiza_id = tua.user_department_id
+      WHERE
+	    rnr.notice_id=#{id}
+    </select>
+
+    <!--查询出该用户对应有效权限信息数量-->
+    <select id="queryNoticePermissionTotalByNoticeId" resultType="int">
+      SELECT
+        count(1)
+      FROM
+        r_notice_permission rnp
+      WHERE
+        rnp.notice_id =#{id}
+    </select>
+
+
+    <!--从权限表中查询一条公告未阅读人数量-->
+    <select id="unReadOneNoticeTotal" resultType="int">
+        SELECT
+          count(1)
+        FROM
+          r_notice_permission rnp
+        WHERE
+          rnp.notice_id = #{id}
+        AND
+          rnp.crt_id NOT IN(select crt_id from r_notice_read where notice_id =#{id} )
+    </select>
+
+    <!--从权限表中查询一条公告未阅读人信息-->
+    <select id="unReadOneNoticeList" resultType="map">
+      SELECT
+        rnp.crt_id as userId,
+        tua.user_name as userName,
+        tua.user_department_id as departmentId,
+        ro.organiza_name AS  department,
+        '' as readTime,
+        0 as remark
+      FROM
+        r_notice_permission rnp
+      LEFT JOIN
+        t_u_admin tua
+      ON
+        rnp.crt_id  = tua.id
+      LEFT JOIN
+        r_organiza ro
+      ON
+       tua.user_department_id = ro.organiza_id
+      WHERE
+        rnp.notice_id =#{id} AND rnp.crt_id not in(select crt_id from r_notice_read where notice_id =#{id})
+        <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+            LIMIT ${start},${limit}
+        </if>
+    </select>
+</mapper>

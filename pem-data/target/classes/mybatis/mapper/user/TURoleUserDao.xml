@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 角色员工  -->
+<mapper namespace="TURoleUserMapper">
+
+	
+    <resultMap type="java.util.Map" id="tURoleUserMap">
+        <result property="id" column="id" jdbcType="BIGINT"/> <!--   -->
+        <result property="crtUserId" column="crt_user_id" jdbcType="BIGINT"/> <!-- 创建用户id  -->
+        <result property="crtTime" column="crt_time" jdbcType="TIMESTAMP"/> <!-- 创建时间  -->
+        <result property="modfUserId" column="modf_user_id" jdbcType="BIGINT"/> <!-- 修改用户id  -->
+        <result property="modfTime" column="modf_time" jdbcType="TIMESTAMP"/> <!-- 修改时间  -->
+        <result property="roleId" column="role_id" jdbcType="BIGINT"/> <!-- 角色id  -->
+        <result property="userId" column="user_id" jdbcType="BIGINT"/> <!-- 用户id  -->
+        <result property="extend1" column="extend1" jdbcType="VARCHAR"/> <!--   -->
+        <result property="extend2" column="extend2" jdbcType="VARCHAR"/> <!--   -->
+        <result property="extend3" column="extend3" jdbcType="VARCHAR"/> <!--   -->
+        <result property="extend4" column="extend4" jdbcType="VARCHAR"/> <!--   -->
+        <result property="extend5" column="extend5" jdbcType="VARCHAR"/> <!--   -->
+    </resultMap>
+    
+    <!-- 李新杰 -->
+    <resultMap type="map" id="roleUserMapForUser">
+    	<result property="id" column="id"/>
+    	<result property="roleId" column="role_id"/>
+    	<result property="userId" column="user_id"/>
+    </resultMap>
+    
+    <!-- 查询角色用户，为了分配给用户，李新杰 -->
+    <select id="selectRoleUserForUser" parameterType="map" resultMap="roleUserMapForUser">
+    	select id,role_id,user_id from t_u_role_user
+		where user_id =	#{userId};
+    </select>
+    
+    <!-- 插入角色用户，为了分配给用户，李新杰 -->
+    <insert id="insertRoleUserForUser" parameterType="map">
+    	insert into t_u_role_user(id,crt_user_id,crt_time,role_id,user_id)
+    	values(#{id},#{crtUserId},#{crtTime},#{roleId},#{userId});
+    </insert>
+    
+    <!-- 删除角色用户，为了分配给用户，李新杰 -->
+    <delete id="deleteRoleUserForUser" parameterType="map">
+    	delete from t_u_role_user where id = #{id};
+    </delete>
+    
+     <!-- 删除用户同时删除关联用户的角色关联信息 -->
+    <delete id="deleteRoleForUser" parameterType="map">
+    	delete from t_u_role_user where user_id = #{id,jdbcType=BIGINT};
+    </delete>
+	
+	<!-- 分页查询角色管理员  -->
+	<select id="queryRoleAdminList" resultMap="tURoleUserMap">
+		select  ruser.id,ruser.user_id,ruser.role_id,
+			    admin.user_name userName,admin.login_id loginId,
+			    role.role_name roleName,role.description
+		 from t_u_role_user ruser
+		 left join t_u_role role on ruser.role_id = role.id
+		 left join t_u_admin admin on ruser.user_id = admin.id
+		 <where>
+		     admin.user_name is NOT null
+		 	<if test="roleId != null and roleId != ''">
+				and ruser.role_id = #{roleId,jdbcType=BIGINT}
+			</if>
+			<if test="userId != null and userId != ''">
+				and ruser.user_id = #{userId,jdbcType=BIGINT}
+			</if>
+		 </where>
+         order by ruser.id desc
+		 limit #{offset}, #{limit}
+	</select>
+	
+	<!-- 不分页查询  -->
+	<select id="queryAll" resultMap="tURoleUserMap">
+		select  ruser.id,ruser.user_id,ruser.role_id,role.role_name roleName
+		 from t_u_role_user ruser
+		 left join t_u_role role on ruser.role_id = role.id
+		 <where>
+		     1=1
+			<if test="roleId != null and roleId != ''">
+				and ruser.role_id = #{roleId}
+			</if>
+			<if test="userId != null and userId != ''">
+				and ruser.user_id = #{userId}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 分页查询发包商用户  -->
+	<select id="queryRoleErUserList" resultMap="tURoleUserMap">
+		select  ruser.id,ruser.user_id,ruser.role_id,
+			u.real_name realName,u.mobile,pf.org_name orgName,role.role_name roleName
+		 from t_u_role_user ruser
+		 left join t_u_role role on ruser.role_id = role.id
+		 left join t_u_account u on u.id = ruser.user_id
+		 left join t_pf_org_info pf on pf.id = u.org_id
+		 <where>
+			ruser.role_id = #{roleId,jdbcType=BIGINT}
+		 </where>
+         order by ruser.id desc
+		 limit #{offset}, #{limit}
+	</select>
+	<!-- 查询总数  -->
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from t_u_role_user
+		<where>
+			<if test="roleId != null and roleId != ''">
+				and role_id = #{roleId,jdbcType=BIGINT}
+			</if>
+			<if test="userId != null and userId != ''">
+				and user_id = #{userId,jdbcType=BIGINT}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 批量添加用户角色 -->
+	<insert id="saveBatch" parameterType="java.util.Map">
+	   insert into t_u_role_user
+		(
+			`id`, 
+			`crt_user_id`, 
+			`crt_time`, 
+			`modf_user_id`, 
+			`modf_time`, 
+			`role_id`, 
+			`user_id`, 
+			`extend1`, 
+			`extend2`, 
+			`extend3`, 
+			`extend4`, 
+			`extend5`
+		)
+		values
+	    <foreach collection="roleUserList" item="item" index="index" separator="," >  
+	      (
+			#{item.id,jdbcType=BIGINT}, 
+			#{item.crtUserId,jdbcType=BIGINT}, 
+			#{item.crtTime,jdbcType=TIMESTAMP}, 
+			#{item.modfUserId,jdbcType=BIGINT}, 
+			#{item.modfTime,jdbcType=TIMESTAMP}, 
+			#{item.roleId,jdbcType=BIGINT}, 
+			#{item.userId,jdbcType=BIGINT}, 
+			#{item.extend1,jdbcType=VARCHAR}, 
+			#{item.extend2,jdbcType=VARCHAR}, 
+			#{item.extend3,jdbcType=VARCHAR}, 
+			#{item.extend4,jdbcType=VARCHAR}, 
+			#{item.extend5,jdbcType=VARCHAR}
+		 )
+	    </foreach> 
+	</insert>
+	
+	<!-- 根据角色Id 删除角色用户管理数据 -->
+	<delete id="deleteByRoleId">
+		delete from t_u_role_user where role_id=#{roleId,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 根据角色批量删除用户角色  -->
+	<delete id="deleteBatchByRoleId" parameterType="map">
+		delete from t_u_role_user where role_id=#{roleId,jdbcType=BIGINT} and user_id in 
+		 <foreach collection="removeUserIds" item="id" separator="," open="(" close=")">
+            #{id}
+         </foreach>
+	</delete>
+	
+	<!-- 根据用户批量删除用户角色  -->
+	<delete id="deleteBatchByUserId" parameterType="map">
+		delete from t_u_role_user where user_id=#{userId,jdbcType=BIGINT} and role_id in 
+		 <foreach collection="removeRoleIds" item="id" separator="," open="(" close=")">
+            #{id}
+         </foreach>
+	</delete>
+</mapper>

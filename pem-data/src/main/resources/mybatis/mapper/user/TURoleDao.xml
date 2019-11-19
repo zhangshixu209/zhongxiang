@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 角色  -->
+<mapper namespace="TURoleMapper">
+
+	
+    <resultMap type="java.util.Map" id="tURoleMap">
+        <result property="id" column="id" jdbcType="BIGINT"/> <!--   -->
+        <result property="crtUserId" column="crt_user_id" jdbcType="BIGINT"/> <!-- 创建用户id  -->
+        <result property="crtTime" column="crt_time" jdbcType="TIMESTAMP"/> <!-- 创建时间  -->
+        <result property="modfUserId" column="modf_user_id" jdbcType="BIGINT"/> <!-- 修改用户id  -->
+        <result property="modfTime" column="modf_time" jdbcType="TIMESTAMP"/> <!-- 修改时间  -->
+        <result property="roleName" column="role_name" jdbcType="VARCHAR"/> <!-- 名称  -->
+        <result property="isinner" column="isinner" jdbcType="CHAR"/> <!-- 是否内置:0-是，1-否  -->
+        <result property="description" column="description" jdbcType="VARCHAR"/> <!-- 描述  -->
+        <result property="validStsCd" column="valid_sts_cd" jdbcType="CHAR"/> <!-- 有效状态:1表示有效，0表示无效  -->
+        <result property="crtName" column="crtName" jdbcType="CHAR"/> <!-- 有效状态:1表示有效，0表示无效  -->
+        <result property="extend1" column="extend1" jdbcType="VARCHAR"/> <!--   -->
+        <result property="extend2" column="extend2" jdbcType="VARCHAR"/> <!--   -->
+        <result property="extend3" column="extend3" jdbcType="VARCHAR"/> <!--   -->
+    </resultMap>
+    
+    <!-- 李新杰 -->
+    <resultMap type="map" id="roleMapForUser">
+    	<result property="id" column="id"/>
+    	<result property="name" column="role_name"/>
+    	<result property="desc" column="description"/>
+    </resultMap>
+    
+    <!-- 分页查询角色，为了分配给用户，李新杰 -->
+    <select id="selectRolesForUser" parameterType="map" resultMap="roleMapForUser">
+    	select id,role_name,description from t_u_role
+		where 1=1
+		<if test="roleName != null and roleName != ''">
+			and role_name like concat('%',#{roleName},'%')
+		</if>
+    </select>
+    
+    <sql id="Base_Column_List" >
+         id,  <!--   -->
+         crt_user_id,  <!-- 创建用户id  -->
+         crt_time,  <!-- 创建时间  -->
+         modf_user_id,  <!-- 修改用户id  -->
+         modf_time,  <!-- 修改时间  -->
+         role_name,  <!-- 名称  -->
+         isinner,  <!-- 是否内置:0-是，1-否  -->
+         description,  <!-- 描述  -->
+         valid_sts_cd,  <!-- 有效状态:1表示有效，0表示无效  -->
+         extend1,  <!--   -->
+         extend2,  <!--   -->
+         extend3 <!--   -->
+      </sql>
+    <!-- 主键查询实体  -->
+	<select id="queryObject" resultMap="tURoleMap">
+		select  role.id,role.role_name,role.crt_time,role.modf_time,role.description,role.isinner,
+		crt.user_name as crtName,modf.user_name as modfName
+		 from t_u_role role
+		 left join t_u_admin crt on role.crt_user_id = crt.id
+		 left join t_u_admin modf on role.modf_user_id = modf.id
+		 where role.id = #{id,jdbcType=BIGINT}
+	</select>
+	<!-- 查询角色，包含管理员是否拥有该角色 -->
+	<select id="queryRoleListWithHasAdmin" resultType="map">
+		select  role.id,role.role_name roleName,role.description,
+		CASE WHEN ruser.id IS NULL THEN 0 ELSE  1 END hasState
+		from t_u_role role
+		left join t_u_role_user ruser on ruser.role_id = role.id and ruser.user_id = #{userId}
+		<where>
+			role.valid_sts_cd = '1' 
+			<if test="roleName != null and roleName != ''">
+				and role.role_name like CONCAT(#{roleName,jdbcType=VARCHAR},'%')
+			</if>
+		</where> 
+        order by role.id desc
+		limit #{offset}, #{limit}
+	</select>
+	
+    <!-- 分页查询  -->
+	<select id="queryList" resultMap="tURoleMap" parameterType="java.util.Map">
+		select  role.id,role.role_name,role.crt_time,role.modf_time,role.description,role.isinner,
+        role.description,  a.user_name as crtName
+		 from t_u_role role
+		 LEFT JOIN t_u_admin a ON a.id=role.crt_user_id
+		<where>
+		 	role.valid_sts_cd='1' 
+			<if test="roleName != null and roleName != ''">
+				and role.role_name like CONCAT('%',#{roleName,jdbcType=VARCHAR},'%')
+			</if>
+		</where>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<!-- 查询总数  -->
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from t_u_role 
+		<where>
+			valid_sts_cd='1' 
+			<if test="roleName != null and roleName != ''">
+				and role_name like CONCAT('%',#{roleName,jdbcType=VARCHAR},'%')
+			</if>
+		</where>
+	</select>
+	 <!-- 新增  -->
+	<insert id="save" parameterType="java.util.Map">
+		insert into t_u_role
+		(
+			`id`, 
+			`crt_user_id`, 
+			`crt_time`, 
+			`modf_user_id`, 
+			`modf_time`, 
+			`role_name`, 
+			`isinner`, 
+			`description`, 
+			`valid_sts_cd`, 
+			`extend1`, 
+			`extend2`, 
+			`extend3`
+		)
+		values
+		(
+			#{id,jdbcType=BIGINT}, 
+			#{crtUserId,jdbcType=BIGINT}, 
+			#{crtTime,jdbcType=TIMESTAMP}, 
+			#{modfUserId,jdbcType=BIGINT}, 
+			#{modfTime,jdbcType=TIMESTAMP}, 
+			#{roleName,jdbcType=VARCHAR}, 
+			#{isinner,jdbcType=CHAR}, 
+			#{description,jdbcType=VARCHAR}, 
+			#{validStsCd,jdbcType=CHAR}, 
+			#{extend1,jdbcType=VARCHAR}, 
+			#{extend2,jdbcType=VARCHAR}, 
+			#{extend3,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 删除  -->
+	<delete id="delete">
+		update t_u_role set valid_sts_cd = '0' where id = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteBatch" parameterType="map">
+		update t_u_role set valid_sts_cd = '0' where id in 
+		 <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+         </foreach>
+	</delete>
+	<!-- 修改 -->
+	<update id="update" parameterType="map" >
+    update t_u_role
+    <set >
+      <if test="crtUserId != null" >
+        crt_user_id = #{crtUserId,jdbcType=BIGINT},
+      </if>
+      <if test="crtTime != null" >
+        crt_time = #{crtTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modfUserId != null" >
+        modf_user_id = #{modfUserId,jdbcType=BIGINT},
+      </if>
+      <if test="modfTime != null" >
+        modf_time = #{modfTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="roleName != null" >
+        role_name = #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="isinner != null" >
+        isinner = #{isinner,jdbcType=CHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="validStsCd != null" >
+        valid_sts_cd = #{validStsCd,jdbcType=CHAR},
+      </if>
+      <if test="extend1 != null" >
+        extend1 = #{extend1,jdbcType=VARCHAR},
+      </if>
+      <if test="extend2 != null" >
+        extend2 = #{extend2,jdbcType=VARCHAR},
+      </if>
+      <if test="extend3 != null" >
+        extend3 = #{extend3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="queryRoleName" resultType="map">
+		SELECT  
+			role.id as id,
+			role.role_name as roleName,
+			role.crt_time as crtTime,
+			role.modf_time as modfTime
+		FROM T_U_ROLE role
+		WHERE role.isinner = '1' and role.valid_sts_cd ='1' and role.role_name = #{roleName,jdbcType=VARCHAR}
+	</select>
+  
+  
+  
+</mapper>

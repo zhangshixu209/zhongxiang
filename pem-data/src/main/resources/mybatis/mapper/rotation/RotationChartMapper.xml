@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RotationChartMapper">
+    
+    <!-- 映射结果  -->
+  <resultMap id="BaseResultMap" type="map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="rotation_chart_id" jdbcType="VARCHAR" property="rotationChartId" />
+    <result column="link_address" jdbcType="VARCHAR" property="linkAddress" />
+    <result column="online_status" jdbcType="VARCHAR" property="onlineStatus" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_user_name" jdbcType="VARCHAR" property="crtUserName" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+    <result column="modf_user_id" jdbcType="BIGINT" property="modfUserId" />
+    <result column="modf_user_name" jdbcType="VARCHAR" property="modfUserName" />
+    <result column="modf_time" jdbcType="TIMESTAMP" property="modfTime" />
+  </resultMap>
+  
+  <!-- 列表查询 -->
+    <select id="queryRotationChartList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+            id AS id,
+            IFNULL( a.rotation_chart_id, '' ) AS rotationChartId,
+            IFNULL( a.link_address, '' ) AS linkAddress,
+            IFNULL( a.online_status, '' ) AS onlineStatus,
+            IFNULL( a.remark, '' ) AS remark,
+            IFNULL( a.crt_user_id, '' ) AS crtUserId,
+            IFNULL( a.crt_user_name, '' ) AS crtUserName,
+            IFNULL( a.crt_time, '' ) AS crtTime,
+            IFNULL( a.modf_user_id, '' ) AS modfUserId,
+            IFNULL( a.modf_user_name, '' ) AS modfUserName,
+            IFNULL( a.modf_time, '' ) AS modfTime
+        FROM
+            t_rotation_chart a
+        <where>
+            <if test="crtUserName != null and crtUserName != ''">
+                AND a.crt_user_name LIKE concat('%',#{crtUserName},'%')
+            </if>
+            <if test="onlineStatus != null and onlineStatus != ''">
+                AND a.online_status = #{onlineStatus}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY a.online_status DESC, a.crt_time DESC
+        <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+            LIMIT #{start}, #{limit}
+        </if>
+    </select>
+    
+    <!-- 分页数量查询 -->
+    <select id="queryRotationChartCount" parameterType="map" resultType="int">
+        SELECT
+            COUNT(1)
+        FROM
+            t_rotation_chart a
+        <where>
+            <if test="crtUserName != null and crtUserName != ''">
+                AND a.crt_user_name LIKE concat('%',#{crtUserName},'%')
+            </if>
+            <if test="onlineStatus != null and onlineStatus != ''">
+                AND a.online_status = #{onlineStatus}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+  
+   <!-- 新增 -->
+  <insert id="saveRotationChartInfo" parameterType="map">
+    insert into t_rotation_chart
+        (id, 
+	    rotation_chart_id,
+	    link_address,
+	    online_status,
+	    remark,
+	    crt_user_id,
+	    crt_user_name,
+	    crt_time)values(
+        #{id,jdbcType=BIGINT},
+        #{rotationChartId,jdbcType=VARCHAR},
+        #{linkAddress,jdbcType=VARCHAR},
+        #{onlineStatus,jdbcType=VARCHAR},
+        #{remark,jdbcType=VARCHAR},
+        #{crtUserId,jdbcType=BIGINT},
+        #{crtUserName,jdbcType=VARCHAR},
+        NOW())
+  </insert>
+  
+  <!-- 保存附件 -->
+  <insert id="saveFile"  parameterType="map">
+    INSERT INTO t_rotation_chart_file (
+      id, 
+      obj_id, 
+      file_type_cd, 
+      file_path, 
+      file_name, 
+      file_seqno, 
+      `status`, 
+      crt_user_id, 
+      crt_time)
+    VALUES (
+        #{id,jdbcType=BIGINT}, 
+        #{objId,jdbcType=BIGINT},
+        #{fileTypeCd,jdbcType=VARCHAR}, 
+        #{filePath,jdbcType=VARCHAR}, 
+        #{fileName,jdbcType=VARCHAR}, 
+        #{fileSeqno,jdbcType=INTEGER}, 
+        '1', 
+        #{crtUserId,jdbcType=BIGINT}, 
+        NOW())
+  </insert>
+  <!-- 删除附件 -->
+  <delete id="deleteFile" parameterType="java.lang.Long">
+    DELETE 
+    	FROM t_rotation_chart_file
+    WHERE 
+        obj_id = #{objId,jdbcType=BIGINT}
+  </delete>
+  
+  <!-- 删除 -->
+  <delete id="deleteRotationChartInfo" parameterType="java.lang.Long">
+    DELETE 
+    	FROM t_rotation_chart
+    WHERE 
+    	id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <!-- 修改轮播图 -->
+  <update id="updateRotationChartInfo" parameterType="map">
+    update t_rotation_chart
+    <set>
+        <if test="rotationChartId != null">
+            rotation_chart_id = #{rotationChartId,jdbcType=BIGINT},
+        </if>
+        <if test="linkAddress != null">
+            link_address = #{linkAddress,jdbcType=VARCHAR},
+        </if>
+        <if test="onlineStatus != null">
+            online_status = #{onlineStatus,jdbcType=VARCHAR},
+        </if>
+        <if test="remark != null">
+            remark = #{remark,jdbcType=VARCHAR},
+        </if>
+        <if test="modfUserId != null">
+            modf_user_id = #{modfUserId,jdbcType=BIGINT},
+        </if>
+        <if test="modfUserName != null">
+            modf_user_name = #{modfUserName,jdbcType=VARCHAR},
+        </if>
+            modf_time = NOW()
+    </set>
+    <where>
+      <if test="id != null and id != ''">
+        and id = #{id,jdbcType=BIGINT} 
+      </if>
+    </where> 
+  </update>
+
+    <!-- 修改轮播图在线状态 -->
+    <update id="updateOnlineStatus" parameterType="map">
+        update t_rotation_chart
+        <set>
+            <if test="onlineStatus != null">
+                online_status = #{onlineStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="modfUserId != null">
+                modf_user_id = #{modfUserId,jdbcType=BIGINT},
+            </if>
+            <if test="modfUserName != null">
+                modf_user_name = #{modfUserName,jdbcType=VARCHAR},
+            </if>
+            modf_time = NOW()
+        </set>
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+        </where>
+    </update>
+
+  <!-- 查询轮播图详情 -->
+  <select id="queryRotationChartDetail" parameterType="java.util.Map" resultType="java.util.Map" >
+    SELECT
+        id AS id,
+        IFNULL( a.rotation_chart_id, '' ) AS rotationChartId,
+        IFNULL( a.link_address, '' ) AS linkAddress,
+        IFNULL( a.online_status, '' ) AS onlineStatus,
+        IFNULL( a.remark, '' ) AS remark,
+        IFNULL( a.crt_user_id, '' ) AS crtUserId,
+        IFNULL( a.crt_user_name, '' ) AS crtUserName,
+        IFNULL( a.crt_time, '' ) AS crtTime,
+        IFNULL( a.modf_user_id, '' ) AS modfUserId,
+        IFNULL( a.modf_user_name, '' ) AS modfUserName,
+        IFNULL( a.modf_time, '' ) AS modfTime
+    FROM
+        t_rotation_chart a
+    WHERE a.id = #{id, jdbcType=BIGINT}
+  </select>
+
+  <resultMap id="FileResultMap" type="map">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="obj_id" jdbcType="BIGINT" property="objId" />
+        <result column="file_type_cd" jdbcType="VARCHAR" property="fileTypeCd" />
+        <result column="file_path" jdbcType="VARCHAR" property="filePath" />
+        <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+        <result column="file_seqno" jdbcType="INTEGER" property="fileSeqno" />
+        <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+        <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+  </resultMap>
+  <!-- 附件查询 -->
+  <select id="queryFileList" parameterType="map" resultMap="FileResultMap">
+      SELECT
+         *
+      FROM
+      	t_rotation_chart_file
+      WHERE
+      	obj_id = #{objId}
+  </select>
+  
+</mapper>

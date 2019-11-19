@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RealNameAuthMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="member_account" jdbcType="VARCHAR" property="memberAccount" />
+    <result column="real_name" jdbcType="VARCHAR" property="realName" />
+    <result column="card_num" jdbcType="VARCHAR" property="cardNum" />
+    <result column="sex" jdbcType="VARCHAR" property="sex" />
+    <result column="birthday" jdbcType="VARCHAR" property="birthday" />
+    <result column="province_id" jdbcType="INTEGER" property="provinceId" />
+    <result column="city_id" jdbcType="INTEGER" property="cityId" />
+    <result column="county_id" jdbcType="INTEGER" property="countyId" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_user_name" jdbcType="VARCHAR" property="crtUserName" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+    <result column="modf_user_id" jdbcType="BIGINT" property="modfUserId" />
+    <result column="modf_user_name" jdbcType="VARCHAR" property="modfUserName" />
+    <result column="modf_user_time" jdbcType="TIMESTAMP" property="modfUserTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, member_account, real_name, card_num, sex, birthday, province_id, city_id, county_id, 
+    crt_user_id, crt_user_name, crt_time, modf_user_id, modf_user_name, modf_user_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_real_name_authentic
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_real_name_authentic
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <!-- 查询实名认证信息 -->
+  <select id="queryRealNameInfo" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.member_account AS memberAccount,
+      a.real_name AS realName,
+      a.card_num AS cardNum,
+      a.sex AS sex,
+      a.birthday AS birthday,
+      a.age AS age,
+      a.crt_time AS crtTime
+  FROM
+      t_real_name_authentic AS a
+  WHERE a.member_account = #{memberAccount}
+  </select>
+
+  <!-- 实名认证信息新增 -->
+  <insert id="saveRealNameAuthInfo" parameterType="java.util.Map">
+    insert into t_real_name_authentic
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        id,
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+      <if test="realName != null">
+        real_name,
+      </if>
+      <if test="cardNum != null">
+        card_num,
+      </if>
+      <if test="sex != null">
+        sex,
+      </if>
+      <if test="birthday != null">
+        birthday,
+      </if>
+      <if test="age != null">
+        age,
+      </if>
+      <if test="provinceId != null">
+        province_id,
+      </if>
+      <if test="cityId != null">
+        city_id,
+      </if>
+      <if test="countyId != null">
+        county_id,
+      </if>
+      <if test="crtUserId != null">
+        crt_user_id,
+      </if>
+      <if test="crtUserName != null">
+        crt_user_name,
+      </if>
+        crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+        #{id},
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null">
+        #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNum != null">
+        #{cardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null">
+        #{birthday,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null">
+        #{age,jdbcType=INTEGER},
+      </if>
+      <if test="provinceId != null">
+        #{provinceId,jdbcType=INTEGER},
+      </if>
+      <if test="cityId != null">
+        #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="countyId != null">
+        #{countyId,jdbcType=INTEGER},
+      </if>
+      <if test="crtUserId != null">
+        #{crtUserId,jdbcType=BIGINT},
+      </if>
+      <if test="crtUserName != null">
+        #{crtUserName,jdbcType=VARCHAR},
+      </if>
+        #{crtTime,jdbcType=TIMESTAMP},
+    </trim>
+  </insert>
+  <!-- 修改实名认证信息 -->
+  <update id="updateRealNameAuthInfo" parameterType="java.util.Map">
+    update t_real_name_authentic
+    <set>
+      <if test="realName != null">
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNum != null">
+        card_num = #{cardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        sex = #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null">
+        birthday = #{birthday,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null">
+        age = #{age,jdbcType=INTEGER},
+      </if>
+      <if test="provinceId != null">
+        province_id = #{provinceId,jdbcType=INTEGER},
+      </if>
+      <if test="cityId != null">
+        city_id = #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="countyId != null">
+        county_id = #{countyId,jdbcType=INTEGER},
+      </if>
+        modf_user_time = NOW(),
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <!-- 根据父ID查询区域信息 -->
+  <select id="queryAreaList" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT
+			area_code areaCode,
+			area_name areaName
+		FROM
+			t_bs_area_info
+		WHERE parent_area_code = #{parentAreaCode,jdbcType=INTEGER}
+	</select>
+</mapper>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 角色权限  -->
+<mapper namespace="TURoleRightMapper">
+
+	
+    <resultMap type="java.util.Map" id="tURoleRightMap">
+        <result property="id" column="id" jdbcType="BIGINT"/> <!--   -->
+        <result property="crtUserId" column="crt_user_id" jdbcType="BIGINT"/> <!-- 创建用户id  -->
+        <result property="crtTime" column="crt_time" jdbcType="TIMESTAMP"/> <!-- 创建时间  -->
+        <result property="modfUserId" column="modf_user_id" jdbcType="BIGINT"/> <!-- 修改用户id  -->
+        <result property="modfTime" column="modf_time" jdbcType="TIMESTAMP"/> <!-- 修改时间  -->
+        <result property="roleId" column="role_id" jdbcType="BIGINT"/> <!-- 角色id  -->
+        <result property="rightId" column="right_id" jdbcType="BIGINT"/> <!-- 权限id  -->
+        <result property="extend1" column="extend1" jdbcType="VARCHAR"/> <!--   -->
+        <result property="extend2" column="extend2" jdbcType="VARCHAR"/> <!--   -->
+        <result property="extend3" column="extend3" jdbcType="VARCHAR"/> <!--   -->
+        <result property="extend4" column="extend4" jdbcType="VARCHAR"/> <!--   -->
+        <result property="extend5" column="extend5" jdbcType="VARCHAR"/> <!--   -->
+        
+		<result property="name" column="name" jdbcType="VARCHAR"/> <!-- 名称  -->
+        <result property="parentId" column="parent_id" jdbcType="VARCHAR"/> <!-- 父id  -->
+        <result property="description" column="description" jdbcType="VARCHAR"/> <!-- 描述  -->
+        <result property="validFlag" column="valid_flag" jdbcType="CHAR"/> <!-- 有效标识，1表示有效，0表示无效  -->
+        <result property="typeCd" column="type_cd" jdbcType="VARCHAR"/> <!-- 权限类型:menu表示菜单，button表示按钮，link表示链接  -->
+        <result property="uiPrivCd" column="ui_priv_cd" jdbcType="VARCHAR"/> <!-- 权限代码  -->
+        <result property="tsvldUrlParaFlag" column="tsvld_url_para_flag" jdbcType="CHAR"/> <!-- 校验url参数标志:0表示校验，1表示不校验  -->
+        <result property="urlAddr" column="url_addr" jdbcType="VARCHAR"/> <!-- url地址  -->
+        <result property="orderLevel" column="order_level" jdbcType="SMALLINT"/> <!--   -->
+        <result property="mo" column="mo" jdbcType="VARCHAR"/> <!-- mo值  -->
+    </resultMap>
+	
+	<!-- 获取角色所有用的权限信息 -->
+	<select id="queryRightListByRoleId" resultMap="tURoleRightMap">
+		select
+			 rr.role_id,
+			 rr.right_id,<!-- 权限Id  -->
+			 r.name,  <!-- 名称  -->
+	         r.parent_id,  <!-- 父id  -->
+	         r.description,  <!-- 描述  -->
+	         r.valid_flag,  <!-- 有效标识，1表示有效，0表示无效  -->
+	         r.type_cd,  <!-- 权限类型:menu表示菜单，button表示按钮，link表示链接  -->
+	         r.ui_priv_cd,  <!-- 权限代码  -->
+	         r.tsvld_url_para_flag,  <!-- 校验url参数标志:0表示校验，1表示不校验  -->
+	         r.url_addr,  <!-- url地址  -->
+	         r.order_level,  <!--   -->
+	         r.mo,
+	         r.extend3
+		 from t_u_role_right rr
+		 left join t_u_right r on rr.right_id = r.id
+		 <where>
+		 	 r.valid_flag = '1' and rr.role_id = #{roleId,jdbcType=VARCHAR}
+		 </where>
+		order by r.order_level asc  
+	</select>
+	
+	<!-- 批量添加用户角色 -->
+	<insert id="saveBatch" parameterType="java.util.Map">
+	  insert into t_u_role_right
+		(
+			`id`, 
+			`crt_user_id`, 
+			`crt_time`, 
+			`modf_user_id`, 
+			`modf_time`, 
+			`role_id`, 
+			`right_id`, 
+			`extend1`, 
+			`extend2`, 
+			`extend3`, 
+			`extend4`, 
+			`extend5`
+		)
+		values
+	    <foreach collection="roleRightList" item="item" index="index" separator="," >  
+	      (
+			#{item.id,jdbcType=BIGINT}, 
+			#{item.crtUserId,jdbcType=BIGINT}, 
+			#{item.crtTime,jdbcType=TIMESTAMP}, 
+			#{item.modfUserId,jdbcType=BIGINT}, 
+			#{item.modfTime,jdbcType=TIMESTAMP}, 
+			#{item.roleId,jdbcType=BIGINT}, 
+			#{item.rightId,jdbcType=BIGINT}, 
+			#{item.extend1,jdbcType=VARCHAR}, 
+			#{item.extend2,jdbcType=VARCHAR}, 
+			#{item.extend3,jdbcType=VARCHAR}, 
+			#{item.extend4,jdbcType=VARCHAR}, 
+			#{item.extend5,jdbcType=VARCHAR}
+		 )
+	    </foreach> 
+	</insert>
+	
+	<!-- 批量添加用户角色和报表关系表 -->
+	<insert id="repoetRoleListSave" parameterType="java.util.Map">
+	  insert into r_report_parti_permission
+		(
+			`id`, 
+			`business_type_id`, 
+			`role_id`, 
+			`crt_user_id`, 
+			`crt_time`, 
+			`remark`, 
+			`extend1`, 
+			`extend2`
+		)
+		values
+	    <foreach collection="repoetRoleList" item="item" index="index" separator="," >  
+	      (
+			#{item.id,jdbcType=BIGINT}, 
+			#{item.businessTypeId,jdbcType=BIGINT}, 
+			#{item.roleId,jdbcType=BIGINT}, 
+			#{item.crtUserId,jdbcType=BIGINT}, 
+			#{item.crtTime,jdbcType=TIMESTAMP}, 
+			#{item.remark,jdbcType=VARCHAR}, 
+			#{item.extend1,jdbcType=VARCHAR}, 
+			#{item.extend2,jdbcType=VARCHAR}
+		 )
+	    </foreach> 
+	</insert>
+	
+	<!-- 根据角色Id删除菜单权限 -->
+	<delete id="deleteByRoleId">
+		delete from t_u_role_right where role_id = #{roleId,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 根据角色Id删除报表分类权限 -->
+	<delete id="deleteByRoleIdReoprt">
+		delete from r_report_parti_permission where role_id = #{roleId,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 根据权限Id删除角色权限 -->
+	<delete id="deleteByRightIds">
+		delete from t_u_role_right where right_id in
+		<foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+         </foreach>
+	</delete>
+</mapper>

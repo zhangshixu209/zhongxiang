@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 管理员信息表  -->
+<mapper namespace="TUAdminMapper">
+
+	
+    <resultMap type="java.util.Map" id="tUAdminMap">
+        <result property="id" column="id" jdbcType="BIGINT"/> <!--   -->
+        <result property="crtUserId" column="crt_user_id" jdbcType="BIGINT"/> <!-- 创建用户id  -->
+        <result property="crtTime" column="crt_time" jdbcType="TIMESTAMP"/> <!-- 创建时间  -->
+        <result property="modfUserId" column="modf_user_id" jdbcType="BIGINT"/> <!-- 修改用户id  -->
+        <result property="modfTime" column="modf_time" jdbcType="TIMESTAMP"/> <!-- 修改时间  -->
+        <result property="loginId" column="login_id" jdbcType="VARCHAR"/> <!-- 用户登录id(手机号)  -->
+        <result property="loginPw" column="login_pw" jdbcType="VARCHAR"/> <!-- 用户密码  -->
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/> <!-- 用户名  -->
+        <result property="userDepartment" column="userDepartment" jdbcType="VARCHAR"/> <!-- 部门 -->
+        <result property="sex" column="sex" jdbcType="CHAR"/> <!-- 性别，0表示男，1表示女  -->
+        <result property="validStsCd" column="valid_sts_cd" jdbcType="TINYINT"/> <!-- 有效状态(0-无效，1-有效)  -->
+        <result property="extend1" column="extend1" jdbcType="VARCHAR"/> <!-- 身份证号  -->
+        <result property="extended2" column="extended2" jdbcType="VARCHAR"/> <!--   -->
+    </resultMap>
+    <sql id="Base_Column_List" >
+         id,  <!--   -->
+         crt_user_id,  <!-- 创建用户id  -->
+         crt_time,  <!-- 创建时间  -->
+         modf_user_id,  <!-- 修改用户id  -->
+         modf_time,  <!-- 修改时间  -->
+         login_id,  <!-- 用户登录id(手机号)  -->
+         login_pw,  <!-- 用户密码  -->
+         user_name,  <!-- 用户名  -->
+         user_department_id,  <!-- 部门  -->
+         sex,  <!-- 性别，0表示男，1表示女  -->
+         valid_sts_cd,  <!-- 有效状态(0-无效，1-有效)  -->
+         extend1,  <!--   -->
+         extend2 <!--   -->
+      </sql>
+    <!-- 主键查询实体  -->
+	<select id="queryObject" resultMap="tUAdminMap">
+		select  <include refid="Base_Column_List" />
+		from t_u_admin where id = #{id,jdbcType=BIGINT}
+	</select>
+    <!-- 分页查询  -->
+	<select id="queryList" resultMap="tUAdminMap">
+		select  a.*,org.organiza_name as userDepartment, CASE WHEN ruser.id IS NULL THEN 0 ELSE  1 END isRoot
+		 from t_u_admin a
+	 	 left join t_u_role_user ruser on ruser.user_id = a.id and ruser.role_id = #{roleId}
+	 	 left join r_organiza org on a.user_department_id = org.organiza_id 
+		 <where>
+		 	<if test="userDepartment != null and userDepartment != ''">
+				and a.user_department_id IN(${userDepartment})
+			</if>
+			<if test="userName != null and userName != ''">
+				and a.user_name like CONCAT('%',#{userName},'%')
+			</if>
+			<if test="loginId != null and loginId != ''">
+				and a.login_id like CONCAT('%',#{loginId},'%')
+			</if>
+		</where>
+        order by a.id desc
+		limit #{offset}, #{limit}
+	</select>
+	
+	<select id="queryAdminByLoginId" resultMap="tUAdminMap">
+		select  <include refid="Base_Column_List" />
+		from t_u_admin where login_id=#{loginId} and id != #{id} limit 1
+	</select>
+	<!-- 分页查询管理员（用于根据角色查询管理员，包含有该角色和没有该角色）  -->
+	<select id="queryListWithRole" resultType="map">
+		SELECT
+		    admin.id,
+		    admin.login_id loginId,
+		    admin.user_name userName,
+		    a.organiza_name AS deptName,
+		    CASE
+	           WHEN ruser.id IS NULL THEN 0 ELSE 1 
+		    END hasState 
+		FROM
+		    t_u_admin admin
+		    LEFT JOIN r_organiza a ON admin.user_department_id = a.organiza_id
+		    LEFT JOIN t_u_role_user ruser ON ruser.user_id = admin.id 
+		    AND ruser.role_id = #{roleId}
+		<where>
+			admin.valid_sts_cd = '1'
+			<if test="userName != null and userName != ''">
+				and user_name like CONCAT('%',#{userName},'%')
+			</if>
+			<if test="loginId != null and loginId != ''">
+				and admin.login_id like CONCAT('%',#{loginId},'%')
+			</if>
+			<if test="userDepartment != null and userDepartment != ''">
+                and a.organiza_name like CONCAT('%',#{userDepartment},'%')
+            </if>
+		</where> 
+        order by admin.id desc
+		limit #{offset}, #{limit}
+	</select>
+	
+	<!-- 查询总数  -->
+    <select id="queryListWithRoleTotal" resultType="int">
+        select count(*) from t_u_admin
+        LEFT JOIN r_organiza a ON user_department_id = a.organiza_id
+        <where>
+            valid_sts_cd = '1'
+            <if test="userDepartment != null and userDepartment != ''">
+                and a.organiza_name like CONCAT('%',#{userDepartment},'%')
+            </if>
+            <if test="userName != null and userName != ''">
+                and user_name like CONCAT('%',#{userName},'%')
+            </if>
+            <if test="loginId != null and loginId != ''">
+                and login_id like CONCAT('%',#{loginId},'%')
+            </if>
+        </where>
+    </select>
+	
+	<!-- 查询总数  -->
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from t_u_admin
+		<where>
+			<if test="userDepartment != null and userDepartment != ''">
+				and user_department_id IN(${userDepartment})
+			</if>
+			<if test="userName != null and userName != ''">
+				and user_name like CONCAT('%',#{userName},'%')
+			</if>
+			<if test="loginId != null and loginId != ''">
+				and login_id like CONCAT('%',#{loginId},'%')
+			</if>
+		</where>
+	</select>
+	 <!-- 新增  -->
+	<insert id="save" parameterType="java.util.Map">
+		insert into t_u_admin
+		(
+			`id`, 
+			`crt_user_id`, 
+			`crt_time`, 
+			`modf_user_id`, 
+			`modf_time`, 
+			`login_id`, 
+			`login_pw`, 
+			`user_name`, 
+			`user_department_id`, 
+			`user_department_name`, 
+			`sex`, 
+			`valid_sts_cd`, 
+			`extend1`, 
+			`extend2`
+		)
+		values
+		(
+			#{id,jdbcType=BIGINT}, 
+			#{crtUserId,jdbcType=BIGINT}, 
+			#{crtTime,jdbcType=TIMESTAMP}, 
+			#{modfUserId,jdbcType=BIGINT}, 
+			#{modfTime,jdbcType=TIMESTAMP}, 
+			#{loginId,jdbcType=VARCHAR}, 
+			#{loginPw,jdbcType=VARCHAR}, 
+			#{userName,jdbcType=VARCHAR}, 
+			#{userDepartment,jdbcType=VARCHAR}, 
+			#{userDepartmentName,jdbcType=VARCHAR}, 
+			#{sex,jdbcType=CHAR}, 
+			#{validStsCd,jdbcType=TINYINT}, 
+			#{extend1,jdbcType=VARCHAR}, 
+			#{extend2,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<update id="update" parameterType="map" >
+	    update t_u_admin
+	    <set >
+	      <if test="modfUserId != null" >
+	        modf_user_id = #{modfUserId,jdbcType=BIGINT},
+	      </if>
+	      <if test="modfTime != null" >
+	        modf_time = #{modfTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="loginId != null" >
+	        login_id = #{loginId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="loginPw != null and loginPw != ''" >
+	        login_pw = #{loginPw,jdbcType=VARCHAR},
+	      </if>
+	      <if test="userName != null" >
+	        user_name = #{userName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="userDepartment != null" >
+	        user_department_id = #{userDepartment,jdbcType=VARCHAR},
+	      </if>
+	      <if test="userDepartmentName != null" >
+	        user_department_name = #{userDepartmentName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="sex != null" >
+	        sex = #{sex,jdbcType=CHAR},
+	      </if>
+	      <if test="validStsCd != null" >
+	        valid_sts_cd = #{validStsCd,jdbcType=TINYINT},
+	      </if>
+	      <if test="extend1 != null" >
+	        extend1 = #{extend1,jdbcType=VARCHAR},
+	      </if>
+	      <if test="extend2 != null" >
+	        extend2 = #{extend2,jdbcType=VARCHAR},
+	      </if>
+	    </set>
+	    where id = #{id,jdbcType=BIGINT}
+	  </update>
+	  
+	  <!-- 根据手机号码查询管理员信息（修改密码用） -->
+	<select id="queryAdminByMobile" resultMap="tUAdminMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		t_u_admin
+		WHERE
+		login_id = #{loginId}
+		AND valid_sts_cd = '1'
+		LIMIT 1
+	</select>
+
+	<!-- 修改密码 -->
+	<update id="updateAdminPwd" parameterType="map">
+		UPDATE t_u_admin
+		SET login_pw = #{password,jdbcType=VARCHAR}
+		WHERE
+		login_id = #{mobile,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 根据id删除用户信息  -->
+	<delete id="delAdminDetail" parameterType="map" >
+	    delete from  t_u_admin  where id = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 根据用户id禁用账号和启用账号 -->
+	<update id="enableORdisable" parameterType="map">
+		UPDATE t_u_admin SET valid_sts_cd = #{validStsCd,jdbcType=BIGINT}
+		 where id = #{id,jdbcType=BIGINT}
+	</update>
+	
+	
+	<!-- 获取部门和人员树状 -->
+	<select id="getDeepartmentUserTree" parameterType="map" resultType="map">
+		SELECT
+			r.organiza_id AS id,
+			r.organiza_name AS name,
+			r.parent_organiza_id AS parentId
+		FROM
+			r_organiza r
+		WHERE
+			r.parent_organiza_id = ''
+		OR
+			r.organiza_id in(select user_department_id from t_u_admin where valid_sts_cd = 1)
+		UNION
+		SELECT
+			a.id as id,
+			a.user_name as name,
+			a.user_department_id as parentId
+		FROM
+			t_u_admin a
+		WHERE
+			a.valid_sts_cd = 1
+	</select>
+	
+	
+		
+	<!-- 报表配置人员权限的时候获取部门和人员树状，需要过滤没有分类权限人员 -->
+	<!-- <select id="getReportUserTree" parameterType="map" resultType="map">
+	 SELECT r.organiza_id as id,r.organiza_name as name,r.parent_organiza_id as parentId FROM r_organiza r
+     UNION
+     select a.id as id,a.user_name as name,a.user_department_id as parentId from t_u_admin a where a.valid_sts_cd = 1
+     <if test="list != null">
+        AND a.id IN
+     </if>
+     <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+        #{item.userId}  
+     </foreach>
+	</select> -->
+	<!-- 报表配置人员权限的时候获取部门和人员树状，需要过滤没有分类权限人员 -->
+    <select id="getReportUserTree" parameterType="map" resultType="map">
+		SELECT
+		    r.organiza_id AS id,
+		    r.organiza_name AS name,
+		    r.parent_organiza_id AS parentId 
+		FROM
+		    r_organiza r 
+		    #WHERE r.parent_organiza_id = ''
+	    UNION
+		SELECT
+		    r.organiza_id AS id,
+		    r.organiza_name AS name,
+		    r.parent_organiza_id AS parentId 
+		FROM
+		    r_organiza r 
+		WHERE r.organiza_id IN (
+		    SELECT a.organiza_id FROM r_organiza a WHERE a.organiza_id IN(
+			    SELECT
+			        user_department_id
+			    FROM
+			    t_u_admin  WHERE id IN 
+		     <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+		        #{item.userId}  
+		     </foreach>
+		     )
+		)
+		UNION
+		SELECT
+		    a.id AS id,
+		    a.user_name AS name,
+		    a.user_department_id AS parentId 
+		FROM
+		    t_u_admin a 
+		WHERE
+		    a.valid_sts_cd = 1 AND a.id IN
+	     <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+	        #{item.userId}  
+	     </foreach>
+	</select>
+	
+	<!-- 批量新增用户信息 -->
+	<insert id="importExcelUserData" parameterType="java.util.Map">
+	   insert into t_u_admin (
+            id,
+            login_id,
+            login_pw,
+            user_name,
+            user_mobile,
+            user_department_id,
+            user_department_name,
+            sex,
+            extend1,
+            crt_user_id,
+            crt_time
+          ) values
+      <foreach collection="list" item="item" index="index" separator=",">
+          (
+            #{item.id,jdbcType=BIGINT},
+            #{item.loginId,jdbcType=VARCHAR},
+            #{item.loginPw,jdbcType=VARCHAR},
+            #{item.userName,jdbcType=VARCHAR},
+            #{item.userMobile,jdbcType=VARCHAR},
+            #{item.userDepartmentId,jdbcType=VARCHAR},
+            #{item.userDepartmentName,jdbcType=VARCHAR},
+            #{item.sex,jdbcType=CHAR},
+            #{item.cardNum,jdbcType=VARCHAR},
+            #{item.crtUserId,jdbcType=BIGINT},
+            NOW()
+          )
+      </foreach>
+	</insert>
+	
+	<!-- 校验工号（手机号）身份证号是否重复 -->
+    <select id="checkUserTelAndCardNum" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT login_id AS loginId, extend1 AS cardNum FROM t_u_admin 
+    </select>
+    <!-- 查询角色信息 -->
+    <select id="queryTURoleInfo" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT a.id AS roleId, a.role_name AS roleName FROM t_u_role a WHERE a.valid_sts_cd = '1'
+    </select>
+    <!-- 批量新增关联用户角色信息 -->
+    <insert id="batchInsertRoleUser" parameterType="java.util.Map">
+       insert into t_u_role_user (
+            id,
+            crt_user_id,
+            crt_time,
+            role_id,
+            user_id
+          ) values
+      <foreach collection="list" item="item" index="index" separator=",">
+          (
+            #{item.id,jdbcType=BIGINT},
+            #{item.crtUserId,jdbcType=BIGINT},
+            NOW(),
+            #{item.roleId,jdbcType=BIGINT},
+            #{item.userId,jdbcType=BIGINT}
+          )
+      </foreach>
+    </insert>
+    
+    <!-- 获取部门 -->
+    <select id="getDeepartmentInfo" parameterType="map" resultType="map">
+        SELECT
+            r.organiza_id AS id,
+            r.organiza_name AS name,
+            r.parent_organiza_id AS parentId
+        FROM
+            r_organiza r
+    </select>
+    <!-- 获取所有用户及部门信息 -->
+    <select id="getDataTableUserTree" parameterType="map" resultType="map">
+        SELECT
+            r.organiza_id AS id,
+            r.organiza_name AS name,
+            r.parent_organiza_id AS parentId 
+        FROM
+            r_organiza r 
+        UNION
+        SELECT
+            r.organiza_id AS id,
+            r.organiza_name AS name,
+            r.parent_organiza_id AS parentId 
+        FROM
+            r_organiza r 
+        WHERE r.organiza_id IN (
+            SELECT a.organiza_id FROM r_organiza a WHERE a.organiza_id IN(
+                SELECT
+                    user_department_id
+                FROM
+                t_u_admin  
+             )
+        )
+        UNION
+        SELECT
+            a.id AS id,
+            a.user_name AS name,
+            a.user_department_id AS parentId 
+        FROM
+            t_u_admin a 
+        WHERE
+            a.valid_sts_cd = 1 
+    </select>
+</mapper>

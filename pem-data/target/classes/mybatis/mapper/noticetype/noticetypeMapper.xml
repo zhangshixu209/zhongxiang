@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- @author wangteng  公告分类sql-->
+<mapper namespace="noticetypeMapper">
+    <!--根据页面查询条件查询符合条件公告分类信息-->
+    <select id="queryNoticetypeMessageInfoList" parameterType="java.util.Map" resultType="map">
+        SELECT
+          id AS id,
+          code AS code,
+          name AS name,
+          remark AS remark,
+          crt_time AS insertTime
+         FROM
+          r_notice_type
+        <where>
+            <if test="code!=null and code!=''">
+                AND code LIKE  concat('%',#{code},'%')
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                AND DATE_FORMAT(crt_time,'%Y-%m-%d')&gt;=#{beginTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                AND DATE_FORMAT(crt_time,'%Y-%m-%d')&lt;=#{endTime}
+            </if>
+            <if test="name!=null and name!=''">
+                AND name like concat('%',#{name},'%')
+            </if>
+        </where>
+        ORDER BY
+        crt_time DESC
+        <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+            LIMIT ${start},${limit}
+        </if>
+    </select>
+
+    <!--根据页面查询条件查询页面符合条件数量-->
+    <select id="queryNoticetypeMessageInfoTotal" parameterType="java.util.Map"  resultType="int">
+        SELECT
+          COUNT(*)
+        FROM
+          r_notice_type
+        <where>
+            <if test="code!=null and code!=''">
+                AND code LIKE  concat('%',#{code},'%')
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                AND DATE_FORMAT(crt_time,'%Y-%m-%d')&gt;=#{beginTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                AND DATE_FORMAT(crt_time,'%Y-%m-%d')&lt;=#{endTime}
+            </if>
+            <if test="name!=null and name!=''">
+                AND name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+    <!--查询单条公告分类详细信息-->
+    <select id="queryNoticrtypeDetailMessageInfo" resultType="map">
+        SELECT
+          id AS id,
+          code AS code,
+          name AS name,
+          remark AS remark,
+          crt_time AS insertTime,
+          sort as sort
+         FROM
+          r_notice_type rnt
+         WHERE
+          id=#{id}
+    </select>
+
+    <!--插入公告分类信息-->
+    <insert id="insertNoticetypeMessageInfo">
+        INSERT INTO
+          r_notice_type
+        (
+          id,
+          code,
+          name,
+          remark,
+          crt_user_id,
+          crt_time,
+          modf_user_id,
+          modf_user_time,
+          sort
+        )
+        VALUES
+        (
+          #{id},
+          #{code},
+          #{name},
+          #{remark},
+          #{insertId},
+          #{insertTime},
+          #{updateId},
+          #{updateTime},
+          #{sort}
+        )
+
+    </insert>
+
+    <!--修改公告分类信息-->
+    <update id="updateNoticetypeMessageInfo">
+        UPDATE
+          r_notice_type
+        SET
+          name=#{name},
+          remark=#{remark},
+          modf_user_id=#{updateId},
+          modf_user_time=#{updateTime},
+          sort=#{sort}
+        WHERE
+          id=#{id}
+    </update>
+
+    <!--删除公告分类信息-->
+    <delete id="deteleNoticetypeMessageInfo">
+        DELETE FROM
+          r_notice_type
+         WHERE
+          id=#{id}
+    </delete>
+
+    <!--查询所有的公告分类-->
+    <select id="queryAllNoticetypeMessageInfo" resultType="map">
+        SELECT
+          id as id,
+          name as name
+        FROM
+          r_notice_type
+    </select>
+
+    <!--查询使用中的公告分类-->
+    <select id="queryUsedNoticeTypeMessageInfo" resultType="long">
+        SELECT
+          DISTINCT notice_type_id
+        FROM
+          r_notice
+    </select>
+    
+     <!-- 新增 查询公告by Name-->
+    <select id="queryNoticetypeByName" parameterType="java.util.Map"  resultType="int">
+        SELECT
+          COUNT(*)
+        FROM
+          r_notice_type
+        <where>
+            name = #{name}
+            <if test="id !=null and id !=''">
+                AND id != #{id}
+            </if>
+        </where>
+    </select>
+</mapper>

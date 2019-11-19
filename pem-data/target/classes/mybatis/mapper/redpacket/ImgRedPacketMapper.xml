@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ImgRedPacketMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="red_packet_img_id" jdbcType="BIGINT" property="redPacketImgId" />
+    <result column="member_account" jdbcType="VARCHAR" property="memberAccount" />
+    <result column="red_packet_img_money_count" jdbcType="DECIMAL" property="redPacketImgMoneyCount" />
+    <result column="red_packet_img_count" jdbcType="INTEGER" property="redPacketImgCount" />
+    <result column="red_packet_img_stock" jdbcType="INTEGER" property="redPacketImgStock" />
+    <result column="red_packet_img_url" jdbcType="VARCHAR" property="redPacketImgUrl" />
+    <result column="red_packet_img_info" jdbcType="VARCHAR" property="redPacketImgInfo" />
+    <result column="red_packet_img_luck_star" jdbcType="VARCHAR" property="redPacketImgLuckStar" />
+    <result column="red_packet_img_start_time" jdbcType="TIMESTAMP" property="redPacketImgStartTime" />
+    <result column="red_packet_img_end_time" jdbcType="TIMESTAMP" property="redPacketImgEndTime" />
+    <result column="red_packet_img_question" jdbcType="VARCHAR" property="redPacketImgQuestion" />
+    <result column="red_packet_img_options" jdbcType="VARCHAR" property="redPacketImgOptions" />
+    <result column="red_packet_img_answer" jdbcType="VARCHAR" property="redPacketImgAnswer" />
+    <result column="red_packet_img_sex" jdbcType="INTEGER" property="redPacketImgSex" />
+    <result column="red_packet_img_age_start" jdbcType="INTEGER" property="redPacketImgAgeStart" />
+    <result column="red_packet_img_age_end" jdbcType="INTEGER" property="redPacketImgAgeEnd" />
+    <result column="red_packet_img_date" jdbcType="TIMESTAMP" property="redPacketImgDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    red_packet_img_id, member_account, red_packet_img_money_count, red_packet_img_count, 
+    red_packet_img_stock, red_packet_img_url, red_packet_img_info, red_packet_img_luck_star, 
+    red_packet_img_start_time, red_packet_img_end_time, red_packet_img_question, red_packet_img_options, 
+    red_packet_img_answer, red_packet_img_sex, red_packet_img_age_start, red_packet_img_age_end, 
+    red_packet_img_date
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zx_app_img_red_packet
+    where red_packet_img_id = #{redPacketImgId,jdbcType=BIGINT}
+  </select>
+  <delete id="delImgRedPacketInfo" parameterType="java.lang.Long">
+    delete from zx_app_img_red_packet
+    where red_packet_img_id = #{redPacketImgId,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="saveImgRedPacketInfo" parameterType="java.util.Map">
+    insert into zx_app_img_red_packet
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="redPacketImgId != null">
+        red_packet_img_id,
+      </if>
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+      <if test="redPacketImgMoneyCount != null">
+        red_packet_img_money_count,
+      </if>
+      <if test="redPacketImgCount != null">
+        red_packet_img_count,
+      </if>
+      <if test="redPacketImgStock != null">
+        red_packet_img_stock,
+      </if>
+      <if test="redPacketImgUrl != null">
+        red_packet_img_url,
+      </if>
+      <if test="redPacketImgInfo != null">
+        red_packet_img_info,
+      </if>
+      <if test="redPacketImgLuckStar != null">
+        red_packet_img_luck_star,
+      </if>
+      <if test="redPacketImgQuestion != null">
+        red_packet_img_question,
+      </if>
+      <if test="redPacketImgOptions != null">
+        red_packet_img_options,
+      </if>
+      <if test="redPacketImgAnswer != null">
+        red_packet_img_answer,
+      </if>
+      <if test="redPacketImgSex != null">
+        red_packet_img_sex,
+      </if>
+      <if test="redPacketImgAgeStart != null">
+        red_packet_img_age_start,
+      </if>
+      <if test="redPacketImgAgeEnd != null">
+        red_packet_img_age_end,
+      </if>
+        red_packet_img_date,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="redPacketImgId != null">
+        #{redPacketImgId,jdbcType=BIGINT},
+      </if>
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketImgMoneyCount != null">
+        #{redPacketImgMoneyCount,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketImgCount != null">
+        #{redPacketImgCount,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketImgStock != null">
+        #{redPacketImgStock,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketImgUrl != null">
+        #{redPacketImgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketImgInfo != null">
+        #{redPacketImgInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketImgLuckStar != null">
+        #{redPacketImgLuckStar,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketImgQuestion != null">
+        #{redPacketImgQuestion,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketImgOptions != null">
+        #{redPacketImgOptions,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketImgAnswer != null">
+        #{redPacketImgAnswer,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketImgSex != null">
+        #{redPacketImgSex,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketImgAgeStart != null">
+        #{redPacketImgAgeStart,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketImgAgeEnd != null">
+        #{redPacketImgAgeEnd,jdbcType=INTEGER},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
+    update zx_app_img_red_packet
+    <set>
+      <if test="memberAccount != null">
+        member_account = #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketImgMoneyCount != null">
+        red_packet_img_money_count = #{redPacketImgMoneyCount,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketImgCount != null">
+        red_packet_img_count = #{redPacketImgCount,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketImgStock != null">
+        red_packet_img_stock = #{redPacketImgStock,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketImgUrl != null">
+        red_packet_img_url = #{redPacketImgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketImgInfo != null">
+        red_packet_img_info = #{redPacketImgInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketImgLuckStar != null">
+        red_packet_img_luck_star = #{redPacketImgLuckStar,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketImgStartTime != null">
+        red_packet_img_start_time = #{redPacketImgStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="redPacketImgEndTime != null">
+        red_packet_img_end_time = #{redPacketImgEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="redPacketImgQuestion != null">
+        red_packet_img_question = #{redPacketImgQuestion,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketImgOptions != null">
+        red_packet_img_options = #{redPacketImgOptions,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketImgAnswer != null">
+        red_packet_img_answer = #{redPacketImgAnswer,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketImgSex != null">
+        red_packet_img_sex = #{redPacketImgSex,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketImgAgeStart != null">
+        red_packet_img_age_start = #{redPacketImgAgeStart,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketImgAgeEnd != null">
+        red_packet_img_age_end = #{redPacketImgAgeEnd,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketImgDate != null">
+        red_packet_img_date = #{redPacketImgDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where red_packet_img_id = #{redPacketImgId,jdbcType=BIGINT}
+  </update>
+
+  <!-- 查询红包信息 -->
+  <select id="queryRedPacketLog" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.red_packet_img_id AS redPacketId,
+      a.member_account AS redPacketUserId,
+      a.red_packet_img_money_count AS redPacketMoneyCount,
+      a.red_packet_img_count AS redPacketCount,
+      a.red_packet_img_stock AS redPacketStock,
+      a.red_packet_img_url AS redPacketUrl,
+      a.red_packet_img_info AS redPacketInfo,
+      a.red_packet_img_luck_star AS redPacketLuckStar,
+      a.red_packet_img_start_time AS redPacketStartTime,
+      a.red_packet_img_end_time AS redPacketEndTime,
+      a.red_packet_img_question AS redPacketQuestion,
+      a.red_packet_img_options AS redPacketOptions,
+      a.red_packet_img_answer AS redPacketAnswer,
+      a.red_packet_img_sex AS redPacketSex,
+      a.red_packet_img_age_start AS redPacketAgeStart,
+      a.red_packet_img_age_end AS redPacketAgeEnd,
+      a.red_packet_img_date AS redPacketDate,
+      b.head_img_url AS headImgUrl,
+      b.nickname AS nickname,
+      b.member_account AS memberAccount
+  FROM
+      zx_app_img_red_packet a
+      LEFT JOIN t_member b ON a.member_account = b.member_account
+      WHERE a.red_packet_img_id = #{redPacketImgId}
+  </select>
+
+  <!-- 新增抢红包记录 -->
+  <insert id="insertListRedPacketInfo" parameterType="java.util.Map">
+      insert into zx_app_img_red_packet_info(red_packet_img_info_id,red_packet_img_id,red_packet_img_money,red_packet_img_luck_star) values(#{redPacketImgInfoId},#{redPacketImgId},#{num},#{luckStar})
+  </insert>
+
+  <!-- 更新抢红包信息 -->
+  <update id="updateByExampleSelective" parameterType="java.util.Map">
+    update zx_app_img_red_packet
+    <set>
+      <if test="redPacketImgCount != null">
+        red_packet_img_count = #{redPacketImgCount,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketImgStock != null">
+        red_packet_img_stock = #{redPacketImgStock,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketImgUnitAmount != null and redPacketImgUnitAmount != ''">
+        red_packet_img_unit_amount = #{redPacketImgUnitAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketImgLuckStar != null and redPacketImgLuckStar != ''">
+        red_packet_img_luck_star = #{redPacketImgLuckStar,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketImgStartTime != null">
+        red_packet_img_start_time = #{redPacketImgStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="redPacketImgEndTime != null">
+        red_packet_img_end_time = #{redPacketImgEndTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where red_packet_img_id = #{redPacketImgId,jdbcType=BIGINT}
+  </update>
+
+  <!-- 查询我的发布红包列表 -->
+  <select id="queryMyReleaseRedPacket" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.red_packet_img_id AS redPacketId,
+      a.member_account AS memberAccount,
+      a.red_packet_img_money_count AS redPacketMoneyCount,
+      a.red_packet_img_count AS redPacketCount,
+      a.red_packet_img_stock AS redPacketStock,
+      DATE_FORMAT(a.red_packet_img_date,'%m月%d日') AS redPacketDate,
+      (red_packet_img_count - red_packet_img_stock) AS robRedPacketCount,
+      '图文广告' AS redPacketType
+  FROM
+      zx_app_img_red_packet AS a
+  WHERE a.member_account = #{memberAccount}
+  </select>
+</mapper>

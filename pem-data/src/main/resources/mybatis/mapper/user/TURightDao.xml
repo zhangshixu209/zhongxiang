@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 权限  -->
+<mapper namespace="TURightMapper">
+
+	
+    <resultMap type="java.util.Map" id="tURightMap">
+        <result property="id" column="id" jdbcType="BIGINT"/> <!--   -->
+        <result property="crtUserId" column="crt_user_id" jdbcType="BIGINT"/> <!-- 创建用户id  -->
+        <result property="crtTime" column="crt_time" jdbcType="TIMESTAMP"/> <!-- 创建时间  -->
+        <result property="modfUserId" column="modf_user_id" jdbcType="BIGINT"/> <!-- 修改用户id  -->
+        <result property="modfTime" column="modf_time" jdbcType="TIMESTAMP"/> <!-- 修改时间  -->
+        <result property="name" column="name" jdbcType="VARCHAR"/> <!-- 名称  -->
+        <result property="parentId" column="parent_id" jdbcType="VARCHAR"/> <!-- 父id  -->
+        <result property="description" column="description" jdbcType="VARCHAR"/> <!-- 描述  -->
+        <result property="validFlag" column="valid_flag" jdbcType="CHAR"/> <!-- 有效标识，1表示有效，0表示无效  -->
+        <result property="typeCd" column="type_cd" jdbcType="VARCHAR"/> <!-- 权限类型:menu表示菜单，button表示按钮，link表示链接  -->
+        <result property="uiPrivCd" column="ui_priv_cd" jdbcType="VARCHAR"/> <!-- 权限代码  -->
+        <result property="tsvldUrlParaFlag" column="tsvld_url_para_flag" jdbcType="CHAR"/> <!-- 校验url参数标志:0表示校验，1表示不校验  -->
+        <result property="urlAddr" column="url_addr" jdbcType="VARCHAR"/> <!-- url地址  -->
+        <result property="orderLevel" column="order_level" jdbcType="SMALLINT"/> <!--   -->
+        <result property="mo" column="mo" jdbcType="VARCHAR"/> <!--   -->
+        <result property="extend3" column="extend3" jdbcType="VARCHAR"/> <!--   -->
+        <result property="extend4" column="extend4" jdbcType="VARCHAR"/> <!--   -->
+        <result property="extend5" column="extend5" jdbcType="VARCHAR"/> <!--   -->
+    </resultMap>
+    <sql id="Base_Column_List" >
+         id,  <!--   -->
+         crt_user_id,  <!-- 创建用户id  -->
+         crt_time,  <!-- 创建时间  -->
+         modf_user_id,  <!-- 修改用户id  -->
+         modf_time,  <!-- 修改时间  -->
+         name,  <!-- 名称  -->
+         parent_id,  <!-- 父id  -->
+         description,  <!-- 描述  -->
+         valid_flag,  <!-- 有效标识，1表示有效，0表示无效  -->
+         type_cd,  <!-- 权限类型:menu表示菜单，button表示按钮，link表示链接  -->
+         ui_priv_cd,  <!-- 权限代码  -->
+         tsvld_url_para_flag,  <!-- 校验url参数标志:0表示校验，1表示不校验  -->
+         url_addr,  <!-- url地址  -->
+         order_level,  <!--   -->
+         mo,  <!--   -->
+         extend3,  <!--   -->
+         extend4,  <!--   -->
+         extend5 <!--   -->
+      </sql>
+    <!-- 主键查询实体  -->
+	<select id="queryObject" resultMap="tURightMap">
+		select  <include refid="Base_Column_List" />
+		 from t_u_right where id = #{id,jdbcType=BIGINT}
+	</select>
+	
+	 <!-- 分页查询  -->
+	<select id="queryList" resultMap="tURightMap">
+		select  <include refid="Base_Column_List" />
+		from t_u_right where valid_flag = '1' 
+		order by order_level asc
+	</select>
+	<!-- 获取所有的权限 -->
+	<select id="queryAll" parameterType="map" resultType="map">
+		select r.id,r.name,r.parent_id parentId
+		from t_u_right r  where r.valid_flag = '1' 
+		order by r.order_level asc
+	</select>
+	
+	<select id="queryRightByUrlAddr" resultType="map">
+		select  <include refid="Base_Column_List" />
+		 from t_u_right where valid_flag='1' and url_addr = #{urlAddr} and  id != #{id,jdbcType=BIGINT}
+	</select>
+	<!-- 获取权限树，包含角色是否拥有该权限 -->
+	<select id="queryRightAndHasRole" parameterType="map" resultType="map">
+		select DISTINCT r.id,r.name,r.parent_id parentId,r.url_addr as urlAddr,r.extend3,
+		CASE WHEN rr.id IS NULL THEN 0 ELSE  1 END hasState,r.order_level
+		from t_u_right r 
+		left join t_u_role_right rr on rr.right_id = r.id  AND rr.role_id= #{roleId,jdbcType=BIGINT}
+		where r.valid_flag = '1' 
+		order by r.order_level asc
+	</select>
+	
+	 <!-- 新增  -->
+	<insert id="save" parameterType="java.util.Map">
+		insert into t_u_right
+		(
+			`id`, 
+			`crt_user_id`, 
+			`crt_time`, 
+			`modf_user_id`, 
+			`modf_time`, 
+			`name`, 
+			`parent_id`, 
+			`description`, 
+			`valid_flag`, 
+			`type_cd`, 
+			`ui_priv_cd`, 
+			`tsvld_url_para_flag`, 
+			`url_addr`, 
+			`order_level`, 
+			`mo`, 
+			`extend3`, 
+			`extend4`, 
+			`extend5`
+		)
+		values
+		(
+			#{id,jdbcType=BIGINT}, 
+			#{crtUserId,jdbcType=BIGINT}, 
+			#{crtTime,jdbcType=TIMESTAMP}, 
+			#{modfUserId,jdbcType=BIGINT}, 
+			#{modfTime,jdbcType=TIMESTAMP}, 
+			#{name,jdbcType=VARCHAR}, 
+			#{parentId,jdbcType=VARCHAR}, 
+			#{description,jdbcType=VARCHAR}, 
+			#{validFlag,jdbcType=CHAR}, 
+			#{typeCd,jdbcType=VARCHAR}, 
+			#{uiPrivCd,jdbcType=VARCHAR}, 
+			#{tsvldUrlParaFlag,jdbcType=CHAR}, 
+			#{urlAddr,jdbcType=VARCHAR}, 
+			#{orderLevel,jdbcType=SMALLINT}, 
+			#{mo,jdbcType=VARCHAR}, 
+			#{extend3,jdbcType=VARCHAR}, 
+			#{extend4,jdbcType=VARCHAR}, 
+			#{extend5,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 删除  -->
+	<delete id="deleteBatch" parameterType="map">
+		update t_u_right set valid_flag = '0' where id in 
+		 <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+         </foreach>
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="map" >
+    update t_u_right
+    <set >
+      <if test="crtUserId != null" >
+        crt_user_id = #{crtUserId,jdbcType=BIGINT},
+      </if>
+      <if test="crtTime != null" >
+        crt_time = #{crtTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="crtAppSysId != null" >
+        crt_app_sys_id = #{crtAppSysId,jdbcType=VARCHAR},
+      </if>
+      <if test="modfUserId != null" >
+        modf_user_id = #{modfUserId,jdbcType=BIGINT},
+      </if>
+      <if test="modfTime != null" >
+        modf_time = #{modfTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modfAppSysId != null" >
+        modf_app_sys_id = #{modfAppSysId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="appSysId != null" >
+        app_sys_id = #{appSysId,jdbcType=VARCHAR},
+      </if>
+      <if test="validFlag != null" >
+        valid_flag = #{validFlag,jdbcType=CHAR},
+      </if>
+      <if test="typeCd != null" >
+        type_cd = #{typeCd,jdbcType=VARCHAR},
+      </if>
+      <if test="tsvldUrlParaFlag != null" >
+        tsvld_url_para_flag = #{tsvldUrlParaFlag,jdbcType=CHAR},
+      </if>
+      <if test="urlAddr != null" >
+        url_addr = #{urlAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="orderLevel != null" >
+        order_level = #{orderLevel,jdbcType=SMALLINT},
+      </if>
+      <if test="mo != null and mo != ''" >
+        mo = #{mo,jdbcType=VARCHAR},
+      </if>
+      <if test="extend3 != null" >
+        extend3 = #{extend3,jdbcType=VARCHAR},
+      </if>
+      <if test="extend4 != null" >
+        extend4 = #{extend4,jdbcType=VARCHAR},
+      </if>
+      <if test="extend5 != null" >
+        extend5 = #{extend5,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <!-- 获取部门树 -->
+  <select id="queryUserDepartment" parameterType="map" resultType="map">
+		SELECT 
+			r.organiza_id as id,
+			r.organiza_name as name,
+			r.parent_organiza_id as parentId,
+			r.id as orgId
+		FROM R_ORGANIZA r
+		WHERE r.status = '1'
+	</select>
+  
+  
+  
+  
+  
+</mapper>

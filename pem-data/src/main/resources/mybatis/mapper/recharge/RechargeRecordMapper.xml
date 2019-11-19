@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RechargeRecordMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="member_account" jdbcType="VARCHAR" property="memberAccount" />
+    <result column="recharge_amount" jdbcType="DECIMAL" property="rechargeAmount" />
+    <result column="recharge_time" jdbcType="TIMESTAMP" property="rechargeTime" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_user_name" jdbcType="VARCHAR" property="crtUserName" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+    <result column="modf_user_id" jdbcType="BIGINT" property="modfUserId" />
+    <result column="modf_user_name" jdbcType="VARCHAR" property="modfUserName" />
+    <result column="modf_user_time" jdbcType="TIMESTAMP" property="modfUserTime" />
+  </resultMap>
+  <!-- 累计投诉 -->
+  <sql id="total_Column_List">
+    (SELECT COUNT(1) FROM t_member_complaint_record w WHERE a.member_account = w.member_account) AS complaintTotal
+  </sql>
+  <!-- 充值记录列表查询（1001广告费充值，1002钱包余额充值，1003会员充值） -->
+  <select id="queryRechargeRecordList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        a.id AS id,
+        a.member_account AS memberAccount,
+        a.recharge_amount AS rechargeAmount,
+        a.recharge_time,
+        a.`status` AS `status`,
+        a.crt_time AS crtTime,
+        b.nickname AS nickname,
+        b.recom_nick_name AS recomNickname,
+        b.advertising_fee AS advertisingFee,
+        b.wallet_balance AS walletBalance,
+        b.`status` AS memberStatus,
+        c.real_name AS realName,
+        <include refid="total_Column_List" />
+    FROM
+        t_recharge_record AS a
+    LEFT JOIN t_member b ON a.member_account = b.member_account
+    LEFT JOIN t_real_name_authentic c ON a.member_account = c.member_account
+    <where>
+      <if test="memberAccount != null and memberAccount != ''">
+        a.member_account = #{memberAccount}
+      </if>
+      <if test="nickname != null and nickname != ''">
+        AND b.nickname = #{nickname}
+      </if>
+      <if test="status != null and status != ''">
+        AND a.status = #{status}
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+    ORDER BY a.crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 充值记录统计 -->
+  <select id="queryRechargeRecordCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+       COUNT(1)
+    FROM
+        t_recharge_record AS a
+    LEFT JOIN t_member b ON a.member_account = b.member_account
+    LEFT JOIN t_real_name_authentic c ON a.member_account = c.member_account
+    <where>
+      <if test="memberAccount != null and memberAccount != ''">
+        a.member_account = #{memberAccount}
+      </if>
+      <if test="nickname != null and nickname != ''">
+        AND b.nickname = #{nickname}
+      </if>
+      <if test="status != null and status != ''">
+        AND a.status = #{status}
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+  </select>
+
+  <insert id="insertSelective" parameterType="java.util.Map">
+    insert into t_recharge_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+      <if test="rechargeAmount != null">
+        recharge_amount,
+      </if>
+      <if test="rechargeTime != null">
+        recharge_time,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="crtUserId != null">
+        crt_user_id,
+      </if>
+      <if test="crtUserName != null">
+        crt_user_name,
+      </if>
+      <if test="crtTime != null">
+        crt_time,
+      </if>
+      <if test="modfUserId != null">
+        modf_user_id,
+      </if>
+      <if test="modfUserName != null">
+        modf_user_name,
+      </if>
+      <if test="modfUserTime != null">
+        modf_user_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="rechargeAmount != null">
+        #{rechargeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="rechargeTime != null">
+        #{rechargeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="crtUserId != null">
+        #{crtUserId,jdbcType=BIGINT},
+      </if>
+      <if test="crtUserName != null">
+        #{crtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="crtTime != null">
+        #{crtTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modfUserId != null">
+        #{modfUserId,jdbcType=BIGINT},
+      </if>
+      <if test="modfUserName != null">
+        #{modfUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="modfUserTime != null">
+        #{modfUserTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
+    update t_recharge_record
+    <set>
+      <if test="memberAccount != null">
+        member_account = #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="rechargeAmount != null">
+        recharge_amount = #{rechargeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="rechargeTime != null">
+        recharge_time = #{rechargeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="crtUserId != null">
+        crt_user_id = #{crtUserId,jdbcType=BIGINT},
+      </if>
+      <if test="crtUserName != null">
+        crt_user_name = #{crtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="crtTime != null">
+        crt_time = #{crtTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modfUserId != null">
+        modf_user_id = #{modfUserId,jdbcType=BIGINT},
+      </if>
+      <if test="modfUserName != null">
+        modf_user_name = #{modfUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="modfUserTime != null">
+        modf_user_time = #{modfUserTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

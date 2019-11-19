@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="VideoRedPacketMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="red_packet_video_id" jdbcType="BIGINT" property="redPacketVideoId" />
+    <result column="red_packet_video_user_id" jdbcType="VARCHAR" property="redPacketVideoUserId" />
+    <result column="red_packet_video_money_count" jdbcType="DECIMAL" property="redPacketVideoMoneyCount" />
+    <result column="red_packet_video_count" jdbcType="INTEGER" property="redPacketVideoCount" />
+    <result column="red_packet_video_stock" jdbcType="INTEGER" property="redPacketVideoStock" />
+    <result column="red_packet_video_unit_amount" jdbcType="DECIMAL" property="redPacketVideoUnitAmount" />
+    <result column="red_packet_video_info" jdbcType="VARCHAR" property="redPacketVideoInfo" />
+    <result column="red_packet_video_luck_star" jdbcType="VARCHAR" property="redPacketVideoLuckStar" />
+    <result column="red_packet_video_start_time" jdbcType="TIMESTAMP" property="redPacketVideoStartTime" />
+    <result column="red_packet_video_end_time" jdbcType="TIMESTAMP" property="redPacketVideoEndTime" />
+    <result column="red_packet_video_question" jdbcType="VARCHAR" property="redPacketVideoQuestion" />
+    <result column="red_packet_video_options" jdbcType="VARCHAR" property="redPacketVideoOptions" />
+    <result column="red_packet_video_answer" jdbcType="VARCHAR" property="redPacketVideoAnswer" />
+    <result column="red_packet_video_sex" jdbcType="INTEGER" property="redPacketVideoSex" />
+    <result column="red_packet_video_age_start" jdbcType="INTEGER" property="redPacketVideoAgeStart" />
+    <result column="red_packet_video_age_end" jdbcType="INTEGER" property="redPacketVideoAgeEnd" />
+    <result column="red_packet_video_date" jdbcType="TIMESTAMP" property="redPacketVideoDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    red_packet_video_id, red_packet_video_user_id, red_packet_video_money_count, red_packet_video_count, 
+    red_packet_video_stock, red_packet_video_unit_amount, red_packet_video_info, red_packet_video_luck_star, 
+    red_packet_video_start_time, red_packet_video_end_time, red_packet_video_question, 
+    red_packet_video_options, red_packet_video_answer, red_packet_video_sex, red_packet_video_age_start, 
+    red_packet_video_age_end, red_packet_video_date
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zx_app_video_red_packet
+    where red_packet_video_id = #{redPacketVideoId,jdbcType=BIGINT}
+  </select>
+  <delete id="delVideoRedPacketInfo" parameterType="java.lang.Long">
+    delete from zx_app_video_red_packet
+    where red_packet_video_id = #{redPacketVideoId,jdbcType=BIGINT}
+  </delete>
+
+  <!-- 新增视频红包记录 -->
+  <insert id="saveVideoRedPacketInfo" parameterType="java.util.Map">
+    insert into zx_app_video_red_packet
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        red_packet_video_id,
+      <if test="redPacketVideoUserId != null">
+        red_packet_video_user_id,
+      </if>
+      <if test="redPacketVideoMoneyCount != null">
+        red_packet_video_money_count,
+      </if>
+      <if test="redPacketVideoCount != null">
+        red_packet_video_count,
+      </if>
+      <if test="redPacketVideoStock != null">
+        red_packet_video_stock,
+      </if>
+      <if test="redPacketVideoUnitAmount != null">
+        red_packet_video_unit_amount,
+      </if>
+      <if test="redPacketVideoInfo != null">
+        red_packet_video_info,
+      </if>
+      <if test="redPacketVideoLuckStar != null">
+        red_packet_video_luck_star,
+      </if>
+      <if test="redPacketVideoStartTime != null and redPacketVideoStartTime != ''">
+        red_packet_video_start_time,
+      </if>
+      <if test="redPacketVideoEndTime != null and redPacketVideoEndTime != ''">
+        red_packet_video_end_time,
+      </if>
+      <if test="redPacketVideoQuestion != null">
+        red_packet_video_question,
+      </if>
+      <if test="redPacketVideoOptions != null">
+        red_packet_video_options,
+      </if>
+      <if test="redPacketVideoAnswer != null">
+        red_packet_video_answer,
+      </if>
+      <if test="redPacketVideoSex != null">
+        red_packet_video_sex,
+      </if>
+      <if test="redPacketVideoAgeStart != null">
+        red_packet_video_age_start,
+      </if>
+      <if test="redPacketVideoAgeEnd != null">
+        red_packet_video_age_end,
+      </if>
+        red_packet_video_date,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+        #{redPacketVideoId,jdbcType=BIGINT},
+      <if test="redPacketVideoUserId != null">
+        #{redPacketVideoUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketVideoMoneyCount != null">
+        #{redPacketVideoMoneyCount,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketVideoCount != null">
+        #{redPacketVideoCount,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketVideoStock != null">
+        #{redPacketVideoStock,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketVideoUnitAmount != null">
+        #{redPacketVideoUnitAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketVideoInfo != null">
+        #{redPacketVideoInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketVideoLuckStar != null">
+        #{redPacketVideoLuckStar,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketVideoStartTime != null and redPacketVideoStartTime != ''">
+        #{redPacketVideoStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="redPacketVideoEndTime != null and redPacketVideoEndTime != ''">
+        #{redPacketVideoEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="redPacketVideoQuestion != null">
+        #{redPacketVideoQuestion,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketVideoOptions != null">
+        #{redPacketVideoOptions,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketVideoAnswer != null">
+        #{redPacketVideoAnswer,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketVideoSex != null">
+        #{redPacketVideoSex,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketVideoAgeStart != null">
+        #{redPacketVideoAgeStart,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketVideoAgeEnd != null">
+        #{redPacketVideoAgeEnd,jdbcType=INTEGER},
+      </if>
+        NOW()
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
+    update zx_app_video_red_packet
+    <set>
+      <if test="redPacketVideoUserId != null">
+        red_packet_video_user_id = #{redPacketVideoUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketVideoMoneyCount != null">
+        red_packet_video_money_count = #{redPacketVideoMoneyCount,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketVideoCount != null">
+        red_packet_video_count = #{redPacketVideoCount,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketVideoStock != null">
+        red_packet_video_stock = #{redPacketVideoStock,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketVideoUnitAmount != null">
+        red_packet_video_unit_amount = #{redPacketVideoUnitAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketVideoInfo != null">
+        red_packet_video_info = #{redPacketVideoInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketVideoLuckStar != null">
+        red_packet_video_luck_star = #{redPacketVideoLuckStar,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketVideoStartTime != null">
+        red_packet_video_start_time = #{redPacketVideoStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="redPacketVideoEndTime != null">
+        red_packet_video_end_time = #{redPacketVideoEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="redPacketVideoQuestion != null">
+        red_packet_video_question = #{redPacketVideoQuestion,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketVideoOptions != null">
+        red_packet_video_options = #{redPacketVideoOptions,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketVideoAnswer != null">
+        red_packet_video_answer = #{redPacketVideoAnswer,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketVideoSex != null">
+        red_packet_video_sex = #{redPacketVideoSex,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketVideoAgeStart != null">
+        red_packet_video_age_start = #{redPacketVideoAgeStart,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketVideoAgeEnd != null">
+        red_packet_video_age_end = #{redPacketVideoAgeEnd,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketVideoDate != null">
+        red_packet_video_date = #{redPacketVideoDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where red_packet_video_id = #{redPacketVideoId,jdbcType=BIGINT}
+  </update>
+
+  <!-- 查询红包信息 -->
+  <select id="queryRedPacketLog" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.red_packet_video_id AS redPacketId,
+      a.red_packet_video_user_id AS redPacketUserId,
+      a.red_packet_video_money_count AS redPacketMoneyCount,
+      a.red_packet_video_count AS redPacketCount,
+      a.red_packet_video_stock AS redPacketStock,
+      a.red_packet_video_url AS redPacketUrl,
+      a.red_packet_video_img AS redPacketVideoImg,
+      a.red_packet_video_info AS redPacketInfo,
+      a.red_packet_video_luck_star AS redPacketLuckStar,
+      a.red_packet_video_start_time AS redPacketStartTime,
+      a.red_packet_video_end_time AS redPacketEndTime,
+      a.red_packet_video_question AS redPacketQuestion,
+      a.red_packet_video_options AS redPacketOptions,
+      a.red_packet_video_answer AS redPacketAnswer,
+      a.red_packet_video_sex AS redPacketSex,
+      a.red_packet_video_age_start AS redPacketAgeStart,
+      a.red_packet_video_age_end AS redPacketAgeEnd,
+      a.red_packet_video_date AS redPacketDate,
+      b.head_img_url AS headImgUrl,
+      b.nickname AS nickname,
+      b.member_account AS memberAccount
+  FROM
+      zx_app_video_red_packet a
+      LEFT JOIN t_member b ON a.red_packet_video_user_id = b.member_account
+      WHERE a.red_packet_video_id = #{redPacketVideoId}
+  </select>
+
+  <!-- 新增抢红包记录 -->
+  <insert id="insertListRedPacketInfo" parameterType="java.util.Map">
+      insert into zx_app_video_red_packet_info(red_packet_video_info_id,red_packet_video_id,red_packet_video_money,red_packet_video_luck_star) values(#{redPacketVideoInfoId},#{redPacketVideoId},#{num},#{luckStar})
+  </insert>
+
+  <!-- 更新抢红包信息 -->
+  <update id="updateByExampleSelective" parameterType="java.util.Map">
+    update zx_app_video_red_packet
+    <set>
+      <if test="redPacketVideoCount != null">
+        red_packet_video_count = #{redPacketVideoCount,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketVideoStock != null">
+        red_packet_video_stock = #{redPacketVideoStock,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketVideoUnitAmount != null and redPacketVideoUnitAmount != ''">
+        red_packet_video_unit_amount = #{redPacketVideoUnitAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketVideoLuckStar != null and redPacketVideoLuckStar != ''">
+        red_packet_video_luck_star = #{redPacketVideoLuckStar,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketVideoStartTime != null">
+        red_packet_video_start_time = #{redPacketVideoStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="redPacketVideoEndTime != null">
+        red_packet_video_end_time = #{redPacketVideoEndTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where red_packet_video_id = #{redPacketVideoId,jdbcType=BIGINT}
+  </update>
+
+  <!-- 查询我的发布红包列表 -->
+  <select id="queryMyReleaseRedPacket" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.red_packet_video_id AS redPacketId,
+      a.red_packet_video_user_id AS memberAccount,
+      a.red_packet_video_money_count AS redPacketMoneyCount,
+      a.red_packet_video_count AS redPacketCount,
+      a.red_packet_video_stock AS redPacketStock,
+      DATE_FORMAT(a.red_packet_video_date,'%m月%d日') AS redPacketDate,
+      (a.red_packet_video_count - a.red_packet_video_stock) AS robRedPacketCount,
+      '视频广告' AS redPacketType
+  FROM
+      zx_app_video_red_packet AS a
+  WHERE a.red_packet_video_user_id = #{memberAccount}
+  </select>
+
+</mapper>

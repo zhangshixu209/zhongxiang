@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="feedbackMapper">
+    
+    <!-- 映射结果  -->
+  <resultMap id="BaseResultMap" type="map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="titles" jdbcType="VARCHAR" property="titles" />
+    <result column="contents" jdbcType="VARCHAR" property="contents" />
+    <result column="start_penson_id" jdbcType="VARCHAR" property="startPensonId" />
+    <result column="start_penson_name" jdbcType="VARCHAR" property="startPensonName" />
+    <result column="start_penson_time" jdbcType="TIMESTAMP" property="startPensonTime" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="reply_content" jdbcType="VARCHAR" property="replyContent" />
+    <result column="end_penson_id" jdbcType="VARCHAR" property="endPensonId" />
+    <result column="end_penson_name" jdbcType="VARCHAR" property="endPensonName" />
+    <result column="end_penson_time" jdbcType="TIMESTAMP" property="endPensonTime" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    a.id, 
+    a.titles, 
+    a.contents, 
+    a.start_penson_id, 
+    a.start_penson_name, 
+    a.start_penson_time, 
+    a.status, 
+    a.reply_content, 
+    a.end_penson_id, 
+    a.end_penson_name, 
+    a.end_penson_time
+  </sql>
+  
+  <!-- 列表查询 -->
+    <select id="queryList" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+        	<include refid="Base_Column_List" />
+        FROM 
+        	r_feedback a
+        <where>
+            <if test="startPensonId != null and startPensonId != ''">
+                AND a.start_penson_id = #{startPensonId}
+            </if>
+            <if test="startPensonName != null and startPensonName != ''">
+                AND a.start_penson_name LIKE concat('%',#{startPensonName},'%')
+            </if>
+            <if test="titles != null and titles != ''">
+                AND a.titles LIKE concat('%',#{titles},'%')
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND DATE_FORMAT(a.start_penson_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND DATE_FORMAT(a.start_penson_time,'%Y-%m-%d') &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY a.status asc,a.start_penson_time desc
+        <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+            LIMIT #{start}, #{limit}
+        </if>
+    </select>
+    
+    <!-- 分页数量查询 -->
+    <select id="queryListCount" parameterType="map" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM 
+        	r_feedback a
+        <where>
+           <if test="startPensonId != null and startPensonId != ''">
+                AND a.start_penson_id = #{startPensonId}
+            </if>
+            <if test="startPensonName != null and startPensonName != ''">
+                AND a.start_penson_name LIKE concat('%',#{startPensonName},'%')
+            </if>
+            <if test="titles != null and titles != ''">
+                AND a.titles LIKE concat('%',#{titles},'%')
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND DATE_FORMAT(a.start_penson_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND DATE_FORMAT(a.start_penson_time,'%Y-%m-%d') &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+    
+  <!-- 回复反馈信息根据id查询单条数据 -->
+  <select id="selectByPrimaryKey" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT 
+    	<include refid="Base_Column_List" />
+    FROM 
+    	r_feedback a
+    WHERE 
+    	a.id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  
+  <!-- 附件信息映射 -->
+  <resultMap id="FileResultMap" type="map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="obj_id" jdbcType="BIGINT" property="objId" />
+    <result column="file_type_cd" jdbcType="VARCHAR" property="fileTypeCd" />
+    <result column="file_path" jdbcType="VARCHAR" property="filePath" />
+    <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="file_seqno" jdbcType="INTEGER" property="fileSeqno" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+  </resultMap>
+   <!-- 附件查询 -->
+  <select id="queryFileList" parameterType="map" resultMap="FileResultMap">
+      SELECT
+         *
+      FROM 
+      	r_work_order_file
+      WHERE 
+      	obj_id = #{objId}
+  </select>
+  
+   <!-- 新增 -->
+  <insert id="insertSelective" parameterType="map">
+    insert into r_feedback 
+        (id, 
+	    titles, 
+	    contents, 
+	    start_penson_id, 
+	    start_penson_name, 
+	    start_penson_time, 
+	    status)values(
+        #{id,jdbcType=BIGINT},
+        #{titles,jdbcType=VARCHAR},
+        #{contents,jdbcType=VARCHAR},
+        #{startPensonId,jdbcType=VARCHAR},
+        #{startPensonName,jdbcType=VARCHAR},
+        NOW(),
+        '0')
+  </insert>
+  
+  <!-- 保存附件 -->
+  <insert id="saveFile"  parameterType="map">
+    INSERT INTO r_work_order_file (
+      id, 
+      obj_id, 
+      file_type_cd, 
+      file_path, 
+      file_name, 
+      file_seqno, 
+      `status`, 
+      crt_user_id, 
+      crt_time)
+    VALUES (
+        #{id,jdbcType=BIGINT}, 
+        #{objId,jdbcType=BIGINT}, 
+        #{fileTypeCd,jdbcType=VARCHAR}, 
+        #{filePath,jdbcType=VARCHAR}, 
+        #{fileName,jdbcType=VARCHAR}, 
+        #{fileSeqno,jdbcType=INTEGER}, 
+        '1', 
+        #{crtUserId,jdbcType=BIGINT}, 
+        NOW())
+  </insert>
+  <!-- 删除附件 -->
+  <delete id="deleteFile" parameterType="java.lang.Long">
+    DELETE 
+    	FROM r_work_order_file
+    WHERE 
+        obj_id = #{objId,jdbcType=BIGINT}
+  </delete>
+  
+  <!-- 删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    DELETE 
+    	FROM r_feedback
+    WHERE 
+    	id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <!-- 回复更新数据 -->
+  <update id="doUpdateFeedback" parameterType="map">
+    update r_feedback
+    <set>
+      <if test="replyContent != null and replyContent != ''">
+        reply_content = #{replyContent,jdbcType=VARCHAR},
+      </if>
+      <if test="modfUserId != null and modfUserId != ''">
+        end_penson_id = #{endPensonId,jdbcType=VARCHAR},
+      </if>
+      <if test="endPensonName != null and endPensonName != ''">
+        end_penson_name = #{endPensonName,jdbcType=VARCHAR},
+      </if>
+      <if test="modfTime != null and modfTime != ''">
+        end_penson_time = NOW(),
+      </if>
+      status = '1'
+    </set>
+    <where>
+      <if test="id != null and id != ''">
+        and id = #{id,jdbcType=BIGINT} 
+      </if>
+    </where> 
+  </update>
+
+  
+</mapper>

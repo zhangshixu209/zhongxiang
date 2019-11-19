@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ShareOutBonusMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="ad_share_out_bonus_id" jdbcType="BIGINT" property="adShareOutBonusId" />
+    <result column="ad_share_out_bonus_user_id" jdbcType="VARCHAR" property="adShareOutBonusUserId" />
+    <result column="ad_share_out_bonus_limit" jdbcType="DECIMAL" property="adShareOutBonusLimit" />
+    <result column="ad_share_out_bonus_residue_limit" jdbcType="DECIMAL" property="adShareOutBonusResidueLimit" />
+    <result column="ad_share_out_bonus_money" jdbcType="DECIMAL" property="adShareOutBonusMoney" />
+    <result column="ad_share_out_bonus_type" jdbcType="VARCHAR" property="adShareOutBonusType" />
+    <result column="ad_share_out_bonus_date" jdbcType="TIMESTAMP" property="adShareOutBonusDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ad_share_out_bonus_id, ad_share_out_bonus_user_id, ad_share_out_bonus_limit, ad_share_out_bonus_residue_limit, 
+    ad_share_out_bonus_money, ad_share_out_bonus_type, ad_share_out_bonus_date
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zx_app_advertising_share_out_bonus
+    where ad_share_out_bonus_id = #{adShareOutBonusId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from zx_app_advertising_share_out_bonus
+    where ad_share_out_bonus_id = #{adShareOutBonusId,jdbcType=BIGINT}
+  </delete>
+
+  <!-- 广告分红新增 -->
+  <insert id="saveShareOutBonusInfo" parameterType="java.util.Map">
+    insert into zx_app_advertising_share_out_bonus
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="adShareOutBonusId != null">
+        ad_share_out_bonus_id,
+      </if>
+      <if test="adShareOutBonusUserId != null">
+        ad_share_out_bonus_user_id,
+      </if>
+      <if test="adShareOutBonusLimit != null">
+        ad_share_out_bonus_limit,
+      </if>
+      <if test="adShareOutBonusResidueLimit != null">
+        ad_share_out_bonus_residue_limit,
+      </if>
+      <if test="adShareOutBonusMoney != null">
+        ad_share_out_bonus_money,
+      </if>
+      <if test="adShareOutBonusType != null">
+        ad_share_out_bonus_type,
+      </if>
+        ad_share_out_bonus_date,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="adShareOutBonusId != null">
+        #{adShareOutBonusId,jdbcType=BIGINT},
+      </if>
+      <if test="adShareOutBonusUserId != null">
+        #{adShareOutBonusUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="adShareOutBonusLimit != null">
+        #{adShareOutBonusLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="adShareOutBonusResidueLimit != null">
+        #{adShareOutBonusResidueLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="adShareOutBonusMoney != null">
+        #{adShareOutBonusMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="adShareOutBonusType != null">
+        #{adShareOutBonusType,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+
+  <!-- 广告分红编辑 -->
+  <update id="updateShareOutBonusInfo" parameterType="java.util.Map">
+    update zx_app_advertising_share_out_bonus
+    <set>
+      <if test="adShareOutBonusLimit != null and adShareOutBonusLimit != ''">
+        ad_share_out_bonus_limit = #{adShareOutBonusLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="adShareOutBonusResidueLimit != null and adShareOutBonusResidueLimit != '' or adShareOutBonusResidueLimit == 0">
+        ad_share_out_bonus_residue_limit = #{adShareOutBonusResidueLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="adShareOutBonusMoney != null and adShareOutBonusMoney != ''">
+        ad_share_out_bonus_money = #{adShareOutBonusMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="adShareOutBonusType != null and adShareOutBonusType != ''">
+        ad_share_out_bonus_type = #{adShareOutBonusType,jdbcType=VARCHAR},
+      </if>
+        ad_share_out_bonus_date = NOW(),
+    </set>
+    where ad_share_out_bonus_user_id = #{adShareOutBonusUserId}
+  </update>
+
+  <!-- 广告红包详情 -->
+  <select id="queryShareOutBonusDetail" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.ad_share_out_bonus_id AS adShareOutBonusId,
+      a.ad_share_out_bonus_user_id AS adShareOutBonusUserId,
+      a.ad_share_out_bonus_limit AS adShareOutBonusLimit,
+      a.ad_share_out_bonus_residue_limit AS adShareOutBonusResidueLimit,
+      a.ad_share_out_bonus_money AS adShareOutBonusMoney,
+      a.ad_share_out_bonus_type AS adShareOutBonusType,
+      a.ad_share_out_bonus_date AS adShareOutBonusDate
+  FROM zx_app_advertising_share_out_bonus AS a
+  <where>
+    <if test="coverMemberAccount != null and coverMemberAccount != ''">
+        a.ad_share_out_bonus_user_id = #{coverMemberAccount}
+    </if>
+  </where>
+  </select>
+
+  <!-- 查询是否第一次绑定推荐人 -->
+  <select id="queryIsFirstRecommend" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.advertising_fee AS advertisingFee,
+      b.team_user_phone AS teamUserPhone,
+      b.team_user_name AS teamUserName
+    FROM
+    t_member a
+    LEFT JOIN zx_app_my_team b ON a.member_account = b.team_recommended_user_id
+    WHERE a.member_account = #{memberAccount}
+  </select>
+
+  <!-- 根据当前登录用户账号查询分红任务完成了几次 -->
+  <select id="findTaskCountByMemberAccount" parameterType="java.util.Map" resultType="long">
+    SELECT COUNT(1) FROM zx_app_ad_share_out_bonus_info WHERE ad_share_out_bonus_info_user_id = #{memberAccount}
+    AND ad_share_out_bonus_info_done = #{adShareOutBonusInfoDone}
+  </select>
+
+  <!-- 根据用户ID查询分红任务 -->
+  <select id="findTaskByUserIdAndMarkS" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        a.ad_share_out_bonus_info_id AS adShareOutBonusInfoId,
+        a.ad_share_out_bonus_info_money AS adShareOutBonusInfoMoney,
+        a.ad_share_out_bonus_info_user_id AS adShareOutBonusInfoUserId,
+        a.ad_share_out_bonus_info_day_num AS adShareOutBonusInfoDayNum,
+        a.ad_share_out_bonus_info_done AS adShareOutBonusInfoDone,
+        a.ad_share_out_bonus_info_start AS adShareOutBonusInfoStart,
+        a.ad_share_out_bonus_info_end AS adShareOutBonusInfoEnd,
+        a.ad_share_out_bonus_info_date AS adShareOutBonusInfoDate
+    FROM
+        zx_app_ad_share_out_bonus_info AS a
+    <where>
+      a.ad_share_out_bonus_info_user_id = #{memberAccount}
+    </where>
+  </select>
+
+  <!-- 新增申请分红表 -->
+  <insert id="saveAdShareOutBonusInfo" parameterType="java.util.Map">
+    insert into zx_app_ad_share_out_bonus_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="adShareOutBonusInfoId != null">
+        ad_share_out_bonus_info_id,
+      </if>
+      <if test="adShareOutBonusInfoMoney != null">
+        ad_share_out_bonus_info_money,
+      </if>
+      <if test="adShareOutBonusInfoUserId != null">
+        ad_share_out_bonus_info_user_id,
+      </if>
+      <if test="adShareOutBonusInfoDayNum != null">
+        ad_share_out_bonus_info_day_num,
+      </if>
+      <if test="adShareOutBonusInfoDone != null">
+        ad_share_out_bonus_info_done,
+      </if>
+      <if test="adShareOutBonusInfoStart != null">
+        ad_share_out_bonus_info_start,
+      </if>
+      <if test="adShareOutBonusInfoEnd != null">
+        ad_share_out_bonus_info_end,
+      </if>
+        ad_share_out_bonus_info_date,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="adShareOutBonusInfoId != null">
+        #{adShareOutBonusInfoId,jdbcType=BIGINT},
+      </if>
+      <if test="adShareOutBonusInfoMoney != null">
+        #{adShareOutBonusInfoMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="adShareOutBonusInfoUserId != null">
+        #{adShareOutBonusInfoUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="adShareOutBonusInfoDayNum != null">
+        #{adShareOutBonusInfoDayNum,jdbcType=INTEGER},
+      </if>
+      <if test="adShareOutBonusInfoDone != null">
+        #{adShareOutBonusInfoDone,jdbcType=VARCHAR},
+      </if>
+      <if test="adShareOutBonusInfoStart != null">
+        #{adShareOutBonusInfoStart,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adShareOutBonusInfoEnd != null">
+        #{adShareOutBonusInfoEnd,jdbcType=TIMESTAMP},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+
+</mapper>

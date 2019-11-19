@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ZxMessageMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="zx_message_id" jdbcType="BIGINT" property="zxMessageId" />
+    <result column="member_account" jdbcType="VARCHAR" property="memberAccount" />
+    <result column="zx_message_link_url" jdbcType="VARCHAR" property="zxMessageLinkUrl" />
+    <result column="zx_message_video_url" jdbcType="VARCHAR" property="zxMessageVideoUrl" />
+    <result column="zx_message_date" jdbcType="TIMESTAMP" property="zxMessageDate" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="java.util.Map">
+    <result column="zx_message_text" jdbcType="LONGVARCHAR" property="zxMessageText" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    zx_message_id, member_account, zx_message_link_url, zx_message_video_url, zx_message_date, 
+    zx_message_view_count
+  </sql>
+  <sql id="Blob_Column_List">
+    zx_message_text
+  </sql>
+  <!-- 众享信息列表查询 -->
+  <select id="queryZxMessageList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.zx_message_id AS zxMessageId,
+      a.member_account AS memberAccount,
+      a.zx_message_link_url AS zxMessageLinkUrl,
+      a.zx_message_video_url AS zxMessageVideoUrl,
+      a.zx_message_date AS zxMessageDate,
+      a.zx_message_text AS zxMessageText,
+      ( SELECT COUNT( 1 ) FROM zx_app_message_view_count v WHERE v.zx_message_id = a.zx_message_id ) AS zxMessageViewCount,
+      b.head_img_url AS headImgUrl,
+      b.nickname AS nickname
+    FROM zx_app_message AS a
+    LEFT JOIN t_member b ON a.member_account = b.member_account
+    <where>
+      <if test="memberAccount != null and memberAccount != ''">
+        a.member_account = #{memberAccount,jdbcType=VARCHAR}
+      </if>
+    </where>
+    <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+      LIMIT ${start},${limit}
+    </if>
+  </select>
+  <!-- 众享信息列表统计 -->
+  <select id="queryZxMessageCount" parameterType="java.util.Map" resultType="int">
+    select
+        COUNT(1)
+    from zx_app_message
+    <where>
+      <if test="memberAccount != null and memberAccount != ''">
+        member_account = #{memberAccount,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+
+  <!-- 删除众享信息 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from zx_app_message
+    where zx_message_id = #{zxMessageId,jdbcType=BIGINT}
+  </delete>
+
+  <!-- 众享信息新增 -->
+  <insert id="saveZxMessageInfo" parameterType="java.util.Map">
+    insert into zx_app_message
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="zxMessageId != null">
+        zx_message_id,
+      </if>
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+      <if test="zxMessageLinkUrl != null">
+        zx_message_link_url,
+      </if>
+      <if test="zxMessageVideoUrl != null">
+        zx_message_video_url,
+      </if>
+        zx_message_date,
+      <if test="zxMessageText != null">
+        zx_message_text,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="zxMessageId != null">
+        #{zxMessageId,jdbcType=BIGINT},
+      </if>
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="zxMessageLinkUrl != null">
+        #{zxMessageLinkUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="zxMessageVideoUrl != null">
+        #{zxMessageVideoUrl,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+      <if test="zxMessageText != null">
+        #{zxMessageText,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <!-- 修改众享信息 -->
+  <update id="updateZxMessageInfo" parameterType="java.util.Map">
+    update zx_app_message
+    <set>
+      <if test="zxMessageViewCount != null and zxMessageViewCount != ''">
+        zx_message_view_count = zx_message_view_count + #{zxMessageViewCount,jdbcType=INTEGER},
+      </if>
+      <if test="zxMessagePraiseCount != null and zxMessagePraiseCount != ''">
+        zx_message_praise_count = zx_message_praise_count + #{zxMessagePraiseCount,jdbcType=INTEGER},
+      </if>
+    </set>
+    where zx_message_id = #{zxMessageId,jdbcType=BIGINT}
+  </update>
+
+  <!-- 新增众享图片信息 -->
+  <insert id="saveZxMessageImgInfo" parameterType="java.util.Map">
+    insert into zx_app_message_url
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="zxMessageUrlId != null">
+        zx_message_url_id,
+      </if>
+      <if test="zxMessageId != null">
+        zx_message_id,
+      </if>
+      <if test="zxMessageImgsUrl != null">
+        zx_message_imgs_url,
+      </if>
+        zx_message_date,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="zxMessageUrlId != null">
+        #{zxMessageUrlId,jdbcType=BIGINT},
+      </if>
+      <if test="zxMessageId != null">
+        #{zxMessageId,jdbcType=BIGINT},
+      </if>
+      <if test="zxMessageImgsUrl != null">
+        #{zxMessageImgsUrl,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+
+  <!-- 查询众享信息图片附件列表 -->
+  <select id="queryFileList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        a.zx_message_url_id AS zxMessageUrlId,
+        a.zx_message_id AS zxMessageId,
+        a.zx_message_imgs_url AS zxMessageImgsUrl,
+        a.zx_message_date AS zxMessageDate
+    FROM
+        zx_app_message_url AS a
+    WHERE a.zx_message_id = #{zxMessageId}
+  </select>
+
+  <!-- 查询用户是否点赞 -->
+  <select id="queryZxMessagePraiseCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+      COUNT(1) AS praiseTotal
+    FROM
+      `zx_app_message_praise_count`
+    <where>
+      <if test="zxMessageId != null and zxMessageId != ''">
+        zx_message_id = #{zxMessageId}
+      </if>
+      <if test="memberAccount != null and memberAccount != ''">
+        AND member_account = #{memberAccount}
+      </if>
+    </where>
+  </select>
+
+  <!-- 新增用户点赞信息 -->
+  <insert id="saveZxMessagePraiseCount" parameterType="java.util.Map">
+    insert into zx_app_message_praise_count
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="zxMessagePraiseId != null">
+        zx_message_praise_id,
+      </if>
+      <if test="zxMessageId != null">
+        zx_message_id,
+      </if>
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="zxMessagePraiseId != null">
+        #{zxMessagePraiseId,jdbcType=BIGINT},
+      </if>
+      <if test="zxMessageId != null">
+        #{zxMessageId,jdbcType=BIGINT},
+      </if>
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <!-- 删除用户点赞信息 -->
+  <delete id="delZxMessagePraiseCount" parameterType="java.util.Map">
+    DELETE FROM zx_app_message_praise_count WHERE zx_message_id = #{zxMessageId} AND member_account = #{memberAccount}
+  </delete>
+
+  <!-- 新增用户浏览信息 -->
+  <insert id="saveZxMessageBrowseCount" parameterType="java.util.Map">
+    insert into zx_app_message_view_count
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="zxMessageId != null">
+        zx_message_id,
+      </if>
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="zxMessageId != null">
+        #{zxMessageId,jdbcType=BIGINT},
+      </if>
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <!-- 众享信息收藏 -->
+  <insert id="saveZxMessageCollection" parameterType="java.util.Map">
+    insert into zx_app_message_collection
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="zxMessageId != null">
+        zx_message_id,
+      </if>
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+        crt_time
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="zxMessageId != null">
+        #{zxMessageId,jdbcType=BIGINT},
+      </if>
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+        NOW()
+    </trim>
+  </insert>
+
+  <!-- 众享信息删除我的收藏 -->
+  <delete id="delZxMessageCollection" parameterType="java.util.Map">
+    DELETE FROM zx_app_message_collection WHERE zx_message_id = #{zxMessageId} AND member_account = #{memberAccount}
+  </delete>
+
+  <!-- 众享信息删除我的发布 -->
+  <delete id="delMyZxMessageInfo" parameterType="java.util.Map">
+    DELETE FROM zx_app_message WHERE zx_message_id = #{zxMessageId} AND member_account = #{memberAccount}
+  </delete>
+
+  <!-- 查询我的收藏列表 -->
+  <select id="queryMyZxMessageCollection" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.zx_message_id AS zxMessageId,
+      a.member_account AS zxMemberAccount,
+      a.crt_time AS crtTime,
+      b.head_img_url AS headImgUrl,
+      b.nickname AS nickname,
+      c.zx_message_text AS zxMessageText
+    FROM zx_app_message_collection AS a
+        LEFT JOIN zx_app_message AS c ON a.zx_message_id = c.zx_message_id
+        LEFT JOIN t_member AS b ON c.member_account = b.member_account
+    <where>
+      a.member_account = #{memberAccount}
+    </where>
+    <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+      LIMIT ${start},${limit}
+    </if>
+  </select>
+
+  <!-- 我的收藏列表统计 -->
+  <select id="queryMyZxMessageCollectionCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+        COUNT(1)
+    FROM zx_app_message_collection AS a
+    LEFT JOIN zx_app_message AS c ON a.zx_message_id = c.zx_message_id
+    LEFT JOIN t_member AS b ON c.member_account = b.member_account
+    <where>
+      a.member_account = #{memberAccount}
+    </where>
+  </select>
+
+  <!-- 查询众享信息详情 -->
+  <select id="queryZxMessageDetail" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.zx_message_id AS zxMessageId,
+      a.member_account AS memberAccount,
+      a.zx_message_link_url AS zxMessageLinkUrl,
+      a.zx_message_video_url AS zxMessageVideoUrl,
+      a.zx_message_date AS zxMessageDate,
+      a.zx_message_text AS zxMessageText,
+      ( SELECT COUNT( 1 ) FROM zx_app_message_view_count v WHERE v.zx_message_id = a.zx_message_id ) AS zxMessageViewCount,
+      ( SELECT COUNT( 1 ) FROM zx_app_message_praise_count v WHERE v.zx_message_id = a.zx_message_id ) AS zxMessagePraiseCount,
+      b.head_img_url AS headImgUrl,
+      b.nickname AS nickname
+    FROM zx_app_message AS a
+    LEFT JOIN t_member b ON a.member_account = b.member_account
+    <where>
+      <if test="zxMessageId != null and zxMessageId != ''">
+        a.zx_message_id = #{zxMessageId,jdbcType=BIGINT}
+      </if>
+    </where>
+  </select>
+
+</mapper>

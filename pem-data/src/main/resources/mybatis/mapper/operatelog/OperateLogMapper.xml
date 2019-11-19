@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 操作日志管理 @author zhangsx-->
+<mapper namespace="operateLogMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="log_num" jdbcType="VARCHAR" property="logNum" />
+    <result column="operate_page" jdbcType="VARCHAR" property="operatePage" />
+    <result column="operate_type" jdbcType="VARCHAR" property="operateType" />
+    <result column="exec_operate_time" jdbcType="TIMESTAMP" property="execOperateTime" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_user_name" jdbcType="VARCHAR" property="crtUserName" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+    <result column="modf_user_id" jdbcType="BIGINT" property="modfUserId" />
+    <result column="modf_user_name" jdbcType="VARCHAR" property="modfUserName" />
+    <result column="modf_time" jdbcType="TIMESTAMP" property="modfTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, log_num, operate_page, operate_type, exec_operate_time, status, crt_user_id, 
+    crt_user_name, crt_time, modf_user_id, modf_user_name, modf_time
+  </sql>
+  <!-- 操作日志管理查询 -->
+  <select id="queryOperateLogList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT 
+        <include refid="Base_Column_List" />
+    FROM 
+        r_operate_log a
+    <where>
+        <if test="logNum != null and logNum != ''">
+            a.log_num = #{logNum}
+        </if>
+        <if test="operateType != null and operateType != ''">
+            AND a.operate_type = #{operateType}
+        </if>
+        <if test="crtUserName != null and crtUserName != ''">
+            AND a.crt_user_name LIKE CONCAT('%',#{crtUserName},'%')
+        </if>
+        <if test="startTime != null and startTime !=''">
+            AND DATE_FORMAT(a.crt_time, '%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime !=''">
+            AND DATE_FORMAT(a.crt_time, '%Y-%m-%d') &lt;= #{endTime}
+        </if>
+    </where>
+    ORDER BY a.crt_time DESC
+    <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+        LIMIT ${start},${limit}
+    </if>
+  </select>
+  <!-- 操作日志管理统计 -->
+  <select id="queryOperateLogCount" parameterType="java.util.Map" resultType="int">
+    SELECT 
+        COUNT(1)
+    FROM 
+        r_operate_log a
+    <where>
+        <if test="logNum != null and logNum != ''">
+            a.log_num = #{logNum}
+        </if>
+        <if test="operateType != null and operateType != ''">
+            AND a.operate_type = #{operateType}
+        </if>
+        <if test="crtUserName != null and crtUserName != ''">
+            AND a.crt_user_name LIKE CONCAT('%',#{crtUserName},'%')
+        </if>
+        <if test="startTime != null and startTime !=''">
+            AND DATE_FORMAT(a.crt_time, '%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime !=''">
+            AND DATE_FORMAT(a.crt_time, '%Y-%m-%d') &lt;= #{endTime}
+        </if>
+    </where>
+  </select>
+  <!-- 操作日志管理新增 -->
+  <insert id="saveOperateLogInfo" parameterType="java.util.Map">
+    insert into r_operate_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="logNum != null">
+        log_num,
+      </if>
+      <if test="operatePage != null">
+        operate_page,
+      </if>
+      <if test="operateType != null">
+        operate_type,
+      </if>
+        exec_operate_time,
+        status,
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="crtUserId != null">
+        crt_user_id,
+      </if>
+      <if test="crtUserName != null">
+        crt_user_name,
+      </if>
+        crt_time,
+      <if test="modfUserId != null">
+        modf_user_id,
+      </if>
+        modf_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="logNum != null">
+        #{logNum,jdbcType=VARCHAR},
+      </if>
+      <if test="operatePage != null">
+        #{operatePage,jdbcType=VARCHAR},
+      </if>
+      <if test="operateType != null">
+        #{operateType,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+         1,
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="crtUserId != null">
+        #{crtUserId,jdbcType=BIGINT},
+      </if>
+      <if test="crtUserName != null">
+        #{crtUserName,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+      <if test="modfUserId != null">
+        #{modfUserId,jdbcType=BIGINT},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  
+</mapper>

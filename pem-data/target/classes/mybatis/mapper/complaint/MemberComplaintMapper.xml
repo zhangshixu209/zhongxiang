@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MemberComplaintMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="member_account" jdbcType="VARCHAR" property="memberAccount" />
+    <result column="member_nickname" jdbcType="VARCHAR" property="memberNickname" />
+    <result column="complainant" jdbcType="VARCHAR" property="complainant" />
+    <result column="complaint_time" jdbcType="TIMESTAMP" property="complaintTime" />
+    <result column="complaint_remark" jdbcType="VARCHAR" property="complaintRemark" />
+    <result column="chat_record" jdbcType="VARCHAR" property="chatRecord" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_user_name" jdbcType="VARCHAR" property="crtUserName" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+    <result column="modf_user_id" jdbcType="BIGINT" property="modfUserId" />
+    <result column="modf_user_name" jdbcType="VARCHAR" property="modfUserName" />
+    <result column="modf_user_time" jdbcType="TIMESTAMP" property="modfUserTime" />
+  </resultMap>
+  <!-- 累计提现，累计充值，累计分红，累计投诉 -->
+  <sql id="total_Column_List">
+	(SELECT IFNULL(CAST(SUM(w.recharge_amount) AS CHAR), '0') FROM t_recharge_record w WHERE a.member_account = w.member_account
+	AND w.`status` = '1003') AS rechargeTotal,
+	(SELECT IFNULL(CAST(SUM(w.cash_amount) AS CHAR), '0') FROM t_cash_audit w WHERE a.member_account = w.user_account) AS cashTotal,
+	(SELECT IFNULL(CAST(SUM(w.bonus_amount) AS CHAR), '0') FROM t_member_bonus_record w WHERE a.member_account = w.member_account) AS bonusTotal
+  </sql>
+  <!-- 查询会员投诉列表 -->
+  <select id="queryMemberComplaintList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.id AS id,
+      a.member_account AS memberAccount,
+      a.member_nickname AS memberNickname,
+      a.complainant AS complainant,
+      a.complaint_time AS complaintTime,
+      a.complaint_remark AS complaintRemark,
+      a.chat_record AS chatRecord,
+      a.`status` AS `status`,
+      a.crt_time AS crtTime,
+      a.audit_opinion AS auditOpinion,
+      IFNULL( b.wallet_balance, '0' ) AS walletBalance,
+      IFNULL( b.advertising_fee, '0' ) AS advertisingFee,
+      b.recom_nick_name AS recomNickname,
+      <include refid="total_Column_List"></include>
+    FROM
+        t_member_complaint_record AS a
+    LEFT JOIN t_member b ON a.member_account = b.member_account
+	<where>
+      <if test="memberAccount != null and memberAccount != ''">
+        a.member_account = #{memberAccount}
+      </if>
+      <if test="status != null and status != ''">
+        AND a.status = #{status}
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+    ORDER BY a.crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 查询会员投诉统计 -->
+  <select id="queryMemberComplaintCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+        COUNT(1)
+    FROM
+    t_member_complaint_record AS a
+    <where>
+      <if test="memberAccount != null and memberAccount != ''">
+        a.member_account = #{memberAccount}
+      </if>
+      <if test="status != null and status != ''">
+        AND a.status = #{status}
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_member_complaint_record
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <!-- 新增会员投诉 -->
+  <insert id="saveMemberComplaintInfo" parameterType="java.util.Map">
+    insert into t_member_complaint_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        id,
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+      <if test="memberNickname != null">
+        member_nickname,
+      </if>
+      <if test="complainant != null">
+        complainant,
+      </if>
+      <if test="complaintTime != null">
+        complaint_time,
+      </if>
+      <if test="complaintRemark != null">
+        complaint_remark,
+      </if>
+      <if test="chatRecord != null">
+        chat_record,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="crtUserId != null">
+        crt_user_id,
+      </if>
+      <if test="crtUserName != null">
+        crt_user_name,
+      </if>
+        crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+        id,
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="memberNickname != null">
+        #{memberNickname,jdbcType=VARCHAR},
+      </if>
+      <if test="complainant != null">
+        #{complainant,jdbcType=VARCHAR},
+      </if>
+      <if test="complaintTime != null">
+        #{complaintTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="complaintRemark != null">
+        #{complaintRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="chatRecord != null">
+        #{chatRecord,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="crtUserId != null">
+        #{crtUserId,jdbcType=BIGINT},
+      </if>
+      <if test="crtUserName != null">
+        #{crtUserName,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <!-- 修改会员投诉状态 -->
+  <update id="updateMemberComplaintInfo" parameterType="java.util.Map">
+    update t_member_complaint_record
+    <set>
+      <if test="status != null">
+        `status` = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="auditOpinion != null">
+        audit_opinion = #{auditOpinion,jdbcType=VARCHAR},
+      </if>
+      <if test="modfUserId != null">
+        modf_user_id = #{modfUserId,jdbcType=BIGINT},
+      </if>
+      <if test="modfUserName != null">
+        modf_user_name = #{modfUserName,jdbcType=VARCHAR},
+      </if>
+        modf_user_time = NOW(),
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <!-- 会员投诉详情 -->
+  <select id="queryMemberComplaintDetail" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.id AS id,
+      a.member_account AS memberAccount,
+      a.member_nickname AS memberNickname,
+      a.complainant AS complainant,
+      a.complaint_time AS complaintTime,
+      a.complaint_remark AS complaintRemark,
+      a.chat_record AS chatRecord,
+      a.`status` AS `status`,
+      a.crt_time AS crtTime,
+      a.audit_opinion AS auditOpinion
+    FROM
+        t_member_complaint_record AS a
+    WHERE a.id = #{id, jdbcType=BIGINT}
+  </select>
+</mapper>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MemberAccountMapper">
+  <!-- 查询会员管理列表 -->
+  <select id="queryMemberAccountList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.id AS id,
+      IFNULL( a.member_account_num, '' ) AS memberAccount,
+      IFNULL( a.account_name, '' ) AS accountName,
+      IFNULL( a.payment_account, '' ) AS paymentAccount,
+      IFNULL( a.account_type, '' ) AS accountType,
+      a.crt_time AS crtTime
+  FROM
+      zx_app_account_manage a
+    ORDER BY a.crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 查询会员统计 -->
+  <select id="queryMemberAccountCount" parameterType="java.util.Map" resultType="int">
+    SELECT COUNT(1) FROM zx_app_account_manage a
+  </select>
+
+  <!-- 新增会员账户管理信息 -->
+  <insert id="saveMemberAccountInfo" parameterType="java.util.Map">
+    insert into zx_app_account_manage
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        id,
+      <if test="memberAccount != null">
+        member_account_num,
+      </if>
+      <if test="accountName != null">
+        account_name,
+      </if>
+      <if test="paymentAccount != null">
+        payment_account,
+      </if>
+      <if test="accountType != null">
+        account_type,
+      </if>
+        crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+        #{id,jdbcType=BIGINT},
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="accountName != null">
+        #{accountName,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentAccount != null">
+        #{paymentAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="accountType != null">
+        #{accountType,jdbcType=VARCHAR},
+      </if>
+        NOW()
+    </trim>
+  </insert>
+  <!-- 删除会员账户管理 -->
+  <delete id="delMemberAccountInfo" parameterType="java.lang.Long">
+    DELETE FROM zx_app_account_manage WHERE id = #{id,jdbcType=BIGINT}
+  </delete>
+</mapper>

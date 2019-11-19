@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RedRecordMoneyInfoMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="red_packet_info_id" jdbcType="BIGINT" property="redPacketInfoId" />
+    <result column="red_packet_info_user_id" jdbcType="VARCHAR" property="redPacketInfoUserId" />
+    <result column="red_packet_info_from" jdbcType="VARCHAR" property="redPacketInfoFrom" />
+    <result column="red_packet_info_add_or_minus" jdbcType="VARCHAR" property="redPacketInfoAddOrMinus" />
+    <result column="red_packet_info_money" jdbcType="DECIMAL" property="redPacketInfoMoney" />
+    <result column="red_packet_info_date" jdbcType="TIMESTAMP" property="redPacketInfoDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    red_packet_info_id, red_packet_info_user_id, red_packet_info_from, red_packet_info_add_or_minus, 
+    red_packet_info_money, red_packet_info_date
+  </sql>
+
+  <!-- 查询用户红包明细 -->
+  <select id="queryRedPacketMoneyInfoList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zx_app_red_packet_money_info
+    where red_packet_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+    ORDER BY red_packet_info_date DESC
+  </select>
+  <select id="queryRedPacketMoneyInfoCount" parameterType="java.util.Map" resultType="int">
+    select
+        COUNT(1)
+    from zx_app_red_packet_money_info
+    where red_packet_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from zx_app_red_packet_money_info
+    where red_packet_info_id = #{redPacketInfoId,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="saveRedRecordMoneyInfo" parameterType="java.util.Map">
+    insert into zx_app_red_packet_money_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="redPacketInfoId != null">
+        red_packet_info_id,
+      </if>
+      <if test="redPacketInfoUserId != null">
+        red_packet_info_user_id,
+      </if>
+      <if test="redPacketInfoFrom != null">
+        red_packet_info_from,
+      </if>
+      <if test="redPacketInfoAddOrMinus != null">
+        red_packet_info_add_or_minus,
+      </if>
+      <if test="redPacketInfoMoney != null">
+        red_packet_info_money,
+      </if>
+        red_packet_info_date,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="redPacketInfoId != null">
+        #{redPacketInfoId,jdbcType=BIGINT},
+      </if>
+      <if test="redPacketInfoUserId != null">
+        #{redPacketInfoUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketInfoFrom != null">
+        #{redPacketInfoFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketInfoAddOrMinus != null">
+        #{redPacketInfoAddOrMinus,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketInfoMoney != null">
+        #{redPacketInfoMoney,jdbcType=DECIMAL},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
+    update zx_app_red_packet_money_info
+    <set>
+      <if test="redPacketInfoUserId != null">
+        red_packet_info_user_id = #{redPacketInfoUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketInfoFrom != null">
+        red_packet_info_from = #{redPacketInfoFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketInfoAddOrMinus != null">
+        red_packet_info_add_or_minus = #{redPacketInfoAddOrMinus,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketInfoMoney != null">
+        red_packet_info_money = #{redPacketInfoMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketInfoDate != null">
+        red_packet_info_date = #{redPacketInfoDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where red_packet_info_id = #{redPacketInfoId,jdbcType=BIGINT}
+  </update>
+
+</mapper>

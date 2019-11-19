@@ -1,0 +1,1007 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- @author wangteng  公告sql-->
+<mapper namespace="noticeMapper">
+    <!--根据页面查询条件查询符合条件公告分类信息非超级管理员-->
+    <select id="queryNoticeMessageInfoList" resultType="map">
+      SELECT
+        rn.id AS id,
+        rn.code AS code,
+        rn.name AS name,
+        rnt.id AS noticeTypeId,
+        rnt.name AS noticeTypeName,
+        rn.status AS statusId,
+        rccv.cmn_cd_val_nm AS status,
+        rn.instancy_level_id AS instancyLevelId,
+        rn.instancy_level_name AS instancyLevelName,
+        rn.publish_id AS publishId,
+        rn.publish_name AS publishName,
+        (CASE rn.send_total
+        when -9999 then (select count(1) from t_u_admin where valid_sts_cd=1)
+        ELSE
+        rn.send_total
+        END
+        )  AS sendTotal,
+        rn.publish_department AS publishDepartmentId,
+        ro.organiza_name AS publishDepartment,
+        IFNULL((select count(id) from r_notice_read where rn.id  = notice_id GROUP BY notice_id),0) as readTotal
+      FROM
+          r_notice rn
+      LEFT JOIN
+          r_notice_type rnt
+      ON
+          rn.notice_type_id=rnt.id
+      LEFT JOIN
+          r_organiza ro
+      ON
+          ro.organiza_id = rn.publish_department
+      LEFT JOIN
+          r_cmn_cd_val rccv
+      ON
+          rccv.cmn_cd_val = rn.status AND rccv.cmn_cd='1002'
+         <where>
+             rn.publish_id = #{userId}
+             <if test="code!=null and code!=''">
+                 AND rn.code LIKE  concat('%',#{code},'%')
+             </if>
+             <if test="beginTime!=null and beginTime!=''">
+                 AND rn.crt_time>=#{beginTime}
+             </if>
+             <if test="endTime!=null and endTime!=''">
+                 AND rn.crt_time&lt;=#{endTime}
+             </if>
+             <if test="name!=null and name!=''">
+                 AND rn.name like concat('%',#{name},'%')
+             </if>
+             <if test="status!=null and status!=''">
+                 AND rn.status=#{status}
+             </if>
+         </where>
+      ORDER BY
+          rn.publish_time
+      DESC
+        <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+            LIMIT ${start},${limit}
+        </if>
+    </select>
+    <!--根据页面查询条件查询页面符合条件数量是超级管理员-->
+    <select id="queryIsRootNoticeMessageInfoTotal" resultType="int">
+        SELECT
+          COUNT(1)
+        FROM
+          r_notice
+        <where>
+            <if test="code!=null and code!=''">
+                AND code LIKE  concat('%',#{code},'%')
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                AND crt_time>=#{beginTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                AND crt_time&lt;=#{endTime}
+            </if>
+            <if test="name!=null and name!=''">
+                AND name like concat('%',#{name},'%')
+            </if>
+            <if test="status!=null and status!=''">
+                AND status=#{status}
+            </if>
+        </where>
+    </select>
+    <!--根据页面查询条件查询符合条件公告分类信息是超级管理员-->
+    <select id="queryIsRootNoticeMessageInfoList" resultType="map">
+      SELECT
+        rn.id AS id,
+        rn.code AS code,
+        rn.name AS name,
+        rnt.id AS noticeTypeId,
+        rnt.name AS noticeTypeName,
+        rn.status AS statusId,
+        rccv.cmn_cd_val_nm AS status,
+        rn.instancy_level_id AS instancyLevelId,
+        rn.instancy_level_name AS instancyLevelName,
+        rn.publish_id AS publishId,
+        rn.publish_name AS publishName,
+        (CASE rn.send_total
+        when -9999 then (select count(1) from t_u_admin where valid_sts_cd=1)
+        ELSE
+        rn.send_total
+        END
+        )  AS sendTotal,
+        rn.publish_department AS publishDepartmentId,
+        ro.organiza_name AS publishDepartment,
+        IFNULL((select count(id) from r_notice_read where rn.id  = notice_id GROUP BY notice_id),0) as readTotal
+      FROM
+        r_notice rn
+      LEFT JOIN
+        r_notice_type rnt
+      ON
+        rn.notice_type_id=rnt.id
+      LEFT JOIN
+        r_organiza ro
+      ON
+        ro.organiza_id = rn.publish_department
+      LEFT JOIN
+        r_cmn_cd_val rccv
+      ON
+        rccv.cmn_cd_val = rn.status AND rccv.cmn_cd='1002'
+        <where>
+            <if test="code!=null and code!=''">
+                AND rn.code LIKE  concat('%',#{code},'%')
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                AND rn.crt_time>=#{beginTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                AND rn.crt_time&lt;=#{endTime}
+            </if>
+            <if test="name!=null and name!=''">
+                AND rn.name like concat('%',#{name},'%')
+            </if>
+            <if test="status!=null and status!=''">
+                AND rn.status=#{status}
+            </if>
+        </where>
+      ORDER BY
+          rn.publish_time desc
+        <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+            LIMIT ${start},${limit}
+        </if>
+    </select>
+    <!--根据页面查询条件查询页面符合条件数量非超级管理员-->
+    <select id="queryNoticeMessageInfoTotal" resultType="int">
+        SELECT
+          COUNT(1)
+        FROM
+          r_notice
+        <where>
+            publish_id = #{userId}
+            <if test="code!=null and code!=''">
+                AND code LIKE  concat('%',#{code},'%')
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                AND crt_time>=#{beginTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                AND crt_time&lt;=#{endTime}
+            </if>
+            <if test="name!=null and name!=''">
+                AND name like concat('%',#{name},'%')
+            </if>
+            <if test="status!=null and status!=''">
+                AND status=#{status}
+            </if>
+        </where>
+    </select>
+    <!--查询单条公告分类详细信息-->
+    <select id="queryNoticeDetailMessageInfo" resultType="map">
+        SELECT
+          rn.id AS id,
+          rn.code AS code,
+          rn.name AS name,
+          rnt.id AS noticeTypeId,
+          rnt.name AS noticeTypeName,
+          rn.status AS status,
+          rn.instancy_level_id AS instancyLevelId,
+          rn.instancy_level_name AS instancyLevelName,
+          rn.publish_id AS publishId,
+          rn.publish_name AS publishName,
+          rn.publish_time AS publishTime,
+          rn.send_total AS sendTotal,
+          rn.content AS  content,
+          rn.publish_department AS publishDepartment,
+          ro.organiza_name as publishDepartmentName
+        FROM
+          r_notice rn
+        LEFT JOIN
+          r_notice_type rnt
+        ON
+          rn.notice_type_id=rnt.id
+        LEFT JOIN
+          r_organiza ro
+        ON
+          rn.publish_department = ro.organiza_id
+        WHERE
+          rn.id=#{id}
+    </select>
+
+    <!--插入公告分类信息-->
+    <insert id="insertNoticeMessageInfo">
+        INSERT INTO
+          r_notice
+        (
+          id,
+          code,
+          name,
+          content,
+          notice_type_id,
+          notice_type_name,
+          status,
+          instancy_level_id,
+          instancy_level_name,
+          publish_id,
+          publish_name,
+          send_total,
+          publish_department,
+          crt_id,
+          crt_name,
+          crt_time,
+          modf_id,
+          modf_name,
+          modf_time,
+          publish_time
+        )
+        VALUES
+        (
+          #{id},
+          #{code},
+          #{notice.name},
+          #{notice.content},
+          #{notice.noticeTypeId},
+          #{notice.noticeTypeName},
+          #{notice.status},
+          #{notice.instancyLevelId},
+          #{notice.instancyLevelName},
+          #{notice.publishId},
+          #{notice.publishName},
+          #{notice.sendTotal},
+          #{publishDepartment},
+          #{notice.crtId},
+          #{notice.crtName},
+          #{notice.crtTime},
+          #{notice.modfId},
+          #{notice.modfName},
+          #{notice.modfTime},
+          #{notice.publishTime}
+        )
+
+    </insert>
+
+    <!--修改公告分类信息-->
+    <update id="updateNoticeMessageInfo">
+        UPDATE
+          r_notice
+         SET
+          name=#{notice.name},
+          content=#{notice.content},
+          notice_type_id=#{notice.noticeTypeId},
+          notice_type_name=#{notice.noticeTypeName},
+          status=#{notice.status},
+          send_total=#{notice.sendTotal},
+          instancy_level_id=#{notice.instancyLevelId},
+          instancy_level_name=#{notice.instancyLevelName},
+          modf_time=#{notice.modfTime},
+          publish_time=#{notice.publishTime}
+        WHERE
+          id=#{notice.id}
+    </update>
+
+    <!--删除公告分类信息-->
+    <delete id="deleteNoticeMessageInfo">
+        DELETE FROM
+          r_notice
+        WHERE
+          id=#{id}
+    </delete>
+
+    <!--更新发布状态与时间-->
+    <update id="updateNoticeStatus">
+        UPDATE
+          r_notice
+        SET
+          status = #{status},
+          publish_time=#{publishTime},
+          modf_time=#{modfTime}
+        WHERE
+          id=#{id}
+    </update>
+
+    <!--加载公告状态下拉列表-->
+    <select id="queryNoticeStatusMessageInfo" resultType="map">
+        SELECT
+			cmn_cd AS cmnCd,
+			cmn_cd_val AS cmnCdVal,
+			cmn_cd_val_nm AS cmnCdNm,
+			cmn_cd_val_desc AS cmnDesc
+			FROM r_cmn_cd_val
+        WHERE
+            status = '1'
+        AND
+            cmn_cd = '1002'
+    </select>
+    <!--加载公告紧急程度下拉列表-->
+    <select id="queryInstancyLevelMessageInfo" resultType="map">
+      SELECT
+        cmn_cd AS cmnCd,
+        cmn_cd_val AS cmnCdVal,
+        cmn_cd_val_nm AS cmnCdNm,
+        cmn_cd_val_desc AS cmnDesc
+      FROM
+        r_cmn_cd_val
+      WHERE
+        status = '1'
+      AND
+        cmn_cd = '1003'
+    </select>
+    <!--查询出所有的用户数量-->
+    <select id="queryAllPeople" resultType="int">
+        SELECT
+          count(1)
+         FROM
+          t_u_admin
+         WHERE
+          valid_sts_cd = 1
+    </select>
+    <!--查询我的公告数量包括已阅读和未阅读是超管-->
+    <select id="queryAllIsRootNoticeTotal" resultType="int">
+        SELECT
+          count(1)
+        FROM
+          r_notice rn
+        <where>
+            rn.status = '1003'
+            <if test="code!=null and code!=''">
+                and rn.code like concat('%',#{code},'%')
+            </if>
+            <if test="name!=null and name!=''">
+                and rn.name like concat('%',#{name},'%')
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                and rn.publish_time>=#{beginTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and rn.publish_time &lt;=#{endTime}
+            </if>
+        </where>
+    </select>
+    <!--查询我的公告数量包括已阅读和未阅读非超管-->
+    <select id="queryAllNoticeTotal" resultType="int">
+        SELECT
+          count(1)
+        FROM
+          r_notice_permission rnp
+        LEFT JOIN
+           r_notice rn
+        ON
+          rnp.notice_id = rn.id
+         <where>
+             rnp.crt_id in(#{userId},-9999) AND rnp.status = 1
+             <if test="code!=null and code!=''">
+                 and rn.code like concat('%',#{code},'%')
+             </if>
+             <if test="name!=null and name!=''">
+                 and rn.name like concat('%',#{name},'%')
+             </if>
+             <if test="beginTime!=null and beginTime!=''">
+                and rn.publish_time>=#{beginTime}
+             </if>
+             <if test="endTime!=null and endTime!=''">
+                and rn.publish_time &lt;=#{endTime}
+             </if>
+         </where>
+    </select>
+    <!--查询我的公告包括已读与未读是超管-->
+    <select id="queryAllIsRootNoticeList" resultType="map">
+      SELECT
+        rn.id as id,
+        rn.code AS code,
+        rn.name AS name,
+        rn.notice_type_name as noticeTypeName,
+        rn.instancy_level_name as instancyLevelName,
+        rn.publish_name as publishName,
+        rn.publish_time as publishTime,
+        rn.publish_department as publishDepartmentId,
+        ro.organiza_name as publishDepartment,
+        '' as readTime,
+        0 as isRead
+      FROM
+        r_notice rn
+      LEFT JOIN
+        r_organiza ro
+      ON
+        ro.organiza_id = rn.publish_department
+        <where>
+            rn.status = '1003'
+            AND
+            rn.id NOT IN(select notice_id from r_notice_read where crt_id = #{userId})
+            <if test="code!=null and code!=''">
+                and rn.code like concat('%',#{code},'%')
+            </if>
+            <if test="name!=null and name!=''">
+                and rn.name like concat('%',#{name},'%')
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                and rn.publish_time>=#{beginTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and rn.publish_time &lt;=#{endTime}
+            </if>
+        </where>
+      UNION
+      SELECT
+        rn.id as id,
+        rn.code AS code,
+        rn.name AS name,
+        rn.notice_type_name as noticeTypeName,
+        rn.instancy_level_name as instancyLevelName,
+        rn.publish_name as publishName,
+        rn.publish_time as publishTime,
+        rn.publish_department as publishDepartmentId,
+        ro.organiza_name as publishDepartment,
+        rnr.read_time as readTime,
+        rnr.status as isRead
+      FROM
+        r_notice rn
+      LEFT JOIN
+        r_notice_read rnr
+      ON
+        rnr.notice_id  = rn.id
+      LEFT JOIN
+        r_organiza ro
+      ON
+        ro.organiza_id = rn.publish_department
+        <where>
+            rn.status = '1003' and rnr.crt_id =#{userId}
+            <if test="code!=null and code!=''">
+                and rn.code like concat('%',#{code},'%')
+            </if>
+            <if test="name!=null and name!=''">
+                and rn.name like concat('%',#{name},'%')
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                and rn.publish_time>=#{beginTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and rn.publish_time &lt;=#{endTime}
+            </if>
+        </where>
+      ORDER BY
+        publishTime
+      DESC
+        <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+            LIMIT ${start},${limit}
+        </if>
+    </select>
+    <!--查询我的公告包括已读与未读非超管-->
+    <select id="queryAllNoticeList" resultType="map">
+      SELECT
+        rn.id as id,
+        rn.code AS code,
+        rn.name AS name,
+        rn.publish_time AS publishTime,
+        rn.notice_type_name as noticeTypeName,
+        rn.instancy_level_name as instancyLevelName,
+        rn.publish_name as publishName,
+        rn.publish_department as publishDepartmentId,
+        ro.organiza_name as publishDepartment,
+        '' as readTime,
+        0 as isRead
+      FROM
+        r_notice_permission rnp
+      LEFT JOIN
+        r_notice rn
+      ON
+        rnp.notice_id = rn.id
+      LEFT JOIN
+        r_notice_read rnr
+      ON
+        rn.id = rnr.notice_id
+      LEFT JOIN
+        r_organiza ro
+      ON
+        ro.organiza_id = rn.publish_department
+        <where>
+            rnp.crt_id in(#{userId},-9999) AND rnp.status = 1
+            AND
+            rnp.notice_id NOT IN (select notice_id from r_notice_read where crt_id=#{userId})
+            <if test="code!=null and code!=''">
+                and rn.code like concat('%',#{code},'%')
+            </if>
+            <if test="name!=null and name!=''">
+                and rn.name like concat('%',#{name},'%')
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                and rn.publish_time>=#{beginTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and rn.publish_time &lt;=#{endTime}
+            </if>
+        </where>
+      UNION
+      SELECT
+        rn.id as id,
+        rn.code AS code,
+        rn.name AS name,
+        rn.publish_time AS publishTime,
+        rn.notice_type_name as noticeTypeName,
+        rn.instancy_level_name as instancyLevelName,
+        rn.publish_name as publishName,
+        rn.publish_department as publishDepartmentId,
+        ro.organiza_name as publishDepartment,
+        rnr.read_time as readTime,
+        rnr.status as isRead
+      FROM
+        r_notice rn
+      LEFT JOIN
+        r_notice_read rnr
+      ON
+        rnr.notice_id  = rn.id
+      LEFT JOIN
+        r_organiza ro
+      ON
+        ro.organiza_id = rn.publish_department
+        <where>
+            rnr.crt_id = #{userId} and rn.status = '1003'
+            <if test="code!=null and code!=''">
+                and rn.code like concat('%',#{code},'%')
+            </if>
+            <if test="name!=null and name!=''">
+                and rn.name like concat('%',#{name},'%')
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                and rn.publish_time>=#{beginTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and rn.publish_time &lt;=#{endTime}
+            </if>
+        </where>
+      ORDER BY
+        publishTime
+      DESC
+        <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+            LIMIT ${start},${limit}
+        </if>
+    </select>
+    <!--查看已阅读我的公告数量是超管-->
+    <select id="readIsRootNoticeTotal" resultType="int">
+        SELECT
+          count(1)
+        FROM
+          r_notice rn
+        LEFT JOIN
+          r_notice_read rnr
+        ON
+        rnr.notice_id  = rn.id
+        <where>
+            rn.status = '1003' and rnr.crt_id = #{userId}
+            <if test="code!=null and code!=''">
+                and rn.code like concat('%',#{code},'%')
+            </if>
+            <if test="name!=null and name!=''">
+                and rn.name like concat('%',#{name},'%')
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                and rn.publish_time>=#{beginTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and rn.publish_time &lt;=#{endTime}
+            </if>
+        </where>
+    </select>
+    <!--查看已阅读我的公告数量非超管-->
+    <select id="readNoticeTotal" resultType="int">
+        SELECT
+          count(1)
+        FROM
+          r_notice rn
+        LEFT JOIN
+          r_notice_read rnr
+        ON
+          rnr.notice_id  = rn.id
+        <where>
+                rnr.crt_id = #{userId} and rn.status = '1003'
+                <if test="code!=null and code!=''">
+                    and rn.code like concat('%',#{code},'%')
+                </if>
+                <if test="name!=null and name!=''">
+                    and rn.name like concat('%',#{name},'%')
+                </if>
+                <if test="beginTime!=null and beginTime!=''">
+                    and rn.publish_time>=#{beginTime}
+                </if>
+                <if test="endTime!=null and endTime!=''">
+                    and rn.publish_time &lt;=#{endTime}
+                </if>
+            </where>
+    </select>
+    <!--查看我的公告已阅读列表是超管-->
+    <select id="readIsRootNoticeList" resultType="map">
+      SELECT
+        rn.id as id,
+        rn.code AS code,
+        rn.name AS name,
+        rn.notice_type_name as noticeTypeName,
+        rn.instancy_level_name as instancyLevelName,
+        rn.publish_name as publishName,
+        rn.publish_time as publishTime,
+        rn.publish_department as publishDepartmentId,
+        ro.organiza_name as publishDepartment,
+        rnr.read_time as readTime,
+        rnr.status as isRead
+      FROM
+        r_notice rn
+      LEFT JOIN
+        r_notice_read rnr
+      ON
+        rnr.notice_id  = rn.id
+      LEFT JOIN
+        r_organiza ro
+      ON
+        ro.organiza_id = rn.publish_department
+        <where>
+            rn.status = '1003' and rnr.crt_id =#{userId}
+            <if test="code!=null and code!=''">
+                and rn.code like concat('%',#{code},'%')
+            </if>
+            <if test="name!=null and name!=''">
+                and rn.name like concat('%',#{name},'%')
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                and rn.publish_time>=#{beginTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and rn.publish_time &lt;=#{endTime}
+            </if>
+        </where>
+      ORDER BY
+          rn.publish_time
+      DESC
+        <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+            LIMIT ${start},${limit}
+        </if>
+    </select>
+    <!--查看我的公告已阅读列表非超管-->
+    <select id="readNoticeList" resultType="map">
+        SELECT
+          rn.id as id,
+          rn.code AS code,
+          rn.name AS name,
+          rn.publish_time as publishTime,
+          rn.notice_type_name as noticeTypeName,
+          rn.instancy_level_name as instancyLevelName,
+          rn.publish_name as publishName,
+          rn.publish_department as publishDepartmentId,
+          ro.organiza_name as publishDepartment,
+          rnr.read_time as readTime,
+          rnr.status as isRead
+        FROM
+          r_notice rn
+        LEFT JOIN
+          r_notice_read rnr
+        ON
+          rnr.notice_id  = rn.id
+        LEFT JOIN
+          r_organiza ro
+        ON
+          ro.organiza_id = rn.publish_department
+        <where>
+                rnr.crt_id = #{userId} and rn.status = '1003'
+                <if test="code!=null and code!=''">
+                    and rn.code like concat('%',#{code},'%')
+                </if>
+                <if test="name!=null and name!=''">
+                    and rn.name like concat('%',#{name},'%')
+                </if>
+                <if test="beginTime!=null and beginTime!=''">
+                    and rn.publish_time>=#{beginTime}
+                </if>
+                <if test="endTime!=null and endTime!=''">
+                    and rn.publish_time &lt;=#{endTime}
+                </if>
+        </where>
+        ORDER BY
+          rn.publish_time
+        DESC
+        <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+            LIMIT ${start},${limit}
+        </if>
+    </select>
+    <!--我的公告查询未阅读信息数量是超级管理员-->
+    <select id="unReadIsRootNoticeTotal" resultType="int">
+        SELECT
+          count(1)
+        FROM
+          r_notice rn
+        <where>
+              rn.status = '1003'
+            AND
+              rn.id NOT IN(select notice_id from r_notice_read where crt_id =#{userId})
+            <if test="code!=null and code!=''">
+                and rn.code like concat('%',#{code},'%')
+            </if>
+            <if test="name!=null and name!=''">
+                and rn.name like concat('%',#{name},'%')
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                and rn.publish_time>=#{beginTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and rn.publish_time &lt;=#{endTime}
+            </if>
+        </where>
+    </select>
+    <!--我的公告查询未阅读信息数量非超级管理员-->
+    <select id="unReadNoticeTotal" resultType="int">
+        SELECT
+          count(1)
+        FROM
+            r_notice_permission rnp
+        LEFT JOIN
+          r_notice rn
+        ON
+          rnp.notice_id = rn.id
+        <where>
+            rnp.crt_id in(#{userId},-9999) AND rnp.status = 1
+            AND
+            rnp.notice_id NOT IN (select notice_id from r_notice_read where crt_id=#{userId})
+            <if test="code!=null and code!=''">
+                and rn.code like concat('%',#{code},'%')
+            </if>
+            <if test="name!=null and name!=''">
+                and rn.name like concat('%',#{name},'%')
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                and rn.publish_time>=#{beginTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and rn.publish_time &lt;=#{endTime}
+            </if>
+        </where>
+    </select>
+    <!--查询未阅读信息列表是超管-->
+    <select id="unReadIsRootNoticeList" resultType="map">
+      SELECT
+        rn.id as id,
+        rn.code AS code,
+        rn.name AS name,
+        rn.notice_type_name as noticeTypeName,
+        rn.instancy_level_name as instancyLevelName,
+        rn.publish_name as publishName,
+        rn.publish_department as publishDepartmentId,
+        rn.publish_time as publishTime,
+        ro.organiza_name as publishDepartment,
+        '' as readTime,
+        0 as isRead
+      FROM
+        r_notice rn
+      LEFT JOIN
+        r_organiza ro
+      ON
+        ro.organiza_id = rn.publish_department
+        <where>
+              rn.status = '1003'
+            AND
+            rn.id NOT IN(select notice_id from r_notice_read where crt_id = #{userId})
+            <if test="code!=null and code!=''">
+                and rn.code like concat('%',#{code},'%')
+            </if>
+            <if test="name!=null and name!=''">
+                and rn.name like concat('%',#{name},'%')
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                and rn.publish_time>=#{beginTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and rn.publish_time &lt;=#{endTime}
+            </if>
+        </where>
+        ORDER BY
+          rn.publish_time
+        DESC
+        <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+            LIMIT ${start},${limit}
+        </if>
+    </select>
+    <!--查询未阅读信息列表非超管-->
+    <select id="unReadNoticeList" resultType="map">
+        SELECT
+          rn.id as id,
+          rn.code AS code,
+          rn.name AS name,
+          rn.publish_time as publishTime,
+          rn.notice_type_name as noticeTypeName,
+          rn.instancy_level_name as instancyLevelName,
+          rn.publish_name as publishName,
+          rn.publish_department as publishDepartmentId,
+          ro.organiza_name as publishDepartment,
+          '' as readTime,
+          0 as isRead
+        FROM
+          r_notice_permission rnp
+        LEFT JOIN
+          r_notice rn
+        ON
+          rnp.notice_id = rn.id
+        LEFT JOIN
+          r_organiza ro
+        ON
+          ro.organiza_id = rn.publish_department
+        <where>
+          rnp.crt_id in(#{userId},-9999) AND rnp.status = 1
+          AND
+          rnp.notice_id NOT IN (select notice_id from r_notice_read where crt_id=#{userId})
+            <if test="code!=null and code!=''">
+                and rn.code like concat('%',#{code},'%')
+            </if>
+            <if test="name!=null and name!=''">
+                and rn.name like concat('%',#{name},'%')
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                and rn.publish_time>=#{beginTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and rn.publish_time &lt;=#{endTime}
+            </if>
+        </where>
+        ORDER BY
+          rn.publish_time
+        DESC
+        <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+            LIMIT ${start},${limit}
+        </if>
+    </select>
+
+    <!--查询一条公告已读的总数量-->
+    <select id="readOneNoticeTotal" resultType="int">
+        SELECT
+          count(1)
+         FROM
+          r_notice_read rnr
+         LEFT JOIN
+          r_notice rn
+        ON
+          rnr.notice_id = rn.id
+        WHERE
+          rnr.notice_id = #{id}
+    </select>
+
+    <!--查询一条公告已读的列表-->
+    <select id="readOneNoticeList" resultType="map">
+        SELECT
+          rn.id as id,
+          rnr.crt_id AS userId,
+          tua.user_name as userName,
+          rnr.read_time as readTime,
+          rnr.status as remark,
+          tua.user_department_id as departmentId,
+          ro.organiza_name as department
+        FROM
+          r_notice_read rnr
+         LEFT JOIN
+          r_notice rn
+        ON
+          rnr.notice_id = rn.id
+        LEFT  JOIN
+          t_u_admin tua
+        ON
+          rnr.crt_id = tua.id
+        LEFT JOIN
+          r_organiza ro
+        ON
+          rn.publish_department = ro.organiza_id
+        WHERE
+          rnr.notice_id = #{id}
+        ORDER BY
+          rnr.read_time
+        <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+            LIMIT ${start},${limit}
+        </if>
+    </select>
+
+    <!--查询一条公告未读的总数量-->
+    <select id="unReadOneNoticeTotal" resultType="int">
+        SELECT
+          count(1)
+        FROM
+          t_u_admin tua
+        WHERE
+          tua.valid_sts_cd = 1
+        AND
+          tua.id not in (SELECT  crt_id FROM r_notice_read where notice_id=#{id})
+    </select>
+
+    <!--查询一条公告未读的列表-->
+    <select id="unReadOneNoticeList" resultType="map">
+      SELECT
+	    tua.id as id,
+	    tua.user_name as userName,
+	    ro.organiza_name as department,
+	    '' as readTome,
+	    0 as remark
+      FROM
+	    t_u_admin tua
+      LEFT JOIN
+        r_organiza ro
+      ON
+       tua.user_department_id = ro.organiza_id
+     WHERE
+        tua.valid_sts_cd = 1
+      AND
+          tua.id not in (SELECT  crt_id FROM r_notice_read where notice_id=#{id})
+        <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+            LIMIT ${start},${limit}
+        </if>
+    </select>
+
+    <!--查询一条公告阅读的总数量-->
+    <select id="AllUserMeaasgeTotal" resultType="int">
+        SELECT
+          count(1)
+        FROM
+          t_u_admin
+        WHERE
+           valid_sts_cd = 1
+    </select>
+
+    <!--查询一条公告阅读详情列表-->
+    <select id="AllUserMeaasgeList" resultType="map">
+    SELECT
+      tua.id as userId,
+	  tua.user_name AS userName,
+	  tua.user_department_id AS departmentId,
+      ro.organiza_name AS department,
+	  '' as readTime,
+	  0 as remark
+    FROM
+	  t_u_admin tua
+	LEFT JOIN
+      r_organiza ro
+    ON
+      ro.organiza_id = tua.user_department_id
+    WHERE
+      tua.valid_sts_cd = 1
+        <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+            LIMIT ${start},${limit}
+        </if>
+    </select>
+
+    <!--查询该公告的用户权限信息用作权限树回显-->
+    <select id="getNoticePermissionTree" resultType="map">
+    SELECT
+	  r.organiza_id as id,
+	  r.organiza_name as name,
+	  (CASE r.parent_organiza_id WHEN '' THEN 0 ELSE r.parent_organiza_id END) as parentId,
+	  (CASE WHEN r.organiza_id IN
+		(
+		  SELECT
+			tua.user_department_id as parentId
+		  FROM
+			r_notice_permission rnp
+		  LEFT JOIN
+			t_u_admin tua
+		  ON
+			rnp.crt_id = tua.id
+		  WHERE
+			rnp.notice_id = #{noticeId}
+		)
+		THEN 1 ELSE 0 END) as hasState
+    FROM
+	  r_organiza r
+	WHERE
+	  r.parent_organiza_id = ''
+	OR
+	  r.organiza_id in(select user_department_id from t_u_admin where valid_sts_cd = 1)
+    UNION
+    SELECT
+	  a.id AS id,
+	  a.user_name AS name,
+	  a.user_department_id AS parentId,
+	  (CASE WHEN	a.id IN
+	    (
+	      SELECT
+	        rnp.crt_id as id
+          FROM
+	        r_notice_permission rnp
+          LEFT JOIN
+	        t_u_admin tua
+          ON
+	        rnp.crt_id = tua.id
+          WHERE
+	        rnp.notice_id = #{noticeId})
+          THEN 1 ELSE 0 END) as hasState
+    FROM
+	  t_u_admin a
+    WHERE
+      a.valid_sts_cd = 1
+    </select>
+</mapper>

@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RedPacketMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="red_packet_id" jdbcType="BIGINT" property="redPacketId" />
+    <result column="member_account" jdbcType="VARCHAR" property="memberAccount" />
+    <result column="red_packet_money_count" jdbcType="DECIMAL" property="redPacketMoneyCount" />
+    <result column="red_packet_count" jdbcType="INTEGER" property="redPacketCount" />
+    <result column="red_packet_stock" jdbcType="INTEGER" property="redPacketStock" />
+    <result column="red_packet_unit_amount" jdbcType="DECIMAL" property="redPacketUnitAmount" />
+    <result column="red_packet_info" jdbcType="VARCHAR" property="redPacketInfo" />
+    <result column="red_packet_luck_star" jdbcType="VARCHAR" property="redPacketLuckStar" />
+    <result column="red_packet_start_time" jdbcType="TIMESTAMP" property="redPacketStartTime" />
+    <result column="red_packet_end_time" jdbcType="TIMESTAMP" property="redPacketEndTime" />
+    <result column="red_packet_question" jdbcType="VARCHAR" property="redPacketQuestion" />
+    <result column="red_packet_options" jdbcType="VARCHAR" property="redPacketOptions" />
+    <result column="red_packet_answer" jdbcType="VARCHAR" property="redPacketAnswer" />
+    <result column="red_packet_sex" jdbcType="INTEGER" property="redPacketSex" />
+    <result column="red_packet_age_start" jdbcType="INTEGER" property="redPacketAgeStart" />
+    <result column="red_packet_age_end" jdbcType="INTEGER" property="redPacketAgeEnd" />
+    <result column="red_packet_date" jdbcType="TIMESTAMP" property="redPacketDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    red_packet_id, member_account, red_packet_money_count, red_packet_count, red_packet_stock, 
+    red_packet_unit_amount, red_packet_info, red_packet_luck_star, red_packet_start_time, 
+    red_packet_end_time, red_packet_question, red_packet_options, red_packet_answer, 
+    red_packet_sex, red_packet_age_start, red_packet_age_end, red_packet_date
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zx_app_red_packet
+    where red_packet_id = #{redPacketId,jdbcType=BIGINT}
+  </select>
+  <delete id="delRedPacketInfo" parameterType="java.lang.Long">
+    delete from zx_app_red_packet
+    where red_packet_id = #{redPacketId,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="saveRedPacketInfo" parameterType="java.util.Map">
+    insert into zx_app_red_packet
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="redPacketId != null">
+        red_packet_id,
+      </if>
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+      <if test="redPacketMoneyCount != null">
+        red_packet_money_count,
+      </if>
+      <if test="redPacketCount != null">
+        red_packet_count,
+      </if>
+      <if test="redPacketStock != null">
+        red_packet_stock,
+      </if>
+      <if test="redPacketUnitAmount != null">
+        red_packet_unit_amount,
+      </if>
+      <if test="redPacketInfo != null">
+        red_packet_info,
+      </if>
+      <if test="redPacketLuckStar != null">
+        red_packet_luck_star,
+      </if>
+      <if test="redPacketQuestion != null">
+        red_packet_question,
+      </if>
+      <if test="redPacketOptions != null">
+        red_packet_options,
+      </if>
+      <if test="redPacketAnswer != null">
+        red_packet_answer,
+      </if>
+      <if test="redPacketSex != null">
+        red_packet_sex,
+      </if>
+      <if test="redPacketAgeStart != null">
+        red_packet_age_start,
+      </if>
+      <if test="redPacketAgeEnd != null">
+        red_packet_age_end,
+      </if>
+        red_packet_date,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="redPacketId != null">
+        #{redPacketId,jdbcType=BIGINT},
+      </if>
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketMoneyCount != null">
+        #{redPacketMoneyCount,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketCount != null">
+        #{redPacketCount,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketStock != null">
+        #{redPacketStock,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketUnitAmount != null">
+        #{redPacketUnitAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketInfo != null">
+        #{redPacketInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketLuckStar != null">
+        #{redPacketLuckStar,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketQuestion != null">
+        #{redPacketQuestion,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketOptions != null">
+        #{redPacketOptions,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketAnswer != null">
+        #{redPacketAnswer,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketSex != null">
+        #{redPacketSex,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketAgeStart != null">
+        #{redPacketAgeStart,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketAgeEnd != null">
+        #{redPacketAgeEnd,jdbcType=INTEGER},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
+    update zx_app_red_packet
+    <set>
+      <if test="memberAccount != null">
+        member_account = #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketMoneyCount != null">
+        red_packet_money_count = #{redPacketMoneyCount,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketCount != null">
+        red_packet_count = #{redPacketCount,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketStock != null">
+        red_packet_stock = #{redPacketStock,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketUnitAmount != null">
+        red_packet_unit_amount = #{redPacketUnitAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketInfo != null">
+        red_packet_info = #{redPacketInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketLuckStar != null">
+        red_packet_luck_star = #{redPacketLuckStar,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketStartTime != null">
+        red_packet_start_time = #{redPacketStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="redPacketEndTime != null">
+        red_packet_end_time = #{redPacketEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="redPacketQuestion != null">
+        red_packet_question = #{redPacketQuestion,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketOptions != null">
+        red_packet_options = #{redPacketOptions,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketAnswer != null">
+        red_packet_answer = #{redPacketAnswer,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketSex != null">
+        red_packet_sex = #{redPacketSex,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketAgeStart != null">
+        red_packet_age_start = #{redPacketAgeStart,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketAgeEnd != null">
+        red_packet_age_end = #{redPacketAgeEnd,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketDate != null">
+        red_packet_date = #{redPacketDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where red_packet_id = #{redPacketId,jdbcType=BIGINT}
+  </update>
+
+  <!-- 查询红包信息 -->
+  <select id="queryRedPacketLog" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.red_packet_id AS redPacketId,
+      a.member_account AS redPacketUserId,
+      a.red_packet_money_count AS redPacketMoneyCount,
+      a.red_packet_count AS redPacketCount,
+      a.red_packet_stock AS redPacketStock,
+      a.red_packet_info AS redPacketInfo,
+      a.red_packet_luck_star AS redPacketLuckStar,
+      a.red_packet_start_time AS redPacketStartTime,
+      a.red_packet_end_time AS redPacketEndTime,
+      a.red_packet_question AS redPacketQuestion,
+      a.red_packet_options AS redPacketOptions,
+      a.red_packet_answer AS redPacketAnswer,
+      a.red_packet_sex AS redPacketSex,
+      a.red_packet_age_start AS redPacketAgeStart,
+      a.red_packet_age_end AS redPacketAgeEnd,
+      a.red_packet_date AS redPacketDate,
+      b.head_img_url AS headImgUrl,
+      b.nickname AS nickname,
+      b.member_account AS memberAccount
+  FROM
+      zx_app_red_packet a
+      LEFT JOIN t_member b ON a.member_account = b.member_account
+      WHERE a.red_packet_id = #{redPacketId}
+  </select>
+
+  <!-- 新增抢红包记录 -->
+  <insert id="insertListRedPacketInfo" parameterType="java.util.Map">
+      insert into zx_app_red_packet_info(red_packet_info_id,red_packet_id,red_packet_money,red_packet_luck_star) values(#{redPacketInfoId},#{redPacketId},#{num},#{luckStar})
+  </insert>
+
+  <!-- 更新抢红包信息 -->
+  <update id="updateByExampleSelective" parameterType="java.util.Map">
+    update zx_app_red_packet
+    <set>
+      <if test="redPacketCount != null">
+        red_packet_count = #{redPacketCount,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketStock != null">
+        red_packet_stock = #{redPacketStock,jdbcType=INTEGER},
+      </if>
+      <if test="redPacketUnitAmount != null and redPacketUnitAmount != ''">
+        red_packet_unit_amount = #{redPacketUnitAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="redPacketLuckStar != null and redPacketLuckStar != ''">
+        red_packet_luck_star = #{redPacketLuckStar,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketStartTime != null">
+        red_packet_start_time = #{redPacketStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="redPacketEndTime != null">
+        red_packet_end_time = #{redPacketEndTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where red_packet_id = #{redPacketId,jdbcType=BIGINT}
+  </update>
+
+  <!-- 查询我的发布红包列表 -->
+  <select id="queryMyReleaseRedPacket" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.red_packet_id AS redPacketId,
+      a.member_account AS memberAccount,
+      a.red_packet_money_count AS redPacketMoneyCount,
+      a.red_packet_count AS redPacketCount,
+      a.red_packet_stock AS redPacketStock,
+      DATE_FORMAT(a.red_packet_date,'%m月%d日') AS redPacketDate,
+      (red_packet_count - red_packet_stock) AS robRedPacketCount,
+      '众享红包' AS redPacketType
+  FROM
+      zx_app_red_packet AS a
+  WHERE a.member_account = #{memberAccount}
+  </select>
+</mapper>

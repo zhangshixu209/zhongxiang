@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="user">
+	<resultMap id="userInfo" type="map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+    <result column="modf_user_id" jdbcType="BIGINT" property="modfUserId" />
+    <result column="modf_time" jdbcType="TIMESTAMP" property="modfTime" />
+    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+    <result column="real_name" jdbcType="VARCHAR" property="realName" />
+    <result column="login_name" jdbcType="VARCHAR" property="loginName" />
+    <result column="member_no" jdbcType="VARCHAR" property="memberNo" />
+    <result column="sex" jdbcType="CHAR" property="sex" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+    <result column="head_portrait" jdbcType="VARCHAR" property="headPortrait" />
+    <result column="birthday" jdbcType="DATE" property="birthday" />
+    <result column="id_number" jdbcType="VARCHAR" property="idNumber" />
+    <result column="province_id" jdbcType="INTEGER" property="provinceId" />
+    <result column="city_id" jdbcType="INTEGER" property="cityId" />
+    <result column="county_id" jdbcType="INTEGER" property="countyId" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="acc_state" jdbcType="CHAR" property="accState" />
+    <result column="org_id" jdbcType="BIGINT" property="orgId" />
+    <!-- 会员信息 -->
+    <result column="platform_id" jdbcType="VARCHAR" property="platformId" />
+    <result column="busi_num" jdbcType="VARCHAR" property="jobNum" />
+    <result column="platform_name" jdbcType="VARCHAR" property="platformName" />
+	<result column="erOrgCode" jdbcType="BIGINT" property="orgCode" />
+	<result column="cco_name" jdbcType="VARCHAR" property="orgName" />
+	
+	<result column="pco_id" jdbcType="BIGINT" property="pcoId" />
+	<result column="pco_name" jdbcType="VARCHAR" property="pcoName" />
+	
+  </resultMap>
+  
+  <resultMap id="adminInfo" type="map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+    <result column="modf_user_id" jdbcType="BIGINT" property="modfUserId" />
+    <result column="modf_time" jdbcType="TIMESTAMP" property="modfTime" />
+    <result column="login_id" jdbcType="VARCHAR" property="loginId" />
+    <result column="login_pw" jdbcType="VARCHAR" property="loginPw" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="user_department_id" jdbcType="VARCHAR" property="userDepartmentId" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="sex" jdbcType="CHAR" property="sex" />
+    <result column="valid_sts_cd" jdbcType="CHAR" property="validStsCd" />
+  </resultMap>
+  
+  <!-- 会员及工号信息 -->
+  <resultMap type="map" id="userBusiInfo">
+  	<result column="id" jdbcType="BIGINT" property="id"/>
+  	<result column="member_no" jdbcType="VARCHAR" property="memberNO"/>
+  	<result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+  	<result column="nick_name" jdbcType="VARCHAR" property="nickName"/>
+  	<result column="real_name" jdbcType="VARCHAR" property="realName"/>
+  	<result column="payplace_id" jdbcType="BIGINT" property="payplaceId"/>
+  	<result column="payplace_name" jdbcType="VARCHAR" property="payplaceName"/>
+  	<result column="id_card" jdbcType="VARCHAR" property="idCard"/>
+  	<result column="busi_num" jdbcType="BIGINT" property="busiNum"/>
+  	<result column="effect_time" jdbcType="TIMESTAMP" property="effectTime"/>
+  	<result column="invalid_time" jdbcType="TIMESTAMP" property="invalidTime"/>
+  	<result column="platform_id" jdbcType="BIGINT" property="platformId"/>
+  </resultMap>
+  
+	<!-- 根据手机号查询帐号信息-->
+	<select id="queryUserAcctInfoByMobile" parameterType="map" resultType="map">
+		SELECT
+			ua.login_id as loginId,
+			ua.login_pw as loginPw,
+			ua.user_name as userName,
+			ua.user_mobile as userMobile,
+			ua.user_department_id as userDepartmentId,
+			ua.user_department_name as userDepartmentName,
+			ua.sex as sex
+        FROM
+			t_u_admin ua
+       WHERE valid_sts_cd ='1' and 
+			ua.login_id = #{mobile,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 根据主键ID查询帐号信息-->
+	<select id="queryUserAcctInfoById" parameterType="map" resultMap="userInfo">
+		select
+			id,nick_name,real_name,login_name,mobile,password,org_id,acc_state,member_no
+		from
+			t_u_account
+		where
+			id = #{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 新增帐号，注册插入 -->
+	<insert id="insertUserAccount" parameterType="map">
+		insert into 
+			t_u_account (id,crt_user_id,crt_time,modf_user_id,modf_time,mobile,`password`,acc_state,register_time)
+		values 
+			(#{id,jdbcType=BIGINT},#{crtUserId,jdbcType=BIGINT},#{crtTime,jdbcType=TIMESTAMP},
+			#{crtUserId,jdbcType=BIGINT},#{crtTime,jdbcType=TIMESTAMP},
+			#{mobile,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},#{accState,jdbcType=CHAR},
+			#{registerTime})
+	</insert>
+	
+	<!-- 修改密码 -->
+	<update id="updateUserAccountPwd" parameterType="map">
+		update t_u_account set password = #{password,jdbcType=VARCHAR} where mobile=#{mobile,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 根据手机号获取管理用户信息 -->
+	<select id="queryAdminUserInfoByMobile" parameterType="map" resultMap="adminInfo">
+		select id,login_id,login_pw,valid_sts_cd,user_name,user_department_id from t_u_admin where login_id = #{mobile,jdbcType=VARCHAR}
+	</select>
+	
+	
+	
+	<!-- 更新用户登录时间 -->
+	<update id="updateLoginTime" parameterType="map">
+		update t_u_account set last_login_time = #{loginTime} where mobile = #{mobile}
+	</update>
+	
+	<!-- 查询所有帐号信息 用于对导入生产数据比对用户-->
+	<select id="queryAllUserAcctInfo" parameterType="map" resultMap="userInfo">
+		select
+			platform_id,busi_num,member_no,platform_name
+		from
+			t_u_account
+		WHERE member_state>1
+	</select>
+   	
+</mapper>

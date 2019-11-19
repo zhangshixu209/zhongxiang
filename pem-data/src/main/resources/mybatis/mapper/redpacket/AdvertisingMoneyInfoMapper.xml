@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdvertisingMoneyInfoMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="advertising_info_id" jdbcType="BIGINT" property="advertisingInfoId" />
+    <result column="advertising_info_user_id" jdbcType="VARCHAR" property="advertisingInfoUserId" />
+    <result column="advertising_info_from" jdbcType="VARCHAR" property="advertisingInfoFrom" />
+    <result column="advertising_info_add_or_minus" jdbcType="VARCHAR" property="advertisingInfoAddOrMinus" />
+    <result column="advertising_info_money" jdbcType="DECIMAL" property="advertisingInfoMoney" />
+    <result column="advertising_info_date" jdbcType="TIMESTAMP" property="advertisingInfoDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    advertising_info_id, advertising_info_user_id, advertising_info_from, advertising_info_add_or_minus, 
+    advertising_info_money, advertising_info_date
+  </sql>
+  <!-- 查询广告费明细 -->
+  <select id="queryAdvertisingMoneyInfoList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zx_app_advertising_money_info
+    where advertising_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+    ORDER BY advertising_info_date DESC
+  </select>
+  <select id="queryAdvertisingMoneyInfoCount" parameterType="java.util.Map" resultType="int">
+    select
+        COUNT(1)
+    from zx_app_advertising_money_info
+    where advertising_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from zx_app_advertising_money_info
+    where advertising_info_id = #{advertisingInfoId,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="saveAdvertisingMoneyInfo" parameterType="java.util.Map">
+    insert into zx_app_advertising_money_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="advertisingInfoId != null">
+        advertising_info_id,
+      </if>
+      <if test="advertisingInfoUserId != null">
+        advertising_info_user_id,
+      </if>
+      <if test="advertisingInfoFrom != null">
+        advertising_info_from,
+      </if>
+      <if test="advertisingInfoAddOrMinus != null">
+        advertising_info_add_or_minus,
+      </if>
+      <if test="advertisingInfoMoney != null">
+        advertising_info_money,
+      </if>
+        advertising_info_date,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="advertisingInfoId != null">
+        #{advertisingInfoId,jdbcType=BIGINT},
+      </if>
+      <if test="advertisingInfoUserId != null">
+        #{advertisingInfoUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="advertisingInfoFrom != null">
+        #{advertisingInfoFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="advertisingInfoAddOrMinus != null">
+        #{advertisingInfoAddOrMinus,jdbcType=VARCHAR},
+      </if>
+      <if test="advertisingInfoMoney != null">
+        #{advertisingInfoMoney,jdbcType=DECIMAL},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
+    update zx_app_advertising_money_info
+    <set>
+      <if test="advertisingInfoUserId != null">
+        advertising_info_user_id = #{advertisingInfoUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="advertisingInfoFrom != null">
+        advertising_info_from = #{advertisingInfoFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="advertisingInfoAddOrMinus != null">
+        advertising_info_add_or_minus = #{advertisingInfoAddOrMinus,jdbcType=VARCHAR},
+      </if>
+      <if test="advertisingInfoMoney != null">
+        advertising_info_money = #{advertisingInfoMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="advertisingInfoDate != null">
+        advertising_info_date = #{advertisingInfoDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where advertising_info_id = #{advertisingInfoId,jdbcType=BIGINT}
+  </update>
+
+</mapper>

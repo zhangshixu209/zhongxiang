@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="operationLogMapper">
+	<resultMap id="operationLog" type="map">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+		<result column="item_belong" jdbcType="CHAR" property="itemBelong" />
+		<result column="operation_model" jdbcType="VARCHAR" property="operationModel" />
+		<result column="operation_action" jdbcType="VARCHAR" property="operationAction" />
+		<result column="operation_user_mobile" jdbcType="VARCHAR" property="operationUserMobile" />
+		<result column="operation_user_name" jdbcType="VARCHAR" property="operationUserName" />
+		<result column="cltpt_ip_addr" jdbcType="VARCHAR" property="cltptIpAddr" />
+		<result column="org_id" jdbcType="BIGINT" property="orgId" />
+		<result column="org_name" jdbcType="VARCHAR" property="orgName" />
+		<result column="operation_account_id" jdbcType="BIGINT" property="operationAccountId" />
+	</resultMap>
+
+	<!-- 新增操作日志 -->
+	<insert id="insert" parameterType="map">
+		insert into ${tableName} (
+			id,
+			crt_time,
+			item_belong,
+			operation_model,
+			operation_action,
+			operation_user_mobile,
+			operation_user_name,
+			cltpt_ip_addr,
+			org_id,
+			org_name,
+			operation_account_id
+		) values (
+			#{id, jdbcType=BIGINT},
+			#{crtTime, jdbcType=TIMESTAMP},
+			#{itemBelong, jdbcType=CHAR},
+			#{operationModel, jdbcType=VARCHAR},
+			#{operationAction, jdbcType=VARCHAR},
+			#{operationUserMobile, jdbcType=VARCHAR},
+			#{operationUserName, jdbcType=VARCHAR},
+			#{cltptIpAddr, jdbcType=VARCHAR},
+			#{orgId, jdbcType=BIGINT},
+			#{orgName, jdbcType=VARCHAR},
+			#{operationAccountId, jdbcType=BIGINT}
+		)
+	</insert>
+	
+	<!-- 分页获取操作日志查询条件 -->
+	<sql id="findList_where_condition">
+		<where>
+			<if test="itemBelong != null and itemBelong !='' ">
+				and item_belong = #{itemBelong}
+			</if>
+			<if test="operationUserName != null and operationUserName !='' ">
+				and operation_user_name = #{operationUserName}
+			</if>
+			<if test="operationModel != null and operationModel !='' ">
+				and operation_model = #{operationModel}
+			</if>
+			<if test="operationUserMobile != null and operationUserMobile !='' ">
+				and operation_user_mobile = #{operationUserMobile}
+			</if>
+			<if test="timeBegin != null and timeBegin !='' ">
+				and crt_time <![CDATA[>= ]]> #{timeBegin}
+			</if>
+			<if test="timeEnd != null and timeEnd !='' ">
+				and crt_time <![CDATA[<= ]]> #{timeEnd}
+			</if>
+		</where> 
+	</sql>
+	<!-- 分页获取操作日志 -->
+	<select id="findList" parameterType="java.util.Map" resultMap="operationLog">
+		select
+			id,
+			crt_time,
+			item_belong,
+			operation_model,
+			operation_action,
+			operation_user_mobile,
+			operation_user_name,
+			cltpt_ip_addr,
+			org_name,
+			operation_account_id
+		from ${tableName} 
+		<include refid="findList_where_condition" />
+		order by crt_time desc
+		limit #{start}, #{limit}
+	</select>
+	<!-- 查询列表总数 -->
+	<select id="findListCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select
+			count(*)
+		from ${tableName}
+		<include refid="findList_where_condition" />
+	</select>
+
+	<select id="findById" parameterType="java.util.Map" resultMap="operationLog">
+		select
+			id,
+			crt_time,
+			item_belong,
+			operation_model,
+			operation_action,
+			operation_user_mobile,
+			operation_user_name,
+			cltpt_ip_addr,
+			org_name,
+			operation_account_id
+		from ${tableName} 
+		where 
+			id = #{id, jdbcType=BIGINT}
+	</select>
+
+</mapper>

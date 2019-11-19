@@ -1,0 +1,246 @@
+#java -cp druid-1.1.6.jar com.alibaba.druid.filter.config.ConfigTools <password>
+#id生成策略
+idgenerator:
+  generators:
+    idGenerator:
+      base-time: 2018-11-28 00:00:00.000
+      node-num: 0
+    antherOne:
+      base-time: 2018-01-01 00:00:00.000
+      node-num: 1
+
+httpinvoker:
+  httpcomponents:
+    httpcomponentsHttpInvoker:
+      connection-request-timeout: 60000
+      connect-timeout: 60000
+      read-timeout: 120000
+      max-conn-per-route: 256
+      max-conn-total: 2560
+      max-idle-time: 1200
+  okhttp3:
+    okhttp3HttpInvoker:
+      connect-timeout: 60000
+      read-timeout: 120000
+      write-timeout: 60000
+
+
+ertaskcodegenerator:
+  name: pem:ertaskcode:generator
+  init-no: 1
+  step: 1
+  max-no: 9999
+
+server:
+  display-name: pem-data
+  port: ${port:8060}
+  context-path: /pem-data
+  connection-timeout: 20000
+  session:
+    timeout: 1800
+  tomcat:
+    accesslog:
+      enabled: true
+      directory: access-logs
+      rename-on-rotate: true
+    #    basedir: ../tomcat
+    max-http-post-size: 52428800 #50MB
+    max-connections: 10000
+    min-spare-threads: 10
+    max-threads: 200
+    uri-encoding: UTF-8
+    accept-count: 100
+
+mybatis:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/**/*.xml
+  executor-type: REUSE
+  check-config-location: true
+
+pagehelper:
+  helper-dialect: mysql
+  offset-as-page-num: "true"
+  row-bounds-with-count: "true"
+  page-size-zero: "false"
+  reasonable: "false"
+  params: pageNum=pageNum;pageSize=pageSize;count=countSql;reasonable=reasonable;pageSizeZero=pageSizeZero
+  support-methods-arguments: "true"
+  auto-runtime-dialect: "false"
+  close-conn: "true"
+
+dubbo:
+  application:
+    id: pem-data
+    name: pem-data
+    qos-enable: false
+  registry:
+    id: pem-data-registry
+    client: curator
+    protocol: zookeeper
+    address: 127.0.0.1:2181
+  protocol:
+    id: pem-data-protocol
+    name: dubbo
+    port: 20861
+  scan:
+    base-packages: com.chmei.**.dubbo.provider,com.chmei.**.dubbo.consumer
+
+spring:
+  datasource:
+    druid:
+      url: jdbc:mysql://127.0.0.1:3306/pem_manage_db?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
+      username: root
+      password: GW7AgS9Tsypy8XXmpW5l5n4ZWOyUgUNpxtO7R/l5szVy5I0v3DHPzbXJnZXGLqrPVsmV7A8b0Tlpfp5fur8lyg==
+      driver-class-name: com.mysql.jdbc.Driver
+      filters: config
+      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIKbnMEE7ON1C+p57UpDFgtmDptgnVJhI45ah6HTcUeV/SVX+ufJi35FMmSgmQyLxEENCNndUpwcs19Pd9FzpJUCAwEAAQ==
+      connection-error-retry-attempts: 0
+      initial-size: 1
+      max-active: 200
+      min-idle: 1
+      max-wait: 20000
+      pool-prepared-statements: false
+      max-pool-prepared-statement-per-connection-size:  -1
+      max-open-prepared-statements: -1
+      validation-query: select 1
+      validation-query-timeout: 3
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 1800000
+      max-evictable-idle-time-millis: 1800000
+  application:
+    name: pem-data
+  mandatory-file-encoding: UTF-8
+  http:
+    converters:
+      preferred-json-mapper: jackson
+    encoding:
+      charset: UTF-8
+      force: true
+    multipart:
+      #location: ../uploadfiles
+      max-file-size: 10MB
+      max-request-size: 50MB
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+    joda-date-time-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: NON_NULL
+  mvc:
+    date-format: yyyy-MM-dd HH:mm:ss
+    servlet:
+      load-on-startup: 0
+    throw-exception-if-no-handler-found: true
+  resources:
+    static-locations:
+      - context:/
+      - classpath:/META-INF/resources/
+      - classpath:/resources/
+      - classpath:/static/
+      - classpath:/public/
+      - file:D:/
+  #  session:
+  #    store-type: REDIS
+  #    redis:
+  #      flush-mode: ON_SAVE
+  #    cleanup:
+  #      cron:
+  #        expression: ${sessionCleanupCron:0 0/2 * * * ?}
+  #  thymeleaf:
+  #    cache: false
+  #    encoding: UTF-8
+  #    mode: HTML
+  #    prefix: classpath:/templates/
+  #    suffix: .html
+  redis:
+    host: localhost
+    password: 
+    database: 2
+    port: 6379
+    timeout: 3000
+    pool:
+      max-active: 10000
+      max-idle: 100
+#    cluster:
+#      nodes: host:port,host:port,host:port
+#      max-redirects: 5
+
+#org/springframework/boot/logging/logback/*.xml，在spring-boot-version.jar里面。
+logging:
+  config: classpath:logback/logback-spring.xml
+  path: ../tomcat/logs
+  file: pem-data.log
+  level:
+    root: INFO
+
+---
+spring:
+  profiles: test
+  datasource:
+    druid:
+      url: jdbc:mysql://192.168.0.206:3306/pem_manage_test_db?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
+      username: pem_manage_test
+      password: BSd+ivgcIx5tGTdgBQAM/G1S6i4IcENZTVKiWI1UfZmHsa9KZZ9Ov7oEhjqTy5m7fcHmRxtZiGgXcPFJs5/Wmw==
+      driver-class-name: com.mysql.jdbc.Driver
+      filters: config
+      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJqMtrmhzE4HXtZwQUo0NGSwhEjEb8RzlKrF7n3un7co0tXtOzVz7NtbIJrKejqNykvB2DT4tzfqddPNGaAcM3kCAwEAAQ==
+      connection-error-retry-attempts: 0
+      initial-size: 1
+      max-active: 200
+      min-idle: 1
+      max-wait: 20000
+      pool-prepared-statements: false
+      max-pool-prepared-statement-per-connection-size:  -1
+      max-open-prepared-statements: -1
+      validation-query: select 1
+      validation-query-timeout: 3
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 1800000
+      max-evictable-idle-time-millis: 1800000
+  redis:
+    host: 127.0.0.1
+    password: qazWSXedcRFV
+    port: 6379
+    database: 2
+logging:
+  path: ./../pem_log/data
+
+---
+spring:
+  profiles: prod
+  datasource:
+    druid:
+      url: jdbc:mysql://47.104.74.151:3306/pem_manage_db?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
+      username: pem_manage_db
+      password: Kw0KQXHWeZbGVYJP/nIb1z7y/63Rm4fui28o3BP9hcUe1HkX2eyYsTZD3xh95uJgDe6TLmnGSQ+Yc3ZOI2Z4JA==
+      driver-class-name: com.mysql.jdbc.Driver
+      filters: config
+      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJVUYyL8e/V2uRlvQRTEeLMJuA096K7UJk9PTNhjUlyldMIhfwc0foJcVSQeAymxr4NFEwxviyvHn2ksK5zKqV0CAwEAAQ==
+      connection-error-retry-attempts: 0
+      initial-size: 1
+      max-active: 200
+      min-idle: 1
+      max-wait: 20000
+      pool-prepared-statements: false
+      max-pool-prepared-statement-per-connection-size:  -1
+      max-open-prepared-statements: -1
+      validation-query: select 1
+      validation-query-timeout: 3
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 1800000
+      max-evictable-idle-time-millis: 1800000
+  redis:
+    host: 127.0.0.1
+    password: 1qaz!QAZ
+    port: 6379
+    database: 2
+logging:
+  path: ./../pem_log/data

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  参数管理和字典表配置mapper 翟超锋 -->
+<mapper namespace="paramManageMapper">
+    <!-- 参数管理和字典表查询  -->
+    <select id="queryParamManageList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+            id AS id,
+			param_key AS paramKey,
+			param_name AS paramName,
+			extend1 AS ext1,
+			extend1 AS ext2,
+			extend1 AS ext3,
+			status AS status,
+			crt_user_id AS crtId,
+			remark AS remark,
+            DATE_FORMAT(crt_time,'%Y-%m-%d %H:%i:%s') AS crtTime
+        FROM r_param_manage a
+         <where>
+             1=1 
+             <if test="paramKey != null and paramKey != ''">
+                and a.param_key LIKE CONCAT('%',#{paramKey},'%')
+            </if>
+            <if test="paramName != null and paramName != ''">
+                and a.param_name LIKE CONCAT('%',#{paramName},'%')
+            </if>
+            <if test="id != null and id != ''">
+                and a.id =#{id}
+            </if>
+        </where>
+        ORDER BY a.crt_time DESC
+        <if test="start != null and start != '' or start == 0 and limit != null and limit != ''">
+            LIMIT ${start},${limit}
+        </if>
+    </select>
+    <!-- 参数管理和字典表总数  -->
+    <select id="queryParamManageCount" parameterType="java.util.Map" resultType="int">
+        SELECT
+            COUNT(1)
+        FROM
+            r_param_manage a
+        <where>
+             1=1 
+             <if test="paramKey != null and paramKey != ''">
+                and a.param_key LIKE CONCAT('%',#{paramKey},'%')
+            </if>
+            <if test="paramName != null and paramName != ''">
+                and a.param_name LIKE CONCAT('%',#{paramName},'%')
+            </if>
+        </where>
+    </select>
+    
+    
+    <!-- 获取参数并做判断是否存在，字典表-->
+    <select id="queryParamKeyList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+            id AS id,
+			param_key AS paramKey,
+			param_name AS paramName,
+			extend1 AS ext1,
+			extend1 AS ext2,
+			extend1 AS ext3,
+			status AS status,
+			crt_user_id AS crtId,
+			remark AS remark,
+            DATE_FORMAT(crt_time,'%Y-%m-%d %H:%i:%s') AS crtTime
+        FROM r_param_manage a
+        <where>
+            1=1
+            <if test="paramKey != null and paramKey != ''">
+                and a.param_key LIKE CONCAT('%',#{paramKey},'%')
+            </if>
+        </where>
+    </select>
+      <!-- 参数管理和字典表新增 -->
+    <insert id="addEditParamManage" parameterType="map">
+        insert into r_param_manage (
+        id,param_key,param_name,extend1,extend2,
+        extend3,status,remark,crt_user_id,crt_time
+        ) values
+            (
+            #{id,jdbcType=BIGINT},
+            #{paramKey ,jdbcType=VARCHAR},
+            #{paramName ,jdbcType=VARCHAR},
+            #{ext1 ,jdbcType=VARCHAR},
+            #{ext2 ,jdbcType=VARCHAR},
+            #{ext3 ,jdbcType=VARCHAR},
+            #{status ,jdbcType=VARCHAR},
+            #{remark ,jdbcType=VARCHAR},
+            #{crtId ,jdbcType=VARCHAR},
+            #{crtTime ,jdbcType=VARCHAR}
+            )
+    </insert>
+    
+    <!-- 修改 -->
+	<update id="updateParam" parameterType="map">
+		update r_param_manage 
+		<set>
+			<if test="paramKey != null and paramKey != ''">
+				param_key = #{paramKey},
+			</if>
+			<if test="paramName != null and paramName != ''">
+				param_name = #{paramName},
+			</if>
+			<if test="status != null and status != ''">
+				status = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null and remark != ''">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+    
+    <!-- 根据id做逻辑删除   -->
+    <update id="delParamManage" parameterType="java.util.Map">
+        UPDATE r_param_manage set  status = 0
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+    
+    <!-- 根据键值查询值，字典表-->
+    <select id="queryParamByKey" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+            id AS id,
+			param_key AS paramKey,
+			param_name AS paramName,
+			extend1 AS ext1,
+			extend1 AS ext2,
+			extend1 AS ext3,
+			status AS status,
+			crt_user_id AS crtId,
+			remark AS remark,
+            DATE_FORMAT(crt_time,'%Y-%m-%d %H:%i:%s') AS crtTime
+        FROM r_param_manage a
+        <where>
+            `status`='1'
+            <if test="paramKey != null and paramKey != ''">
+                and a.param_key = #{paramKey, jdbcType=VARCHAR}
+            </if>
+        </where>
+        ORDER BY crt_time DESC
+    </select>
+    
+</mapper>

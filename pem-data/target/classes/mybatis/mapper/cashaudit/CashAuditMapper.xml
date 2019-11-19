@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CashAuditMapper">
+    
+    <!-- 映射结果  -->
+    <resultMap id="BaseResultMap" type="map">
+      <id column="id" jdbcType="BIGINT" property="id" />
+      <result column="member_account" jdbcType="VARCHAR" property="memberAccount" />
+      <result column="cash_user_name" jdbcType="VARCHAR" property="cashUserName" />
+      <result column="account_type" jdbcType="VARCHAR" property="accountType" />
+      <result column="user_account" jdbcType="VARCHAR" property="userAccount" />
+      <result column="cash_amount" jdbcType="VARCHAR" property="cashAmount" />
+      <result column="cash_apply_time" jdbcType="TIMESTAMP" property="cashApplyTime" />
+      <result column="audit_type" jdbcType="VARCHAR" property="auditType" />
+      <result column="audit_opinion" jdbcType="VARCHAR" property="auditOpinion" />
+      <result column="audit_time" jdbcType="TIMESTAMP" property="auditTime" />
+      <result column="audit_user_name" jdbcType="VARCHAR" property="auditUserName" />
+      <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+      <result column="crt_user_name" jdbcType="VARCHAR" property="crtUserName" />
+      <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+      <result column="modf_user_id" jdbcType="BIGINT" property="modfUserId" />
+      <result column="modf_user_name" jdbcType="VARCHAR" property="modfUserName" />
+      <result column="modf_user_time" jdbcType="TIMESTAMP" property="modfUserTime" />
+    </resultMap>
+    <!-- 累计充值，累计分红 -->
+    <sql id="total_Column_List">
+        (SELECT IFNULL(CAST(SUM(w.recharge_amount) AS CHAR), '0') FROM t_recharge_record w WHERE a.member_account = w.member_account
+        AND w.`status` = '1003') AS rechargeTotal,
+        (SELECT IFNULL(CAST(SUM(w.bonus_amount) AS CHAR), '0') FROM t_member_bonus_record w WHERE a.member_account = w.member_account) AS bonusTotal
+    </sql>
+    <!-- 提现审核列表查询 -->
+    <select id="queryCashAuditList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+            a.id AS id,
+            IFNULL( a.member_account, '' ) AS memberAccount,
+            IFNULL( a.cash_user_name, '' ) AS cashUserName,
+            IFNULL( a.account_type, '' ) AS accountType,
+            IFNULL( a.user_account, '' ) AS userAccount,
+            IFNULL( a.cash_amount, '' ) AS cashAmount,
+            IFNULL( a.cash_apply_time, '' ) AS cashApplyTime,
+            IFNULL( a.audit_type, '' ) AS auditType,
+            IFNULL( a.audit_opinion, '' ) AS auditOpinion,
+            IFNULL( a.audit_time, '' ) AS auditTime,
+            IFNULL( a.audit_user_name, '' ) AS auditUserName,
+            IFNULL( b.wallet_balance, '0' ) AS walletBalance,
+            IFNULL( b.crt_time, '' ) AS registerTime,
+            b.recom_nick_name AS recomNickname,
+            c.real_name AS realName,
+            <include refid="total_Column_List" />
+        FROM
+            t_cash_audit a
+        LEFT JOIN t_member b ON a.member_account = b.member_account
+        LEFT JOIN t_real_name_authentic c ON a.member_account = c.member_account
+        <where>
+            <if test="cashUserName != null and cashUserName != ''">
+                AND a.cash_user_name LIKE concat('%',#{cashUserName},'%')
+            </if>
+            <if test="userAccount != null and userAccount != ''">
+                AND a.user_account = #{userAccount}
+            </if>
+            <if test="accountType != null and accountType != ''">
+                AND a.account_type = #{accountType}
+            </if>
+            <if test="auditType != null and auditType != ''">
+                AND a.audit_type = #{auditType}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND DATE_FORMAT(a.cash_apply_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND DATE_FORMAT(a.cash_apply_time,'%Y-%m-%d') &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY a.audit_type DESC, a.cash_apply_time DESC
+        <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+            LIMIT #{start}, #{limit}
+        </if>
+    </select>
+    
+    <!-- 分页数量查询 -->
+    <select id="queryCashAuditCount" parameterType="map" resultType="int">
+        SELECT
+            COUNT(1)
+        FROM
+            t_cash_audit a
+        <where>
+            <if test="cashUserName != null and cashUserName != ''">
+                AND a.cash_user_name LIKE concat('%',#{cashUserName},'%')
+            </if>
+            <if test="userAccount != null and userAccount != ''">
+                AND a.user_account = #{userAccount}
+            </if>
+            <if test="accountType != null and accountType != ''">
+                AND a.account_type = #{accountType}
+            </if>
+            <if test="auditType != null and auditType != ''">
+                AND a.audit_type = #{auditType}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND DATE_FORMAT(a.cash_apply_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND DATE_FORMAT(a.cash_apply_time,'%Y-%m-%d') &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <!-- 提现审核详情查询 -->
+    <select id="queryCashAuditDetail" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+            a.id AS id,
+            IFNULL( a.member_account, '' ) AS memberAccount,
+            IFNULL( a.cash_user_name, '' ) AS cashUserName,
+            IFNULL( a.account_type, '' ) AS accountType,
+            IFNULL( a.user_account, '' ) AS userAccount,
+            IFNULL( a.cash_amount, '' ) AS cashAmount,
+            IFNULL( a.cash_apply_time, '' ) AS cashApplyTime,
+            IFNULL( a.audit_type, '' ) AS auditType,
+            IFNULL( a.audit_opinion, '' ) AS auditOpinion,
+            IFNULL( a.audit_time, '' ) AS auditTime,
+            IFNULL( a.audit_user_name, '' ) AS auditUserName,
+            IFNULL( a.crt_time, '' ) AS crtTime
+        FROM
+        t_cash_audit a
+        WHERE a.id = #{id, jdbcType=BIGINT}
+    </select>
+
+    <!-- 修改提现审核 -->
+    <update id="updateCashAuditInfo" parameterType="java.util.Map">
+        update t_cash_audit
+        <set>
+            <if test="memberAccount != null and memberAccount != ''">
+                member_account = #{memberAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="cashUserName != null and cashUserName != ''">
+                cash_user_name = #{cashUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="accountType != null and accountType != ''">
+                account_type = #{accountType,jdbcType=VARCHAR},
+            </if>
+            <if test="userAccount != null and userAccount != ''">
+                user_account = #{userAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="cashAmount != null and cashAmount != ''">
+                cash_amount = #{cashAmount,jdbcType=VARCHAR},
+            </if>
+            <if test="cashApplyTime != null and cashApplyTime != ''">
+                cash_apply_time = #{cashApplyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="auditType != null and auditType != ''">
+                audit_type = #{auditType,jdbcType=VARCHAR},
+            </if>
+            <if test="auditOpinion != null">
+                audit_opinion = #{auditOpinion,jdbcType=VARCHAR},
+            </if>
+                audit_time = NOW(),
+            <if test="auditUserName != null">
+                audit_user_name = #{auditUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="modfUserId != null">
+                modf_user_id = #{modfUserId,jdbcType=BIGINT},
+            </if>
+            <if test="modfUserName != null">
+                modf_user_name = #{modfUserName,jdbcType=VARCHAR},
+            </if>
+                modf_user_time = NOW(),
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 提现审核新增 -->
+    <insert id="saveCashAuditInfo" parameterType="java.util.Map">
+        insert into t_cash_audit
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            <if test="memberAccount != null">
+                member_account,
+            </if>
+            <if test="cashUserName != null">
+                cash_user_name,
+            </if>
+            <if test="accountType != null">
+                account_type,
+            </if>
+            <if test="userAccount != null">
+                user_account,
+            </if>
+            <if test="cashAmount != null">
+                cash_amount,
+            </if>
+                cash_apply_time,
+                audit_type,
+            <if test="crtUserId != null">
+                crt_user_id,
+            </if>
+            <if test="crtUserName != null">
+                crt_user_name,
+            </if>
+                crt_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id, jdbcType=BIGINT},
+            <if test="memberAccount != null">
+                #{memberAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="cashUserName != null">
+                #{cashUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="accountType != null">
+                #{accountType,jdbcType=VARCHAR},
+            </if>
+            <if test="userAccount != null">
+                #{userAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="cashAmount != null">
+                #{cashAmount,jdbcType=VARCHAR},
+            </if>
+                NOW(),
+               "3",
+            <if test="crtUserId != null">
+                #{crtUserId,jdbcType=BIGINT},
+            </if>
+            <if test="crtUserName != null">
+                #{crtUserName,jdbcType=VARCHAR},
+            </if>
+            NOW()
+        </trim>
+    </insert>
+  
+</mapper>

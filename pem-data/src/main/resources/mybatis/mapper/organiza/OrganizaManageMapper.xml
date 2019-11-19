@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 组织机构管理 @author zhangsx-->
+<mapper namespace="organizaManageMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="organiza_id" jdbcType="VARCHAR" property="organizaId" />
+    <result column="organiza_name" jdbcType="VARCHAR" property="organizaName" />
+    <result column="parent_organiza_id" jdbcType="VARCHAR" property="parentOrganizaId" />
+    <result column="parent_organiza_name" jdbcType="VARCHAR" property="parentOrganizaName" />
+    <result column="sort" jdbcType="VARCHAR" property="sort" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+    <result column="modf_user_id" jdbcType="BIGINT" property="modfUserId" />
+    <result column="modf_time" jdbcType="TIMESTAMP" property="modfTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, 
+    organiza_id, 
+    organiza_name, 
+    parent_organiza_id, 
+    parent_organiza_name, 
+    sort, 
+    status, 
+    crt_user_id, 
+    crt_time,
+    modf_user_id, 
+    modf_time
+  </sql>
+  <!-- 组织机构管理查询 -->
+  <select id="queryOrganizaManageList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT 
+        <include refid="Base_Column_List" />
+    FROM 
+        r_organiza a
+    <where>
+        <if test="organizaId != null and organizaId != ''">
+            a.organiza_id = #{organizaId}
+        </if>
+        <if test="organizaName != null and organizaName != ''">
+            AND a.organiza_name LIKE CONCAT('%',#{organizaName},'%')
+        </if>
+        <if test="startTime != null and startTime !=''">
+            AND DATE_FORMAT(a.crt_time, '%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime !=''">
+            AND DATE_FORMAT(a.crt_time, '%Y-%m-%d') &lt;= #{endTime}
+        </if>
+    </where>
+    ORDER BY a.sort
+    <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+        LIMIT ${start},${limit}
+    </if>
+  </select>
+  <!-- 组织机构管理统计 -->
+  <select id="queryOrganizaManageCount" parameterType="java.util.Map" resultType="int">
+    SELECT 
+        COUNT(1)
+    FROM 
+        r_organiza a
+    <where>
+        <if test="organizaId != null and organizaId != ''">
+            a.organiza_id = #{organizaId}
+        </if>
+        <if test="organizaName != null and organizaName != ''">
+            AND a.organiza_name LIKE CONCAT('%',#{organizaName},'%')
+        </if>
+        <if test="startTime != null and startTime !=''">
+            AND DATE_FORMAT(a.crt_time, '%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime !=''">
+            AND DATE_FORMAT(a.crt_time, '%Y-%m-%d') &lt;= #{endTime}
+        </if>
+    </where>
+  </select>
+  <!-- 组织机构管理删除 -->
+  <delete id="delOrganizaManageInfo" parameterType="java.util.Map">
+    delete from r_organiza
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <!-- 组织机构管理新增 -->
+  <insert id="saveOrganizaManageInfo" parameterType="java.util.Map">
+    insert into r_organiza
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="organizaId != null">
+        organiza_id,
+      </if>
+      <if test="organizaName != null">
+        organiza_name,
+      </if>
+      <if test="parentOrganizaId != null">
+        parent_organiza_id,
+      </if>
+      <if test="parentOrganizaName != null">
+        parent_organiza_name,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="crtUserId != null">
+        crt_user_id,
+      </if>
+        crt_time,
+      <if test="modfUserId != null">
+        modf_user_id,
+      </if>
+        modf_time,
+      <if test="remark != null and remark != ''">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="organizaId != null">
+        #{organizaId,jdbcType=VARCHAR},
+      </if>
+      <if test="organizaName != null">
+        #{organizaName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentOrganizaId != null">
+        #{parentOrganizaId,jdbcType=VARCHAR},
+      </if>
+      <if test="parentOrganizaName != null">
+        #{parentOrganizaName,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="crtUserId != null">
+        #{crtUserId,jdbcType=BIGINT},
+      </if>
+        NOW(),
+      <if test="modfUserId != null">
+        #{modfUserId,jdbcType=BIGINT},
+      </if>
+        NOW(),
+      <if test="remark != null and remark != ''">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <!-- 组织机构名称编辑 -->
+  <update id="updateOrganizaManageInfo" parameterType="java.util.Map">
+    update r_organiza
+    <set>
+      <if test="organizaId != null and organizaId != ''">
+        organiza_id = #{organizaId,jdbcType=VARCHAR},
+      </if>
+      <if test="organizaName != null">
+        organiza_name = #{organizaName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentOrganizaId != null and parentOrganizaId != ''">
+        parent_organiza_id = #{parentOrganizaId,jdbcType=VARCHAR},
+      </if>
+      <if test="parentOrganizaName != null and parentOrganizaName != ''">
+        parent_organiza_name = #{parentOrganizaName,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null and sort != ''">
+        sort = #{sort,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null and status != ''">
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="modfUserId != null">
+        modf_user_id = #{modfUserId,jdbcType=BIGINT},
+      </if>
+        modf_time = NOW(),
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <!-- 组织机构管理查询详细信息 -->
+  <select id="queryOrganizaManageDetail" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+	    a.id AS id,
+	    IFNULL( a.organiza_id, '' ) AS organizaId,
+	    IFNULL( a.organiza_name, '' ) AS organizaName,
+	    IFNULL( a.sort, '' ) AS sort,
+	    IFNULL( a.remark, '' ) AS remark,
+	    IFNULL( a.parent_organiza_id, '' ) AS parentOrganizaId,
+	    IFNULL( a.parent_organiza_name, '' ) AS parentOrganizaName
+	FROM
+	    r_organiza a
+	<where>
+	   a.id = #{id,jdbcType=BIGINT}
+	</where>
+  </select>
+  <!-- 查询父机构名称 -->
+  <select id="queryParentOrganizaList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        IFNULL( a.organiza_id, '' ) AS organizaId,
+        IFNULL( a.organiza_name, '' ) AS organizaName
+    FROM
+        r_organiza a
+  </select>
+  <!-- 校验父机构是否被使用 -->
+  <select id="checkParentOrganiza" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        IFNULL( a.parent_organiza_id, '' ) AS parentOrganizaId
+    FROM
+        r_organiza a
+    WHERE a.parent_organiza_id = #{organizaId}
+  </select>
+  <!-- 校验机构是否关联了用户 -->
+  <select id="checkOrganizaUserDept" parameterType="java.util.Map" resultType="int">
+    SELECT COUNT(1) FROM t_u_admin WHERE user_department_id = #{organizaId}
+  </select>
+</mapper>

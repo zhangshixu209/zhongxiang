@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- @author wangteng  公告阅读信息sql-->
+<mapper namespace="noticeReadMapper">
+    <!--根据公告id获取到已读人数总和-->
+    <select id="queryReadTotal" resultType="int">
+        SELECT
+          count(1)
+        FROM
+          r_notice_read
+        WHERE
+          notice_id=#{id}
+    </select>
+
+    <!--根据公告id与当前用户id获取到唯一一条阅读数据-->
+    <select id="queryByNoticeIdAndCurrentUserId" resultType="map">
+        SELECT
+          *
+        FROM
+          r_notice_read
+        WHERE
+          notice_id=#{id} AND crt_id=#{currentUserId}
+    </select>
+
+    <!--插入阅读信息-->
+    <insert id="insertReadMeaasgeInfo">
+        INSERT INTO
+          r_notice_read
+         (
+            id,
+            notice_id,
+            crt_id,
+            read_time,
+            crt_time
+         )
+        VALUES
+         (
+            #{id},
+            #{noticeId},
+            #{crtId},
+            #{readTime},
+            #{crtTime}
+         )
+    </insert>
+</mapper>

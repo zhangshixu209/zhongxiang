@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MemberMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="member_account" jdbcType="VARCHAR" property="memberAccount" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="member_pwd" jdbcType="VARCHAR" property="memberPwd" />
+    <result column="bind_phone" jdbcType="VARCHAR" property="bindPhone" />
+    <result column="recom_account" jdbcType="VARCHAR" property="recomAccount" />
+    <result column="recom_nick_name" jdbcType="VARCHAR" property="recomNickName" />
+    <result column="red_enve_balance" jdbcType="VARCHAR" property="redEnveBalance" />
+    <result column="wallet_balance" jdbcType="VARCHAR" property="walletBalance" />
+    <result column="advertising_fee" jdbcType="VARCHAR" property="advertisingFee" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_user_name" jdbcType="VARCHAR" property="crtUserName" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+    <result column="modf_user_id" jdbcType="BIGINT" property="modfUserId" />
+    <result column="modf_user_name" jdbcType="VARCHAR" property="modfUserName" />
+    <result column="modf_user_time" jdbcType="TIMESTAMP" property="modfUserTime" />
+  </resultMap>
+  <!-- 累计提现，累计充值，累计分红，累计投诉 -->
+  <sql id="total_Column_List">
+    (SELECT COUNT(1) FROM t_member_complaint_record w WHERE a.member_account = w.member_account) AS complaintTotal,
+	(SELECT IFNULL(CAST(SUM(w.recharge_amount) AS CHAR), '0') FROM t_recharge_record w WHERE a.member_account = w.member_account
+	AND w.`status` = '1003') AS rechargeTotal,
+	(SELECT IFNULL(CAST(SUM(w.cash_amount) AS CHAR), '0') FROM t_cash_audit w WHERE a.member_account = w.user_account) AS cashTotal,
+	(SELECT IFNULL(CAST(SUM(w.bonus_amount) AS CHAR), '0') FROM t_member_bonus_record w WHERE a.member_account = w.member_account) AS bonusTotal
+  </sql>
+  <!-- 查询会员列表 -->
+  <select id="queryMemberList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.id AS id,
+      IFNULL( a.member_account, '' ) AS memberAccount,
+      IFNULL( a.nickname, '' ) AS nickname,
+      IFNULL( a.recom_account, '' ) AS recomAccount,
+      IFNULL( a.recom_nick_name, '-' ) AS recomNickname,
+      IFNULL( b.real_name, '' ) AS realName,
+      IFNULL( a.wallet_balance, '0' ) AS walletBalance,
+      IFNULL( a.advertising_fee, '0' ) AS advertisingFee,
+      IFNULL( a.STATUS, '' ) AS status,
+      a.crt_time AS crtTime,
+      <include refid="total_Column_List" />
+  FROM
+      t_member a
+      LEFT JOIN t_real_name_authentic b ON a.member_account = b.member_account
+    <where>
+      <if test="memberAccount != null and memberAccount != ''">
+        a.member_account = #{memberAccount}
+      </if>
+      <if test="nickname != null and nickname != ''">
+        AND a.nickname = #{nickname}
+      </if>
+      <if test="status != null and status != ''">
+        AND a.status = #{status}
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+    ORDER BY a.crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 查询会员统计 -->
+  <select id="queryMemberCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+      COUNT(1)
+    FROM
+      t_member a
+    <where>
+      <if test="memberAccount != null and memberAccount != ''">
+        a.member_account = #{memberAccount}
+      </if>
+      <if test="nickname != null and nickname != ''">
+        AND a.nickname = #{nickname}
+      </if>
+      <if test="status != null and status != ''">
+        AND a.status = #{status}
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+      <if test="recomAccount != null and recomAccount != ''">
+        AND a.recom_account = #{recomAccount}
+      </if>
+    </where>
+  </select>
+
+  <!-- 新增会员信息 -->
+  <insert id="saveMemberInfo" parameterType="java.util.Map">
+    insert into t_member
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        id,
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+      <if test="nickname != null">
+        nickname,
+      </if>
+      <if test="memberPwd != null">
+        member_pwd,
+      </if>
+      <if test="bindPhone != null">
+        bind_phone,
+      </if>
+        `status`,
+      <if test="crtUserId != null">
+        crt_user_id,
+      </if>
+      <if test="crtUserName != null">
+        crt_user_name,
+      </if>
+        activate_status,
+        crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+        #{id,jdbcType=BIGINT},
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="nickname != null">
+        #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="memberPwd != null">
+        #{memberPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="bindPhone != null">
+        #{bindPhone,jdbcType=VARCHAR},
+      </if>
+        '1',
+      <if test="crtUserId != null">
+        #{crtUserId,jdbcType=BIGINT},
+      </if>
+      <if test="crtUserName != null">
+        #{crtUserName,jdbcType=VARCHAR},
+      </if>
+        0,
+        NOW()
+    </trim>
+  </insert>
+  <!-- 修改个人信息 -->
+  <update id="updateMemberInfo" parameterType="java.util.Map">
+    update t_member
+    <set>
+      <if test="nickname != null and nickname != ''">
+        nickname = #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="headImgUrl != null and headImgUrl != ''" >
+        head_img_url = #{headImgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="activateStatus != null and activateStatus != ''" >
+        activate_status = #{activateStatus,jdbcType=VARCHAR},
+      </if>
+        modf_user_time = NOW(),
+    </set>
+    where member_account = #{memberAccount,jdbcType=VARCHAR}
+  </update>
+
+  <!-- 查询会员被投诉记录 -->
+  <select id="queryMemberComplaintRecord" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        a.member_account AS memberAccount,
+        a.member_nickname AS memberNickname,
+        a.complainant AS complainant,
+        a.complaint_time AS complaintTime,
+        a.complaint_remark AS complaintRemark,
+        #a.chat_record AS chatRecord,
+        a.`status` AS `status`
+    FROM t_member_complaint_record AS a
+    <where>
+      <if test="status != null and status != ''">
+         a.status = #{status}
+      </if>
+    </where>
+    ORDER BY a.crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <select id="queryMemberComplaintRecordCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+        COUNT(1)
+    FROM t_member_complaint_record AS a
+    <where>
+      <if test="status != null and status != ''">
+        a.status = #{status}
+      </if>
+    </where>
+  </select>
+  <!-- 查询会员详细信息 -->
+  <select id="queryMemberDetail" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.id AS id,
+      IFNULL( a.member_account, '' ) AS memberAccount,
+      IFNULL( a.nickname, '' ) AS nickname,
+      IFNULL( a.member_pwd, '' ) AS memberPwd,
+      IFNULL( a.head_img_url, '' ) AS headImgUrl,
+      IFNULL( a.member_payment_pwd, '' ) AS memberPaymentPwd,
+      IFNULL( a.recom_nick_name, '-' ) AS recomNickname,
+      IFNULL( a.wallet_balance, '0' ) AS walletBalance,
+      IFNULL( a.red_enve_balance, '0' ) AS redEnveBalance,
+      IFNULL( a.advertising_fee, '0' ) AS advertisingFee,
+      IFNULL( a.STATUS, '' ) AS status,
+      IFNULL( a.bind_phone, '' ) AS bindPhone,
+      a.crt_time AS crtTime
+    FROM
+        t_member a
+    <where>
+      <if test="id  != null and id != ''">
+        a.id = #{id, jdbcType=BIGINT}
+      </if>
+      <if test="memberAccount != null and memberAccount != ''">
+        AND a.member_account = #{memberAccount}
+      </if>
+    </where>
+  </select>
+
+  <!-- 会员充值（钱包余额、广告费） -->
+  <update id="saveMemberRechargeInfo" parameterType="java.util.Map">
+    update t_member
+    <set>
+      <if test="walletBalance != null and walletBalance != ''">
+        wallet_balance = #{walletBalance,jdbcType=VARCHAR},
+      </if>
+      <if test="advertisingFee != null and advertisingFee != ''">
+        advertising_fee = #{advertisingFee,jdbcType=VARCHAR},
+      </if>
+      <if test="modfUserId != null and modfUserId != ''">
+        modf_user_id = #{modfUserId,jdbcType=BIGINT},
+      </if>
+      <if test="modfUserName != null and modfUserName != ''">
+        modf_user_name = #{modfUserName,jdbcType=VARCHAR},
+      </if>
+        modf_user_time = NOW(),
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="updateMemberBalance" parameterType="java.util.Map">
+    update t_member
+    <set>
+      <if test="walletBalance != null or walletBalance == 0 ">
+        wallet_balance = #{walletBalance,jdbcType=VARCHAR},
+      </if>
+      <if test="advertisingFee != null or advertisingFee == 0">
+        advertising_fee = #{advertisingFee,jdbcType=VARCHAR},
+      </if>
+      <if test="redEnveBalance != null or redEnveBalance == 0">
+        red_enve_balance = #{redEnveBalance,jdbcType=VARCHAR},
+      </if>
+      <if test="activateStatus != null and activateStatus != ''" >
+        activate_status = #{activateStatus,jdbcType=VARCHAR},
+      </if>
+      modf_user_time = NOW(),
+    </set>
+    where member_account = #{memberAccount,jdbcType=VARCHAR}
+  </update>
+
+  <!-- 查询会员余额信息 -->
+  <select id="queryMemberBalanceDetail" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.id AS id,
+      IFNULL( a.member_account, '' ) AS memberAccount,
+      IFNULL( a.member_pwd, '' ) AS memberPwd,
+      IFNULL( a.nickname, '' ) AS nickname,
+      IFNULL( a.recom_nick_name, '-' ) AS recomNickname,
+      IFNULL( a.wallet_balance, '0' ) AS walletBalance,
+      IFNULL( a.red_enve_balance, '0' ) AS redEnveBalance,
+      IFNULL( a.advertising_fee, '0' ) AS advertisingFee,
+      IFNULL( a.STATUS, '' ) AS status,
+      a.crt_time AS crtTime
+    FROM
+        t_member a
+    WHERE a.member_account = #{memberAccount}
+  </select>
+
+  <!-- 校验用户是否存在 -->
+  <select id="checkUserIsExist" parameterType="java.util.Map" resultType="int">
+    SELECT COUNT(1) FROM t_member a WHERE a.member_account = #{memberAccount} AND a.status = '1'
+  </select>
+
+  <!-- 修改会员登录/支付密码 -->
+  <update id="updateLoginOrPayPwd" parameterType="java.util.Map">
+    update t_member
+    <set>
+      <if test="memberPwd != null and memberPwd != ''">
+        member_pwd = #{memberPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="memberPaymentPwd != null and memberPaymentPwd != ''">
+        member_payment_pwd = #{memberPaymentPwd,jdbcType=VARCHAR},
+      </if>
+      modf_user_time = NOW(),
+    </set>
+    where member_account = #{memberAccount}
+  </update>
+
+  <!-- 修改绑定手机号 -->
+  <update id="updateBindPhoneNum" parameterType="java.util.Map">
+    update t_member
+    <set>
+      <if test="bindPhone != null and bindPhone != ''">
+        bind_phone = #{bindPhone,jdbcType=VARCHAR},
+      </if>
+      modf_user_time = NOW(),
+    </set>
+    where member_account = #{memberAccount}
+  </update>
+
+</mapper>

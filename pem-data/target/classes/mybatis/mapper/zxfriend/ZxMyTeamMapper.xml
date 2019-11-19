@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ZxMyTeamMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="team_id" jdbcType="BIGINT" property="teamId" />
+    <result column="team_parent_id" jdbcType="VARCHAR" property="teamParentId" />
+    <result column="team_recommended_user_id" jdbcType="VARCHAR" property="teamRecommendedUserId" />
+    <result column="team_user_phone" jdbcType="VARCHAR" property="teamUserPhone" />
+    <result column="team_user_name" jdbcType="VARCHAR" property="teamUserName" />
+    <result column="team_type" jdbcType="VARCHAR" property="teamType" />
+    <result column="team_date" jdbcType="TIMESTAMP" property="teamDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    team_id, team_parent_id, team_recommended_user_id, team_user_phone, team_user_name, 
+    team_type, team_date
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zx_app_my_team
+    where team_id = #{teamId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from zx_app_my_team
+    where team_id = #{teamId,jdbcType=BIGINT}
+  </delete>
+
+  <!-- 我的团队新增 -->
+  <insert id="saveMyTeamInfo" parameterType="java.util.Map">
+    insert into zx_app_my_team
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="teamId != null">
+        team_id,
+      </if>
+      <if test="teamParentId != null">
+        team_parent_id,
+      </if>
+      <if test="teamRecommendedUserId != null">
+        team_recommended_user_id,
+      </if>
+      <if test="teamUserPhone != null">
+        team_user_phone,
+      </if>
+      <if test="teamUserName != null">
+        team_user_name,
+      </if>
+      <if test="teamType != null">
+        team_type,
+      </if>
+        team_date,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="teamId != null">
+        #{teamId,jdbcType=BIGINT},
+      </if>
+      <if test="teamParentId != null">
+        #{teamParentId,jdbcType=VARCHAR},
+      </if>
+      <if test="teamRecommendedUserId != null">
+        #{teamRecommendedUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="teamUserPhone != null">
+        #{teamUserPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="teamUserName != null">
+        #{teamUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="teamType != null">
+        #{teamType,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
+    update zx_app_my_team
+    <set>
+      <if test="teamParentId != null">
+        team_parent_id = #{teamParentId,jdbcType=VARCHAR},
+      </if>
+      <if test="teamRecommendedUserId != null">
+        team_recommended_user_id = #{teamRecommendedUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="teamUserPhone != null">
+        team_user_phone = #{teamUserPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="teamUserName != null">
+        team_user_name = #{teamUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="teamType != null">
+        team_type = #{teamType,jdbcType=VARCHAR},
+      </if>
+      <if test="teamDate != null">
+        team_date = #{teamDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where team_id = #{teamId,jdbcType=BIGINT}
+  </update>
+
+  <!-- 查询我的团队信息 -->
+  <select id="queryMyTeamInfo" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        a.team_id AS teamId,
+        a.team_parent_id AS teamParentId,
+        a.team_recommended_user_id AS teamRecommendedUserId,
+        a.team_user_phone AS teamUserPhone,
+        a.team_user_name AS teamUserName,
+        a.team_type AS teamType,
+        a.team_date AS teamDate
+    FROM
+        zx_app_my_team AS a
+    <where>
+        <if test="teamParentId != null and teamParentId != ''">
+          a.team_parent_id = #{teamParentId}
+        </if>
+        <if test="teamRecommendedUserId != null and teamRecommendedUserId != ''">
+          AND a.team_recommended_user_id = #{teamRecommendedUserId}
+        </if>
+    </where>
+  </select>
+
+  <!-- 根据登录用户ID, 查询自己手下的团队信息 -->
+  <select id="queryTheLower" resultType="java.util.Map" parameterType="java.util.Map">
+      SELECT
+		a.id AS id,
+		a.member_account AS memberAccount,
+		IFNULL( b.real_name, a.nickname ) AS realName,
+		(select count(1) FROM zx_app_my_team WHERE zx_app_my_team.team_parent_id = #{memberAccount,jdbcType=VARCHAR}) AS count
+      FROM
+		t_member a
+		LEFT JOIN t_real_name_authentic b ON a.member_account = b.member_account
+      WHERE
+		a.member_account = #{memberAccount,jdbcType=VARCHAR}
+    </select>
+</mapper>
