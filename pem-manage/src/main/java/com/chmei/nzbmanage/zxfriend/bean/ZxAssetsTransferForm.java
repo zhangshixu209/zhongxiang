@@ -46,7 +46,7 @@ public class ZxAssetsTransferForm extends BaseForm {
 	/**
 	 * 资产转让状态（1转让信息，2交易记录个人）
 	 */
-	private String transferType;
+	private Integer transferType;
 
 	private static final long serialVersionUID = 1L;
 
@@ -98,11 +98,11 @@ public class ZxAssetsTransferForm extends BaseForm {
 		this.memberAccount = memberAccount;
 	}
 
-	public String getTransferType() {
+	public Integer getTransferType() {
 		return transferType;
 	}
 
-	public void setTransferType(String transferType) {
+	public void setTransferType(Integer transferType) {
 		this.transferType = transferType;
 	}
 }

@@ -14,24 +14,16 @@
   </sql>
 
   <!-- 资产转让信息列表查询 -->
-  <select id="queryAssetsTransferList" parameterType="java.util.Map" resultType="java.util.Map">
+  <select id="queryAssetsTransferList" parameterType="java.util.Map" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from zx_app_deal
     <where>
-        <if test="transferType != null and transferType != '' and transferType == '1'">
-          deal_money_mark = '2'
-        </if>
-        <if test="transferType != null and transferType != '' and transferType == '2'">
-          deal_user_id = #{memberAccount,jdbcType=VARCHAR}
-        </if>
+          <if test="dealUserId != null and dealUserId != ''">
+            deal_user_id = #{memberAccount,jdbcType=VARCHAR}
+          </if>
     </where>
-    <if test="transferType != null and transferType != '' and transferType == '1'">
       ORDER BY deal_date DESC
-    </if>
-    <if test="transferType != null and transferType != '' and transferType == '2'">
-      ORDER BY  deal_money_mark desc, deal_date desc
-    </if>
     <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
       LIMIT #{start}, #{limit}
     </if>
@@ -42,17 +34,14 @@
         COUNT(1)
     from zx_app_deal
     <where>
-      <if test="transferType != null and transferType != '' and transferType == '1'">
         deal_money_mark = '2'
-      </if>
-      <if test="transferType != null and transferType != '' and transferType == '2'">
-        deal_user_id = #{memberAccount,jdbcType=VARCHAR}
-      </if>
     </where>
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+
+  <!-- 删除转让信息 -->
+  <delete id="deleteDealInfo" parameterType="java.lang.Long">
     delete from zx_app_deal
-    where deal_id = #{dealId,jdbcType=BIGINT}
+    where deal_user_id = #{memberAccount,jdbcType=VARCHAR}
   </delete>
 
   <!-- 资产转让交易记录新增 -->
@@ -113,7 +102,7 @@
   </update>
 
   <!-- 资产转让信息列表查询 -->
-  <select id="queryNewAssetsTransferList" parameterType="java.util.Map" resultType="java.util.Map">
+  <select id="queryNewAssetsTransferList" parameterType="java.util.Map" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from zx_app_deal
@@ -124,6 +113,73 @@
         </if>
     </where>
       ORDER BY update_deal_date DESC
+  </select>
+
+  <!-- 新增交易记录信息 -->
+  <insert id="saveZxDealRecordInfo" parameterType="java.util.Map">
+    insert into zx_app_deal_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="zxAppDealRecordId != null">
+        zx_app_deal_record_id,
+      </if>
+      <if test="zxAppDealRecordMoney != null">
+        zx_app_deal_record_money,
+      </if>
+      <if test="zxAppDealRecordUserId != null">
+        zx_app_deal_record_user_id,
+      </if>
+      <if test="zxAppDealRecordDate != null">
+        zx_app_deal_record_date,
+      </if>
+      <if test="zxAppDealType != null">
+        zx_app_deal_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="zxAppDealRecordId != null">
+        #{zxAppDealRecordId,jdbcType=BIGINT},
+      </if>
+      <if test="zxAppDealRecordMoney != null">
+        #{zxAppDealRecordMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="zxAppDealRecordUserId != null">
+        #{zxAppDealRecordUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="zxAppDealRecordDate != null">
+        #{zxAppDealRecordDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="zxAppDealType != null">
+        #{zxAppDealType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <!-- 查询交易记录信息 -->
+  <select id="queryDealRecordList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.zx_app_deal_record_id AS dealRecordId,
+      a.zx_app_deal_record_money AS dealRecordMoney,
+      a.zx_app_deal_record_user_id AS dealRecordUserId,
+      a.zx_app_deal_record_date AS dealRecordDate,
+      a.zx_app_deal_type AS dealRecordType
+    FROM
+      zx_app_deal_record AS a
+    <where>
+      zx_app_deal_record_user_id = #{memberAccount}
+    </where>
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 查询交易记录统计 -->
+  <select id="queryDealRecordCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+        COUNT(1)
+    FROM
+    zx_app_deal_record AS a
+    <where>
+      zx_app_deal_record_user_id = #{memberAccount}
+    </where>
   </select>
 
 </mapper>

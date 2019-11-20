@@ -40,4 +40,20 @@ public class ZxAssetsTransferController extends BaseController {
         return outputDTO;
     }
 
+    /**
+     * 发布资产转让信息
+     *
+     * @param zxAssetsTransferForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/releaseTransferInfo")
+    public OutputDTO releaseTransferInfo(@ModelAttribute ZxAssetsTransferForm zxAssetsTransferForm) {
+        LOGGER.info("资产转让列表查询...ZxAssetsTransferController.releaseTransferInfo()...");
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxAssetsTransferForm);
+        OutputDTO outputDTO = getOutputDTO(params, "zxAssetsTransferService", "releaseTransferInfo");
+        return outputDTO;
+    }
+
+
+
 }

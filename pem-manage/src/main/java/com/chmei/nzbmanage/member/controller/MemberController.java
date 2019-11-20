@@ -9,10 +9,12 @@ import com.chmei.nzbmanage.common.controller.BaseController;
 import com.chmei.nzbmanage.common.util.Global;
 import com.chmei.nzbmanage.common.util.Md5Utils;
 import com.chmei.nzbmanage.common.util.SmUtils;
+import com.chmei.nzbmanage.configure.FileUploadPathConfig.UploadFilePathConfig;
 import com.chmei.nzbmanage.member.bean.MemberForm;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +40,12 @@ public class MemberController extends BaseController {
      * 日志对象
      */
     private static final Logger LOGGER = Logger.getLogger(MemberController.class);
+
+    /**
+     * 上传下载文件
+     */
+    @Autowired
+    private UploadFilePathConfig uploadFilePathConfig;
 
     /**
      * 新增会员信息
@@ -624,12 +632,16 @@ public class MemberController extends BaseController {
     public OutputDTO uploadPersonalHeadImg(@ModelAttribute MemberForm memberForm) {
         Map<String, Object> map = new HashMap<>();
         OutputDTO outputDTO;
-        String prefix = "/profile/upload/app/head/";
+//        String prefix = "/profile/upload/app/head/";
         try {
             String memberAccount = memberForm.getMemberAccount();
             String base64Data = memberForm.getHeadImgUrl(); // 用户头像
-            String uploadPath_ = Global.getUploadPath() + "app/head/";
-            LOGGER.info("上传图片到服务器的路径全路径 {} " + uploadPath_);
+//            String uploadPath_ = Global.getUploadPath() + "app/head/";
+
+            String path = uploadFilePathConfig.getUploadFolder();
+            String url = uploadFilePathConfig.getFileUrlPath();
+
+            LOGGER.info("上传图片到服务器的路径全路径 {} " + path);
             String dataPrix = "";
             String data = "";
             if (StringUtils.isEmpty(base64Data)) {
@@ -663,17 +675,18 @@ public class MemberController extends BaseController {
             String tempFileName = getRandomFileName() + headImgLastPrix;
             LOGGER.info("文件名称 {} " + tempFileName);
             byte[] bytes = Base64Utils.decodeFromString(data);
-            File file = new File(uploadPath_, tempFileName);
+            File file = new File(path, tempFileName);
             FileUtils.writeByteArrayToFile(file, bytes);
 
             // 保存图片到数据库
             memberForm.setMemberAccount(memberAccount);
-            memberForm.setHeadImgUrl(prefix + tempFileName);
+            memberForm.setHeadImgUrl(url + tempFileName);
             Map<String, Object> params = BeanUtil.convertBean2Map(memberForm);
             outputDTO = getOutputDTO(params, "memberService", "updateMemberInfo");
             if ("0".equals(outputDTO.getCode())) {
-                map.put("headImgUrl", prefix + tempFileName);
+                map.put("headImgUrl", url + tempFileName);
                 outputDTO.setItem(map);
+                outputDTO.setMsg("头像修改成功！");
             }
         } catch (IOException e) {
             e.printStackTrace();

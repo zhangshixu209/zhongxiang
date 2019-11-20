@@ -32,4 +32,34 @@ public interface IZxAssetsTransferService {
 	 * @return
 	 */
 	void releaseTransferInfo(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 购买资产转让信息
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 * @return
+	 */
+	void buyTransferFee(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 取消资产转让信息
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 * @return
+	 */
+	void cancelTransferInfo(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 交易记录列表查询
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 * @return
+	 */
+	void queryDealRecordList(InputDTO input, OutputDTO output) throws NzbDataException;
 }

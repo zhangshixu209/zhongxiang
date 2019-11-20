@@ -31,4 +31,19 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 		input.setMethod("queryAssetsTransferList");
 		getNzbDataService().execute(input, output);
 	}
+
+	/**
+	 * 发布资产转让信息
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void releaseTransferInfo(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxAssetsTransferService");
+		input.setMethod("releaseTransferInfo");
+		getNzbDataService().execute(input, output);
+	}
 }

@@ -4,9 +4,11 @@ import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbcommon.cmutil.BeanUtil;
 import com.chmei.nzbmanage.common.controller.BaseController;
 import com.chmei.nzbmanage.common.util.Global;
+import com.chmei.nzbmanage.configure.FileUploadPathConfig.UploadFilePathConfig;
 import com.chmei.nzbmanage.message.bean.ZxMessageForm;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,6 +32,12 @@ public class ZxMessageController extends BaseController {
      * 日志对象
      */
     private static final Logger LOGGER = Logger.getLogger(ZxMessageController.class);
+
+    /**
+     * 上传下载文件
+     */
+    @Autowired
+    private UploadFilePathConfig uploadFilePathConfig;
     
     /**
      * 众享信息新增
@@ -47,11 +55,6 @@ public class ZxMessageController extends BaseController {
     }
 
     /**
-     * 众享信息服务器图片存放位置
-     */
-    private final String PREFIX_IMG = "/profile/upload/app/message/img/";
-
-    /**
      * 众享信息上传图片
      * @param files 文件
      * @return
@@ -62,7 +65,9 @@ public class ZxMessageController extends BaseController {
         if (Optional.ofNullable(files).isPresent() && files.size() > 0) {
             // 上传图片到服务器
             ArrayList<String> list = new ArrayList<>();
-            String path = Global.getUploadPath() + "/app/message/img/";
+            String path = uploadFilePathConfig.getUploadFolder();
+            String PREFIX_IMG = uploadFilePathConfig.getFileUrlPath();
+
             for (MultipartFile file : files) {
                 String originalFilename = file.getOriginalFilename();
                 String lastFileName = getLastFileName(originalFilename);
@@ -89,11 +94,6 @@ public class ZxMessageController extends BaseController {
     }
 
     /**
-     * 众享信息服务器视频存放位置
-     */
-    private final String PREFIX_VIDEO = "/profile/upload/app/message/video/";
-
-    /**
      * 众享信息上传视频
      * @param file 文件
      * @return
@@ -102,12 +102,14 @@ public class ZxMessageController extends BaseController {
     public OutputDTO uploadVideo(@RequestParam("file") MultipartFile file) {
         OutputDTO outputDTO = new OutputDTO();
         if (Optional.ofNullable(file).isPresent()) {
-            String video_url = Global.getUploadPath() + "app/message/video/";
+//            String video_url = Global.getUploadPath() + "app/message/video/";
+            String video_url = uploadFilePathConfig.getUploadFolder();
             String originalFilename = file.getOriginalFilename();
             // 截取文件后缀名称
             String substring = originalFilename.substring(originalFilename.lastIndexOf("."));
             // 获取随机文件名称,不带.xxx后缀
             String extendFileName = this.getRandomFileName();
+            String PREFIX_VIDEO = uploadFilePathConfig.getFileUrlPath();
             // 临时文件处理路径
             String url = video_url + extendFileName + substring;
             File path = new File(url);

@@ -23,4 +23,14 @@ public interface IZxAssetsTransferService {
 	 */
 	void queryAssetsTransferList(InputDTO input, OutputDTO output) throws NzbServiceException;
 
+	/**
+	 * 发布资产转让信息
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 * @return
+	 */
+	void releaseTransferInfo(InputDTO input, OutputDTO output) throws NzbServiceException;
+
 }
