@@ -70,28 +70,30 @@ public class ZxMessageServiceImpl extends BaseServiceImpl implements IZxMessageS
 	@Override
 	public void queryZxMessageList(InputDTO input, OutputDTO output) throws NzbDataException {
 		LOGGER.info("ZxMessageServiceImpl.queryRotationChartList, input::" + input.getParams().toString());
-		Map<String, Object> params = new HashMap<>();
+		Map<String, Object> params = input.getParams();
 		try {
 			int total = getBaseDao().getTotalCount("ZxMessageMapper.queryZxMessageCount", params);
 			if (total > 0) {
 				List<Map<String, Object>> list = getBaseDao().queryForList("ZxMessageMapper.queryZxMessageList", params);
-				for (Map<String, Object> map : list) {
-					Map<String, Object> result = new HashMap<>();
-					// 查询附件
-					result.put("zxMessageId", map.get("zxMessageId"));       // 众享信息ID
-					List<Map<String, Object>> filePaths = getBaseDao().queryForList("ZxMessageMapper.queryFileList",
-							result);
-					// 统计当前众享信息总赞数
-					int praiseTotalAll = getBaseDao().getTotalCount("ZxMessageMapper.queryZxMessagePraiseCount", result);
-					result.put("memberAccount", map.get("memberAccount"));   // 当前登录用户ID
-					int praiseTotal = queryZxMessagePraiseCount(result);     // 查询当前用户是否已点赞该众享信息
-					if (praiseTotal > 0) {
-						map.put("praiseStatus", "1"); // 已点赞
-					} else {
-						map.put("praiseStatus", "0"); // 未点赞
+				if (null != list && list.size() > 0) {
+					for (Map<String, Object> map : list) {
+						Map<String, Object> result = new HashMap<>();
+						// 查询附件
+						result.put("zxMessageId", map.get("zxMessageId"));       // 众享信息ID
+						List<Map<String, Object>> filePaths = getBaseDao().queryForList("ZxMessageMapper.queryFileList",
+								result);
+						// 统计当前众享信息总赞数
+						int praiseTotalAll = getBaseDao().getTotalCount("ZxMessageMapper.queryZxMessagePraiseCount", result);
+						result.put("memberAccount", map.get("memberAccount"));   // 当前登录用户ID
+						int praiseTotal = queryZxMessagePraiseCount(result);     // 查询当前用户是否已点赞该众享信息
+						if (praiseTotal > 0) {
+							map.put("praiseStatus", "1"); // 已点赞
+						} else {
+							map.put("praiseStatus", "0"); // 未点赞
+						}
+						map.put("praiseTotalAll", praiseTotalAll); // 点赞数量
+						map.put("filePaths", filePaths);     	   // 图片信息
 					}
-					map.put("praiseTotalAll", praiseTotalAll); // 点赞数量
-					map.put("filePaths", filePaths);     	   // 图片信息
 				}
 				output.setItems(list);
 			}
@@ -314,8 +316,9 @@ public class ZxMessageServiceImpl extends BaseServiceImpl implements IZxMessageS
 			String filePaths = MapUtils.getString(params, "filePaths");
 			if (StringUtils.isNotEmpty(filePaths)) {
 				@SuppressWarnings("unchecked")
-				List<String> fileList = JsonUtil.convertJson2Object(filePaths, List.class);
-				for (String list : fileList) {
+//				List<String> fileList = JsonUtil.convertJson2Object(filePaths, List.class);
+				String[] fileArray = filePaths.split("\\$");
+				for (String list : fileArray) {
 					Map<String, Object> paraMap = new HashMap<>();
 					paraMap.put("zxMessageUrlId", getSequence());
 					paraMap.put("zxMessageId", params.get("zxMessageId")); // 众享信息表id

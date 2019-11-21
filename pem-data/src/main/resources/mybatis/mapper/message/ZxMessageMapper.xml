@@ -37,6 +37,7 @@
         a.member_account = #{memberAccount,jdbcType=VARCHAR}
       </if>
     </where>
+    ORDER BY zx_message_date DESC
     <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
       LIMIT ${start},${limit}
     </if>

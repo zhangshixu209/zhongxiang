@@ -259,4 +259,127 @@
       zx_app_red_packet AS a
   WHERE a.member_account = #{memberAccount}
   </select>
+
+  <!-- 判断是否已经答错过 -->
+  <select id="isScrapeRedPacket" resultType="java.lang.Integer" parameterType="java.util.Map">
+       SELECT count(1)
+        FROM ${tableName} WHERE red_packet_id = #{redPacketId}  AND red_packet_user_id = #{memberAccount}
+  </select>
+
+  <!--根据用户ID和红包ID查询红包详细信息 -->
+  <select id="queryRedPacketDetail" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.red_packet_id AS redPacketId,
+      a.member_account AS redPacketUserId,
+      a.red_packet_money_count AS redPacketMoneyCount,
+      a.red_packet_count AS redPacketCount,
+      a.red_packet_stock AS redPacketStock,
+      a.red_packet_info AS redPacketInfo,
+      a.red_packet_luck_star AS redPacketLuckStar,
+      a.red_packet_start_time AS redPacketStartTime,
+      a.red_packet_end_time AS redPacketEndTime,
+      a.red_packet_question AS redPacketQuestion,
+      a.red_packet_options AS redPacketOptions,
+      a.red_packet_answer AS redPacketAnswer,
+      a.red_packet_sex AS redPacketSex,
+      a.red_packet_age_start AS redPacketAgeStart,
+      a.red_packet_age_end AS redPacketAgeEnd,
+      a.red_packet_date AS redPacketDate
+  FROM
+      zx_app_red_packet a
+      WHERE a.red_packet_id = #{redPacketId} AND red_packet_user_id = #{memberAccount}
+  </select>
+
+  <!--根据用户账号和红包id查询-->
+  <select id="queryRedPacketInfoDetail" resultType="java.util.Map">
+       SELECT
+            red_packet_info_id AS redPacketInfoId,
+            red_packet_id AS redPacketId,
+            red_packet_user_id AS redPacketUserId,
+            red_packet_money AS redPacketMoney,
+            red_packet_luck_star AS redPacketLuckStar,
+            red_packet_date AS redPacketDate
+        FROM zx_app_red_packet_info WHERE red_packet_id = #{redPacketId}  AND red_packet_user_id = #{robUserId}
+	      LIMIT 1
+    </select>
+
+  <!--随机获取红包信息-->
+  <select id="randomSelectRedPacketInfo" parameterType="java.lang.Integer" resultType="java.util.Map">
+      SELECT
+        zx_app_red_packet_info.red_packet_info_id AS "redPacketInfoId",
+        zx_app_red_packet_info.red_packet_id AS "redPacketId",
+        zx_app_red_packet_info.red_packet_user_id AS "redPacketUserId",
+        zx_app_red_packet_info.red_packet_money AS "redPacketMoney",
+        zx_app_red_packet_info.red_packet_luck_star AS "redPacketLuckStar",
+        zx_app_red_packet_info.red_packet_date AS "redPacketDate",
+        UNIX_TIMESTAMP(zx_app_red_packet.red_packet_end_time) - UNIX_TIMESTAMP(zx_app_red_packet.red_packet_start_time)  AS "timeSum"
+      FROM zx_app_red_packet_info
+              LEFT JOIN zx_app_red_packet ON zx_app_red_packet.red_packet_id = zx_app_red_packet_info.red_packet_id
+      WHERE zx_app_red_packet_info.red_packet_id = #{redPacketId}  AND zx_app_red_packet_info.red_packet_user_id IS NULL
+      LIMIT 1
+  </select>
+
+  <!--更新红包信息绑定用户ID-->
+  <update id="updateRedPacketInfoById" parameterType="java.util.Map">
+      update zx_app_img_red_packet_info set
+          red_packet_img_user_id = #{robUserId},
+          red_packet_img_date = sysdate()
+      where red_packet_img_info_id = #{redPacketId}
+  </update>
+
+  <!-- 根据红包信息ID查询出最终的红包信息 -->
+  <select id="selectRedPacketInfoByInfoId" parameterType="java.lang.Integer" resultType="java.util.Map">
+		SELECT
+          zx_app_red_packet_info.red_packet_info_id AS "redPacketInfoId",
+          zx_app_red_packet_info.red_packet_id AS "redPacketId",
+          zx_app_red_packet.red_packet_user_id AS "redPacketUserId",
+          zx_app_red_packet_info.red_packet_user_id AS "robRedPacketUserId",
+		  zx_app_red_packet_info.red_packet_money AS "redPacketMoney",
+		  zx_app_red_packet_info.red_packet_luck_star AS "redPacketLuckStar",
+          zx_app_red_packet_info.red_packet_date AS "redPacketDate",
+          zx_app_red_packet.red_packet_stock AS "redPacketStock",
+		  UNIX_TIMESTAMP(zx_app_red_packet.red_packet_end_time) - UNIX_TIMESTAMP(zx_app_red_packet.red_packet_start_time)  AS "timeSum"
+        FROM zx_app_red_packet_info
+				LEFT JOIN zx_app_red_packet ON zx_app_red_packet.red_packet_id = zx_app_red_packet_info.red_packet_id
+        WHERE zx_app_red_packet_info.red_packet_info_id = #{redPacketInfoId}
+        LIMIT 1
+	</select>
+
+  <!-- 根据当前登录人查询所抢红包 -->
+  <select id="selectRedPacketInfoByRobUserId" parameterType="java.lang.Integer" resultType="java.util.Map">
+      SELECT
+          b.red_packet_id AS redPacketId, -- 红包ID
+          b.member_account AS memberAccount, -- 发布红包用户ID
+          b.red_packet_money_count AS redPacketMoneyCount, -- 红包金额
+          b.red_packet_count AS redPacketCount,-- 红包个数
+          b.red_packet_info AS redPacketInfo,-- 红包显示信息
+          UNIX_TIMESTAMP(b.red_packet_end_time) - UNIX_TIMESTAMP(b.red_packet_start_time)  AS timeSum, -- 抢红包总耗时
+          b.red_packet_date AS redPacketDate,-- 发布红包时间
+          a.head_img_url AS headImgUrl,-- 发布红包用户头像ID
+          IFNULL(a.nickname,a.member_account) AS nickName, -- 发布红包用户昵称
+          a.id AS userId -- 用户账号
+      FROM
+          zx_app_red_packet b
+      LEFT JOIN t_member a ON a.member_account = b.member_account
+      WHERE b.red_packet_id IN ( SELECT red_packet_id FROM zx_app_red_packet_info WHERE red_packet_user_id = '')
+            AND b.red_packet_stock = 0
+    </select>
+
+  <!-- 通过当前用户ID查询此用户的抢红包的信息和红包信息 -->
+  <select id="selectUserRedPacketInfoAndRedPacketByUserId" parameterType="java.util.Map" resultType="java.util.Map">
+      SELECT
+              zx_app_user.head_img_url AS "headImgUrl",-- 头像图片链接
+              IFNULL( zx_app_user.nick_name, zx_app_user.phone_number ) AS "nickName",-- 昵称
+              zx_app_user.phone_number AS "phoneNumber",-- 用户账号
+              zx_app_red_packet.red_packet_info AS "redPacketInfo",-- 红包广告标语
+              zx_app_red_packet.red_packet_count AS "redPacketCount",-- 红包总个数
+              zx_app_red_packet.red_packet_stock AS "redPacketStock",-- 红包剩余个数
+              UNIX_TIMESTAMP( zx_app_red_packet.red_packet_end_time ) - UNIX_TIMESTAMP( zx_app_red_packet.red_packet_start_time ) AS "timeSum"-- 抢红包总耗时
+          FROM
+              zx_app_red_packet
+              LEFT JOIN zx_app_user ON zx_app_user.id = zx_app_red_packet.red_packet_user_id
+          WHERE
+              zx_app_red_packet.red_packet_id = #{redPacketId}
+    </select>
+
 </mapper>

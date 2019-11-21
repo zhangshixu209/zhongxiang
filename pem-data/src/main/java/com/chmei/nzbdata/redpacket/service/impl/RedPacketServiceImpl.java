@@ -193,6 +193,177 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 	}
 
 	/**
+	 * 众享红包抢红包
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public void robRedPacketInfo(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			// 查询用户信息
+			Map<String, Object> zxAppUser =  (Map<String, Object>) getBaseDao().
+					queryForObject("MemberMapper.queryMemberDetail", params);
+			// 通过用户账号和红包ID查询出红包信息:
+			Long redPacketId = (Long) params.get("redPacketId");
+			String redPacketUserId = (String) params.get("memberAccount");
+			String robUserId = (String) params.get("robUserId");
+			//判断是否已经答错过
+			Map<String,Object> ismap = new HashMap<>();
+			ismap.put("redPacketId", redPacketId);
+			ismap.put("userId", robUserId);
+			ismap.put("tableName","zx_app_red_packet_scrape");
+			int ishave = getBaseDao().getTotalCount("RedPacketMapper.isScrapeRedPacket", ismap);
+			if (ishave != 0) {
+				output.setCode("-1"); // 8
+				output.setMsg("答案错误,祝下次好运!");
+				return;
+			}
+			// 根据用户ID和红包ID查询红包详细信息
+			Map<String, Object> redPacket = (Map<String, Object>) getBaseDao().queryForObject(
+					"RedPacketMapper.queryRedPacketDetail", params);
+			// 抢红包的人存在和红包信息存在才可以进行抢红包操作
+			if (Optional.ofNullable(zxAppUser).isPresent() && Optional.ofNullable(redPacket).isPresent()) {
+				// 先判断是否抢过红包:
+				Map<String, Object> one = (Map<String, Object>) getBaseDao().queryForObject(
+						"RedPacketMapper.queryRedPacketInfoDetail", params);
+				if (Optional.ofNullable(one).isPresent() && (int)one.get("redPacketUserId") != 0) {
+					output.setCode("-1"); // 4
+					output.setMsg("不能重复抢红包!");
+					return;
+				}
+				if(0 == (int) redPacket.get("redPacketStock")) { // 判断红包剩余数量
+					output.setCode("-1"); // 5
+					output.setMsg("很遗憾，红包已被领完!");
+					return;
+				}
+				String answer = (String) params.get("redPacketAnswer"); // 判断回答问题答案
+				if (answer == null || answer.isEmpty() || !answer.equals(redPacket.get("redPacketAnswer"))) {
+					getBaseDao().insert("RedPacketMapper.insertScrapeRedPacket", ismap);
+					output.setCode("-1"); // 3
+					output.setMsg("回答错误，下次要用心哟!");
+					return;
+				}
+				// 返回一个随意产生的红包给用户,并保存到数据库:
+				Map<String, Object> maps = (Map<String, Object>) getBaseDao().queryForObject(
+						"RedPacketMapper.randomSelectRedPacketInfo", redPacket);
+				// 之后将抢红包人的Id更新到抢红包的表中,并结算时间,存入到红包信息表中
+				if (Optional.ofNullable(maps).isPresent()) {
+					// 更新抢红包信息表
+					int time = getBaseDao().update("RedPacketMapper.updateRedPacketInfoById", params);
+					if (time != -1) {
+						// 更新用户表金额
+						Map<String, Object> result = new HashMap<>();
+						result.put("memberAccount", params.get("robUserId"));
+						// 查询用户信息
+						Map<String, Object> appUser =  (Map<String, Object>) getBaseDao().
+								queryForObject("MemberMapper.queryMemberDetail", result);
+						if (null != appUser) {
+							Map<String, Object> updateUser = new HashMap<>();
+							// 给抢红包的用户进行金额的更新,抢到的红包放入到红包金额中
+							updateUser.put("memberAccount", params.get("robUserId"));
+							// 使用那个发布的就进入那个钱包
+							double money = (double) maps.get("redPacketMoney");
+							BigDecimal advertisingFee = (BigDecimal) appUser.get("advertisingFee");
+							updateUser.put("advertisingFee", advertisingFee.doubleValue() + money);
+							int i = getBaseDao().update("Member.updateMemberBalance", updateUser);
+							if (i > 0) {
+								Map<String, Object> redPac = new HashMap<>();
+								redPac.put("memberAccount", redPacketUserId);
+								Map<String, Object> zxAppUser1 = (Map<String, Object>) getBaseDao().queryForObject(
+										"MemberMapper.queryMemberDetail", redPac);
+								if (null != zxAppUser1) {
+									// 广告钱包记录
+									Map<String, Object> adRecord = new HashMap<>();
+									adRecord.put("advertisingInfoId", getSequence());
+									adRecord.put("advertisingInfoAddOrMinus", "-");
+									adRecord.put("advertisingInfoUserId", robUserId);
+									adRecord.put("advertisingInfoMoney", money);
+									adRecord.put("advertisingInfoFrom", "钱包红包--来自" + zxAppUser1.get("nickName"));
+									getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
+								}
+								maps = (Map<String, Object>) getBaseDao().queryForObject("RedPacketMapper.selectRedPacketInfoByInfoId", maps);
+								output.setCode("0"); // 3
+								output.setMsg("返回单个红包金额信息!");
+								output.setItem(maps);
+								return;
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("系统异常", e);
+		}
+	}
+
+	/**
+	 * 查看已经领取过得红包,参数是:抢红包用户ID,红包ID
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void viewRedPacketDone(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			if(Optional.ofNullable(params).isPresent()) {
+				// 根据抢红包人的ID查询红包金额信息表中红包ID
+				List<Map<String,Object>> list = getBaseDao().queryForList(
+						"RedPacketMapper.selectRedPacketInfoByRobUserId", params);
+				if(list != null && list.size() > 0){
+					output.setCode("0");
+					output.setMsg("数据存在!");
+					output.setItems(list);
+					return;
+				}
+				Long id = (Long) params.get("redPacketId");
+				@SuppressWarnings("unchecked")
+				Map<String, Object> maps = (Map<String, Object>) getBaseDao().
+						queryForObject("RedPacketMapper.queryRedPacketLog", id);
+				if(Optional.ofNullable(maps).isPresent()){
+					output.setCode("0");
+					output.setMsg("暂无人抢该红包!");
+					output.setItem(maps);
+					return;
+				}
+				output.setCode("0");
+				output.setMsg("该红包已过期!");
+				return;
+			}
+			output.setCode("-1");
+			output.setMsg("系统错误!");
+		} catch (Exception e) {
+			LOGGER.error("系统错误", e);
+		}
+	}
+
+	/**
+	 * 查看红包详细的信息,比如未领取完毕,谁领取了多少钱,谁是手气最佳,参数为:红包id和当前用户ID
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void viewRedPacketInfo(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			if (Optional.ofNullable(params).isPresent()) {
+				// 红包信息和当前人抢红包金额,和发布红包人的信息
+//				Map<String, Object> maps1 = redPacketService.selectUserRedPacketInfoAndRedPacketByUserId(map);
+				// TODO     ========2019年11月21日
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * 校验钱包余额
 	 * @param input 入参
 	 * @param output 出参

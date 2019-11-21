@@ -101,6 +101,11 @@ public class RedPacketForm implements Serializable {
      */
     private String redPacketVideoType;
 
+    /**
+     * 抢红包用户ID账号
+     */
+    private String robUserId;
+
     private static final long serialVersionUID = 1L;
 
     public Long getRedPacketId() {
@@ -245,5 +250,13 @@ public class RedPacketForm implements Serializable {
 
     public void setRedPacketVideoType(String redPacketVideoType) {
         this.redPacketVideoType = redPacketVideoType;
+    }
+
+    public String getRobUserId() {
+        return robUserId;
+    }
+
+    public void setRobUserId(String robUserId) {
+        this.robUserId = robUserId;
     }
 }
