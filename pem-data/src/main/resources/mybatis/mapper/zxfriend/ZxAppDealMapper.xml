@@ -19,8 +19,9 @@
     <include refid="Base_Column_List" />
     from zx_app_deal
     <where>
+          deal_money_mark = '2'
           <if test="dealUserId != null and dealUserId != ''">
-            deal_user_id = #{memberAccount,jdbcType=VARCHAR}
+            AND deal_user_id = #{memberAccount,jdbcType=VARCHAR}
           </if>
     </where>
       ORDER BY deal_date DESC
@@ -35,11 +36,14 @@
     from zx_app_deal
     <where>
         deal_money_mark = '2'
+        <if test="dealUserId != null and dealUserId != ''">
+          AND deal_user_id = #{memberAccount,jdbcType=VARCHAR}
+        </if>
     </where>
   </select>
 
   <!-- 删除转让信息 -->
-  <delete id="deleteDealInfo" parameterType="java.lang.Long">
+  <delete id="deleteDealInfo" parameterType="java.util.Map">
     delete from zx_app_deal
     where deal_user_id = #{memberAccount,jdbcType=VARCHAR}
   </delete>
@@ -82,7 +86,7 @@
   </insert>
 
   <!-- 资产转让交易记录修改 -->
-  <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
+  <update id="updateDealInfo" parameterType="java.util.Map">
     update zx_app_deal
     <set>
       <if test="dealUserId != null">

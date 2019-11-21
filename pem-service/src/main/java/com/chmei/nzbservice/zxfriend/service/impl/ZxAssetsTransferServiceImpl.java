@@ -46,4 +46,49 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 		input.setMethod("releaseTransferInfo");
 		getNzbDataService().execute(input, output);
 	}
+
+	/**
+	 * 购买资产转让信息
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void buyTransferFee(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxAssetsTransferService");
+		input.setMethod("buyTransferFee");
+		getNzbDataService().execute(input, output);
+	}
+
+	/**
+	 * 取消资产转让信息
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void cancelTransferInfo(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxAssetsTransferService");
+		input.setMethod("cancelTransferInfo");
+		getNzbDataService().execute(input, output);
+	}
+
+	/**
+	 * 交易记录列表查询
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void queryDealRecordList(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxAssetsTransferService");
+		input.setMethod("queryDealRecordList");
+		getNzbDataService().execute(input, output);
+	}
 }

@@ -54,6 +54,46 @@ public class ZxAssetsTransferController extends BaseController {
         return outputDTO;
     }
 
+    /**
+     * 购买资产转让信息
+     *
+     * @param zxAssetsTransferForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/buyTransferFee")
+    public OutputDTO buyTransferFee(@ModelAttribute ZxAssetsTransferForm zxAssetsTransferForm) {
+        LOGGER.info("资产转让列表查询...ZxAssetsTransferController.buyTransferFee()...");
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxAssetsTransferForm);
+        OutputDTO outputDTO = getOutputDTO(params, "zxAssetsTransferService", "buyTransferFee");
+        return outputDTO;
+    }
 
+    /**
+     * 取消资产转让信息
+     *
+     * @param zxAssetsTransferForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/cancelTransferInfo")
+    public OutputDTO cancelTransferInfo(@ModelAttribute ZxAssetsTransferForm zxAssetsTransferForm) {
+        LOGGER.info("资产转让列表查询...ZxAssetsTransferController.cancelTransferInfo()...");
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxAssetsTransferForm);
+        OutputDTO outputDTO = getOutputDTO(params, "zxAssetsTransferService", "cancelTransferInfo");
+        return outputDTO;
+    }
+
+    /**
+     * 查询交易记录信息
+     *
+     * @param zxAssetsTransferForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/queryDealRecordList")
+    public OutputDTO queryDealRecordList(@ModelAttribute ZxAssetsTransferForm zxAssetsTransferForm) {
+        LOGGER.info("资产转让列表查询...ZxAssetsTransferController.queryDealRecordList()...");
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxAssetsTransferForm);
+        OutputDTO outputDTO = getOutputDTO(params, "zxAssetsTransferService", "queryDealRecordList");
+        return outputDTO;
+    }
 
 }
