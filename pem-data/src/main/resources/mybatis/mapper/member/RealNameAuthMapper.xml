@@ -42,7 +42,10 @@
       a.sex AS sex,
       a.birthday AS birthday,
       a.age AS age,
-      a.crt_time AS crtTime
+      a.crt_time AS crtTime,
+      a.province_name AS provinceName,
+      a.city_name AS cityName,
+      a.county_name AS countyName
   FROM
       t_real_name_authentic AS a
   WHERE a.member_account = #{memberAccount}

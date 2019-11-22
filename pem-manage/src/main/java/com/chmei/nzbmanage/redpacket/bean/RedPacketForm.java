@@ -106,6 +106,11 @@ public class RedPacketForm implements Serializable {
      */
     private String robUserId;
 
+    /**
+     * 地区父ID
+     */
+    private Integer parentAreaCode;
+
     private static final long serialVersionUID = 1L;
 
     public Long getRedPacketId() {
@@ -258,5 +263,13 @@ public class RedPacketForm implements Serializable {
 
     public void setRobUserId(String robUserId) {
         this.robUserId = robUserId;
+    }
+
+    public Integer getParentAreaCode() {
+        return parentAreaCode;
+    }
+
+    public void setParentAreaCode(Integer parentAreaCode) {
+        this.parentAreaCode = parentAreaCode;
     }
 }

@@ -129,6 +129,62 @@ public class MemberForm extends BaseForm {
      */
     private String headImgUrl;
 
+    /**
+     * 真实姓名
+     */
+    private String realName;
+
+    /**
+     * 身份证号码
+     */
+    private String cardNum;
+
+    /**
+     * 性别
+     */
+    private String sex;
+
+    /**
+     * 出生年月日
+     */
+    private String birthday;
+
+    /**
+     * 年龄
+     */
+    private Integer age;
+
+    /**
+     * 省ID
+     */
+    private Integer provinceId;
+
+    /**
+     * 市ID
+     */
+    private Integer cityId;
+
+    /**
+     * 县ID
+     */
+    private Integer countyId;
+
+    /**
+     * 省名称
+     */
+    private String provinceName;
+
+    /**
+     * 市名称
+     */
+    private String cityName;
+
+    /**
+     * 区/县名称
+     */
+    private String countyName;
+
+
     public String getUsername() {
         return username;
     }
@@ -353,5 +409,93 @@ public class MemberForm extends BaseForm {
 
     public void setHeadImgUrl(String headImgUrl) {
         this.headImgUrl = headImgUrl;
+    }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
+
+    public String getCardNum() {
+        return cardNum;
+    }
+
+    public void setCardNum(String cardNum) {
+        this.cardNum = cardNum;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public Integer getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(Integer provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    public Integer getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Integer cityId) {
+        this.cityId = cityId;
+    }
+
+    public Integer getCountyId() {
+        return countyId;
+    }
+
+    public void setCountyId(Integer countyId) {
+        this.countyId = countyId;
+    }
+
+    public String getProvinceName() {
+        return provinceName;
+    }
+
+    public void setProvinceName(String provinceName) {
+        this.provinceName = provinceName;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
+    public String getCountyName() {
+        return countyName;
+    }
+
+    public void setCountyName(String countyName) {
+        this.countyName = countyName;
     }
 }

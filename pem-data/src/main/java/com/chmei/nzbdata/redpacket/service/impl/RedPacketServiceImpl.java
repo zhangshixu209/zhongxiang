@@ -2,6 +2,7 @@ package com.chmei.nzbdata.redpacket.service.impl;
 
 import com.chmei.nzbcommon.cmbean.InputDTO;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
+import com.chmei.nzbcommon.cmutil.JsonUtil;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
 import com.chmei.nzbdata.redpacket.service.IRedPacketService;
@@ -349,17 +350,199 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 	 * @param output 返回对象
 	 * @throws NzbDataException 自定义异常
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void viewRedPacketInfo(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
 			if (Optional.ofNullable(params).isPresent()) {
 				// 红包信息和当前人抢红包金额,和发布红包人的信息
-//				Map<String, Object> maps1 = redPacketService.selectUserRedPacketInfoAndRedPacketByUserId(map);
-				// TODO     ========2019年11月21日
+				Map<String, Object> maps1 = (Map<String, Object>) getBaseDao().queryForObject(
+						"RedPacketMapper.selectUserRedPacketInfoAndRedPacketByUserId", params);
+				if (Optional.ofNullable(maps1).isPresent()) {
+					Map<String, Object> stringObjectMap = (Map<String, Object>) getBaseDao().queryForObject(
+							"RedPacketMapper.queryRedPacketInfoByRedPacketIdAndUserId", params);
+					if (!Optional.ofNullable(stringObjectMap).isPresent()) {
+						stringObjectMap = new HashMap<>();
+						stringObjectMap.put("redPacketMoney",0);
+						stringObjectMap.put("redPacketDate","");
+					}
+					maps1.putAll(stringObjectMap);
+					// 非当前人抢红包信息
+					List<Map<String, Object>> maps = getBaseDao().queryForList(
+							"RedPacketMapper.selectRedPacketInfoByRedPacketId", params);
+					maps1.put("list",maps);
+					output.setItem(maps1);
+					output.setCode("0");
+					output.setMsg("查询成功!");
+					return;
+				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("系统异常", e);
+		}
+	}
+
+	/**
+	 * 根据红包ID查询红包详细信息
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void queryRedPacketDetail(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) getBaseDao().
+					queryForObject("RedPacketMapper.queryRedPacketLog", params);
+			output.setItem(map);
+		} catch (Exception e) {
+			LOGGER.error("系统异常", e);
+		}
+	}
+
+	/**
+	 * 根据红包ID和用户ID查看此用户是否抢当前这个红包
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void checkUserIsRobRedPacket(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			int check =  getBaseDao().getTotalCount("RedPacketMapper.checkUserIsRobRedPacket", params);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> checkMap = (Map<String, Object>) getBaseDao().queryForObject(
+					"RedPacketMapper.selectStockByRedPacketId", params);
+			if (Optional.ofNullable(checkMap).isPresent()) {
+				checkMap.put("isRobRedPacket",check > 0 ? "1" : "0");
+				output.setMsg("成功");
+				output.setItem(checkMap);
+			}
+		} catch (Exception e) {
+			LOGGER.error("系统异常", e);
+		}
+	}
+
+	/**
+	 * 当前用户是否领取该红包 参数为 memberAccount（当前用户账号）,redPackageIds（红包Id） 返回值
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void selectListStockByRedPacketId(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			String packetIds = (String) params.get("redPacketIds");
+			@SuppressWarnings("unchecked")
+			List<Map<String, Object>> btnList = JsonUtil.convertJson2Object(packetIds, List.class);
+			params.put("redPacketIds", btnList);
+			List<Map<String, Object>> list = getBaseDao().queryForList(
+					"RedPacketMapper.selectListStockByRedPacketId", params);
+			if (null != list && list.size() > 0) {
+				output.setMsg("查询成功");
+				output.setItems(list);
+			} else {
+				output.setCode("-1");
+				output.setMsg("查询失败");
+			}
+		} catch (Exception e) {
+			LOGGER.error("系统异常", e);
+		}
+	}
+
+	/**
+	 * 查询所有红包根据用户权限（性别，年龄，地区）
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void queryAllRedPacketByAuth(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		List<Map<String, Object>> listAll = new ArrayList<>();
+		try {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> item = (Map<String, Object>) getBaseDao().
+					queryForObject("RealNameAuthMapper.queryRealNameInfo", params);
+			List<Map<String, Object>> list = getBaseDao().queryForList("RedPacketMapper.queryRedPacketLog", params);
+			if (Optional.ofNullable(item).isPresent()) {
+				Integer age = (Integer) item.get("age");
+				String sex = (String) item.get("sex");
+				if (null != list && list.size() > 0) {
+					for (Map<String, Object> map : list) {
+						Map<String, Object> result = new HashMap<>();
+						String redPacketSex = (String) map.get("redPacketSex");           // 红包性别
+						String redPacketAgeStart = (String) map.get("redPacketAgeStart"); // 红包开始年龄
+						String redPacketAgeEnd = (String) map.get("redPacketAgeEnd");     // 红包结束年龄
+						result.put("redProName", map.get("provinceName"));                // 省名称
+						result.put("redCityName", map.get("cityName"));                   // 市名称
+						result.put("redCountyName", map.get("countyName"));               // 区县名称
+						// 校验红包地区
+						int checkArea = checkArea(item, result);
+						// 校验红包年龄
+						int checkAge = checkAge(age, Integer.parseInt(redPacketAgeStart), Integer.parseInt(redPacketAgeEnd));
+						if (!sex.equals(redPacketSex) || checkAge == 0 || checkArea == 0) {
+							continue;
+						}
+						listAll.add(map);
+					}
+				}
+			}
+			// TODO =====
+		} catch (Exception e) {
+			LOGGER.error("系统异常", e);
+		}
+	}
+
+	/**
+	 * 校验红包年龄限制
+	 * @param age 用户年龄
+	 * @param redPacketAgeStart 红包开始年龄
+	 * @param redPacketAgeEnd 红包结束年龄
+	 * @return
+	 */
+	private int checkAge(Integer age, Integer redPacketAgeStart, Integer redPacketAgeEnd){
+		if (age >= redPacketAgeStart && age <= redPacketAgeEnd) {
+			return 1;
+		}
+		return 0;
+	}
+
+	private int checkArea(Map<String, Object> item, Map<String, Object> result){
+//		if ("-1".equals(result.get("redProvName"))) {
+//			return 1;
+//		} else if (item.get("")) {
+//
+//		}
+		// TODO ====
+		return 0;
+	}
+
+	/**
+	 * 根据父编码查询省市信息
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void queryAreaByParent(InputDTO input, OutputDTO output) throws NzbDataException{
+		try {
+			List<Map<String,Object>> queryForObject = getBaseDao().queryForList(
+					"RedPacketMapper.queryAreaList", input.getParams());
+			if(queryForObject != null && !queryForObject.isEmpty()) {
+				output.setItems(queryForObject);
+			}
+		} catch (Exception e) {
+			LOGGER.error("系统异常", e);
 		}
 	}
 

@@ -206,11 +206,18 @@
       a.red_packet_date AS redPacketDate,
       b.head_img_url AS headImgUrl,
       b.nickname AS nickname,
-      b.member_account AS memberAccount
+      b.member_account AS memberAccount,
+      a.province_name AS provinceName,
+      a.city_name AS cityName,
+      a.county_name AS countyName
   FROM
       zx_app_red_packet a
       LEFT JOIN t_member b ON a.member_account = b.member_account
-      WHERE a.red_packet_id = #{redPacketId}
+      <where>
+        <if test="redPacketId != null and redPacketId != ''">
+            a.red_packet_id = #{redPacketId}
+        </if>
+      </where>
   </select>
 
   <!-- 新增抢红包记录 -->
@@ -368,18 +375,90 @@
   <!-- 通过当前用户ID查询此用户的抢红包的信息和红包信息 -->
   <select id="selectUserRedPacketInfoAndRedPacketByUserId" parameterType="java.util.Map" resultType="java.util.Map">
       SELECT
-              zx_app_user.head_img_url AS "headImgUrl",-- 头像图片链接
-              IFNULL( zx_app_user.nick_name, zx_app_user.phone_number ) AS "nickName",-- 昵称
-              zx_app_user.phone_number AS "phoneNumber",-- 用户账号
-              zx_app_red_packet.red_packet_info AS "redPacketInfo",-- 红包广告标语
-              zx_app_red_packet.red_packet_count AS "redPacketCount",-- 红包总个数
-              zx_app_red_packet.red_packet_stock AS "redPacketStock",-- 红包剩余个数
-              UNIX_TIMESTAMP( zx_app_red_packet.red_packet_end_time ) - UNIX_TIMESTAMP( zx_app_red_packet.red_packet_start_time ) AS "timeSum"-- 抢红包总耗时
-          FROM
-              zx_app_red_packet
-              LEFT JOIN zx_app_user ON zx_app_user.id = zx_app_red_packet.red_packet_user_id
-          WHERE
-              zx_app_red_packet.red_packet_id = #{redPacketId}
+		b.head_img_url AS headImgUrl,-- 头像图片链接
+		IFNULL( b.nickname, b.member_account ) AS nickName,-- 昵称
+		b.member_account AS phoneNumber,-- 用户账号
+		a.red_packet_info AS redPacketInfo,-- 红包广告标语
+		a.red_packet_count AS redPacketCount,-- 红包总个数
+		a.red_packet_stock AS redPacketStock,-- 红包剩余个数
+		UNIX_TIMESTAMP( a.red_packet_end_time ) - UNIX_TIMESTAMP( a.red_packet_start_time ) AS timeSum-- 抢红包总耗时
+      FROM
+        zx_app_red_packet a
+        LEFT JOIN t_member b ON b.member_account = a.member_account
+        WHERE a.red_packet_id = #{redPacketId}
     </select>
+
+  <!-- 通过红包ID和当前登录人ID查询当前用户是否抢过红包 -->
+  <select id="queryRedPacketInfoByRedPacketIdAndUserId" parameterType="java.util.Map" resultType="java.util.Map">
+      SELECT
+          zx_app_red_packet_info.red_packet_money AS "redPacketMoney",
+          zx_app_red_packet_info.red_packet_date AS "redPacketDate"
+      FROM
+          zx_app_red_packet_info
+      WHERE
+          zx_app_red_packet_info.red_packet_id = #{redPacketId}
+          AND zx_app_red_packet_info.red_packet_user_id = #{robUserId}
+    </select>
+
+  <!-- 查询单个红包的抢红包信息,比如谁抢过了,抢了多少钱,手气最佳 -->
+  <select id="selectRedPacketInfoByRedPacketId" parameterType="java.util.Map" resultType="java.util.Map">
+      SELECT
+		b.id AS userId, -- 用户ID
+		a.red_packet_money AS redPacketMoney,-- 非当前用户抢钱金额
+		a.red_packet_luck_star AS redPacketLuckStar,-- 非当前用户是否是手气最佳
+		b.head_img_url AS headImgUrl,-- 头像图片链接
+		IFNULL(b.nickname,b.member_account) AS nickName, -- 昵称
+		b.member_account AS memberAccount, -- 用户账号
+		a.red_packet_date AS redPacketDate -- 抢红包时间
+      FROM
+        zx_app_red_packet_info a
+        LEFT JOIN t_member b ON b.member_account = a.red_packet_user_id
+      WHERE
+        a.red_packet_id = #{redPacketId}
+        AND a.red_packet_user_id IS NOT NULL
+    </select>
+
+    <!-- 根据红包ID查询红包详细信息 -->
+    <select id="checkUserIsRobRedPacket" resultType="java.util.Map">
+      select COUNT(1) from zx_app_red_packet_info WHERE red_packet_id = #{redPacketId,jdbcType=BIGINT}
+      AND red_packet_user_id = #{memberAccount,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 查看用户抢红包成功失败信息 -->
+    <select id="selectStockByRedPacketId" parameterType="java.util.Map" resultType="java.util.Map">
+       SELECT v.red_packet_stock AS "redPacketStock",
+       v.red_packet_count AS "redPacketCount",
+       IFNULL(s.red_packet_user_id,"0") AS "isWrong"
+       FROM zx_app_red_packet v
+       LEFT JOIN zx_app_red_packet_scrape s on v.red_packet_id = s.red_packet_id and #{memberAccount,jdbcType=VARCHAR} = s.red_packet_user_id
+       WHERE v.red_packet_id = #{redPacketId,jdbcType=BIGINT}
+    </select>
+
+    <!-- 当前用户是否领取该红包 参数为 memberAccount（当前用户账号）,redPackageIds（红包Id） 返回值 -->
+    <select id="selectListStockByRedPacketId" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT v.red_packet_id AS "redPacketId",
+        v.red_packet_count AS "redPacketCount",
+        v.red_packet_stock AS "redPacketStock",
+        IFNULL(p.red_packet_user_id,"0") AS "isRobRedPacket",
+        IFNULL(s.red_packet_user_id,"0") AS "isWrong"
+        from zx_app_red_packet v
+        LEFT JOIN zx_app_red_packet_scrape s on v.red_packet_id = s.red_packet_id and #{memberAccount} = s.red_packet_user_id
+        LEFT JOIN zx_app_red_packet_info p
+        on v.red_packet_id = p.red_packet_id and p.red_packet_user_id = #{memberAccount}
+        where v.red_packet_id in
+        <foreach item="redPacketIds" index="index" collection="redPacketIds"
+                 open="(" separator="," close=")"> #{redPacketIds}
+        </foreach>
+    </select>
+
+    <!-- 查询地区列表 -->
+    <select id="queryAreaList" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT
+			area_code areaCode,
+			area_name areaName
+		FROM
+			t_bs_area_info
+		WHERE parent_area_code = #{parentAreaCode,jdbcType=INTEGER}
+	</select>
 
 </mapper>

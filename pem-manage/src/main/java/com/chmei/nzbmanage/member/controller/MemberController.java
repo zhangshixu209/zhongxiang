@@ -11,6 +11,7 @@ import com.chmei.nzbmanage.common.util.Md5Utils;
 import com.chmei.nzbmanage.common.util.SmUtils;
 import com.chmei.nzbmanage.configure.FileUploadPathConfig.UploadFilePathConfig;
 import com.chmei.nzbmanage.member.bean.MemberForm;
+import com.chmei.nzbmanage.redpacket.bean.RedPacketForm;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -771,6 +772,18 @@ public class MemberController extends BaseController {
             LOGGER.error("查询失败", e);
             outputDTO = new OutputDTO("1", "系统错误");
         }
+        return outputDTO;
+    }
+
+    /**
+     * 根据父编码查询省市信息
+     * @param redPacketForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/queryAreaByParent")
+    public OutputDTO queryAreaByParent(@ModelAttribute RedPacketForm redPacketForm) {
+        Map<String, Object> params = BeanUtil.convertBean2Map(redPacketForm);
+        OutputDTO outputDTO = getOutputDTO(params, "redPacketService", "queryAreaByParent");
         return outputDTO;
     }
 
