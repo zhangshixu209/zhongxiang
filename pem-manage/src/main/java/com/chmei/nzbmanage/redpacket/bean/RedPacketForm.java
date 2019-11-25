@@ -99,7 +99,7 @@ public class RedPacketForm implements Serializable {
     /**
      * 红包类型（0钱包，1红包，2广告费）
      */
-    private String redPacketVideoType;
+    private String redPacketType;
 
     /**
      * 抢红包用户ID账号
@@ -110,6 +110,19 @@ public class RedPacketForm implements Serializable {
      * 地区父ID
      */
     private Integer parentAreaCode;
+
+    /**
+     * 省名称
+     */
+    private String provName;
+    /**
+     * 市名称
+     */
+    private String cittName;
+    /**
+     * 区/县名称
+     */
+    private String countyName;
 
     private static final long serialVersionUID = 1L;
 
@@ -249,14 +262,6 @@ public class RedPacketForm implements Serializable {
         this.redPacketDate = redPacketDate;
     }
 
-    public String getRedPacketVideoType() {
-        return redPacketVideoType;
-    }
-
-    public void setRedPacketVideoType(String redPacketVideoType) {
-        this.redPacketVideoType = redPacketVideoType;
-    }
-
     public String getRobUserId() {
         return robUserId;
     }
@@ -271,5 +276,37 @@ public class RedPacketForm implements Serializable {
 
     public void setParentAreaCode(Integer parentAreaCode) {
         this.parentAreaCode = parentAreaCode;
+    }
+
+    public String getRedPacketType() {
+        return redPacketType;
+    }
+
+    public void setRedPacketType(String redPacketType) {
+        this.redPacketType = redPacketType;
+    }
+
+    public String getProvName() {
+        return provName;
+    }
+
+    public void setProvName(String provName) {
+        this.provName = provName;
+    }
+
+    public String getCittName() {
+        return cittName;
+    }
+
+    public void setCittName(String cittName) {
+        this.cittName = cittName;
+    }
+
+    public String getCountyName() {
+        return countyName;
+    }
+
+    public void setCountyName(String countyName) {
+        this.countyName = countyName;
     }
 }

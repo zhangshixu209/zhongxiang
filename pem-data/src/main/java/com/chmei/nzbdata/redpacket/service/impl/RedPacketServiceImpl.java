@@ -6,6 +6,7 @@ import com.chmei.nzbcommon.cmutil.JsonUtil;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
 import com.chmei.nzbdata.redpacket.service.IRedPacketService;
+import com.chmei.nzbdata.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -130,9 +131,11 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 						output.setCode("-1");
 						output.setMsg("发布红包失败");
 					}
+					Map<String, Object> mmap = new HashMap<>();
+					mmap.put("redPacketId", params.get("redPacketId"));
 					@SuppressWarnings("unchecked")
 					Map<String, Object> stringObjectMap = (Map<String, Object>) getBaseDao().
-							queryForObject("RedPacketMapper.queryRedPacketLog", params.get("redPacketId"));
+							queryForObject("RedPacketMapper.queryRedPacketLog", mmap);
 					// 发布成功,直接进行红包的分配:
 					List<Double> doubles = gradRedPacket(redPacketCount, redPacketMoneyCount.doubleValue());
 					int i = this.insertListRedPacketImgInfo(doubles, (Long) params.get("redPacketId"));
@@ -163,14 +166,14 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 	 * @throws NzbDataException 自定义异常
 	 */
 	@Override
-	public void updateImgRedPacketInfoById(InputDTO input, OutputDTO output) throws NzbDataException {
+	public int updateRedPacketInfoById(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		// 更新抢红包信息表
 		int i = getBaseDao().update("RedPacketMapper.updateRedPacketInfoById", params);
 		if(i > 0){
 			@SuppressWarnings("unchecked")
 			Map<String, Object> packet = (Map<String, Object>) getBaseDao().
-					queryForObject("RedPacketMapper.queryRedPacketLog", params.get("redPacketId"));
+					queryForObject("RedPacketMapper.queryRedPacketLog", params);
 			// 更新完毕成功之后,更新红包的数据,红包的开始时间和结束时间
 			if(Optional.ofNullable(packet).isPresent()){
 				params.put("redPacketId", packet.get("redPacketId"));
@@ -188,9 +191,11 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 				if (k < 0) {
 					output.setCode("-1");
 					output.setMsg("抢红包失败");
+					return -1;
 				}
 			}
 		}
+		return 0;
 	}
 
 	/**
@@ -231,7 +236,7 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 				// 先判断是否抢过红包:
 				Map<String, Object> one = (Map<String, Object>) getBaseDao().queryForObject(
 						"RedPacketMapper.queryRedPacketInfoDetail", params);
-				if (Optional.ofNullable(one).isPresent() && (int)one.get("redPacketUserId") != 0) {
+				if (Optional.ofNullable(one).isPresent() && StringUtil.isNotEmpty((String) one.get("redPacketUserId"))) {
 					output.setCode("-1"); // 4
 					output.setMsg("不能重复抢红包!");
 					return;
@@ -253,8 +258,14 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 						"RedPacketMapper.randomSelectRedPacketInfo", redPacket);
 				// 之后将抢红包人的Id更新到抢红包的表中,并结算时间,存入到红包信息表中
 				if (Optional.ofNullable(maps).isPresent()) {
+					HashMap<String, Object> mapp = new HashMap<>();
+					mapp.put("redPacketInfoId", maps.get("redPacketInfoId"));
+					mapp.put("robUserId", params.get("robUserId"));
+					mapp.put("redPacketId", params.get("redPacketId"));
+					InputDTO inputDTO = new InputDTO();
+					inputDTO.setParams(mapp);
 					// 更新抢红包信息表
-					int time = getBaseDao().update("RedPacketMapper.updateRedPacketInfoById", params);
+					int time = updateRedPacketInfoById(inputDTO, output);
 					if (time != -1) {
 						// 更新用户表金额
 						Map<String, Object> result = new HashMap<>();
@@ -267,10 +278,10 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 							// 给抢红包的用户进行金额的更新,抢到的红包放入到红包金额中
 							updateUser.put("memberAccount", params.get("robUserId"));
 							// 使用那个发布的就进入那个钱包
-							double money = (double) maps.get("redPacketMoney");
-							BigDecimal advertisingFee = (BigDecimal) appUser.get("advertisingFee");
-							updateUser.put("advertisingFee", advertisingFee.doubleValue() + money);
-							int i = getBaseDao().update("Member.updateMemberBalance", updateUser);
+							BigDecimal money = (BigDecimal) maps.get("redPacketMoney");
+							String advertisingFee = (String) appUser.get("advertisingFee");
+							updateUser.put("advertisingFee", BigDecimal.valueOf(Double.valueOf(advertisingFee)).doubleValue() + money.doubleValue());
+							int i = getBaseDao().update("MemberMapper.updateMemberBalance", updateUser);
 							if (i > 0) {
 								Map<String, Object> redPac = new HashMap<>();
 								redPac.put("memberAccount", redPacketUserId);
@@ -283,14 +294,13 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 									adRecord.put("advertisingInfoAddOrMinus", "-");
 									adRecord.put("advertisingInfoUserId", robUserId);
 									adRecord.put("advertisingInfoMoney", money);
-									adRecord.put("advertisingInfoFrom", "钱包红包--来自" + zxAppUser1.get("nickName"));
+									adRecord.put("advertisingInfoFrom", "钱包红包--来自" + zxAppUser1.get("nickname"));
 									getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
 								}
 								maps = (Map<String, Object>) getBaseDao().queryForObject("RedPacketMapper.selectRedPacketInfoByInfoId", maps);
 								output.setCode("0"); // 3
 								output.setMsg("返回单个红包金额信息!");
 								output.setItem(maps);
-								return;
 							}
 						}
 					}
@@ -476,27 +486,37 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 			if (Optional.ofNullable(item).isPresent()) {
 				Integer age = (Integer) item.get("age");
 				String sex = (String) item.get("sex");
+				if (StringUtil.isEmpty(age + "") ||
+					StringUtil.isEmpty(sex)) {
+					output.setCode("-1");
+					output.setMsg("请完善个人信息！");
+					return;
+				}
 				if (null != list && list.size() > 0) {
 					for (Map<String, Object> map : list) {
 						Map<String, Object> result = new HashMap<>();
-						String redPacketSex = (String) map.get("redPacketSex");           // 红包性别
-						String redPacketAgeStart = (String) map.get("redPacketAgeStart"); // 红包开始年龄
-						String redPacketAgeEnd = (String) map.get("redPacketAgeEnd");     // 红包结束年龄
+						Integer redPacketSex = (Integer) map.get("redPacketSex");           // 红包性别
+						Integer redPacketAgeStart = (Integer) map.get("redPacketAgeStart"); // 红包开始年龄
+						Integer redPacketAgeEnd = (Integer) map.get("redPacketAgeEnd");     // 红包结束年龄
 						result.put("redProName", map.get("provinceName"));                // 省名称
 						result.put("redCityName", map.get("cityName"));                   // 市名称
 						result.put("redCountyName", map.get("countyName"));               // 区县名称
 						// 校验红包地区
 						int checkArea = checkArea(item, result);
 						// 校验红包年龄
-						int checkAge = checkAge(age, Integer.parseInt(redPacketAgeStart), Integer.parseInt(redPacketAgeEnd));
-						if (!sex.equals(redPacketSex) || checkAge == 0 || checkArea == 0) {
+						int checkAge = checkAge(age, redPacketAgeStart, (redPacketAgeEnd));
+						if (!sex.equals(redPacketSex + "") || checkAge == 0 || checkArea == 0) {
 							continue;
 						}
 						listAll.add(map);
 					}
+				} else {
+					output.setCode("0");
+					output.setMsg("暂无记录！");
 				}
 			}
-			// TODO =====
+			output.setItems(listAll);
+			output.setTotal(listAll.size());
 		} catch (Exception e) {
 			LOGGER.error("系统异常", e);
 		}
@@ -516,13 +536,34 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 		return 0;
 	}
 
+	/**
+	 * 校验省市县
+	 * @param item 个人省市县
+	 * @param result 红包省市县
+	 * @return
+	 */
 	private int checkArea(Map<String, Object> item, Map<String, Object> result){
-//		if ("-1".equals(result.get("redProvName"))) {
-//			return 1;
-//		} else if (item.get("")) {
-//
-//		}
-		// TODO ====
+		if ("-1".equals(result.get("redProvName"))) {
+			return 1; // 全国状态
+		}
+		if (StringUtil.isEmpty((String) item.get("provinceName"))) {
+			return 2; // 请完善个人信息
+		}
+		// 省级红包，只匹配省级是否相等
+		if (item.get("provinceName").equals(result.get("redProvName"))
+			&& StringUtil.isEmpty((String) result.get("redCityName"))) {
+			return 3; // 匹配成功
+		} else if (!StringUtil.isEmpty((String) result.get("redCityName"))) {
+			// 市级红包
+			if (item.get("cityName").equals(result.get("redCityName"))) {
+				return 3; // 匹配成功
+			}
+		} else if (!StringUtil.isEmpty((String) result.get("redCountyName"))) {
+			// 区县级红包
+			if (item.get("countyName").equals(result.get("redCountyName"))) {
+				return 3; // 匹配成功
+			}
+		}
 		return 0;
 	}
 

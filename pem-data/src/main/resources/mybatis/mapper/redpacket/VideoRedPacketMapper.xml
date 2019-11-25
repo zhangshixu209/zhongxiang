@@ -272,4 +272,41 @@
   WHERE a.red_packet_video_user_id = #{memberAccount}
   </select>
 
+  <!--根据用户ID和红包ID查询红包详细信息 -->
+  <select id="queryRedPacketDetail" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.red_packet_video_id AS redPacketVideoId,
+      a.member_account AS redPacketVideoUserId,
+      a.red_packet_video_money_count AS redPacketMoneyCount,
+      a.red_packet_video_count AS redPacketVideoCount,
+      a.red_packet_video_stock AS redPacketVideoStock,
+      a.red_packet_video_info AS redPacketVideoInfo,
+      a.red_packet_video_luck_star AS redPacketVideoLuckStar,
+      a.red_packet_video_start_time AS redPacketVideoStartTime,
+      a.red_packet_video_end_time AS redPacketVideoEndTime,
+      a.red_packet_video_question AS redPacketVideoQuestion,
+      a.red_packet_video_options AS redPacketVideoOptions,
+      a.red_packet_video_answer AS redPacketVideoAnswer,
+      a.red_packet_video_sex AS redPacketVideoSex,
+      a.red_packet_video_age_start AS redPacketVideoAgeStart,
+      a.red_packet_video_age_end AS redPacketVideoAgeEnd,
+      a.red_packet_video_date AS redPacketVideoDate
+  FROM
+      zx_app_red_packet a
+      WHERE a.red_packet_video_id = #{redPacketVideoId} AND member_account = #{memberAccount}
+  </select>
+
+  <!--根据用户账号和红包id查询-->
+  <select id="queryRedPacketInfoDetail" resultType="java.util.Map">
+     SELECT
+          red_packet_video_info_id AS redPacketVideoInfoId,
+          red_packet_video_id AS redPacketVideoId,
+          red_packet_video_user_id AS redPacketVideoUserId,
+          red_packet_video_money AS redPacketVideoMoney,
+          red_packet_video_luck_star AS redPacketVideoLuckStar,
+          red_packet_video_date AS redPacketVideoDate
+      FROM zx_app_red_packet_video_info WHERE red_packet_video_id = #{redPacketVideoId}  AND red_packet_video_user_id = #{robUserId}
+        LIMIT 1
+  </select>
+
 </mapper>

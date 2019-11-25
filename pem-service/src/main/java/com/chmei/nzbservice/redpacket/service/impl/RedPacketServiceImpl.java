@@ -124,4 +124,49 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 		input.setMethod("queryAreaByParent");
 		getNzbDataService().execute(input, output);
 	}
+
+	/**
+	 * 根据红包ID和用户ID查看此用户是否抢当前这个红包
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void checkUserIsRobRedPacket(InputDTO input, OutputDTO output) throws NzbServiceException {
+		LOGGER.info("根据红包ID和用户ID查看此用户是否抢当前这个红包...checkUserIsRobRedPacket....");
+		input.setService("redPacketService");
+		input.setMethod("checkUserIsRobRedPacket");
+		getNzbDataService().execute(input, output);
+	}
+
+	/**
+	 * 当前用户是否领取该红包 参数为 memberAccount（当前用户账号）,redPackageIds（红包Id） 返回值
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void selectListStockByRedPacketId(InputDTO input, OutputDTO output) throws NzbServiceException {
+		LOGGER.info("当前用户是否领取该红包...selectListStockByRedPacketId....");
+		input.setService("redPacketService");
+		input.setMethod("selectListStockByRedPacketId");
+		getNzbDataService().execute(input, output);
+	}
+
+	/**
+	 * 查询所有红包根据用户权限（性别，年龄，地区）
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void queryAllRedPacketByAuth(InputDTO input, OutputDTO output) throws NzbServiceException {
+		LOGGER.info("查询所有红包根据用户权限...queryAllRedPacketByAuth....");
+		input.setService("redPacketService");
+		input.setMethod("queryAllRedPacketByAuth");
+		getNzbDataService().execute(input, output);
+	}
 }

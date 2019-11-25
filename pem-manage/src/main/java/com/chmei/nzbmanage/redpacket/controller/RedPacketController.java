@@ -98,4 +98,42 @@ public class RedPacketController extends BaseController {
         return outputDTO;
     }
 
+    /**
+     * 根据红包ID和用户ID查看此用户是否抢当前这个红包
+     * @param redPacketForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/checkUserIsRobRedPacket")
+    public OutputDTO checkUserIsRobRedPacket(@ModelAttribute RedPacketForm redPacketForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(redPacketForm);
+        outputDTO = getOutputDTO(params, "redPacketService", "checkUserIsRobRedPacket");
+        return outputDTO;
+    }
+
+    /**
+     * 当前用户是否领取该红包 参数为 memberAccount（当前用户账号）,redPackageIds（红包Id） 返回值
+     * @param redPacketForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/selectListStockByRedPacketId")
+    public OutputDTO selectListStockByRedPacketId(@ModelAttribute RedPacketForm redPacketForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(redPacketForm);
+        outputDTO = getOutputDTO(params, "redPacketService", "selectListStockByRedPacketId");
+        return outputDTO;
+    }
+
+    /**
+     * 查询所有红包根据用户权限
+     * @param redPacketForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/queryAllRedPacketByAuth")
+    public OutputDTO queryAllRedPacketByAuth(@ModelAttribute RedPacketForm redPacketForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(redPacketForm);
+        outputDTO = getOutputDTO(params, "redPacketService", "queryAllRedPacketByAuth");
+        return outputDTO;
+    }
 }

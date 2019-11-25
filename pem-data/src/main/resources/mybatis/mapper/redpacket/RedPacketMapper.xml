@@ -83,6 +83,15 @@
         red_packet_age_end,
       </if>
         red_packet_date,
+      <if test="provName != null and provName != ''">
+          province_name,
+      </if>
+      <if test="cityName != null and cityName != ''">
+          city_name,
+      </if>
+      <if test="countyName != null and countyName != ''">
+          county_name,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="redPacketId != null">
@@ -128,6 +137,15 @@
         #{redPacketAgeEnd,jdbcType=INTEGER},
       </if>
         NOW(),
+        <if test="provName != null and provName != ''">
+            #{provName,jdbcType=VARCHAR},
+        </if>
+        <if test="cityName != null and cityName != ''">
+            #{cityName,jdbcType=VARCHAR},
+        </if>
+        <if test="countyName != null and countyName != ''">
+            #{countyName,jdbcType=VARCHAR},
+        </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
@@ -270,7 +288,7 @@
   <!-- 判断是否已经答错过 -->
   <select id="isScrapeRedPacket" resultType="java.lang.Integer" parameterType="java.util.Map">
        SELECT count(1)
-        FROM ${tableName} WHERE red_packet_id = #{redPacketId}  AND red_packet_user_id = #{memberAccount}
+        FROM ${tableName} WHERE red_packet_id = #{redPacketId}  AND red_packet_user_id = #{userId}
   </select>
 
   <!--根据用户ID和红包ID查询红包详细信息 -->
@@ -294,7 +312,7 @@
       a.red_packet_date AS redPacketDate
   FROM
       zx_app_red_packet a
-      WHERE a.red_packet_id = #{redPacketId} AND red_packet_user_id = #{memberAccount}
+      WHERE a.red_packet_id = #{redPacketId} AND member_account = #{memberAccount}
   </select>
 
   <!--根据用户账号和红包id查询-->
@@ -311,7 +329,7 @@
     </select>
 
   <!--随机获取红包信息-->
-  <select id="randomSelectRedPacketInfo" parameterType="java.lang.Integer" resultType="java.util.Map">
+  <select id="randomSelectRedPacketInfo" parameterType="java.util.Map" resultType="java.util.Map">
       SELECT
         zx_app_red_packet_info.red_packet_info_id AS "redPacketInfoId",
         zx_app_red_packet_info.red_packet_id AS "redPacketId",
@@ -328,18 +346,18 @@
 
   <!--更新红包信息绑定用户ID-->
   <update id="updateRedPacketInfoById" parameterType="java.util.Map">
-      update zx_app_img_red_packet_info set
-          red_packet_img_user_id = #{robUserId},
-          red_packet_img_date = sysdate()
-      where red_packet_img_info_id = #{redPacketId}
+      update zx_app_red_packet_info set
+          red_packet_user_id = #{robUserId},
+          red_packet_date = sysdate()
+      where red_packet_info_id = #{redPacketInfoId}
   </update>
 
   <!-- 根据红包信息ID查询出最终的红包信息 -->
-  <select id="selectRedPacketInfoByInfoId" parameterType="java.lang.Integer" resultType="java.util.Map">
+  <select id="selectRedPacketInfoByInfoId" parameterType="java.util.Map" resultType="java.util.Map">
 		SELECT
           zx_app_red_packet_info.red_packet_info_id AS "redPacketInfoId",
           zx_app_red_packet_info.red_packet_id AS "redPacketId",
-          zx_app_red_packet.red_packet_user_id AS "redPacketUserId",
+          zx_app_red_packet.member_account AS "redPacketUserId",
           zx_app_red_packet_info.red_packet_user_id AS "robRedPacketUserId",
 		  zx_app_red_packet_info.red_packet_money AS "redPacketMoney",
 		  zx_app_red_packet_info.red_packet_luck_star AS "redPacketLuckStar",
@@ -460,5 +478,9 @@
 			t_bs_area_info
 		WHERE parent_area_code = #{parentAreaCode,jdbcType=INTEGER}
 	</select>
+
+    <insert id="insertScrapeRedPacket" parameterType="java.util.Map">
+        insert into ${tableName}(red_packet_id,red_packet_user_id) values(#{redPacketId},#{userId})
+    </insert>
 
 </mapper>

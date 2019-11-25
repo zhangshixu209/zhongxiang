@@ -75,4 +75,31 @@ public interface IRedPacketService {
 	 */
 	void queryAreaByParent(InputDTO input, OutputDTO output) throws NzbServiceException;
 
+	/**
+	 * 根据红包ID和用户ID查看此用户是否抢当前这个红包
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	void checkUserIsRobRedPacket(InputDTO input, OutputDTO output) throws NzbServiceException;
+
+	/**
+	 * 当前用户是否领取该红包 参数为 memberAccount（当前用户账号）,redPackageIds（红包Id） 返回值
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	void selectListStockByRedPacketId(InputDTO input, OutputDTO output) throws NzbServiceException;
+
+	/**
+	 * 查询所有红包根据用户权限（性别，年龄，地区）
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	void queryAllRedPacketByAuth(InputDTO input, OutputDTO output) throws NzbServiceException;
+
 }
