@@ -28,7 +28,7 @@ public interface IRedPacketService {
 	 * @param output 返回对象
 	 * @throws NzbServiceException 自定义异常
 	 */
-	void updateImgRedPacketInfoById(InputDTO input, OutputDTO output) throws NzbServiceException;
+	void updateRedPacketInfoById(InputDTO input, OutputDTO output) throws NzbServiceException;
 
 	/**
 	 * 众享红包抢红包

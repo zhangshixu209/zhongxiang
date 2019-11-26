@@ -112,6 +112,19 @@ public class VideoRedPacketForm extends BaseForm {
 	 */
 	private String robUserId;
 
+	/**
+	 * 省名称
+	 */
+	private String provName;
+	/**
+	 * 市名称
+	 */
+	private String cityName;
+	/**
+	 * 区/县名称
+	 */
+	private String countyName;
+
 	private static final long serialVersionUID = 1L;
 
 	public Long getRedPacketVideoId() {
@@ -272,5 +285,29 @@ public class VideoRedPacketForm extends BaseForm {
 
 	public void setRobUserId(String robUserId) {
 		this.robUserId = robUserId;
+	}
+
+	public String getProvName() {
+		return provName;
+	}
+
+	public void setProvName(String provName) {
+		this.provName = provName;
+	}
+
+	public String getCityName() {
+		return cityName;
+	}
+
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
+	}
+
+	public String getCountyName() {
+		return countyName;
+	}
+
+	public void setCountyName(String countyName) {
+		this.countyName = countyName;
 	}
 }

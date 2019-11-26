@@ -118,7 +118,7 @@ public class RedPacketForm implements Serializable {
     /**
      * 市名称
      */
-    private String cittName;
+    private String cityName;
     /**
      * 区/县名称
      */
@@ -294,12 +294,12 @@ public class RedPacketForm implements Serializable {
         this.provName = provName;
     }
 
-    public String getCittName() {
-        return cittName;
+    public String getCityName() {
+        return cityName;
     }
 
-    public void setCittName(String cittName) {
-        this.cittName = cittName;
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
     }
 
     public String getCountyName() {

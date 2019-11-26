@@ -371,7 +371,7 @@
 	</select>
 
   <!-- 根据当前登录人查询所抢红包 -->
-  <select id="selectRedPacketInfoByRobUserId" parameterType="java.lang.Integer" resultType="java.util.Map">
+  <select id="selectRedPacketInfoByRobUserId" parameterType="java.util.Map" resultType="java.util.Map">
       SELECT
           b.red_packet_id AS redPacketId, -- 红包ID
           b.member_account AS memberAccount, -- 发布红包用户ID
@@ -386,7 +386,7 @@
       FROM
           zx_app_red_packet b
       LEFT JOIN t_member a ON a.member_account = b.member_account
-      WHERE b.red_packet_id IN ( SELECT red_packet_id FROM zx_app_red_packet_info WHERE red_packet_user_id = '')
+      WHERE b.red_packet_id IN ( SELECT red_packet_id FROM zx_app_red_packet_info WHERE red_packet_user_id = #{robUserId})
             AND b.red_packet_stock = 0
     </select>
 
@@ -479,6 +479,7 @@
 		WHERE parent_area_code = #{parentAreaCode,jdbcType=INTEGER}
 	</select>
 
+    <!-- 回答错误新增信息 -->
     <insert id="insertScrapeRedPacket" parameterType="java.util.Map">
         insert into ${tableName}(red_packet_id,red_packet_user_id) values(#{redPacketId},#{userId})
     </insert>

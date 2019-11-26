@@ -174,9 +174,9 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 					queryForObject("VideoRedPacketMapper.queryRedPacketLog", params);
 			// 更新完毕成功之后,更新红包的数据,红包的开始时间和结束时间
 			if(Optional.ofNullable(packet).isPresent()){
-				params.put("redPacketVideoId", packet.get("redPacketVideoId"));
-				Integer stock = (Integer) packet.get("redPacketVideoStock");
-				Integer count = (Integer) packet.get("redPacketVideoCount");
+				params.put("redPacketVideoId", packet.get("redPacketId"));
+				Integer stock = (Integer) packet.get("redPacketStock");
+				Integer count = (Integer) packet.get("redPacketCount");
 				Date date = new Date();
 				if(stock.intValue() == count.intValue()){
 					params.put("redPacketVideoStartTime", date);
@@ -252,11 +252,11 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 				}
 				// 返回一个随意产生的红包给用户,并保存到数据库:
 				Map<String, Object> maps = (Map<String, Object>) getBaseDao().queryForObject(
-						"RedPacketMapper.randomSelectRedPacketInfo", redPacket);
+						"VideoRedPacketMapper.randomSelectRedPacketInfo", redPacket);
 				// 之后将抢红包人的Id更新到抢红包的表中,并结算时间,存入到红包信息表中
 				if (Optional.ofNullable(maps).isPresent()) {
 					HashMap<String, Object> mapp = new HashMap<>();
-					mapp.put("redPacketInfoId", maps.get("redPacketVideoInfoId"));
+					mapp.put("redPacketInfoId", maps.get("redPacketInfoId"));
 					mapp.put("robUserId", params.get("robUserId"));
 					mapp.put("redPacketId", params.get("redPacketVideoId"));
 					InputDTO inputDTO = new InputDTO();
@@ -322,7 +322,7 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 			if(Optional.ofNullable(params).isPresent()) {
 				// 根据抢红包人的ID查询红包金额信息表中红包ID
 				List<Map<String,Object>> list = getBaseDao().queryForList(
-						"RedPacketMapper.selectRedPacketInfoByRobUserId", params);
+						"VideoRedPacketMapper.selectRedPacketInfoByRobUserId", params);
 				if(list != null && list.size() > 0){
 					output.setCode("0");
 					output.setMsg("数据存在!");
@@ -332,7 +332,7 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 				Long id = (Long) params.get("redPacketId");
 				@SuppressWarnings("unchecked")
 				Map<String, Object> maps = (Map<String, Object>) getBaseDao().
-						queryForObject("RedPacketMapper.queryRedPacketLog", id);
+						queryForObject("VideoRedPacketMapper.queryRedPacketLog", id);
 				if(Optional.ofNullable(maps).isPresent()){
 					output.setCode("0");
 					output.setMsg("暂无人抢该红包!");
@@ -362,29 +362,36 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 	public void viewRedPacketInfo(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
-			if (Optional.ofNullable(params).isPresent()) {
-				// 红包信息和当前人抢红包金额,和发布红包人的信息
-				Map<String, Object> maps1 = (Map<String, Object>) getBaseDao().queryForObject(
-						"RedPacketMapper.selectUserRedPacketInfoAndRedPacketByUserId", params);
-				if (Optional.ofNullable(maps1).isPresent()) {
-					Map<String, Object> stringObjectMap = (Map<String, Object>) getBaseDao().queryForObject(
-							"RedPacketMapper.queryRedPacketInfoByRedPacketIdAndUserId", params);
-					if (!Optional.ofNullable(stringObjectMap).isPresent()) {
-						stringObjectMap = new HashMap<>();
-						stringObjectMap.put("redPacketMoney",0);
-						stringObjectMap.put("redPacketDate","");
-					}
-					maps1.putAll(stringObjectMap);
-					// 非当前人抢红包信息
-					List<Map<String, Object>> maps = getBaseDao().queryForList(
-							"RedPacketMapper.selectRedPacketInfoByRedPacketId", params);
-					maps1.put("list",maps);
-					output.setItem(maps1);
+			if(Optional.ofNullable(params).isPresent()){
+				// 根据红包id和用户id查询出红包信息和用户信息
+				Map<String, Object> maps = (Map<String, Object>) getBaseDao().queryForObject(
+						"VideoRedPacketMapper.selectUserRedPacketInfoAndRedPacketByUserId", params);
+				if(Optional.ofNullable(maps).isPresent()){
+					List<Map<String, Object>> maps_ = getBaseDao().queryForList(
+							"VideoRedPacketMapper.selectRedPacketInfoByRedPacketId", params);
+					maps.put("list",maps_);
+					output.setItem(maps);
 					output.setCode("0");
 					output.setMsg("查询成功!");
 					return;
 				}
 			}
+			if(Optional.ofNullable(params).isPresent()) {
+				Map<String, Object> maps = (Map<String, Object>) getBaseDao().
+						queryForObject("VideoRedPacketMapper.queryRedPacketLog", params);
+				if(Optional.ofNullable(maps).isPresent()){
+					output.setItem(maps);
+					output.setCode("-1");
+					output.setMsg("暂无人抢该红包!");
+					return;
+				}
+				output.setCode("-1");
+				output.setMsg("该红包已过期!");
+				return;
+			}
+			output.setCode("-1");
+			output.setMsg("暂无人抢该红包!");
+			return;
 		} catch (Exception e) {
 			LOGGER.error("系统异常", e);
 		}
@@ -403,7 +410,7 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 		try {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> map = (Map<String, Object>) getBaseDao().
-					queryForObject("RedPacketMapper.queryRedPacketLog", params);
+					queryForObject("VideoRedPacketMapper.queryRedPacketLog", params);
 			output.setItem(map);
 		} catch (Exception e) {
 			LOGGER.error("系统异常", e);
@@ -421,10 +428,10 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 	public void checkUserIsRobRedPacket(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
-			int check =  getBaseDao().getTotalCount("RedPacketMapper.checkUserIsRobRedPacket", params);
+			int check =  getBaseDao().getTotalCount("VideoRedPacketMapper.checkUserIsRobRedPacket", params);
 			@SuppressWarnings("unchecked")
 			Map<String, Object> checkMap = (Map<String, Object>) getBaseDao().queryForObject(
-					"RedPacketMapper.selectStockByRedPacketId", params);
+					"VideoRedPacketMapper.selectStockByRedPacketId", params);
 			if (Optional.ofNullable(checkMap).isPresent()) {
 				checkMap.put("isRobRedPacket",check > 0 ? "1" : "0");
 				output.setMsg("成功");
@@ -451,7 +458,7 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 			List<Map<String, Object>> btnList = JsonUtil.convertJson2Object(packetIds, List.class);
 			params.put("redPacketIds", btnList);
 			List<Map<String, Object>> list = getBaseDao().queryForList(
-					"RedPacketMapper.selectListStockByRedPacketId", params);
+					"VideoRedPacketMapper.selectListStockByRedPacketId", params);
 			if (null != list && list.size() > 0) {
 				output.setMsg("查询成功");
 				output.setItems(list);
@@ -479,7 +486,7 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 			@SuppressWarnings("unchecked")
 			Map<String, Object> item = (Map<String, Object>) getBaseDao().
 					queryForObject("RealNameAuthMapper.queryRealNameInfo", params);
-			List<Map<String, Object>> list = getBaseDao().queryForList("RedPacketMapper.queryRedPacketLog", params);
+			List<Map<String, Object>> list = getBaseDao().queryForList("VideoRedPacketMapper.queryRedPacketLog", params);
 			if (Optional.ofNullable(item).isPresent()) {
 				Integer age = (Integer) item.get("age");
 				String sex = (String) item.get("sex");

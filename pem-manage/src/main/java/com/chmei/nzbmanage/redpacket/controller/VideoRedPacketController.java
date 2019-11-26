@@ -2,25 +2,13 @@ package com.chmei.nzbmanage.redpacket.controller;
 
 import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbcommon.cmutil.BeanUtil;
-import com.chmei.nzbcommon.util.UuidUtil;
 import com.chmei.nzbmanage.common.controller.BaseController;
-import com.chmei.nzbmanage.common.exception.NzbManageException;
-import com.chmei.nzbmanage.configure.FileUploadPathConfig.UploadFilePathConfig;
 import com.chmei.nzbmanage.redpacket.bean.VideoRedPacketForm;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * 视频红包控制器
@@ -46,30 +34,107 @@ public class VideoRedPacketController extends BaseController {
     }
 
     /**
-     * 视频红包发布新增
+     * 返回红包信息
      * @param videoRedPacketForm 参数
      * @return outputDTO 返回结果
      */
-    @RequestMapping("/robRedPacket")
-    public OutputDTO robRedPacket(@ModelAttribute VideoRedPacketForm videoRedPacketForm) {
+    @RequestMapping("/updateImgRedPacketInfoById")
+    public OutputDTO updateImgRedPacketInfoById(@ModelAttribute VideoRedPacketForm videoRedPacketForm) {
         OutputDTO outputDTO = new OutputDTO();
-        String robUserId = videoRedPacketForm.getRobUserId();
-        // TODO 发布红包未完成===================
-        if (null != robUserId) {
-            // 判断答题,年龄,和性别的限制
-            outputDTO = getOutputDTO(robUserId, "memberService", "queryMemberDetail");
-            Map<String, Object> zxAppUser = new HashMap<>();
-            zxAppUser = outputDTO.getItem();
-            // 通过用户ID和红包ID查询出红包信息:
-            Long redPacketId = videoRedPacketForm.getRedPacketVideoId();
-            String redPacketUserId = videoRedPacketForm.getRedPacketVideoUserId();
-        }
-
         Map<String, Object> params = BeanUtil.convertBean2Map(videoRedPacketForm);
-
-        outputDTO = getOutputDTO(params, "videoRedPacketService", "saveVideoRedPacketInfo");
+        outputDTO = getOutputDTO(params, "videoRedPacketService", "updateImgRedPacketInfoById");
         return outputDTO;
     }
 
+    /**
+     * 视频红包抢红包
+     * @param videoRedPacketForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/robRedPacketInfo")
+    public OutputDTO robRedPacketInfo(@ModelAttribute VideoRedPacketForm videoRedPacketForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(videoRedPacketForm);
+        outputDTO = getOutputDTO(params, "videoRedPacketService", "robRedPacketInfo");
+        return outputDTO;
+    }
+
+    /**
+     * 查看已经领取过得红包,参数是:抢红包用户ID,红包ID
+     * @param videoRedPacketForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/viewRedPacketDone")
+    public OutputDTO viewRedPacketDone(@ModelAttribute VideoRedPacketForm videoRedPacketForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(videoRedPacketForm);
+        outputDTO = getOutputDTO(params, "videoRedPacketService", "viewRedPacketDone");
+        return outputDTO;
+    }
+
+    /**
+     * 查看红包详细的信息,比如未领取完毕,谁领取了多少钱,谁是手气最佳,参数为:红包id和当前用户ID
+     * @param videoRedPacketForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/viewRedPacketInfo")
+    public OutputDTO viewRedPacketInfo(@ModelAttribute VideoRedPacketForm videoRedPacketForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(videoRedPacketForm);
+        outputDTO = getOutputDTO(params, "videoRedPacketService", "viewRedPacketInfo");
+        return outputDTO;
+    }
+
+    /**
+     * 根据红包ID查询红包详细信息
+     * @param videoRedPacketForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/queryRedPacketDetail")
+    public OutputDTO queryRedPacketDetail(@ModelAttribute VideoRedPacketForm videoRedPacketForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(videoRedPacketForm);
+        outputDTO = getOutputDTO(params, "videoRedPacketService", "queryRedPacketDetail");
+        return outputDTO;
+    }
+
+    /**
+     * 根据红包ID和用户ID查看此用户是否抢当前这个红包
+     * @param videoRedPacketForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/checkUserIsRobRedPacket")
+    public OutputDTO checkUserIsRobRedPacket(@ModelAttribute VideoRedPacketForm videoRedPacketForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(videoRedPacketForm);
+        outputDTO = getOutputDTO(params, "videoRedPacketService", "checkUserIsRobRedPacket");
+        return outputDTO;
+    }
+
+    /**
+     * 当前用户是否领取该红包 参数为 memberAccount（当前用户账号）,redPackageIds（红包Id） 返回值
+     * @param videoRedPacketForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/selectListStockByRedPacketId")
+    public OutputDTO selectListStockByRedPacketId(@ModelAttribute VideoRedPacketForm videoRedPacketForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(videoRedPacketForm);
+        outputDTO = getOutputDTO(params, "videoRedPacketService", "selectListStockByRedPacketId");
+        return outputDTO;
+    }
+
+    /**
+     * 查询所有红包根据用户权限
+     * @param videoRedPacketForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/queryAllRedPacketByAuth")
+    public OutputDTO queryAllRedPacketByAuth(@ModelAttribute VideoRedPacketForm videoRedPacketForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(videoRedPacketForm);
+        outputDTO = getOutputDTO(params, "videoRedPacketService", "queryAllRedPacketByAuth");
+        return outputDTO;
+    }
 
 }

@@ -44,10 +44,10 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 	 * @throws NzbServiceException 自定义异常
 	 */
 	@Override
-	public void updateImgRedPacketInfoById(InputDTO input, OutputDTO output) throws NzbServiceException {
+	public void updateRedPacketInfoById(InputDTO input, OutputDTO output) throws NzbServiceException {
 		LOGGER.info("返回红包信息...redPacketService.updateImgRedPacketInfoById....");
 		input.setService("redPacketService");
-		input.setMethod("updateImgRedPacketInfoById");
+		input.setMethod("updateRedPacketInfoById");
 		getNzbDataService().execute(input, output);
 	}
 
