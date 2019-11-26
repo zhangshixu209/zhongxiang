@@ -3,7 +3,7 @@
 <mapper namespace="LinkRedPacketMapper">
   <resultMap id="BaseResultMap" type="java.util.Map">
     <id column="red_packet_link_id" jdbcType="BIGINT" property="redPacketLinkId" />
-    <result column="member_account" jdbcType="BIGINT" property="memberAccount" />
+    <result column="member_account" jdbcType="VARCHAR" property="memberAccount" />
     <result column="red_packet_link_money_count" jdbcType="DECIMAL" property="redPacketLinkMoneyCount" />
     <result column="red_packet_link_count" jdbcType="INTEGER" property="redPacketLinkCount" />
     <result column="red_packet_link_stock" jdbcType="INTEGER" property="redPacketLinkStock" />
@@ -99,7 +99,7 @@
         #{redPacketLinkId,jdbcType=BIGINT},
       </if>
       <if test="memberAccount != null">
-        #{memberAccount,jdbcType=BIGINT},
+        #{memberAccount,jdbcType=VARCHAR},
       </if>
       <if test="redPacketLinkMoneyCount != null">
         #{redPacketLinkMoneyCount,jdbcType=DECIMAL},
@@ -153,7 +153,7 @@
     update zx_app_link_red_packet
     <set>
       <if test="memberAccount != null">
-        member_account = #{memberAccount,jdbcType=BIGINT},
+        member_account = #{memberAccount,jdbcType=VARCHAR},
       </if>
       <if test="redPacketLinkMoneyCount != null">
         red_packet_link_money_count = #{redPacketLinkMoneyCount,jdbcType=DECIMAL},
@@ -343,7 +343,7 @@
       SELECT
         zx_app_link_red_packet_info.red_packet_link_info_id   AS "redPacketInfoId",
         zx_app_link_red_packet_info.red_packet_link_id        AS "redPacketId",
-        zx_app_link_red_packet.red_packet_link_user_id        AS "redPacketUserId",
+        zx_app_link_red_packet.member_account                 AS "redPacketUserId",
         zx_app_link_red_packet_info.red_packet_link_user_id   AS "robRedPacUserId",
         zx_app_link_red_packet_info.red_packet_link_money     AS "redPacketMoney",
         zx_app_link_red_packet_info.red_packet_link_luck_star AS "redPacketLuckStar",

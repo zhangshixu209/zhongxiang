@@ -1,6 +1,6 @@
 #java -cp druid-1.1.6.jar com.alibaba.druid.filter.config.ConfigTools <password>
 reportmanage:
-  session-timeout: 1800 #180000 2天
+  session-timeout: 180000 #180000 2天
   login-need-msg: 0  #1表示需要发送短信验证码0则反之
   sms-expire-seconds: 300
 

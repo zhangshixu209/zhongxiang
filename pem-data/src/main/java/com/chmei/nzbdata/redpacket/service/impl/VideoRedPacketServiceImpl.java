@@ -140,6 +140,7 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 					if(i > 0 && stringObjectMap != null){
 						output.setCode("0");
 						output.setMsg("发布红包成功!");
+                        output.setItem(stringObjectMap);
 					}
 				} else {
 					output.setCode("-1");

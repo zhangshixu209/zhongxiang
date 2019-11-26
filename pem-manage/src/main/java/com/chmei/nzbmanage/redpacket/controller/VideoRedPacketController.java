@@ -39,7 +39,7 @@ public class VideoRedPacketController extends BaseController {
      * @return outputDTO 返回结果
      */
     @RequestMapping("/updateRedPacketInfoById")
-    public OutputDTO updateImgRedPacketInfoById(@ModelAttribute VideoRedPacketForm videoRedPacketForm) {
+    public OutputDTO updateRedPacketInfoById(@ModelAttribute VideoRedPacketForm videoRedPacketForm) {
         OutputDTO outputDTO = new OutputDTO();
         Map<String, Object> params = BeanUtil.convertBean2Map(videoRedPacketForm);
         outputDTO = getOutputDTO(params, "videoRedPacketService", "updateRedPacketInfoById");

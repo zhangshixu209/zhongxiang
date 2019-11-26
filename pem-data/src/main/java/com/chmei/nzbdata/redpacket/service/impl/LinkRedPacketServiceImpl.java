@@ -140,6 +140,7 @@ public class LinkRedPacketServiceImpl extends BaseServiceImpl implements ILinkRe
 					if(i > 0 && stringObjectMap != null){
 						output.setCode("0");
 						output.setMsg("发布红包成功!");
+						output.setItem(stringObjectMap);
 					}
 				} else {
 					output.setCode("-1");
@@ -218,7 +219,7 @@ public class LinkRedPacketServiceImpl extends BaseServiceImpl implements ILinkRe
 			Map<String,Object> ismap = new HashMap<>();
 			ismap.put("redPacketId", redPacketId);
 			ismap.put("userId", robUserId);
-			ismap.put("tableName","zx_app_video_red_packet_scrape");
+			ismap.put("tableName","zx_app_Link_red_packet_scrape");
 			int ishave = getBaseDao().getTotalCount("LinkRedPacketMapper.isScrapeRedPacket", ismap);
 			if (ishave != 0) {
 				output.setCode("-1"); // 8

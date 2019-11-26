@@ -142,6 +142,7 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 					if(i > 0 && stringObjectMap != null){
 						output.setCode("0");
 						output.setMsg("发布红包成功!");
+						output.setItem(stringObjectMap);
 					}
 				} else {
 					output.setCode("-1");

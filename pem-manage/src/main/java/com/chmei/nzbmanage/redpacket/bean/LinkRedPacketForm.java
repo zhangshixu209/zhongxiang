@@ -19,7 +19,7 @@ public class LinkRedPacketForm implements Serializable {
     /**
      * 用户账户
      */
-    private Long memberAccount;
+    private String memberAccount;
 
     /**
      * 红包发布的金额大小
@@ -99,7 +99,25 @@ public class LinkRedPacketForm implements Serializable {
     /**
      * 红包类型（0钱包，1红包，2广告费）
      */
-    private String redPacketVideoType;
+    private String redPacketLinkType;
+
+    /**
+     * 抢红包用户ID
+     */
+    private String robUserId;
+
+    /**
+     * 省名称
+     */
+    private String provName;
+    /**
+     * 市名称
+     */
+    private String cityName;
+    /**
+     * 区/县名称
+     */
+    private String countyName;
 
     private static final long serialVersionUID = 1L;
 
@@ -109,14 +127,6 @@ public class LinkRedPacketForm implements Serializable {
 
     public void setRedPacketLinkId(Long redPacketLinkId) {
         this.redPacketLinkId = redPacketLinkId;
-    }
-
-    public Long getMemberAccount() {
-        return memberAccount;
-    }
-
-    public void setMemberAccount(Long memberAccount) {
-        this.memberAccount = memberAccount;
     }
 
     public BigDecimal getRedPacketLinkMoneyCount() {
@@ -239,11 +249,51 @@ public class LinkRedPacketForm implements Serializable {
         this.redPacketLinkDate = redPacketLinkDate;
     }
 
-    public String getRedPacketVideoType() {
-        return redPacketVideoType;
+    public String getRedPacketLinkType() {
+        return redPacketLinkType;
     }
 
-    public void setRedPacketVideoType(String redPacketVideoType) {
-        this.redPacketVideoType = redPacketVideoType;
+    public void setRedPacketLinkType(String redPacketLinkType) {
+        this.redPacketLinkType = redPacketLinkType;
+    }
+
+    public String getMemberAccount() {
+        return memberAccount;
+    }
+
+    public void setMemberAccount(String memberAccount) {
+        this.memberAccount = memberAccount;
+    }
+
+    public String getRobUserId() {
+        return robUserId;
+    }
+
+    public void setRobUserId(String robUserId) {
+        this.robUserId = robUserId;
+    }
+
+    public String getProvName() {
+        return provName;
+    }
+
+    public void setProvName(String provName) {
+        this.provName = provName;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
+    public String getCountyName() {
+        return countyName;
+    }
+
+    public void setCountyName(String countyName) {
+        this.countyName = countyName;
     }
 }
