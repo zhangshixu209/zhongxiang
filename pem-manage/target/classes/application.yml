@@ -83,7 +83,7 @@ spring:
       charset: UTF-8
       force: true
     multipart:
-      max-file-size: 10MB
+      max-file-size: 100MB
       max-request-size: 50MB
   jackson:
     time-zone: GMT+8
@@ -134,9 +134,9 @@ logging:
 #静态资源对外暴露的访问路径
 fileUpload:
   #url拼接路径
-  file-url-path: /image/
+  file-url-path: /upload/
   #映射文件路径
-  static-access-path: /api/image/**
+  static-access-path: /api/upload/**
   #文件上传目录（注意Linux和Windows上的目录结构不同）
   #uploadFolder: /home/cmtest/uploadFiles/
   upload-folder: D:/uploadFiles/
