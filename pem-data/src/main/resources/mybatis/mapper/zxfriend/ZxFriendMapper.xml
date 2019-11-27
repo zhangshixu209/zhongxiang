@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ZxFriendMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="zx_friend_id" jdbcType="BIGINT" property="zxFriendId" />
+    <result column="zx_friend_user_id" jdbcType="VARCHAR" property="zxFriendUserId" />
+    <result column="zx_friend_remark" jdbcType="VARCHAR" property="zxFriendRemark" />
+    <result column="zx_friend_friend_id" jdbcType="VARCHAR" property="zxFriendFriendId" />
+    <result column="zx_friend_notes_type" jdbcType="VARCHAR" property="zxFriendNotesType" />
+    <result column="zx_friend_friend_type" jdbcType="VARCHAR" property="zxFriendFriendType" />
+    <result column="zx_friend_notes_date" jdbcType="TIMESTAMP" property="zxFriendNotesDate" />
+    <result column="zx_friend_add_date" jdbcType="TIMESTAMP" property="zxFriendAddDate" />
+    <result column="zx_friend_off_notes_date" jdbcType="TIMESTAMP" property="zxFriendOffNotesDate" />
+    <result column="zx_friend_del_date" jdbcType="TIMESTAMP" property="zxFriendDelDate" />
+    <result column="zx_friend_grouping_id" jdbcType="BIGINT" property="zxFriendGroupingId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    zx_friend_id, zx_friend_user_id, zx_friend_remark, zx_friend_friend_id, zx_friend_notes_type, 
+    zx_friend_friend_type, zx_friend_notes_date, zx_friend_add_date, zx_friend_off_notes_date, 
+    zx_friend_del_date, zx_friend_grouping_id
+  </sql>
+  <!-- 查询众享好友关系列表 -->
+  <select id="queryZxFriendList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zx_app_friend
+    <where>
+      <if test="zxFriendId != null and zxFriendId != ''">
+        zx_friend_id = #{zxFriendId,jdbcType=BIGINT}
+      </if>
+      <if test="zxFriendUserId != null and zxFriendUserId != ''" >
+        zx_friend_user_id = #{zxFriendUserId}
+      </if>
+      <if test="zxFriendFriendId != null and zxFriendFriendId != ''" >
+        zx_friend_friend_id = #{zxFriendUserId}
+      </if>
+    </where>
+
+  </select>
+
+  <!-- 删除好友关系 -->
+  <delete id="deleteZxFriendInfo" parameterType="java.util.Map">
+    delete from zx_app_friend
+    where zx_friend_user_id = #{zxFriendUserId} AND zx_friend_friend_id = #{zxFriendUserId}
+  </delete>
+
+  <!-- 添加好友 -->
+  <insert id="saveZxFriendInfo" parameterType="java.util.Map">
+    insert into zx_app_friend
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="zxFriendId != null">
+        zx_friend_id,
+      </if>
+      <if test="zxFriendUserId != null">
+        zx_friend_user_id,
+      </if>
+      <if test="zxFriendRemark != null">
+        zx_friend_remark,
+      </if>
+      <if test="zxFriendFriendId != null">
+        zx_friend_friend_id,
+      </if>
+      <if test="zxFriendNotesType != null">
+        zx_friend_notes_type,
+      </if>
+      <if test="zxFriendFriendType != null">
+        zx_friend_friend_type,
+      </if>
+      <if test="zxFriendNotesDate != null">
+        zx_friend_notes_date,
+      </if>
+      <if test="zxFriendAddDate != null">
+        zx_friend_add_date,
+      </if>
+      <if test="zxFriendOffNotesDate != null">
+        zx_friend_off_notes_date,
+      </if>
+      <if test="zxFriendDelDate != null">
+        zx_friend_del_date,
+      </if>
+      <if test="zxFriendGroupingId != null">
+        zx_friend_grouping_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="zxFriendId != null">
+        #{zxFriendId,jdbcType=BIGINT},
+      </if>
+      <if test="zxFriendUserId != null">
+        #{zxFriendUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="zxFriendRemark != null">
+        #{zxFriendRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="zxFriendFriendId != null">
+        #{zxFriendFriendId,jdbcType=VARCHAR},
+      </if>
+      <if test="zxFriendNotesType != null">
+        #{zxFriendNotesType,jdbcType=VARCHAR},
+      </if>
+      <if test="zxFriendFriendType != null">
+        #{zxFriendFriendType,jdbcType=VARCHAR},
+      </if>
+      <if test="zxFriendNotesDate != null">
+        #{zxFriendNotesDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="zxFriendAddDate != null">
+        #{zxFriendAddDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="zxFriendOffNotesDate != null">
+        #{zxFriendOffNotesDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="zxFriendDelDate != null">
+        #{zxFriendDelDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="zxFriendGroupingId != null">
+        #{zxFriendGroupingId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
+    update zx_app_friend
+    <set>
+      <if test="zxFriendUserId != null">
+        zx_friend_user_id = #{zxFriendUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="zxFriendRemark != null">
+        zx_friend_remark = #{zxFriendRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="zxFriendFriendId != null">
+        zx_friend_friend_id = #{zxFriendFriendId,jdbcType=VARCHAR},
+      </if>
+      <if test="zxFriendNotesType != null">
+        zx_friend_notes_type = #{zxFriendNotesType,jdbcType=VARCHAR},
+      </if>
+      <if test="zxFriendFriendType != null">
+        zx_friend_friend_type = #{zxFriendFriendType,jdbcType=VARCHAR},
+      </if>
+      <if test="zxFriendNotesDate != null">
+        zx_friend_notes_date = #{zxFriendNotesDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="zxFriendAddDate != null">
+        zx_friend_add_date = #{zxFriendAddDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="zxFriendOffNotesDate != null">
+        zx_friend_off_notes_date = #{zxFriendOffNotesDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="zxFriendDelDate != null">
+        zx_friend_del_date = #{zxFriendDelDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="zxFriendGroupingId != null">
+        zx_friend_grouping_id = #{zxFriendGroupingId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where zx_friend_id = #{zxFriendId,jdbcType=BIGINT}
+  </update>
+
+  <!-- 更新好友关系 -->
+  <update id="updateZxFriendInfo" parameterType="java.util.Map">
+    update zx_app_friend
+    <set>
+      <if test="zxFriendFriendType != null and zxFriendFriendType != ''">
+        zx_friend_friend_type = #{zxFriendFriendType,jdbcType=VARCHAR},
+      </if>
+      <if test="zxFriendGroupingId != null and zxFriendGroupingId !=''">
+        zx_friend_grouping_id = #{zxFriendGroupingId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where zx_friend_user_id = #{zxFriendUserId} AND zx_friend_friend_id = #{zxFriendUserId}
+  </update>
+
+  <!-- 查询众享好友详细信息 -->
+  <select id="queryZxFriendDetail" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        a.zx_friend_id AS zxFriendId,
+        a.zx_friend_user_id AS zxFriendUserId,
+        a.zx_friend_remark AS zxFriendRemark,
+        a.zx_friend_friend_id AS zxFriendFriendId,
+        a.zx_friend_notes_type AS zxFriendNotesType,
+        a.zx_friend_friend_type AS zxFriendFriendType,
+        a.zx_friend_notes_date AS zxFriendNotesDate,
+        a.zx_friend_add_date AS zxFriendAddDate,
+        a.zx_friend_off_notes_date AS zxFriendOffNotesDate,
+        a.zx_friend_del_date AS zxFriendDelDate,
+        a.zx_friend_grouping_id
+    FROM
+        zx_app_friend AS a
+    <where>
+      <if test="zxFriendId != null and zxFriendId != ''">
+        a.zx_friend_id = #{zxFriendId,jdbcType=BIGINT}
+      </if>
+      <if test="zxFriendUserId != null and zxFriendUserId != ''" >
+        a.zx_friend_user_id = #{zxFriendUserId}
+      </if>
+      <if test="zxFriendFriendId != null and zxFriendFriendId != ''" >
+        a.zx_friend_friend_id = #{zxFriendUserId}
+      </if>
+    </where>
+  </select>
+</mapper>

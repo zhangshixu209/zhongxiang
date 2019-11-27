@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ZxFriendGroupingMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="zx_friend_grouping_id" jdbcType="BIGINT" property="zxFriendGroupingId" />
+    <result column="zx_friend_id" jdbcType="VARCHAR" property="zxFriendId" />
+    <result column="zx_friend_grouping_name" jdbcType="VARCHAR" property="zxFriendGroupingName" />
+    <result column="zx_friend_grouping_type" jdbcType="VARCHAR" property="zxFriendGroupingType" />
+    <result column="zx_friend_crt_time" jdbcType="TIMESTAMP" property="zxFriendCrtTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    zx_friend_grouping_id, zx_friend_id, zx_friend_grouping_name, zx_friend_grouping_type, 
+    zx_friend_crt_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zx_app_friend_grouping
+    where zx_friend_grouping_id = #{zxFriendGroupingId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from zx_app_friend_grouping
+    where zx_friend_grouping_id = #{zxFriendGroupingId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="java.util.Map">
+    insert into zx_app_friend_grouping (zx_friend_grouping_id, zx_friend_id, zx_friend_grouping_name, 
+      zx_friend_grouping_type, zx_friend_crt_time
+      )
+    values (#{zxFriendGroupingId,jdbcType=BIGINT}, #{zxFriendId,jdbcType=VARCHAR}, #{zxFriendGroupingName,jdbcType=VARCHAR}, 
+      #{zxFriendGroupingType,jdbcType=VARCHAR}, #{zxFriendCrtTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="java.util.Map">
+    insert into zx_app_friend_grouping
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="zxFriendGroupingId != null">
+        zx_friend_grouping_id,
+      </if>
+      <if test="zxFriendId != null">
+        zx_friend_id,
+      </if>
+      <if test="zxFriendGroupingName != null">
+        zx_friend_grouping_name,
+      </if>
+      <if test="zxFriendGroupingType != null">
+        zx_friend_grouping_type,
+      </if>
+      <if test="zxFriendCrtTime != null">
+        zx_friend_crt_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="zxFriendGroupingId != null">
+        #{zxFriendGroupingId,jdbcType=BIGINT},
+      </if>
+      <if test="zxFriendId != null">
+        #{zxFriendId,jdbcType=VARCHAR},
+      </if>
+      <if test="zxFriendGroupingName != null">
+        #{zxFriendGroupingName,jdbcType=VARCHAR},
+      </if>
+      <if test="zxFriendGroupingType != null">
+        #{zxFriendGroupingType,jdbcType=VARCHAR},
+      </if>
+      <if test="zxFriendCrtTime != null">
+        #{zxFriendCrtTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
+    update zx_app_friend_grouping
+    <set>
+      <if test="zxFriendId != null">
+        zx_friend_id = #{zxFriendId,jdbcType=VARCHAR},
+      </if>
+      <if test="zxFriendGroupingName != null">
+        zx_friend_grouping_name = #{zxFriendGroupingName,jdbcType=VARCHAR},
+      </if>
+      <if test="zxFriendGroupingType != null">
+        zx_friend_grouping_type = #{zxFriendGroupingType,jdbcType=VARCHAR},
+      </if>
+      <if test="zxFriendCrtTime != null">
+        zx_friend_crt_time = #{zxFriendCrtTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where zx_friend_grouping_id = #{zxFriendGroupingId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="java.util.Map">
+    update zx_app_friend_grouping
+    set zx_friend_id = #{zxFriendId,jdbcType=VARCHAR},
+      zx_friend_grouping_name = #{zxFriendGroupingName,jdbcType=VARCHAR},
+      zx_friend_grouping_type = #{zxFriendGroupingType,jdbcType=VARCHAR},
+      zx_friend_crt_time = #{zxFriendCrtTime,jdbcType=TIMESTAMP}
+    where zx_friend_grouping_id = #{zxFriendGroupingId,jdbcType=BIGINT}
+  </update>
+
+  <!-- 众享好友分组详情 -->
+  <select id="queryZxFriendGroupingInfo" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        a.zx_friend_grouping_id AS zxFriendGroupingId,
+        a.zx_friend_id AS zxFriendId,
+        a.zx_friend_grouping_name AS zxFriendGroupingName,
+        a.zx_friend_grouping_type AS zxFriendGroupingType,
+        a.zx_friend_crt_time AS zxFriendGroupingCrtTime
+    FROM
+        zx_app_friend_grouping AS a
+    WHERE a.zx_friend_id = #{zxFriendUserId}
+  </select>
+</mapper>

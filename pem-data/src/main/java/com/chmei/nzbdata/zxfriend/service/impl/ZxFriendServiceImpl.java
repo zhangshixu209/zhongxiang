@@ -4,16 +4,14 @@ import com.chmei.nzbcommon.cmbean.InputDTO;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
-import com.chmei.nzbdata.util.Constants;
 import com.chmei.nzbdata.zxfriend.service.IZxFriendService;
-import com.chmei.nzbdata.zxfriend.service.IZxMyTeamService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 众享好友关系dao接口实现
@@ -44,7 +42,6 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 			String zxFriendUserId = (String) params.get("zxFriendUserId"); // 当前登录人账号
 			String zxFriendFriendId = (String) params.get("zxFriendFriendId"); // 需要添加好友账号
 			params.put("memberAccount", zxFriendFriendId);
-
 			Map<String, Object> item = (Map<String, Object>) getBaseDao().queryForObject(
 					"MemberMapper.queryMemberDetail", params);
 			if (null == item) {
@@ -66,7 +63,7 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 			int i = getBaseDao().insert("ZxFriendMapper.saveZxFriendInfo", params);
 			if (i > 0) {
 				Map<String, Object> groupCount = (Map<String, Object>) getBaseDao().queryForObject(
-						"ZxFriendMapper.queryZxFriendGroupingInfo", params);
+						"ZxFriendGroupingMapper.queryZxFriendGroupingInfo", params);
 				if (null != groupCount) {
 					params.put("zxFriendGroupingId", groupCount.get("zxFriendGroupingId"));
 					getBaseDao().update("ZxFriendMapper.updateZxFriendInfo", params);
@@ -85,7 +82,7 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 			if (null == friendTo) {
 				// 用好友账号查询好友的默认分组ID
 				Map<String, Object> groupCount = (Map<String, Object>) getBaseDao().queryForObject(
-						"ZxFriendMapper.queryZxFriendGroupingInfo", maps);
+						"ZxFriendGroupingMapper.queryZxFriendGroupingInfo", maps);
 				if (null != groupCount) {
 					maps.put("zxFriendGroupingId", groupCount.get("zxFriendGroupingId"));
 					maps.put("zxFriendFriendType", "Y");   // 是否好友状态
@@ -111,11 +108,123 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 	 */
 	@Override
 	public void deleteZxFriendInfo(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
 		try {
-			// TODO ======================2019年11月27日
+			List<Map<String, Object>> list = getBaseDao().queryForList("ZxFriendMapper.queryZxFriendList", params);
+			if (null != list && list.size() > 0) {
+				int i = getBaseDao().delete("ZxFriendMapper.deleteZxFriendInfo", params);
+				if (i > 0) {
+					output.setCode("0");
+					output.setMsg("删除好友成功");
+					return;
+				}
+			}
+			params.put("memberAccount", params.get("zxFriendFriendId"));
+			@SuppressWarnings("unchecked")
+			Map<String, Object> item = (Map<String, Object>) getBaseDao().queryForObject(
+					"MemberMapper.queryMemberDetail", params);
+			if (null == item) {
+				output.setCode("-1");
+				output.setMsg("好友不存在");
+				return;
+			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("系统异常", e);
 		}
+	}
+
+	/**
+	 * 关注众享好友
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public void notesZxFriendInfo(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			String zxFriendFriendId = (String) params.get("zxFriendFriendId"); // 需要添加好友账号
+			params.put("memberAccount", zxFriendFriendId);
+			Map<String, Object> item = (Map<String, Object>) getBaseDao().queryForObject(
+					"MemberMapper.queryMemberDetail", params);
+			if (null == item) {
+				output.setCode("-1");
+				output.setMsg("用户不存在！");
+				return;
+			}
+			// 判断是否关注过好友
+			Map<String, Object> friend = (Map<String, Object>) getBaseDao().queryForObject(
+					"ZxFriendMapper.queryZxFriendDetail", params);
+			if (null == friend) {
+				params.put("zxFriendId", getSequence()); // 众享好友ID
+				params.put("zxFriendNotesType", "Y");   // 是否关注状态
+				// 新增众享好友信息
+				int i = getBaseDao().insert("ZxFriendMapper.saveZxFriendInfo", params);
+				if (i < 0) {
+					output.setCode("-1");
+					output.setMsg("关注失败");
+				}
+				output.setCode("0");
+				output.setMsg("关注成功");
+			}
+			if (null != friend && "N".equals(friend.get("zxFriendNotesType"))) {
+				getBaseDao().update("ZxFriendMapper.updateZxFriendInfo", params);
+			}
+		} catch (Exception e) {
+			LOGGER.error("系统异常", e);
+		}
+	}
+
+	/**
+	 * 取消关注众享好友
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public void cancelNotesZxFriendInfo(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			String zxFriendFriendId = (String) params.get("zxFriendFriendId"); // 需要添加好友账号
+			params.put("memberAccount", zxFriendFriendId);
+			Map<String, Object> item = (Map<String, Object>) getBaseDao().queryForObject(
+					"MemberMapper.queryMemberDetail", params);
+			if (null == item) {
+				output.setCode("-1");
+				output.setMsg("用户不存在！");
+				return;
+			}
+			// 判断是否关注过好友
+			Map<String, Object> friend = (Map<String, Object>) getBaseDao().queryForObject(
+					"ZxFriendMapper.queryZxFriendDetail", params);
+			if (null == friend) {
+				output.setCode("-1");
+				output.setMsg("好友关系不存在");
+				return;
+			}
+			params.put("zxFriendNotesType", "N");   // 是否关注状态
+			if (null != friend && "Y".equals(friend.get("zxFriendNotesType"))) {
+				getBaseDao().update("ZxFriendMapper.updateZxFriendInfo", params);
+			}
+		} catch (Exception e) {
+			LOGGER.error("系统异常", e);
+		}
+	}
+
+	/**
+	 * 查询众享好友列表(带分组关系)
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void queryZxFriendList(InputDTO input, OutputDTO output) throws NzbDataException {
+
 	}
 
 

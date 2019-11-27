@@ -766,8 +766,6 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 									Map<String, Object> bonusMoney = (Map<String, Object>) getBaseDao().queryForObject(
 											"ShareOutBonusMapper.findAdShareOutBonusMoney", outBonusInfo);
 									Map<String, Object> record_ = new HashMap<>();
-									//record_.setAdvertisingShareOutBonusResidueLimit(bonusMoney.getAdvertisingShareOutBonusResidueLimit() + outBonusInfo.getAdvertisingShareOutBonusInfoMoney());
-
 									String adShareOutBonusMoney = (String) bonusMoney.get("adShareOutBonusMoney");
 									String  outAdShareOutBonusInfoMoney = (String) outBonusInfo.get("adShareOutBonusInfoMoney");
 									record_.put("adShareOutBonusMoney", Double.valueOf(adShareOutBonusMoney) + Double.valueOf(outAdShareOutBonusInfoMoney));
@@ -790,7 +788,5 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 		}
 		return -1;
 	}
-
-
 
 }
