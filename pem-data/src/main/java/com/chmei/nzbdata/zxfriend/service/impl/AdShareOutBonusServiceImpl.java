@@ -439,13 +439,6 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 			@SuppressWarnings("unchecked")
 			Map<String, Object> item = (Map<String, Object>) getBaseDao().queryForObject(
 					"ShareOutBonusMapper.queryIsFirstRecommend", params);
-			if (null != item) {
-				String teamUserPhone = (String) item.get("teamUserPhone");
-				if (StringUtil.isEmpty(teamUserPhone)) {
-					item.put("teamUserPhone", "88888888");
-					item.put("teamUserName", "众享平台");
-				}
-			}
 			output.setItem(item);
 		} catch (Exception ex) {
 			LOGGER.error("查询失败: " + ex);
@@ -486,6 +479,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				output.setMsg("推荐人不存在！");
 				return;
 			}
+			output.setCode("0");
 			output.setItem(item);
 		} catch (Exception ex) {
 			LOGGER.error("查询失败: " + ex);
@@ -559,7 +553,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 			// 设置分红开始标志
 			outBonusInfo.put("adShareOutBonusInfoDone", "S");
 			// 新增申请分红记录
-			int i = getBaseDao().insert("ShareOutBonusMapper.saveAdShareOutBonusInfo", outBonusInfo);
+			int i = insert(outBonusInfo);
 			if(i > 0){
 				output.setCode("0");
 				output.setMsg("分红成功！");
@@ -661,5 +655,142 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 		}
 		return taskCount;
 	}
+
+	/**
+	 * 广告分红定时任务
+	 * @param outBonusInfo
+	 * @return
+	 */
+	@SuppressWarnings("all")
+	public int insert(Map<String, Object> outBonusInfo){
+		Date date = new Date();
+		outBonusInfo.put("adShareOutBonusInfoStart", date);
+		outBonusInfo.put("adShareOutBonusInfoDate", date);
+		int i = getBaseDao().insert("ShareOutBonusMapper.saveAdShareOutBonusInfo", outBonusInfo);
+		if(i > 0){
+			// 扣除可用额度:
+			Map<String, Object> bonusMoney = (Map<String, Object>) getBaseDao().queryForObject(
+					"ShareOutBonusMapper.findAdShareOutBonusMoney", outBonusInfo);
+			Map<String, Object> one = new HashMap<>();
+			double mo = Double.valueOf(bonusMoney.get("adShareOutBonusMoney")+"") -
+					Double.valueOf(outBonusInfo.get("adShareOutBonusInfoMoney")+"");
+			one.put("adShareOutBonusMoney", mo);
+			Map<String, Object> two = new HashMap<>();
+			two.put("adShareOutBonusUserId", outBonusInfo.get("adShareOutBonusInfoUserId"));
+			one.putAll(two);
+			getBaseDao().update("ShareOutBonusMapper.updateShareOutBonusInfo", one);
+			// 3.在确认分红成功之后,设置当前登录人为有效人员
+			Map<String, Object> param = new HashMap<>();
+			param.put("memberAccount", outBonusInfo.get("adShareOutBonusInfoUserId")); // 被推荐人账户
+			Map<String, Object> user1 = (Map<String, Object>) getBaseDao().queryForObject(
+					"MemberMapper.queryMemberDetail", param);
+			Map<String, Object> user = new HashMap<>();
+			// 扣除当前人手续费:
+			if(user1 != null){
+				user.put("memberAccount", outBonusInfo.get("adShareOutBonusInfoUserId"));
+				user.put("walletBalance", Double.valueOf(user1.get("walletBalance")+"") -
+						Double.valueOf(outBonusInfo.get("adShareOutBonusInfoMoney")+"") * 0.01);
+				// 设置当前人为有效人员
+				Date nowDate = new Date();
+				long nowTime = nowDate.getTime();
+				// 注册时间
+				String startDate = (String) user1.get("crtTime");
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				ParsePosition pos = new ParsePosition(0);
+				Date registerDate = formatter.parse(startDate, pos);
+				long oldTime = registerDate.getTime();
+				// 证明是在30天以内进行的激活,为有效人员
+				if (((nowTime - oldTime) / (24 * 3600 * 1000) <= 30)){
+					user.put("zxMyTeamId", 1);
+				}
+				int i1 = getBaseDao().update("MemberMapper.updateMemberBalance", user);
+				if(i1 > 0){
+					// 钱包扣除金额记录:
+					Map<String, Object> walletMoneyInfo = new HashMap<>();
+					walletMoneyInfo.put("walletInfoId", getSequence());
+					walletMoneyInfo.put("walletInfoAddOrMinus", "-");
+					walletMoneyInfo.put("walletInfoUserId", outBonusInfo.get("adShareOutBonusInfoUserId"));
+					// 记录扣除当人金额的 1% 手续费
+					walletMoneyInfo.put("walletInfoMoney", Double.valueOf(outBonusInfo.get("adShareOutBonusInfoMoney")+"") * 0.01);
+					walletMoneyInfo.put("walletInfoFrom", "追加分红");
+					getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
+					if(1 == (int) user1.get("zxMyTeamId")){
+						Map<String, Object> record = new HashMap<>();
+						record.put("teamType", "Y");
+						record.put("teamRecommendedUserId", outBonusInfo.get("adShareOutBonusInfoUserId"));
+						int i_ = getBaseDao().update("ZxMyTeamMapper.updateMyTeamInfo", record);
+					}
+					// 当前时间的毫秒数 + 天数毫秒数  = 结束时间
+					System.out.println(outBonusInfo.get("adShareOutBonusInfoDayNum"));
+					long daySpan = 24 * 3600 * 1000 * Integer.valueOf(outBonusInfo.get("adShareOutBonusInfoDayNum")+"");
+					final Timer timer = new Timer();
+					timer.schedule(new TimerTask() {
+						@Override
+						public void run() {
+							LOGGER.info("用户{ " + outBonusInfo.get("adShareOutBonusInfoUserId") +" }分红任务开始");
+							Map<String, Object> param = new HashMap<>();
+							param.put("memberAccount", outBonusInfo.get("adShareOutBonusInfoUserId")); // 被推荐人账户
+							Map<String, Object> userRun = (Map<String, Object>) getBaseDao().queryForObject(
+									"MemberMapper.queryMemberDetail", param);
+							// 更新任务结束标志
+							Map<String, Object> record = new HashMap<>();
+							record.put("adShareOutBonusInfoDone", "D");
+							record.put("adShareOutBonusInfoUserId", outBonusInfo.get("adShareOutBonusInfoUserId"));
+							int i = getBaseDao().update("ShareOutBonusMapper.updateAdShareOutBonusInfo", record);
+							if(i > 0){
+								// 每个分红周期结束后，申请分红金额的10%进入广告费钱包，5%进入红包。
+								Map<String, Object> user = new HashMap<>();
+								user.put("memberAccount", outBonusInfo.get("adShareOutBonusInfoUserId"));
+								user.put("redEnveBalance", Double.valueOf(userRun.get("redEnveBalance")+"") + Double.valueOf(outBonusInfo.get("adShareOutBonusInfoMoney")+"") * 0.05);
+								user.put("advertisingFee", Double.valueOf(userRun.get("advertisingFee")+"") + Double.valueOf(outBonusInfo.get("adShareOutBonusInfoMoney")+"") * 0.1);
+								int ii = getBaseDao().update("MemberMapper.updateMemberBalance", user);
+								if(ii > 0){
+									// 并记录红包和广告费金额:
+									Map<String, Object> redRecord = new HashMap<>();
+									redRecord.put("redPacketInfoId", getSequence());
+									// 分红赠送获取的钱数
+									redRecord.put("redPacketInfoAddOrMinus", "+");
+									redRecord.put("redPacketInfoUserId", outBonusInfo.get("adShareOutBonusInfoUserId"));
+									redRecord.put("redPacketInfoMoney", Double.valueOf((String) outBonusInfo.get("adShareOutBonusInfoMoney")) * 0.05);
+									redRecord.put("redPacketInfoFrom", "分红赠送");
+									getBaseDao().insert("RedRecordMoneyInfoMapper.saveRedRecordMoneyInfo", redRecord);
+									// 获取分红的钱数
+									Map<String, Object> adRecord = new HashMap<>();
+									adRecord.put("advertisingInfoId", getSequence());
+									adRecord.put("advertisingInfoAddOrMinus", "+");
+									adRecord.put("advertisingInfoUserId", outBonusInfo.get("adShareOutBonusInfoUserId"));
+									adRecord.put("advertisingInfoMoney", Double.valueOf((String) outBonusInfo.get("adShareOutBonusInfoMoney")) * 0.1);
+									adRecord.put("advertisingInfoFrom", "获得分红");
+									getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
+									// 将可用分红额度恢复
+									Map<String, Object> bonusMoney = (Map<String, Object>) getBaseDao().queryForObject(
+											"ShareOutBonusMapper.findAdShareOutBonusMoney", outBonusInfo);
+									Map<String, Object> record_ = new HashMap<>();
+									//record_.setAdvertisingShareOutBonusResidueLimit(bonusMoney.getAdvertisingShareOutBonusResidueLimit() + outBonusInfo.getAdvertisingShareOutBonusInfoMoney());
+
+									String adShareOutBonusMoney = (String) bonusMoney.get("adShareOutBonusMoney");
+									String  outAdShareOutBonusInfoMoney = (String) outBonusInfo.get("adShareOutBonusInfoMoney");
+									record_.put("adShareOutBonusMoney", Double.valueOf(adShareOutBonusMoney) + Double.valueOf(outAdShareOutBonusInfoMoney));
+									record_.put("adShareOutBonusUserId", outBonusInfo.get("adShareOutBonusInfoUserId"));
+									int j = getBaseDao().update("ShareOutBonusMapper.updateShareOutBonusInfo", record_);
+									// 将交易表中的取消数据删除
+									Map<String, Object> examplee = new HashMap<>();
+									examplee.put("dealUserId", userRun.get("memberAccount"));
+									examplee.put("dealMoneyMark", "0");
+									getBaseDao().delete("AssetsTransferMapper.deleteDealInfo", examplee);
+									LOGGER.info("用户{ " + outBonusInfo.get("adShareOutBonusInfoUserId") +" }分红任务结束");
+								}
+							}
+							timer.cancel();
+						}
+					},daySpan);
+					return i1;
+				}
+			}
+		}
+		return -1;
+	}
+
+
 
 }

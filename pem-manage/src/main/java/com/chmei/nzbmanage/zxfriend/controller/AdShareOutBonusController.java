@@ -35,7 +35,7 @@ public class AdShareOutBonusController extends BaseController {
      */
     @RequestMapping("/adShareOutBonusActivate")
     public OutputDTO adShareOutBonusActivate(@ModelAttribute AdShareOutBonusForm adShareOutBonusForm) {
-    	LOGGER.info("激活广告分红...ZxChatGroupController.upgradeChatGroupInfo()...");
+    	LOGGER.info("激活广告分红...AdShareOutBonusController.upgradeChatGroupInfo()...");
         Map<String, Object> params = BeanUtil.convertBean2Map(adShareOutBonusForm);
         OutputDTO outputDTO = getOutputDTO(params, "adShareOutBonusService", "adShareOutBonusActivate");
         return outputDTO;
@@ -49,7 +49,7 @@ public class AdShareOutBonusController extends BaseController {
      */
     @RequestMapping("/appendShareOutBonus")
     public OutputDTO appendShareOutBonus(@ModelAttribute AdShareOutBonusForm adShareOutBonusForm) {
-        LOGGER.info("追加广告分红...ZxChatGroupController.appendShareOutBonus()...");
+        LOGGER.info("追加广告分红...AdShareOutBonusController.appendShareOutBonus()...");
         Map<String, Object> params = BeanUtil.convertBean2Map(adShareOutBonusForm);
         OutputDTO outputDTO = getOutputDTO(params, "adShareOutBonusService", "appendShareOutBonus");
         return outputDTO;
@@ -63,7 +63,7 @@ public class AdShareOutBonusController extends BaseController {
      */
     @RequestMapping("/queryIsFirstRecommend")
     public OutputDTO queryIsFirstRecommend(@ModelAttribute AdShareOutBonusForm adShareOutBonusForm) {
-        LOGGER.info("追加广告分红...ZxChatGroupController.queryIsFirstRecommend()...");
+        LOGGER.info("追加广告分红...AdShareOutBonusController.queryIsFirstRecommend()...");
         Map<String, Object> params = BeanUtil.convertBean2Map(adShareOutBonusForm);
         OutputDTO outputDTO = getOutputDTO(params, "adShareOutBonusService", "queryIsFirstRecommend");
         return outputDTO;
@@ -77,7 +77,7 @@ public class AdShareOutBonusController extends BaseController {
      */
     @RequestMapping("/queryRecommendInfo")
     public OutputDTO queryRecommendInfo(@ModelAttribute AdShareOutBonusForm adShareOutBonusForm) {
-        LOGGER.info("追加广告分红...ZxChatGroupController.queryRecommendInfo()...");
+        LOGGER.info("追加广告分红...AdShareOutBonusController.queryRecommendInfo()...");
         OutputDTO outputDTO = new OutputDTO();
         Map<String, Object> map = new HashMap<>();
         String memberAccount = adShareOutBonusForm.getMemberAccount();
@@ -85,6 +85,7 @@ public class AdShareOutBonusController extends BaseController {
             if("88888888".equals(memberAccount)) {
                 map.put("memberAccount", "88888888");
                 map.put("nickname", "众享平台");
+                outputDTO.setCode("0");
                 outputDTO.setItem(map);
                 return outputDTO;
             }
@@ -102,7 +103,7 @@ public class AdShareOutBonusController extends BaseController {
      */
     @RequestMapping("/findApplyForAdvertisingInfo")
     public OutputDTO findApplyForAdvertisingInfo(@ModelAttribute AdShareOutBonusForm adShareOutBonusForm) {
-        LOGGER.info("申请分红查询...ZxChatGroupController.findApplyForAdvertisingInfo()...");
+        LOGGER.info("申请分红查询...AdShareOutBonusController.findApplyForAdvertisingInfo()...");
         Map<String, Object> params = BeanUtil.convertBean2Map(adShareOutBonusForm);
         OutputDTO outputDTO = getOutputDTO(params, "adShareOutBonusService", "findApplyForAdvertisingInfo");
         return outputDTO;
@@ -116,7 +117,7 @@ public class AdShareOutBonusController extends BaseController {
      */
     @RequestMapping("/applyShareOutBonus")
     public OutputDTO applyShareOutBonus(@ModelAttribute AdShareOutBonusForm adShareOutBonusForm) {
-        LOGGER.info("申请分红查询...ZxChatGroupController.applyShareOutBonus()...");
+        LOGGER.info("申请分红查询...AdShareOutBonusController.applyShareOutBonus()...");
         Map<String, Object> params = BeanUtil.convertBean2Map(adShareOutBonusForm);
         OutputDTO outputDTO = getOutputDTO(params, "adShareOutBonusService", "applyShareOutBonus");
         return outputDTO;

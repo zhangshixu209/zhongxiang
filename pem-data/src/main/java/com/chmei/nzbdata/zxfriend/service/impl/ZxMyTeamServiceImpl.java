@@ -111,8 +111,9 @@ public class ZxMyTeamServiceImpl extends BaseServiceImpl implements IZxMyTeamSer
 				for (Map<String, Object> eff : effs) {
 					Map<String, Object> param = new HashMap<>();
 					param.put("memberAccount", eff.get("teamRecommendedUserId"));
-					input.setParams(param);
-					int result = this.countMyTeam(input, output);
+					InputDTO inputDTO = new InputDTO();
+					inputDTO.setParams(param);
+					int result = this.countMyTeam(inputDTO, output);
 					count += result;
 				}
 			}

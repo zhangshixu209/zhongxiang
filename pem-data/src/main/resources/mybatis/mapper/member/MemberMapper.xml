@@ -211,7 +211,8 @@
       IFNULL( a.advertising_fee, '0' ) AS advertisingFee,
       IFNULL( a.STATUS, '' ) AS status,
       IFNULL( a.bind_phone, '' ) AS bindPhone,
-      a.crt_time AS crtTime
+      a.crt_time AS crtTime,
+      a.zx_my_team_id as zxMyTeamId
     FROM
         t_member a
     <where>
@@ -259,6 +260,9 @@
       </if>
       <if test="activateStatus != null and activateStatus != ''" >
         activate_status = #{activateStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="zxMyTeamId != null and zxMyTeamId != ''">
+        zx_my_team_id = #{zxMyTeamId,jdbcType=INTEGER},
       </if>
       modf_user_time = NOW(),
     </set>

@@ -45,7 +45,12 @@
   <!-- 删除转让信息 -->
   <delete id="deleteDealInfo" parameterType="java.util.Map">
     delete from zx_app_deal
-    where deal_user_id = #{memberAccount,jdbcType=VARCHAR}
+    <where>
+      deal_user_id = #{memberAccount,jdbcType=VARCHAR}
+      <if test="dealMoneyMark != null and dealMoneyMark != ''">
+        AND deal_money_mark = #{dealMoneyMark}
+      </if>
+    </where>
   </delete>
 
   <!-- 资产转让交易记录新增 -->

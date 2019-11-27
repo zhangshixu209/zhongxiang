@@ -201,4 +201,50 @@
     </trim>
   </insert>
 
+  <!-- 查询申请分红钱数 -->
+  <select id="findAdShareOutBonusMoney" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+    a.ad_share_out_bonus_id AS adShareOutBonusId,
+    a.ad_share_out_bonus_user_id AS adShareOutBonusUserId,
+    a.ad_share_out_bonus_limit AS adShareOutBonusLimit,
+    a.ad_share_out_bonus_residue_limit AS adShareOutBonusResidueLimit,
+    a.ad_share_out_bonus_money AS adShareOutBonusMoney,
+    a.ad_share_out_bonus_type AS adShareOutBonusType,
+    a.ad_share_out_bonus_date AS adShareOutBonusDate
+    FROM zx_app_advertising_share_out_bonus AS a
+    <where>
+        a.ad_share_out_bonus_user_id = #{adShareOutBonusInfoUserId}
+    </where>
+  </select>
+
+  <!-- 更新申请分红表 -->
+  <update id="updateAdShareOutBonusInfo" parameterType="java.util.Map">
+    update zx_app_ad_share_out_bonus_info
+    <set>
+      <if test="adShareOutBonusInfoMoney != null">
+        ad_share_out_bonus_info_money = #{adShareOutBonusInfoMoney},
+      </if>
+      <if test="adShareOutBonusInfoDayNum != null">
+        ad_share_out_bonus_info_day_num = #{adShareOutBonusInfoDayNum},
+      </if>
+      <if test="adShareOutBonusInfoDone != null">
+        ad_share_out_bonus_info_done = #{adShareOutBonusInfoDone},
+      </if>
+      <if test="adShareOutBonusInfoStart != null">
+        ad_share_out_bonus_info_start = #{adShareOutBonusInfoStart,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adShareOutBonusInfoEnd != null">
+        ad_share_out_bonus_info_end = #{adShareOutBonusInfoEnd,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adShareOutBonusInfoDate != null">
+        ad_share_out_bonus_info_date = #{adShareOutBonusInfoDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <where>
+      <if test="adShareOutBonusInfoUserId != null and adShareOutBonusInfoUserId != ''">
+        ad_share_out_bonus_info_user_id = #{adShareOutBonusInfoUserId}
+      </if>
+    </where>
+  </update>
+
 </mapper>

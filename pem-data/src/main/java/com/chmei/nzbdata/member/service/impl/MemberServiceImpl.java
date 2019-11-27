@@ -78,6 +78,13 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
                     output.setCode("-1");
                     output.setMsg("新增失败");
                 }
+                Map<String, Object> friendGroup = new HashMap<>();
+                friendGroup.put("zxFriendGroupingId", getSequence());
+                friendGroup.put("zxFriendId", memberAccount);
+                friendGroup.put("zxFriendGroupingName", "默认分组");
+                friendGroup.put("zxFriendGroupingType", "Y"); // 默认分组标识
+                // 为用户添加默认分组
+                getBaseDao().insert("ZxFriendMapper.saveZxFriendGroupingInfo", friendGroup);
                 Map<String, Object> map = new HashMap<>();
                 map.put("memberAccount", memberAccount);
                 output.setCode("0");
