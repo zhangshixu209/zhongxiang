@@ -2,6 +2,8 @@ package com.chmei.nzbmanage.zxfriend.bean;
 
 import com.chmei.nzbmanage.common.controller.BaseForm;
 
+import java.util.Date;
+
 /**
  * 众享好友群管理Form
  *
@@ -28,6 +30,63 @@ public class ZxFriendForm extends BaseForm {
 	 */
 	private Integer goal;
 
+	/**
+	 * 众享好友id
+	 */
+	private Long zxFriendId;
+
+	/**
+	 * 当前人账号
+	 */
+	private String zxFriendUserId;
+
+	/**
+	 * 好友备注名称
+	 */
+	private String zxFriendRemark;
+
+	/**
+	 * 好友账号
+	 */
+	private String zxFriendFriendId;
+
+	/**
+	 * 是否关注(Y,关注;N,非关注)
+	 */
+	private String zxFriendNotesType;
+
+	/**
+	 * 是否是好友(Y,是,N否)
+	 */
+	private String zxFriendFriendType;
+
+	/**
+	 * 关注好友时间
+	 */
+	private Date zxFriendNotesDate;
+
+	/**
+	 * 添加好友时间
+	 */
+	private Date zxFriendAddDate;
+
+	/**
+	 * 取消关注好友时间
+	 */
+	private Date zxFriendOffNotesDate;
+
+	/**
+	 * 删除好友时间
+	 */
+	private Date zxFriendDelDate;
+
+	/**
+	 * 众享好友分组id
+	 */
+	private Long zxFriendGroupingId;
+
+	private String zxFriendGroupingName;
+
 	public String getGroupId() {
 		return groupId;
 	}
@@ -50,5 +109,101 @@ public class ZxFriendForm extends BaseForm {
 
 	public void setGoal(Integer goal) {
 		this.goal = goal;
+	}
+
+	public Long getZxFriendId() {
+		return zxFriendId;
+	}
+
+	public void setZxFriendId(Long zxFriendId) {
+		this.zxFriendId = zxFriendId;
+	}
+
+	public String getZxFriendUserId() {
+		return zxFriendUserId;
+	}
+
+	public void setZxFriendUserId(String zxFriendUserId) {
+		this.zxFriendUserId = zxFriendUserId;
+	}
+
+	public String getZxFriendRemark() {
+		return zxFriendRemark;
+	}
+
+	public void setZxFriendRemark(String zxFriendRemark) {
+		this.zxFriendRemark = zxFriendRemark;
+	}
+
+	public String getZxFriendFriendId() {
+		return zxFriendFriendId;
+	}
+
+	public void setZxFriendFriendId(String zxFriendFriendId) {
+		this.zxFriendFriendId = zxFriendFriendId;
+	}
+
+	public String getZxFriendNotesType() {
+		return zxFriendNotesType;
+	}
+
+	public void setZxFriendNotesType(String zxFriendNotesType) {
+		this.zxFriendNotesType = zxFriendNotesType;
+	}
+
+	public String getZxFriendFriendType() {
+		return zxFriendFriendType;
+	}
+
+	public void setZxFriendFriendType(String zxFriendFriendType) {
+		this.zxFriendFriendType = zxFriendFriendType;
+	}
+
+	public Date getZxFriendNotesDate() {
+		return zxFriendNotesDate;
+	}
+
+	public void setZxFriendNotesDate(Date zxFriendNotesDate) {
+		this.zxFriendNotesDate = zxFriendNotesDate;
+	}
+
+	public Date getZxFriendAddDate() {
+		return zxFriendAddDate;
+	}
+
+	public void setZxFriendAddDate(Date zxFriendAddDate) {
+		this.zxFriendAddDate = zxFriendAddDate;
+	}
+
+	public Date getZxFriendOffNotesDate() {
+		return zxFriendOffNotesDate;
+	}
+
+	public void setZxFriendOffNotesDate(Date zxFriendOffNotesDate) {
+		this.zxFriendOffNotesDate = zxFriendOffNotesDate;
+	}
+
+	public Date getZxFriendDelDate() {
+		return zxFriendDelDate;
+	}
+
+	public void setZxFriendDelDate(Date zxFriendDelDate) {
+		this.zxFriendDelDate = zxFriendDelDate;
+	}
+
+	public Long getZxFriendGroupingId() {
+		return zxFriendGroupingId;
+	}
+
+	public void setZxFriendGroupingId(Long zxFriendGroupingId) {
+		this.zxFriendGroupingId = zxFriendGroupingId;
+	}
+
+	public String getZxFriendGroupingName() {
+		return zxFriendGroupingName;
+	}
+
+	public void setZxFriendGroupingName(String zxFriendGroupingName) {
+		this.zxFriendGroupingName = zxFriendGroupingName;
 	}
 }

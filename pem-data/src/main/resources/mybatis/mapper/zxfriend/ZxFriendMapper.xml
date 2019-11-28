@@ -29,10 +29,13 @@
         zx_friend_id = #{zxFriendId,jdbcType=BIGINT}
       </if>
       <if test="zxFriendUserId != null and zxFriendUserId != ''" >
-        zx_friend_user_id = #{zxFriendUserId}
+        AND zx_friend_user_id = #{zxFriendUserId}
       </if>
       <if test="zxFriendFriendId != null and zxFriendFriendId != ''" >
-        zx_friend_friend_id = #{zxFriendUserId}
+        AND zx_friend_friend_id = #{zxFriendFriendId}
+      </if>
+      <if test="zxFriendGroupingId != null and zxFriendGroupingId != ''" >
+        AND zx_friend_grouping_id = #{zxFriendGroupingId}
       </if>
     </where>
 
@@ -41,7 +44,7 @@
   <!-- 删除好友关系 -->
   <delete id="deleteZxFriendInfo" parameterType="java.util.Map">
     delete from zx_app_friend
-    where zx_friend_user_id = #{zxFriendUserId} AND zx_friend_friend_id = #{zxFriendUserId}
+    where zx_friend_user_id = #{zxFriendUserId} AND zx_friend_friend_id = #{zxFriendFriendId}
   </delete>
 
   <!-- 添加好友 -->
@@ -54,31 +57,31 @@
       <if test="zxFriendUserId != null">
         zx_friend_user_id,
       </if>
-      <if test="zxFriendRemark != null">
+      <if test="zxFriendRemark != null and zxFriendRemark != ''">
         zx_friend_remark,
       </if>
       <if test="zxFriendFriendId != null">
         zx_friend_friend_id,
       </if>
-      <if test="zxFriendNotesType != null">
+      <if test="zxFriendNotesType != null and zxFriendNotesType != ''">
         zx_friend_notes_type,
       </if>
-      <if test="zxFriendFriendType != null">
+      <if test="zxFriendFriendType != null and zxFriendFriendType != ''">
         zx_friend_friend_type,
       </if>
-      <if test="zxFriendNotesDate != null">
+      <if test="zxFriendNotesDate != null and zxFriendNotesDate != ''">
         zx_friend_notes_date,
       </if>
-      <if test="zxFriendAddDate != null">
+      <if test="zxFriendAddDate != null and zxFriendAddDate != ''">
         zx_friend_add_date,
       </if>
-      <if test="zxFriendOffNotesDate != null">
+      <if test="zxFriendOffNotesDate != null and zxFriendOffNotesDate != ''">
         zx_friend_off_notes_date,
       </if>
-      <if test="zxFriendDelDate != null">
+      <if test="zxFriendDelDate != null and zxFriendDelDate != ''">
         zx_friend_del_date,
       </if>
-      <if test="zxFriendGroupingId != null">
+      <if test="zxFriendGroupingId != null and zxFriendGroupingId != ''">
         zx_friend_grouping_id,
       </if>
     </trim>
@@ -89,31 +92,31 @@
       <if test="zxFriendUserId != null">
         #{zxFriendUserId,jdbcType=VARCHAR},
       </if>
-      <if test="zxFriendRemark != null">
+      <if test="zxFriendRemark != null and zxFriendRemark != ''">
         #{zxFriendRemark,jdbcType=VARCHAR},
       </if>
       <if test="zxFriendFriendId != null">
         #{zxFriendFriendId,jdbcType=VARCHAR},
       </if>
-      <if test="zxFriendNotesType != null">
+      <if test="zxFriendNotesType != null and zxFriendNotesType != ''">
         #{zxFriendNotesType,jdbcType=VARCHAR},
       </if>
-      <if test="zxFriendFriendType != null">
+      <if test="zxFriendFriendType != null and zxFriendFriendType != ''">
         #{zxFriendFriendType,jdbcType=VARCHAR},
       </if>
-      <if test="zxFriendNotesDate != null">
-        #{zxFriendNotesDate,jdbcType=TIMESTAMP},
+      <if test="zxFriendNotesDate != null and zxFriendNotesDate != ''">
+        NOW(),
       </if>
-      <if test="zxFriendAddDate != null">
-        #{zxFriendAddDate,jdbcType=TIMESTAMP},
+      <if test="zxFriendAddDate != null and zxFriendAddDate != ''">
+        NOW(),
       </if>
-      <if test="zxFriendOffNotesDate != null">
-        #{zxFriendOffNotesDate,jdbcType=TIMESTAMP},
+      <if test="zxFriendOffNotesDate != null and zxFriendOffNotesDate != ''">
+        NOW(),
       </if>
-      <if test="zxFriendDelDate != null">
+      <if test="zxFriendDelDate != null and zxFriendDelDate != ''">
         #{zxFriendDelDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="zxFriendGroupingId != null">
+      <if test="zxFriendGroupingId != null and zxFriendGroupingId != ''">
         #{zxFriendGroupingId,jdbcType=BIGINT},
       </if>
     </trim>
@@ -162,11 +165,14 @@
       <if test="zxFriendFriendType != null and zxFriendFriendType != ''">
         zx_friend_friend_type = #{zxFriendFriendType,jdbcType=VARCHAR},
       </if>
+      <if test="zxFriendNotesType != null and zxFriendNotesType != ''">
+        zx_friend_notes_type = #{zxFriendNotesType,jdbcType=VARCHAR},
+      </if>
       <if test="zxFriendGroupingId != null and zxFriendGroupingId !=''">
         zx_friend_grouping_id = #{zxFriendGroupingId,jdbcType=BIGINT},
       </if>
     </set>
-    where zx_friend_user_id = #{zxFriendUserId} AND zx_friend_friend_id = #{zxFriendUserId}
+    where zx_friend_user_id = #{zxFriendUserId} AND zx_friend_friend_id = #{zxFriendFriendId}
   </update>
 
   <!-- 查询众享好友详细信息 -->
@@ -182,7 +188,7 @@
         a.zx_friend_add_date AS zxFriendAddDate,
         a.zx_friend_off_notes_date AS zxFriendOffNotesDate,
         a.zx_friend_del_date AS zxFriendDelDate,
-        a.zx_friend_grouping_id
+        a.zx_friend_grouping_id AS zxFriendGroupingId
     FROM
         zx_app_friend AS a
     <where>
@@ -190,11 +196,49 @@
         a.zx_friend_id = #{zxFriendId,jdbcType=BIGINT}
       </if>
       <if test="zxFriendUserId != null and zxFriendUserId != ''" >
-        a.zx_friend_user_id = #{zxFriendUserId}
+        AND a.zx_friend_user_id = #{zxFriendUserId}
       </if>
       <if test="zxFriendFriendId != null and zxFriendFriendId != ''" >
-        a.zx_friend_friend_id = #{zxFriendUserId}
+        AND a.zx_friend_friend_id = #{zxFriendFriendId}
       </if>
     </where>
   </select>
+
+  <!-- 按分组查询众享好友列表 -->
+  <select id="queryZxFriendListByGroup" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.zx_friend_id AS zxFriendId,
+      a.zx_friend_user_id AS zxFriendUserId,
+      a.zx_friend_friend_id AS zxFriendFriendId,
+      a.zx_friend_grouping_id AS zxFriendGroupingId,
+      a.zx_friend_friend_type AS zxFriendFriendType,
+      a.zx_friend_remark AS zxFriendRemark,
+      b.head_img_url AS headImgUrl,
+      IFNULL( b.nickname, b.member_account ) AS nickName
+  FROM
+      zx_app_friend AS a
+      LEFT JOIN t_member AS b ON b.member_account = a.zx_friend_friend_id
+    <where>
+      <if test="zxFriendId != null and zxFriendId != ''">
+        zx_friend_id = #{zxFriendId,jdbcType=BIGINT}
+      </if>
+      <if test="zxFriendUserId != null and zxFriendUserId != ''" >
+        AND zx_friend_user_id = #{zxFriendUserId}
+      </if>
+      <if test="zxFriendFriendId != null and zxFriendFriendId != ''" >
+        AND zx_friend_friend_id = #{zxFriendFriendId}
+      </if>
+      <if test="zxFriendGroupingId != null and zxFriendGroupingId != ''" >
+        AND zx_friend_grouping_id = #{zxFriendGroupingId}
+      </if>
+    </where>
+  </select>
+
+  <!-- 批量更新好友分组信息 -->
+  <update id="batchUpdateZxFriendGroup" parameterType="java.util.Map">
+    update zx_app_friend set zx_friend_grouping_id = #{zxFriendGroupingId} where zx_friend_id in
+    <foreach collection="ids" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </update>
 </mapper>

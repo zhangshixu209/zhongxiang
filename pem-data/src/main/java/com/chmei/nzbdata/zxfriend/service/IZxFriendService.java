@@ -58,4 +58,58 @@ public interface IZxFriendService {
 	 */
 	void queryZxFriendList(InputDTO input, OutputDTO output) throws NzbDataException;
 
+	/**
+	 * 众享好友分组新增
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	void saveZxFriendGroupingInfo(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 众享好友分组编辑
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	void updateZxFriendGroupingInfo(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 众享好友分组删除
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	void delZxFriendGroupingInfo(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 移动我的好友到指定分组
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	void moveZxFriendGroupingInfo(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 查询众享好友分组列表
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	void queryZxFriendGroupingList(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 查询众享好友朋友圈列表
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	void queryZxFriendCircleList(InputDTO input, OutputDTO output) throws NzbDataException;
+
 }

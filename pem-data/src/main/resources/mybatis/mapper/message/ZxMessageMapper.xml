@@ -312,4 +312,41 @@
     </where>
   </select>
 
+  <!-- 查询朋友圈众享信息列表 -->
+  <select id="queryZxFriendMessageList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.zx_message_id AS zxMessageId,
+      a.member_account AS memberAccount,
+      a.zx_message_link_url AS zxMessageLinkUrl,
+      a.zx_message_video_url AS zxMessageVideoUrl,
+      a.zx_message_date AS zxMessageDate,
+      a.zx_message_text AS zxMessageText,
+      ( SELECT COUNT( 1 ) FROM zx_app_message_view_count v WHERE v.zx_message_id = a.zx_message_id ) AS zxMessageViewCount,
+      b.head_img_url AS headImgUrl,
+      b.nickname AS nickname
+    FROM zx_app_message AS a
+    LEFT JOIN t_member b ON a.member_account = b.member_account
+    <where>
+      <if test="memberAccounts != null and memberAccounts != ''">
+        a.member_account IN(${memberAccounts})
+      </if>
+    </where>
+    ORDER BY zx_message_date DESC
+    <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+      LIMIT ${start},${limit}
+    </if>
+  </select>
+  <!-- 众享好友朋友圈统计 -->
+  <select id="queryZxFriendMessageCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+        COUNT(1)
+    FROM zx_app_message AS a
+    LEFT JOIN t_member b ON a.member_account = b.member_account
+    <where>
+      <if test="memberAccounts != null and memberAccounts != ''">
+        a.member_account IN(${memberAccounts})
+      </if>
+    </where>
+  </select>
+
 </mapper>

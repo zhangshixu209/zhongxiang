@@ -191,6 +191,7 @@ public class MemberController extends BaseController {
             // 否则的话,就是新用户,需要注册到本地服务和本地服务注册环信用户,本地密码和环信密码一致
             String password_ = MD5Util.generate(loginPassword);
             memberForm.setMemberPwd(password_);
+            memberForm.setNewPassword(loginPassword); // 环信使用
             Map<String, Object> map = BeanUtil.convertBean2Map(memberForm);
             outputDTO = getOutputDTO(map, "memberService", "saveMemberInfo");
         }

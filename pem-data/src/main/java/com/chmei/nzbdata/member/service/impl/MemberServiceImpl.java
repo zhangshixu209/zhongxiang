@@ -60,7 +60,7 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
                 RegisterUsers registerUsers = new RegisterUsers();
                 User user = new User();
                 String memberAccount = (String) params.get("memberAccount");
-                String memberPwd = (String) params.get("memberPwd");
+                String memberPwd = (String) params.get("newPassword");
                 user.setUsername(memberAccount); // 用户账号
                 user.setPassword(memberPwd);     // 用户密码
                 registerUsers.add(user);
