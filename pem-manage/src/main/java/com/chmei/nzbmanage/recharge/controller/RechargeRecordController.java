@@ -40,4 +40,19 @@ public class RechargeRecordController extends BaseController {
         return outputDTO;
     }
 
+    /**
+     * 初始化加载充值记录查询列表
+     *
+     * @param rechargeRecordForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/alipay")
+    public OutputDTO alipay(@ModelAttribute RechargeRecordForm rechargeRecordForm) {
+        LOGGER.info("初始化加载充值记录查询列表...RechargeRecordController.alipay()...");
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(rechargeRecordForm);
+        outputDTO = getOutputDTO(params, "zxPayService", "alipay");
+        return outputDTO;
+    }
+
 }

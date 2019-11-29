@@ -418,7 +418,7 @@
         AND a.red_packet_link_user_id IS NOT NULL
   </select>
   <!-- 根据红包ID查询红包详细信息 -->
-  <select id="checkUserIsRobRedPacket" resultType="java.util.Map">
+  <select id="checkUserIsRobRedPacket" resultType="int">
     select * from zx_app_link_red_packet_info WHERE red_packet_link_id = #{redPackeLinktId,jdbcType=BIGINT}   AND red_packet_link_user_id = #{memberAccount,jdbcType=VARCHAR}
   </select>
   <!-- 查看用户抢红包成功失败信息 -->

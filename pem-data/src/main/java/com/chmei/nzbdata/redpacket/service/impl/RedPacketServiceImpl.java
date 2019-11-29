@@ -487,8 +487,7 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 			if (Optional.ofNullable(item).isPresent()) {
 				Integer age = (Integer) item.get("age");
 				String sex = (String) item.get("sex");
-				if (StringUtil.isEmpty(age + "") ||
-					StringUtil.isEmpty(sex)) {
+				if (null == age || StringUtil.isEmpty(sex)) {
 					output.setCode("-1");
 					output.setMsg("请完善个人信息！");
 					return;
@@ -499,17 +498,25 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 						Integer redPacketSex = (Integer) map.get("redPacketSex");           // 红包性别
 						Integer redPacketAgeStart = (Integer) map.get("redPacketAgeStart"); // 红包开始年龄
 						Integer redPacketAgeEnd = (Integer) map.get("redPacketAgeEnd");     // 红包结束年龄
-						result.put("redProName", map.get("provinceName"));                // 省名称
+						result.put("redProvName", map.get("provinceName"));                // 省名称
 						result.put("redCityName", map.get("cityName"));                   // 市名称
 						result.put("redCountyName", map.get("countyName"));               // 区县名称
 						// 校验红包地区
 						int checkArea = checkArea(item, result);
+						if(checkArea == 2){
+							output.setCode("-1");
+							output.setMsg("请完善个人信息！");
+							return;
+						}
+						int sexFlag = 0; // 性别为3不限制年龄
+						if (redPacketSex == 3 || sex.equals(redPacketSex + "")) {
+							sexFlag = 1;
+						}
 						// 校验红包年龄
 						int checkAge = checkAge(age, redPacketAgeStart, (redPacketAgeEnd));
-						if (!sex.equals(redPacketSex + "") || checkAge == 0 || checkArea == 0) {
-							continue;
+						if (sexFlag == 1 && checkAge == 1 && checkArea == 3 || checkArea == 1) {
+							listAll.add(map);
 						}
-						listAll.add(map);
 					}
 				} else {
 					output.setCode("0");

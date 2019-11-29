@@ -437,7 +437,7 @@
     </select>
 
     <!-- 根据红包ID查询红包详细信息 -->
-    <select id="checkUserIsRobRedPacket" resultType="java.util.Map">
+    <select id="checkUserIsRobRedPacket" resultType="int">
       select COUNT(1) from zx_app_red_packet_info WHERE red_packet_id = #{redPacketId,jdbcType=BIGINT}
       AND red_packet_user_id = #{memberAccount,jdbcType=VARCHAR}
     </select>
