@@ -13,6 +13,20 @@ aliPay:
     alipaySubject: 众享信息
     alipayProductCode: QUICK_MSECURITY_PAY
     alipayNotifyUrl: http://zhongxiang.natapp1.cc/aliPayCallback
+
+wx:
+  app:
+    # APPID
+    appId: wx12953fc5b1c933b8
+    # 商户ID
+    mchId: 1556830761
+    # 商户秘钥
+    key: 1zhongxiangkejiyouxiangongsi2019
+    # 回调地址
+    notifyUrl: http://zhongxiang.natapp1.cc/wxPayCallback
+    # 商品描述
+    body: 众享信息-余额充值
+
 #id生成策略
 idgenerator:
   generators:

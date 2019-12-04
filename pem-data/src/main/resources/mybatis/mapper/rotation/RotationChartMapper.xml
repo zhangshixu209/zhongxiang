@@ -47,7 +47,7 @@
                 AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &lt;= #{endTime}
             </if>
         </where>
-        ORDER BY a.online_status DESC, a.crt_time DESC
+        ORDER BY a.crt_time DESC, a.online_status DESC
         <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
             LIMIT #{start}, #{limit}
         </if>
@@ -226,5 +226,21 @@
       WHERE
       	obj_id = #{objId}
   </select>
+
+    <!-- 列表查询 -->
+    <select id="queryRotationChartFiveList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+            id AS id,
+            IFNULL( a.rotation_chart_id, '' ) AS rotationChartId,
+            IFNULL( a.link_address, '' ) AS linkAddress,
+            IFNULL( a.online_status, '' ) AS onlineStatus,
+            IFNULL( a.remark, '' ) AS remark,
+            IFNULL( a.crt_time, '' ) AS crtTime
+        FROM
+        t_rotation_chart a
+        WHERE a.online_status = '1'
+        ORDER BY a.crt_time DESC, a.online_status DESC
+        LIMIT 5
+    </select>
   
 </mapper>

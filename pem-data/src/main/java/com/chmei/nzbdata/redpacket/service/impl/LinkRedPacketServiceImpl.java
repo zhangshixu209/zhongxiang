@@ -133,7 +133,7 @@ public class LinkRedPacketServiceImpl extends BaseServiceImpl implements ILinkRe
 					}
 					@SuppressWarnings("unchecked")
 					Map<String, Object> stringObjectMap = (Map<String, Object>) getBaseDao().
-							queryForObject("LinkRedPacketMapper.queryRedPacketLog", params.get("redPacketLinkId"));
+							queryForObject("LinkRedPacketMapper.queryRedPacketLog", params);
 					// 发布成功,直接进行红包的分配:
 					List<Double> doubles = gradRedPacket(redPacketLinkCount, redPacketLinkMoneyCount.doubleValue());
 					int i = this.insertListRedPacketImgInfo(doubles, (Long) params.get("redPacketLinkId"));
@@ -503,7 +503,7 @@ public class LinkRedPacketServiceImpl extends BaseServiceImpl implements ILinkRe
 						Integer redPacketSex = (Integer) map.get("redPacketSex");           // 红包性别
 						Integer redPacketAgeStart = (Integer) map.get("redPacketAgeStart"); // 红包开始年龄
 						Integer redPacketAgeEnd = (Integer) map.get("redPacketAgeEnd");     // 红包结束年龄
-						result.put("redProName", map.get("provinceName"));                // 省名称
+						result.put("redProvName", map.get("provinceName"));                // 省名称
 						result.put("redCityName", map.get("cityName"));                   // 市名称
 						result.put("redCountyName", map.get("countyName"));               // 区县名称
 						// 校验红包地区

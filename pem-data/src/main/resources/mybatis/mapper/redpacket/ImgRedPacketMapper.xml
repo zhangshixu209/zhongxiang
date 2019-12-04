@@ -233,7 +233,11 @@
   FROM
       zx_app_img_red_packet a
       LEFT JOIN t_member b ON a.member_account = b.member_account
-      WHERE a.red_packet_img_id = #{redPacketImgId}
+      <where>
+        <if test="redPacketImgId != null and redPacketImgId != ''">
+          a.red_packet_img_id = #{redPacketImgId}
+        </if>
+      </where>
   </select>
 
   <!-- 新增抢红包记录 -->

@@ -243,7 +243,11 @@
   FROM
       zx_app_video_red_packet a
       LEFT JOIN t_member b ON a.red_packet_video_user_id = b.member_account
-      WHERE a.red_packet_video_id = #{redPacketId}
+    <where>
+      <if test="redPacketVideoId != null and redPacketVideoId != ''">
+        a.red_packet_video_id = #{redPacketVideoId}
+      </if>
+    </where>
   </select>
 
   <!-- 新增抢红包记录 -->

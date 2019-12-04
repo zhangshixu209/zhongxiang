@@ -87,9 +87,11 @@
     </where>
   </select>
 
-  <insert id="insertSelective" parameterType="java.util.Map">
+  <!-- 充值信息新增 -->
+  <insert id="saveRechargeRecordInfo" parameterType="java.util.Map">
     insert into t_recharge_record
     <trim prefix="(" suffix=")" suffixOverrides=",">
+      id,
       <if test="memberAccount != null">
         member_account,
       </if>
@@ -108,9 +110,7 @@
       <if test="crtUserName != null">
         crt_user_name,
       </if>
-      <if test="crtTime != null">
         crt_time,
-      </if>
       <if test="modfUserId != null">
         modf_user_id,
       </if>
@@ -120,8 +120,12 @@
       <if test="modfUserTime != null">
         modf_user_time,
       </if>
+      <if test="serialId != null and serialId != ''">
+        serial_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{id},
       <if test="memberAccount != null">
         #{memberAccount,jdbcType=VARCHAR},
       </if>
@@ -140,9 +144,7 @@
       <if test="crtUserName != null">
         #{crtUserName,jdbcType=VARCHAR},
       </if>
-      <if test="crtTime != null">
-        #{crtTime,jdbcType=TIMESTAMP},
-      </if>
+        NOW(),
       <if test="modfUserId != null">
         #{modfUserId,jdbcType=BIGINT},
       </if>
@@ -151,6 +153,9 @@
       </if>
       <if test="modfUserTime != null">
         #{modfUserTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="serialId != null and serialId != ''">
+        #{serialId,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -187,8 +192,34 @@
       <if test="modfUserTime != null">
         modf_user_time = #{modfUserTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="validStsCd != null">
+        valid_sts_cd = #{validStsCd,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <!-- 查询充值金额 -->
+  <select id="queryRechargeRecordDetail" resultType="java.util.Map">
+    SELECT
+      a.id AS id,
+      a.member_account AS memberAccount,
+      a.recharge_amount AS rechargeAmount,
+      a.`status` AS `status`
+    FROM
+	t_recharge_record AS a
+	WHERE a.serial_id = #{serialId}
+  </select>
+
+  <!-- 修改充值状态 -->
+  <update id="updateSuccessOrderPay" parameterType="java.util.Map">
+    update t_recharge_record
+    <set>
+      <if test="validStsCd != null">
+        valid_sts_cd = #{validStsCd,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where a.serial_id = #{serialId}
   </update>
 
 </mapper>

@@ -233,7 +233,11 @@
   FROM
       zx_app_link_red_packet a
       LEFT JOIN t_member b ON a.member_account = b.member_account
-      WHERE a.red_packet_link_id = #{redPacketLinkId}
+    <where>
+      <if test="redPacketLinkId != null and redPacketLinkId != ''">
+        a.red_packet_link_id = #{redPacketLinkId}
+      </if>
+    </where>
   </select>
 
   <!-- 新增抢红包记录 -->

@@ -22,5 +22,21 @@ public interface IZxPayService {
 	 */
 	void alipay(InputDTO input, OutputDTO output) throws NzbServiceException;
 
+	/**
+	 * 支付宝支付回调
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	void aliPayCallback(InputDTO input, OutputDTO output) throws NzbServiceException;
 
+	/**
+	 * 微信支付
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	void wxPay(InputDTO input, OutputDTO output) throws NzbServiceException;
 }

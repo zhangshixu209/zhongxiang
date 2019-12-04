@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -221,6 +222,36 @@ public class RotationChartServiceImpl extends BaseServiceImpl implements IRotati
 			}
 		} catch (Exception ex) {
 			LOGGER.error("更新失败: " + ex);
+		}
+	}
+
+	/**
+	 * 轮播图列表查询APP使用
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void queryRotationListForApp(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		List<Map<String, Object>> listAll = new ArrayList<>();
+		try {
+			List<Map<String, Object>> fiveList = getBaseDao().queryForList("RotationChartMapper.queryRotationChartFiveList", params);
+			for (Map<String, Object> map : fiveList) {
+				Map<String, Object> result = new HashMap<>();
+				// 查询附件
+				map.put("objId", map.get("id"));
+				List<Map<String, Object>> fileList = getBaseDao().queryForList("RotationChartMapper.queryFileList",
+						map);
+				result.put("filePath", fileList.get(0).get("filePath")); // 轮播图片
+				result.put("linkAddress", map.get("linkAddress")); // 轮播图链接
+				result.put("remark", map.get("remark")); // 轮播图描述
+				listAll.add(result);
+			}
+			output.setItems(listAll);
+		} catch (Exception ex) {
+			LOGGER.error("查询失败: " + ex);
 		}
 	}
 

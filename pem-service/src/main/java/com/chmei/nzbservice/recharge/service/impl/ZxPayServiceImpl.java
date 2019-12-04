@@ -39,4 +39,32 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 		input.setMethod("alipay");
 		getNzbDataService().execute(input, output);
 	}
+
+	/**
+	 * 支付宝支付回调
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void aliPayCallback(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxPayService");
+		input.setMethod("aliPayCallback");
+		getNzbDataService().execute(input, output);
+	}
+
+	/**
+	 * 微信支付
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void wxPay(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxPayService");
+		input.setMethod("wxPay");
+		getNzbDataService().execute(input, output);
+	}
 }

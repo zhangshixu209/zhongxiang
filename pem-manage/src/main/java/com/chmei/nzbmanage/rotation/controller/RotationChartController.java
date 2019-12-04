@@ -167,4 +167,18 @@ public class RotationChartController extends BaseController {
         return outputDTO;
     }
 
+    /**
+     * 轮播图列表查询APP使用
+     *
+     * @param rotationChartForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/queryRotationListForApp")
+    public OutputDTO queryRotationListForApp(@ModelAttribute RotationChartForm rotationChartForm) {
+        LOGGER.info("初始化加载轮播图查询列表...RotationChartController.queryRotationListForApp()...");
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(rotationChartForm);
+        outputDTO = getOutputDTO(params, "rotationChartService", "queryRotationListForApp");
+        return outputDTO;
+    }
 }

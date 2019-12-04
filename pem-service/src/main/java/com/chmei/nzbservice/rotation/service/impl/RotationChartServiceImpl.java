@@ -157,4 +157,18 @@ public class RotationChartServiceImpl extends BaseServiceImpl implements IRotati
 		getNzbDataService().execute(input, output);
 	}
 
+	/**
+	 * 轮播图列表查询APP使用
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void queryRotationListForApp(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("rotationChartService");
+		input.setMethod("queryRotationListForApp");
+		getNzbDataService().execute(input, output);
+	}
+
 }

@@ -65,4 +65,13 @@ public interface IRotationChartService {
 	 * @throws NzbDataException 自定义异常
 	 */
 	void updateOnlineStatus(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 轮播图列表查询APP使用
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	void queryRotationListForApp(InputDTO input, OutputDTO output) throws NzbDataException;
 }

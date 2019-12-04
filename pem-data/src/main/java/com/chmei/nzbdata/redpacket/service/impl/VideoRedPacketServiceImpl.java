@@ -133,7 +133,7 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 					}
 					@SuppressWarnings("unchecked")
 					Map<String, Object> stringObjectMap = (Map<String, Object>) getBaseDao().
-							queryForObject("VideoRedPacketMapper.queryRedPacketLog", params.get("redPacketVideoId"));
+							queryForObject("VideoRedPacketMapper.queryRedPacketLog", params);
 					// 发布成功,直接进行红包的分配:
 					List<Double> doubles = gradRedPacket(redPacketVideoCount, redPacketVideoMoneyCount.doubleValue());
 					int i = this.insertListRedPacketImgInfo(doubles, (Long) params.get("redPacketVideoId"));
