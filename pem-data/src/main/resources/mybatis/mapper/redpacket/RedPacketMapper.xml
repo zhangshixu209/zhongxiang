@@ -481,7 +481,7 @@
 
     <!-- 回答错误新增信息 -->
     <insert id="insertScrapeRedPacket" parameterType="java.util.Map">
-        insert into ${tableName}(red_packet_id,red_packet_user_id) values(#{redPacketId},#{userId})
+        insert into ${tableName}(scrape_id,red_packet_id,red_packet_user_id,crt_time) values(#{scrapeId},#{redPacketId},#{userId},NOW())
     </insert>
 
 </mapper>

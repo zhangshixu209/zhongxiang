@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="GroupComplaintMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="group_id" jdbcType="VARCHAR" property="groupId" />
+    <result column="owner_account" jdbcType="VARCHAR" property="ownerAccount" />
+    <result column="owner_nickname" jdbcType="VARCHAR" property="ownerNickname" />
+    <result column="group_chat_name" jdbcType="VARCHAR" property="groupChatName" />
+    <result column="group_capacity" jdbcType="VARCHAR" property="groupCapacity" />
+    <result column="member_num" jdbcType="VARCHAR" property="memberNum" />
+    <result column="group_crt_time" jdbcType="TIMESTAMP" property="groupCrtTime" />
+    <result column="complainant" jdbcType="VARCHAR" property="complainant" />
+    <result column="complaint_time" jdbcType="TIMESTAMP" property="complaintTime" />
+    <result column="complaint_remark" jdbcType="VARCHAR" property="complaintRemark" />
+    <result column="group_chat_record" jdbcType="VARCHAR" property="groupChatRecord" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_user_name" jdbcType="VARCHAR" property="crtUserName" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+    <result column="modf_user_id" jdbcType="BIGINT" property="modfUserId" />
+    <result column="modf_user_name" jdbcType="VARCHAR" property="modfUserName" />
+    <result column="modf_user_time" jdbcType="TIMESTAMP" property="modfUserTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, group_id, owner_account, owner_nickname, group_chat_name, group_capacity, member_num, 
+    group_crt_time, complainant, complaint_time, complaint_remark, group_chat_record, 
+    `status`, crt_user_id, crt_user_name, crt_time, modf_user_id, modf_user_name, modf_user_time
+  </sql>
+  <!-- 群投诉列表查询 -->
+  <select id="queryGroupComplaintList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_group_complaint_record
+    <where>
+      <if test="memberAccount != null and memberAccount != ''">
+        member_account = #{memberAccount}
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+    ORDER BY crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 群投诉列表统计 -->
+  <select id="queryGroupComplaintCount" parameterType="java.util.Map" resultType="int">
+    select
+        COUNT(1)
+    from t_group_complaint_record
+    <where>
+      <if test="memberAccount != null and memberAccount != ''">
+        member_account = #{memberAccount}
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_group_complaint_record
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <!-- 新增群投诉记录 -->
+  <insert id="saveGroupComplaintInfo" parameterType="java.util.Map">
+    insert into t_group_complaint_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="groupId != null">
+        group_id,
+      </if>
+      <if test="ownerAccount != null">
+        owner_account,
+      </if>
+      <if test="ownerNickname != null">
+        owner_nickname,
+      </if>
+      <if test="groupChatName != null">
+        group_chat_name,
+      </if>
+      <if test="groupCapacity != null">
+        group_capacity,
+      </if>
+      <if test="memberNum != null">
+        member_num,
+      </if>
+      <if test="groupCrtTime != null">
+        group_crt_time,
+      </if>
+      <if test="complainant != null">
+        complainant,
+      </if>
+        complaint_time,
+      <if test="complaintRemark != null">
+        complaint_remark,
+      </if>
+      <if test="groupChatRecord != null">
+        group_chat_record,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="crtUserId != null">
+        crt_user_id,
+      </if>
+      <if test="crtUserName != null">
+        crt_user_name,
+      </if>
+        crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="groupId != null">
+        #{groupId,jdbcType=VARCHAR},
+      </if>
+      <if test="ownerAccount != null">
+        #{ownerAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="ownerNickname != null">
+        #{ownerNickname,jdbcType=VARCHAR},
+      </if>
+      <if test="groupChatName != null">
+        #{groupChatName,jdbcType=VARCHAR},
+      </if>
+      <if test="groupCapacity != null">
+        #{groupCapacity,jdbcType=VARCHAR},
+      </if>
+      <if test="memberNum != null">
+        #{memberNum,jdbcType=VARCHAR},
+      </if>
+      <if test="groupCrtTime != null">
+        #{groupCrtTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="complainant != null">
+        #{complainant,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+      <if test="complaintRemark != null">
+        #{complaintRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="groupChatRecord != null">
+        #{groupChatRecord,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="crtUserId != null">
+        #{crtUserId,jdbcType=BIGINT},
+      </if>
+      <if test="crtUserName != null">
+        #{crtUserName,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
+    update t_group_complaint_record
+    <set>
+      <if test="groupId != null">
+        group_id = #{groupId,jdbcType=VARCHAR},
+      </if>
+      <if test="ownerAccount != null">
+        owner_account = #{ownerAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="ownerNickname != null">
+        owner_nickname = #{ownerNickname,jdbcType=VARCHAR},
+      </if>
+      <if test="groupChatName != null">
+        group_chat_name = #{groupChatName,jdbcType=VARCHAR},
+      </if>
+      <if test="groupCapacity != null">
+        group_capacity = #{groupCapacity,jdbcType=VARCHAR},
+      </if>
+      <if test="memberNum != null">
+        member_num = #{memberNum,jdbcType=VARCHAR},
+      </if>
+      <if test="groupCrtTime != null">
+        group_crt_time = #{groupCrtTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="complainant != null">
+        complainant = #{complainant,jdbcType=VARCHAR},
+      </if>
+      <if test="complaintTime != null">
+        complaint_time = #{complaintTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="complaintRemark != null">
+        complaint_remark = #{complaintRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="groupChatRecord != null">
+        group_chat_record = #{groupChatRecord,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="crtUserId != null">
+        crt_user_id = #{crtUserId,jdbcType=BIGINT},
+      </if>
+      <if test="crtUserName != null">
+        crt_user_name = #{crtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="crtTime != null">
+        crt_time = #{crtTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modfUserId != null">
+        modf_user_id = #{modfUserId,jdbcType=BIGINT},
+      </if>
+      <if test="modfUserName != null">
+        modf_user_name = #{modfUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="modfUserTime != null">
+        modf_user_time = #{modfUserTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <!-- 修改群投诉状态 -->
+  <update id="updateGroupComplaintInfo" parameterType="java.util.Map">
+    update t_group_complaint_record
+    <set>
+      <if test="status != null">
+        `status` = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="modfUserId != null">
+        modf_user_id = #{modfUserId,jdbcType=BIGINT},
+      </if>
+      <if test="modfUserName != null">
+        modf_user_name = #{modfUserName,jdbcType=VARCHAR},
+      </if>
+        modf_user_time = NOW(),
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

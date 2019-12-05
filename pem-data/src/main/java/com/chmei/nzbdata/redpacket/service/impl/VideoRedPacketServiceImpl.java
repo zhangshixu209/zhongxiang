@@ -246,7 +246,8 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 				}
 				String answer = (String) params.get("redPacketVideoAnswer"); // 判断回答问题答案
 				if (answer == null || answer.isEmpty() || !answer.equals(redPacket.get("redPacketVideoAnswer"))) {
-					getBaseDao().insert("VideoRedPacketMapper.insertScrapeRedPacket", ismap);
+					ismap.put("scrapeId", getSequence());
+					getBaseDao().insert("RedPacketMapper.insertScrapeRedPacket", ismap);
 					output.setCode("-1"); // 3
 					output.setMsg("回答错误，下次要用心哟!");
 					return;

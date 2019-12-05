@@ -11,17 +11,22 @@ import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
 import com.chmei.nzbdata.recharge.service.IZxPayService;
+import com.chmei.nzbdata.util.UUID;
 import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayConfig;
 import com.github.wxpay.sdk.WXPayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 充值记录dao接口实现
@@ -78,7 +83,7 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 		model.setBody(alipayBody);
 		model.setSubject(alipaySubject);
 		// 唯一订单号 根据项目中实际需要获取相应的
-		String orderNo = String.valueOf(UUID.randomUUID());
+		String orderNo = String.valueOf(UUID.next());
 		model.setOutTradeNo(orderNo);
 		// 支付超时时间（根据项目需要填写）
 		model.setTimeoutExpress("30m");
@@ -177,7 +182,7 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 		}
 	}
 
-//	@Resource
+	@Autowired
 	private WXPayConfig wxPayConfig;
 
 	@Value("${wx.app.key}")
@@ -204,7 +209,7 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 	 */
 	@Override
 	public void wxPay(InputDTO input, OutputDTO output) throws NzbDataException {
-		String orderNo = String.valueOf(UUID.randomUUID());
+		String orderNo = String.valueOf(UUID.next());
 		Map<String, Object> params = input.getParams();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> zxAppUser =  (Map<String, Object>) getBaseDao().
@@ -214,6 +219,110 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 					orderNo, (BigDecimal) params.get("rechargeAmount"), (String) params.get("ip"));
 			output.setItem(map);
 		}
+	}
+
+	private ExecutorService executorService = Executors.newFixedThreadPool(20);
+	private static final String SUCCESS="SUCCESS";
+	/**
+	 * 微信支付回调
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public void wxPayCallback(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			String resultCode = (String) params.get("resultCode");
+			String orderNo = (String) params.get("outTradeNo");
+			String totalFee =  (String) params.get("totalFee");
+			if(check(params)){
+				executorService.execute(() -> {
+					//TODO 成功处理
+					if (resultCode.equals(SUCCESS)) {
+						//TODO 取出订单
+						Map<String,Object> updateMap = new HashMap<>();
+						updateMap.put("serialId", orderNo);
+						Map<String,Object> result = (Map<String, Object>) getBaseDao().queryForObject(
+								"RechargeRecordMapper.queryRechargeRecordDetail", updateMap);
+						//TODO 先判断是否和数据库金钱一样
+						String totalMount = (String) result.get("rechargeAmount");
+
+						if(totalMount.equals(totalFee)){
+							//TODO 在进行修改数据库
+							updateMap.put("validStsCd", "1"); // 有效状态
+							getBaseDao().update("RechargeRecordMapper.updateSuccessOrderPay", updateMap);
+							//TODO 修改完成进行加钱
+							// 查询用户信息
+							Map<String, Object> zxAppUser =  (Map<String, Object>) getBaseDao().
+									queryForObject("MemberMapper.queryMemberDetail", result);
+							//TODO 存在就修改钱包
+							if(zxAppUser != null){
+								Map<String, Object> updateUser = new HashMap<>();
+								updateUser.put("memberAccount", zxAppUser.get("memberAccount"));
+								updateUser.put("walletBalance", Double.valueOf((String) zxAppUser.get("walletBalance")) + Double.parseDouble(totalFee));
+								int i = getBaseDao().update("MemberMapper.updateMemberBalance", updateUser);
+								//TODO 加入记录
+								if(i > 0){
+									Map<String, Object> walletMoneyInfo = new HashMap<>();
+									walletMoneyInfo.put("walletInfoId", getSequence());
+									walletMoneyInfo.put("walletInfoAddOrMinus", "+");
+									walletMoneyInfo.put("walletInfoUserId", zxAppUser.get("memberAccount"));
+									walletMoneyInfo.put("walletInfoMoney", Double.parseDouble(totalFee));
+									walletMoneyInfo.put("walletInfoFrom", "微信-钱包充值");
+									getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
+								}
+								output.setCode("0");
+								output.setMsg("充值成功");
+							}
+						}
+
+					} else {
+						//TODO 失败处理
+						output.setCode("-1");
+						output.setMsg("付款失败");
+					}
+				});
+			}
+			if (resultCode.equals(SUCCESS)) {
+				output.setCode("0");
+				output.setMsg("付款成功");
+			} else {
+				output.setCode("-1");
+				output.setMsg("付款失败");
+			}
+		} catch (Exception e) {
+			LOGGER.error("系统异常", e);
+			output.setCode("-1");
+			output.setMsg("付款失败");
+		}
+	}
+
+	/**
+	 * 校验微信支付信息
+	 * @param params
+	 * @return
+	 */
+	private Boolean check(Map<String, Object> params) {
+		String outTradeNo = (String) params.get("out_trade_no");
+		// 1、商户需要验证该通知数据中的out_trade_no是否为商户系统中创建的订单号，
+		Map<String,Object> maps = new HashMap<>();
+		maps.put("serialId",outTradeNo);
+		@SuppressWarnings("unchecked")
+		Map<String,Object> objectMap = (Map<String, Object>) getBaseDao().queryForObject(
+				"RechargeRecordMapper.queryRechargeRecordDetail", maps);
+		if (objectMap == null) {
+			return false;
+		}
+		// 2、判断total_amount是否确实为该订单的实际金额（即商户订单创建时的金额），
+		Integer totalAmount = (Integer) params.get("total_fee");
+		Integer beforeAmount = (Integer) objectMap.get("rechargeAmount");
+		if (!totalAmount.equals(beforeAmount)) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -250,24 +359,25 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 			resultMap.put("prepayid", returnMap.get("prepay_id"));
 			resultMap.put("noncestr", System.currentTimeMillis() + "");
 			resultMap.put("timestamp", System.currentTimeMillis() / 1000 + "");
-
 			resultMap.put("sign", WXPayUtil.generateSignature(resultMap,key));
-
 			resultMap.remove("package");
 			resultMap.put("packageType", "Sign=WXPay");
 			if("OK".equals(returnMap.get("return_msg"))){
 				//插入数据库
 				Map<String,Object> insertMap = new HashMap<>();
-				insertMap.put("phone",phone);
-				insertMap.put("serialId",orderNO);
-				insertMap.put("type",0);
-				insertMap.put("totalMount",v/100);
-//				zxAppPayMapper.addOrderPay(insertMap);
+				//插入数据库
+				insertMap.put("id", getSequence());
+				insertMap.put("memberAccount", phone);
+				insertMap.put("serialId", orderNO);
+				insertMap.put("validStsCd",2);
+				insertMap.put("rechargeAmount", v/100);
+				insertMap.put("status", "1003");
+				getBaseDao().insert("RechargeRecordMapper.saveRechargeRecordInfo", insertMap);
 				returnMap_.put("data", resultMap);
 				return returnMap_;
 			}
 		} catch (Exception e) {
-			LOGGER.info("微信支付失败{}", e);
+			LOGGER.info("微信支付失败{}", e.getStackTrace());
 			return null;
 		}
 		return null;

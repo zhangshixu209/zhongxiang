@@ -1,52 +1,51 @@
-package com.chmei.nzbservice.recharge.service;
+package com.chmei.nzbservice.complaint.service;
 
 import com.chmei.nzbcommon.cmbean.InputDTO;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbservice.common.exception.NzbServiceException;
 
 /**
- * 微信/支付宝支付dao接口
+ * 群投诉dao接口
  * 
  * @author zhangshixu
- * @since 2019年10月21日 16点23分
+ * @since 2019年12月05日 13点53分
  *
  */
-public interface IZxPayService {
+public interface IGroupComplaintService {
+	/**
+	 * 列表查询
+	 * 
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	void queryGroupComplaintList(InputDTO input, OutputDTO output) throws NzbServiceException;
 
 	/**
-	 * 支付宝支付
+	 * 群投诉详情查询
 	 *
 	 * @param input 入參
 	 * @param output 返回对象
 	 * @throws NzbServiceException 自定义异常
 	 */
-	void alipay(InputDTO input, OutputDTO output) throws NzbServiceException;
+	void queryGroupComplaintDetail(InputDTO input, OutputDTO output) throws NzbServiceException;
 
 	/**
-	 * 支付宝支付回调
+	 * 修改群投诉状态
 	 *
 	 * @param input 入參
 	 * @param output 返回对象
 	 * @throws NzbServiceException 自定义异常
 	 */
-	void aliPayCallback(InputDTO input, OutputDTO output) throws NzbServiceException;
+	void updateGroupComplaintInfo(InputDTO input, OutputDTO output) throws NzbServiceException;
 
 	/**
-	 * 微信支付
+	 * 新增群投诉
 	 *
 	 * @param input 入參
 	 * @param output 返回对象
 	 * @throws NzbServiceException 自定义异常
 	 */
-	void wxPay(InputDTO input, OutputDTO output) throws NzbServiceException;
-
-	/**
-	 * 微信支付回调
-	 *
-	 * @param input 入參
-	 * @param output 返回对象
-	 * @throws NzbServiceException 自定义异常
-	 */
-	void wxPayCallback(InputDTO input, OutputDTO output) throws NzbServiceException;
+	void saveGroupComplaintInfo(InputDTO input, OutputDTO output) throws NzbServiceException;
 
 }

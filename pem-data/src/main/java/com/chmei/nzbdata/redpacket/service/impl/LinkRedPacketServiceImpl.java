@@ -246,7 +246,8 @@ public class LinkRedPacketServiceImpl extends BaseServiceImpl implements ILinkRe
 				}
 				String answer = (String) params.get("redPacketLinkAnswer"); // 判断回答问题答案
 				if (answer == null || answer.isEmpty() || !answer.equals(redPacket.get("redPacketLinkAnswer"))) {
-					getBaseDao().insert("LinkRedPacketMapper.insertScrapeRedPacket", ismap);
+					ismap.put("scrapeId", getSequence());
+					getBaseDao().insert("RedPacketMapper.insertScrapeRedPacket", ismap);
 					output.setCode("-1"); // 3
 					output.setMsg("回答错误，下次要用心哟!");
 					return;

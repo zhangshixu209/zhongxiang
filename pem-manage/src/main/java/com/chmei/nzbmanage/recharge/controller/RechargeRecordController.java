@@ -5,19 +5,20 @@ import com.alipay.api.internal.util.AlipaySignature;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbcommon.cmutil.BeanUtil;
 import com.chmei.nzbmanage.common.controller.BaseController;
+import com.chmei.nzbmanage.common.util.IpUtils;
 import com.chmei.nzbmanage.recharge.bean.RechargeRecordForm;
+import com.github.wxpay.sdk.WXPayUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.*;
 
 /**
  * 充值记录控制器
@@ -110,12 +111,95 @@ public class RechargeRecordController extends BaseController {
      * @return outputDTO 返回结果
      */
     @RequestMapping("/wxPay")
-    public OutputDTO wxPay(@ModelAttribute RechargeRecordForm rechargeRecordForm) {
+    public OutputDTO wxPay(@ModelAttribute RechargeRecordForm rechargeRecordForm, HttpServletRequest request) {
         LOGGER.info("微信充值...RechargeRecordController.wxPay()...");
-        OutputDTO outputDTO = new OutputDTO();
+        String ip = IpUtils.getIpAddr(request);
+        rechargeRecordForm.setIp(ip);
         Map<String, Object> params = BeanUtil.convertBean2Map(rechargeRecordForm);
-        outputDTO = getOutputDTO(params, "zxPayService", "wxPay");
+        OutputDTO outputDTO = getOutputDTO(params, "zxPayService", "wxPay");
         return outputDTO;
+    }
+
+    /**
+     * 微信支付回调
+     * @param request
+     * @return
+     */
+    @Transactional(rollbackFor=Exception.class)
+    @RequestMapping(value = "/wxPayCallback", method = RequestMethod.POST)
+    public OutputDTO wxPayCallback(@RequestBody HttpServletRequest request) {
+        LOGGER.info("微信支付回调");
+        OutputDTO outputDTO = new OutputDTO();
+        try {
+            // 读取参数
+            // 解析xml成map
+            Map<String, String> map = WXPayUtil.xmlToMap(getParam(request));
+            LOGGER.info("微信支付回调返回的信息{}", (Throwable) map);
+            //校验（验证订单号，付款金额等是否正确）
+            String orderNo = map.get("out_trade_no");
+            String resultCode = map.get("result_code");
+            String totalFee = map.get("total_fee");
+            Map<String, Object> params_ = new HashMap<>();
+            params_.put("orderNo", orderNo);
+            params_.put("resultCode", resultCode);
+            params_.put("totalFee", totalFee);
+            outputDTO = getOutputDTO(params_, "zxPayService", "wxPayCallback");
+            if ("0".equals(outputDTO.getCode())) {
+                outputDTO.setCode("0");
+                outputDTO.setMsg(setXml("SUCCESS", "OK"));
+                return outputDTO;
+            } else {
+                outputDTO.setCode("-1");
+                outputDTO.setMsg(setXml("fail", "付款失败"));
+                return outputDTO;
+            }
+        } catch (Exception e) {
+            LOGGER.info("微信支付回调发生异常{}", e);
+            outputDTO.setCode("-1");
+            outputDTO.setMsg(setXml("fail", "付款失败"));
+            return outputDTO;
+        }
+    }
+
+    /**
+     * 微信支付回调获取参数
+     * @param request
+     * @return
+     * @throws IOException
+     */
+    private String getParam(HttpServletRequest request) throws IOException {
+        // 读取参数
+        InputStream inputStream;
+        StringBuilder sb = new StringBuilder();
+        inputStream = request.getInputStream();
+        String s;
+        BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        while ((s = in.readLine()) != null) {
+            sb.append(s);
+        }
+        in.close();
+        inputStream.close();
+        return sb.toString();
+    }
+
+    /**
+     * 通过xml发给微信消息
+     *
+     * @param return_code
+     * @param return_msg
+     * @return
+     */
+    private static String setXml(String return_code, String return_msg) {
+        SortedMap<String, String> parameters = new TreeMap<>();
+        parameters.put("return_code", return_code);
+        parameters.put("return_msg", return_msg);
+        try {
+            return WXPayUtil.mapToXml(parameters);
+        } catch (Exception e) {
+            LOGGER.error("返回微信消息时map转xml失败");
+            return "<xml><return_code><![CDATA[" + return_code + "]]>" + "</return_code><return_msg><![CDATA[" + return_msg
+                    + "]]></return_msg></xml>";
+        }
     }
 
 }

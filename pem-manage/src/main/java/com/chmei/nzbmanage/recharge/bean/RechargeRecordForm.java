@@ -72,6 +72,8 @@ public class RechargeRecordForm extends BaseForm {
 	 */
 	private String memberStatus;
 
+	private String ip;
+
 	private static final long serialVersionUID = 1L;
 
 	public Long getId() {
@@ -168,5 +170,13 @@ public class RechargeRecordForm extends BaseForm {
 
 	public void setMemberStatus(String memberStatus) {
 		this.memberStatus = memberStatus;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 }

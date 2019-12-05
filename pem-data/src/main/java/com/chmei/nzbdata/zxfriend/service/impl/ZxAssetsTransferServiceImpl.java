@@ -289,7 +289,7 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 			// 记录购买信息到取消表中,之后删除那个发布表信息
 			Map<String, Object> record_ = new HashMap<>();
 			record_.put("zxAppDealRecordId", getSequence());
-			record_.put("zxAppDealRecordDate", (zxAppDeals != null && zxAppDeals.size() > 0) ? zxAppDeals.get(0).get("delaDate") : new Date());
+			record_.put("zxAppDealRecordDate", (zxAppDeals != null && zxAppDeals.size() > 0) ? zxAppDeals.get(0).get("dealDate") : new Date());
 			record_.put("zxAppDealRecordUserId", params.get("memberAccount"));
 			record_.put("zxAppDealRecordMoney", 100D);
 			// 此字段是标注字段 0 是取消记录 1 自己购买记录 2 是被购买记录
@@ -396,38 +396,36 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 		Map<String,Object> map = new HashMap<>();
 		try {
 			int total = getBaseDao().getTotalCount("AssetsTransferMapper.queryDealRecordCount", params);
-			if (total > 0) {
-				@SuppressWarnings("unchecked")
-				Map<String, Object> item = (Map<String, Object>) getBaseDao().
-						queryForObject("MemberMapper.queryMemberDetail", params);
-				map.put("memberAccount", item.get("memberAccount"));     // 用户账户
-				map.put("walletMoney", item.get("walletBalance"));       // 钱包余额
-				map.put("advertisingMoney", item.get("advertisingFee")); // 广告费余额
-				params.put("dealUserId", params.get("memberAccount")); // 查询转让表
-				List<Map<String, Object>> recordList = getBaseDao().queryForList("AssetsTransferMapper.queryDealRecordList", params);
-				List<Map<String, Object>> list = getBaseDao().queryForList("AssetsTransferMapper.queryAssetsTransferList", params);
-				if (null != list && list.size() > 0) {
-					Map<String, Object> zxAppDeal = list.get(0);
-					Map<String, Object> record = new HashMap<>();
-					record.put("dealRecordId", zxAppDeal.get("dealId"));
-					record.put("dealRecordMoney", zxAppDeal.get("dealMoney"));
-					record.put("dealRecordUserId", zxAppDeal.get("dealUserId"));
-					record.put("dealRecordDate", zxAppDeal.get("dealDate"));
-					record.put("dealRecordType", "3");
-					recordList.add(record);
-				}
-				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				ParsePosition pos = new ParsePosition(0); // 日期转换
-				recordList.sort((Map<String, Object> o1, Map<String, Object> o2) -> {
-					long beginMillisecond = formatter.parse((String) o1.get("dealRecordDate"), pos).getTime();
-					long endMillisecond = formatter.parse((String) o2.get("dealRecordDate"), pos).getTime();
-					if(beginMillisecond > endMillisecond){
-						return -1;
-					}
-					return 1;
-				});
-				output.setItems(recordList);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> item = (Map<String, Object>) getBaseDao().
+					queryForObject("MemberMapper.queryMemberDetail", params);
+			map.put("memberAccount", item.get("memberAccount"));     // 用户账户
+			map.put("walletMoney", item.get("walletBalance"));       // 钱包余额
+			map.put("advertisingMoney", item.get("advertisingFee")); // 广告费余额
+			params.put("dealUserId", params.get("memberAccount")); // 查询转让表
+			List<Map<String, Object>> recordList = getBaseDao().queryForList("AssetsTransferMapper.queryDealRecordList", params);
+			List<Map<String, Object>> list = getBaseDao().queryForList("AssetsTransferMapper.queryAssetsTransferList", params);
+			if (null != list && list.size() > 0) {
+				Map<String, Object> zxAppDeal = list.get(0);
+				Map<String, Object> record = new HashMap<>();
+				record.put("dealRecordId", zxAppDeal.get("dealId"));
+				record.put("dealRecordMoney", zxAppDeal.get("dealMoney"));
+				record.put("dealRecordUserId", zxAppDeal.get("dealUserId"));
+				record.put("dealRecordDate", zxAppDeal.get("dealDate"));
+				record.put("dealRecordType", "3");
+				recordList.add(record);
 			}
+//			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//			ParsePosition pos = new ParsePosition(0); // 日期转换
+			recordList.sort((Map<String, Object> o1, Map<String, Object> o2) -> {
+				long beginMillisecond = ((Date) o1.get("dealRecordDate")).getTime();
+				long endMillisecond = ((Date) o2.get("dealRecordDate")).getTime();
+				if(beginMillisecond > endMillisecond){
+					return -1;
+				}
+				return 1;
+			});
+			output.setItems(recordList);
 			output.setItem(map);
 			output.setTotal(total);
 		} catch (Exception e) {
