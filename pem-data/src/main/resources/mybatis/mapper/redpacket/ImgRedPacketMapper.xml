@@ -347,7 +347,7 @@
       SELECT
         zx_app_img_red_packet_info.red_packet_img_info_id   AS "redPacketInfoId",
         zx_app_img_red_packet_info.red_packet_img_id        AS "redPacketId",
-        zx_app_img_red_packet.red_packet_img_user_id        AS "redPacketUserId",
+        zx_app_img_red_packet.member_account                AS "redPacketUserId",
         zx_app_img_red_packet_info.red_packet_img_user_id   AS "robRedPacUserId",
         zx_app_img_red_packet_info.red_packet_img_money     AS "redPacketMoney",
         zx_app_img_red_packet_info.red_packet_img_luck_star AS "redPacketLuckStar",
@@ -416,14 +416,14 @@
         a.red_packet_img_date AS redPacketDate -- 抢红包时间
     FROM
         zx_app_img_red_packet_info a
-        LEFT JOIN t_member b ON b.id = a.red_packet_img_user_id
+        LEFT JOIN t_member b ON b.member_account = a.red_packet_img_user_id
     WHERE
         a.red_packet_img_id = #{redPacketImgId}
         AND a.red_packet_img_user_id IS NOT NULL
   </select>
   <!-- 根据红包ID查询红包详细信息 -->
   <select id="checkUserIsRobRedPacket" resultType="int">
-    select COUNT(1) from zx_app_img_red_packet_info WHERE red_packet_img_id = #{redPackeImgId,jdbcType=BIGINT}   AND red_packet_img_user_id = #{memberAccount,jdbcType=VARCHAR}
+    select COUNT(1) from zx_app_img_red_packet_info WHERE red_packet_img_id = #{redPacketImgId,jdbcType=BIGINT}   AND red_packet_img_user_id = #{memberAccount,jdbcType=VARCHAR}
   </select>
   <!-- 查看用户抢红包成功失败信息 -->
   <select id="selectStockByRedPacketId" parameterType="java.util.Map" resultType="java.util.Map">

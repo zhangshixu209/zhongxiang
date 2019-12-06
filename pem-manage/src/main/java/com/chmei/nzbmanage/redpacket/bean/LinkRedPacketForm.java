@@ -119,6 +119,11 @@ public class LinkRedPacketForm implements Serializable {
      */
     private String countyName;
 
+    /**
+     * 红包链接
+     */
+    private String redPacketLinkUrl;
+
     private static final long serialVersionUID = 1L;
 
     public Long getRedPacketLinkId() {
@@ -295,5 +300,13 @@ public class LinkRedPacketForm implements Serializable {
 
     public void setCountyName(String countyName) {
         this.countyName = countyName;
+    }
+
+    public String getRedPacketLinkUrl() {
+        return redPacketLinkUrl;
+    }
+
+    public void setRedPacketLinkUrl(String redPacketLinkUrl) {
+        this.redPacketLinkUrl = redPacketLinkUrl;
     }
 }

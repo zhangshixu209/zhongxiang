@@ -170,6 +170,7 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 		// 更新抢红包信息表
 		int i = getBaseDao().update("VideoRedPacketMapper.updateRedPacketInfoById", params);
 		if(i > 0){
+			params.put("redPacketVideoId", params.get("redPacketId"));
 			@SuppressWarnings("unchecked")
 			Map<String, Object> packet = (Map<String, Object>) getBaseDao().
 					queryForObject("VideoRedPacketMapper.queryRedPacketLog", params);
@@ -383,15 +384,15 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 						queryForObject("VideoRedPacketMapper.queryRedPacketLog", params);
 				if(Optional.ofNullable(maps).isPresent()){
 					output.setItem(maps);
-					output.setCode("-1");
+					output.setCode("0");
 					output.setMsg("暂无人抢该红包!");
 					return;
 				}
-				output.setCode("-1");
+				output.setCode("0");
 				output.setMsg("该红包已过期!");
 				return;
 			}
-			output.setCode("-1");
+			output.setCode("0");
 			output.setMsg("暂无人抢该红包!");
 			return;
 		} catch (Exception e) {

@@ -118,6 +118,8 @@ public class MemberComplaintServiceImpl extends BaseServiceImpl implements IMemb
 				output.setCode("-1");
 				output.setMsg("保存失败");
 			}
+			output.setCode("0");
+			output.setMsg("投诉成功");
 		} catch (Exception ex) {
 			LOGGER.error("保存失败", ex);
 		}

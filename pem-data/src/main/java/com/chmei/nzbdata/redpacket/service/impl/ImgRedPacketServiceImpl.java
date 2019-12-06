@@ -170,14 +170,15 @@ public class ImgRedPacketServiceImpl extends BaseServiceImpl implements IImgRedP
 		// 更新抢红包信息表
 		int i = getBaseDao().update("ImgRedPacketMapper.updateRedPacketInfoById", params);
 		if(i > 0){
+			params.put("redPacketImgId", params.get("redPacketId"));
 			@SuppressWarnings("unchecked")
 			Map<String, Object> packet = (Map<String, Object>) getBaseDao().
-					queryForObject("ImgRedPacketMapper.queryRedPacketLog", params.get("redPacketImgId"));
+					queryForObject("ImgRedPacketMapper.queryRedPacketLog", params);
 			// 更新完毕成功之后,更新红包的数据,红包的开始时间和结束时间
 			if(Optional.ofNullable(packet).isPresent()){
-				params.put("redPacketImgId", packet.get("redPacketImgId"));
-				Integer stock = (Integer) packet.get("redPacketImgStock");
-				Integer count = (Integer) packet.get("redPacketImgCount");
+				params.put("redPacketImgId", packet.get("redPacketId"));
+				Integer stock = (Integer) packet.get("redPacketStock");
+				Integer count = (Integer) packet.get("redPacketCount");
 				Date date = new Date();
 				if(stock.intValue() == count.intValue()){
 					params.put("redPacketImgStartTime", date);
@@ -383,15 +384,15 @@ public class ImgRedPacketServiceImpl extends BaseServiceImpl implements IImgRedP
 						queryForObject("ImgRedPacketMapper.queryRedPacketLog", params);
 				if(Optional.ofNullable(maps).isPresent()){
 					output.setItem(maps);
-					output.setCode("-1");
+					output.setCode("0");
 					output.setMsg("暂无人抢该红包!");
 					return;
 				}
-				output.setCode("-1");
+				output.setCode("0");
 				output.setMsg("该红包已过期!");
 				return;
 			}
-			output.setCode("-1");
+			output.setCode("0");
 			output.setMsg("暂无人抢该红包!");
 			return;
 		} catch (Exception e) {

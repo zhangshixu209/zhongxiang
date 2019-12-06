@@ -197,19 +197,6 @@
 			<artifactId>wxpay-sdk</artifactId>
 			<version>0.0.3</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>com.alipay.sdk</groupId>-->
-<!--			<artifactId>alipay-sdk-java</artifactId>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>com.github.wxpay</groupId>-->
-<!--			<artifactId>wxpay-sdk</artifactId>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>com.alipay</groupId>-->
-<!--			<artifactId>sdk-java</artifactId>-->
-<!--			<version>4.8.0</version>-->
-<!--		</dependency>-->
     </dependencies>
 
 	<build>

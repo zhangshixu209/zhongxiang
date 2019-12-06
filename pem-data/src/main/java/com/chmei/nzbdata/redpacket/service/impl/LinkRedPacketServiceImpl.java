@@ -170,14 +170,15 @@ public class LinkRedPacketServiceImpl extends BaseServiceImpl implements ILinkRe
 		// 更新抢红包信息表
 		int i = getBaseDao().update("LinkRedPacketMapper.updateRedPacketInfoById", params);
 		if(i > 0){
+			params.put("redPacketLinkId", params.get("redPacketId"));
 			@SuppressWarnings("unchecked")
 			Map<String, Object> packet = (Map<String, Object>) getBaseDao().
-					queryForObject("LinkRedPacketMapper.queryRedPacketLog", params.get("redPacketLinkId"));
+					queryForObject("LinkRedPacketMapper.queryRedPacketLog", params);
 			// 更新完毕成功之后,更新红包的数据,红包的开始时间和结束时间
 			if(Optional.ofNullable(packet).isPresent()){
-				params.put("redPacketLinkId", packet.get("redPacketLinkId"));
-				Integer stock = (Integer) packet.get("redPacketLinkStock");
-				Integer count = (Integer) packet.get("redPacketLinkCount");
+				params.put("redPacketLinkId", packet.get("redPacketId"));
+				Integer stock = (Integer) packet.get("redPacketStock");
+				Integer count = (Integer) packet.get("redPacketCount");
 				Date date = new Date();
 				if(stock.intValue() == count.intValue()){
 					params.put("redPacketLinkStartTime", date);
@@ -383,15 +384,15 @@ public class LinkRedPacketServiceImpl extends BaseServiceImpl implements ILinkRe
 						queryForObject("LinkRedPacketMapper.queryRedPacketLog", params);
 				if(Optional.ofNullable(maps).isPresent()){
 					output.setItem(maps);
-					output.setCode("-1");
+					output.setCode("0");
 					output.setMsg("暂无人抢该红包!");
 					return;
 				}
-				output.setCode("-1");
+				output.setCode("0");
 				output.setMsg("该红包已过期!");
 				return;
 			}
-			output.setCode("-1");
+			output.setCode("0");
 			output.setMsg("暂无人抢该红包!");
 			return;
 		} catch (Exception e) {

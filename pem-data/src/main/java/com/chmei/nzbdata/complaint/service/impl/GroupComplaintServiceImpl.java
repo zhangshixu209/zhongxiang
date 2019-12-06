@@ -104,6 +104,8 @@ public class GroupComplaintServiceImpl extends BaseServiceImpl implements IGroup
 				output.setCode("-1");
 				output.setMsg("保存失败");
 			}
+			output.setCode("0");
+			output.setMsg("投诉成功");
 		} catch (Exception ex) {
 			LOGGER.error("保存失败", ex);
 		}

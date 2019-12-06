@@ -125,6 +125,11 @@ public class VideoRedPacketForm extends BaseForm {
 	 */
 	private String countyName;
 
+	/**
+	 * 红包视频
+	 */
+	private String redPacketVideoUrl;
+
 	private static final long serialVersionUID = 1L;
 
 	public Long getRedPacketVideoId() {
@@ -309,5 +314,13 @@ public class VideoRedPacketForm extends BaseForm {
 
 	public void setCountyName(String countyName) {
 		this.countyName = countyName;
+	}
+
+	public String getRedPacketVideoUrl() {
+		return redPacketVideoUrl;
+	}
+
+	public void setRedPacketVideoUrl(String redPacketVideoUrl) {
+		this.redPacketVideoUrl = redPacketVideoUrl;
 	}
 }
