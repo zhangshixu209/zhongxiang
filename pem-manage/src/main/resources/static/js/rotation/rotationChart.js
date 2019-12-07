@@ -80,6 +80,11 @@ function saveRotationChart(){
 	if(!flag) {
 		return false;
 	}
+	var filePaths = $("#filePaths").val();
+	if(isDataNull(filePaths)){
+		Chief.layer.tips("请上传附件！");
+		return false;
+	}
 	//获取表单数据
 	var data = $('#addRotationChartForm').serialize();
 	//发起请求
@@ -161,6 +166,15 @@ $('.pull-right').on('click','#edit_btn', function (){
  * 编辑 保存
  */
 function updateRotationChart(){
+	var flag = $("#editRotationChartForm").validate().form(); //若全部通过验证则form方法返回true
+	if(!flag) {
+		return false;
+	}
+	var filePaths = $("#filePaths").val();
+	if(isDataNull(filePaths)){
+		Chief.layer.tips("请上传附件！");
+		return false;
+	}
 	//获取表单数据
 	var data = $('#editRotationChartForm').serialize();
 	//发起请求
@@ -365,7 +379,7 @@ function uploaderInit(picker) {
 			return false;
 		}
 		var fileList = $('div.file-list').find('.file-item'); //放入的文件数量
-		if(fileList.length > 9) {
+		if(fileList.length > 0) {
 			Chief.layer.tips("文件数量超出限制");
 			return false;
 		}

@@ -87,4 +87,9 @@ public final class Constants {
 	  * 默认上传文件类
 	 */
 	public static final String DEFAULT_STORAGE_CLASS = "com.chmei.nzbmanage.common.upload.FileSystemStorage";
+
+	public static final String USER_NAME = "root"; // 数据库账号
+	public static final String USER_PWD = "1qaz!QAZ"; // 数据库密码
+	public static final String DB_HOST = "localhost"; // 数据库地址
+	public static final String DB_NAME = "pem_manage_db"; // 指定数据库名称
 }
