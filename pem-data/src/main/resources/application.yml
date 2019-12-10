@@ -210,10 +210,10 @@ spring:
     druid:
       url: jdbc:mysql://192.168.0.206:3306/pem_manage_test_db?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
       username: pem_manage_test
-      password: BSd+ivgcIx5tGTdgBQAM/G1S6i4IcENZTVKiWI1UfZmHsa9KZZ9Ov7oEhjqTy5m7fcHmRxtZiGgXcPFJs5/Wmw==
+      password: a3UrA/FDc2f3fgevxc5vUSzOQdKwa5rf1pSq9EzDMvmMDmty603VkxVDE0DGdWD5XjazVe8QTrTT6XWLhZCcWQ==
       driver-class-name: com.mysql.jdbc.Driver
       filters: config
-      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJqMtrmhzE4HXtZwQUo0NGSwhEjEb8RzlKrF7n3un7co0tXtOzVz7NtbIJrKejqNykvB2DT4tzfqddPNGaAcM3kCAwEAAQ==
+      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANKrKZ37uUZHmLLuVyEWIJB2iUA4PncxM4mMIGw+y9SjTUNl4hy+wv13owIqqXBUmef0O7W4pXD5Z7k8jTAFircCAwEAAQ==
       connection-error-retry-attempts: 0
       initial-size: 1
       max-active: 200
@@ -232,7 +232,7 @@ spring:
       max-evictable-idle-time-millis: 1800000
   redis:
     host: 127.0.0.1
-    password: qazWSXedcRFV
+    password: 1qaz!QAZ
     port: 6379
     database: 2
 logging:
@@ -243,12 +243,12 @@ spring:
   profiles: prod
   datasource:
     druid:
-      url: jdbc:mysql://47.104.74.151:3306/pem_manage_db?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
-      username: pem_manage_db
-      password: Kw0KQXHWeZbGVYJP/nIb1z7y/63Rm4fui28o3BP9hcUe1HkX2eyYsTZD3xh95uJgDe6TLmnGSQ+Yc3ZOI2Z4JA==
+      url: jdbc:mysql://39.100.26.214:3306/pem_manage_db?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
+      username: root
+      password: a3UrA/FDc2f3fgevxc5vUSzOQdKwa5rf1pSq9EzDMvmMDmty603VkxVDE0DGdWD5XjazVe8QTrTT6XWLhZCcWQ==
       driver-class-name: com.mysql.jdbc.Driver
       filters: config
-      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJVUYyL8e/V2uRlvQRTEeLMJuA096K7UJk9PTNhjUlyldMIhfwc0foJcVSQeAymxr4NFEwxviyvHn2ksK5zKqV0CAwEAAQ==
+      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANKrKZ37uUZHmLLuVyEWIJB2iUA4PncxM4mMIGw+y9SjTUNl4hy+wv13owIqqXBUmef0O7W4pXD5Z7k8jTAFircCAwEAAQ==
       connection-error-retry-attempts: 0
       initial-size: 1
       max-active: 200

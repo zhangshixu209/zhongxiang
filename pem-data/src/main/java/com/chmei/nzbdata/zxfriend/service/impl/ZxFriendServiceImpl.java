@@ -114,9 +114,16 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 		Map<String, Object> params = input.getParams();
 		try {
 			List<Map<String, Object>> list = getBaseDao().queryForList("ZxFriendMapper.queryZxFriendList", params);
-			if (null != list && list.size() > 0) {
+			// 双向删除好友
+			Map<String, Object> map = new HashMap<>();
+			map.put("zxFriendUserId", params.get("zxFriendFriendId"));
+			map.put("zxFriendFriendId", params.get("zxFriendUserId"));
+			List<Map<String, Object>> listFriend = getBaseDao().queryForList("ZxFriendMapper.queryZxFriendList", map);
+			if (null != list && list.size() > 0 &&
+					null != listFriend && listFriend.size() > 0) {
 				int i = getBaseDao().delete("ZxFriendMapper.deleteZxFriendInfo", params);
-				if (i > 0) {
+				int j = getBaseDao().delete("ZxFriendMapper.deleteZxFriendInfo", map); // 双向删除好友
+				if (i > 0 && j > 0) {
 					output.setCode("0");
 					output.setMsg("删除好友成功");
 					return;

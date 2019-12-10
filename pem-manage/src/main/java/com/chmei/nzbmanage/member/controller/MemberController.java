@@ -476,7 +476,6 @@ public class MemberController extends BaseController {
      */
     @RequestMapping("/checkPaymentPwd")
     public OutputDTO checkPaymentPwd(@ModelAttribute MemberForm memberForm) {
-        OutputDTO outputDTO = new OutputDTO();
         try {
             Map<String, Object> params = BeanUtil.convertBean2Map(memberForm);
             OutputDTO output = getOutputDTO(params, "memberService", "queryMemberDetail");
@@ -485,11 +484,11 @@ public class MemberController extends BaseController {
             if (!MD5Util.verify(password, paymentPwd)) {
                 return new OutputDTO("-1", "支付密码错误");
             }
+            return new OutputDTO("0", "支付密码通过");
         } catch (Exception e) {
             LOGGER.error("查询失败", e);
-            outputDTO = new OutputDTO("1", "系统错误");
+            return new OutputDTO("1", "系统错误");
         }
-        return outputDTO;
     }
 
     /**

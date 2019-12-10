@@ -84,7 +84,7 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
                 friendGroup.put("zxFriendGroupingName", "默认分组");
                 friendGroup.put("zxFriendGroupingType", "Y"); // 默认分组标识
                 // 为用户添加默认分组
-                getBaseDao().insert("ZxFriendMapper.saveZxFriendGroupingInfo", friendGroup);
+                getBaseDao().insert("ZxFriendGroupingMapper.saveZxFriendGroupingInfo", friendGroup);
                 Map<String, Object> map = new HashMap<>();
                 map.put("memberAccount", memberAccount);
                 output.setCode("0");

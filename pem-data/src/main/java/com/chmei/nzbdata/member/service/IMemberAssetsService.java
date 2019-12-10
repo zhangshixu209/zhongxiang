@@ -36,4 +36,12 @@ public interface IMemberAssetsService {
      */
     void queryAdvertisingMoneyInfo(InputDTO input, OutputDTO output) throws NzbDataException;
 
+    /**
+     * 查询资金状况列表
+     * @param input 入参
+     * @param output 出参
+     * @throws NzbDataException 异常信息
+     */
+    void queryMemberMoneyTotalList(InputDTO input, OutputDTO output) throws NzbDataException;
+
 }

@@ -31,6 +31,7 @@ public final class Constants {
         String PERMISSION_MANAGE_CD = "1016" ;//权限管理
         String PARAMS_CONFIG_CD = "1017" ;//参数配置
         String DATATABLE_MANAGE_CD  ="1018" ; //数据表管理
+        String DATABASE_TYPE_CD = "1019"; // 数据库备份/还原
     }
     
     /** 操作类型代码 */
@@ -78,6 +79,8 @@ public final class Constants {
         String OPERATE_DATA_SOURCE = "1050" ;//远程查询数据库
         String OPERATE_DATA_IMPORT = "1051" ;//数据表导入数据
         String RECHARGE_TYPE_CD = "1052"; // 充值
+        String DB_TYPE_CD = "1053"; // 备份
+        String DB_TWO_TYPE_CD = "1054"; // 还原
     }
     
     /** 响应状态 */

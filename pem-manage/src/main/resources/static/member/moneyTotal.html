@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>资金状况</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="Content-Type" content="textml; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Expires" content="0">
+		<link href="../assets/ace/css/bootstrap.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../assets/ace/css/font-awesome.min.css" />
+		<!--[if IE 7]>
+		  <link rel="stylesheet" href="assets/ace/css/font-awesome-ie7.min.css" />
+		<![endif]-->
+
+		<link rel="stylesheet" href="../assets/ace/css/ace.min.css" />
+		<link rel="stylesheet" href="../assets/ace/css/ace-rtl.min.css" />
+		<link rel="stylesheet" href="../assets/ace/css/ace-skins.min.css" />
+		<!--[if IE 8]>
+			<link rel="stylesheet" href="assets/ace/css/ace-ie.min.css" />
+		<![endif]-->
+		<!--<link rel="stylesheet" href="../css/login/css/base.css?v=#scriptversion#" />-->
+		<link rel="stylesheet" href="../css/login/css/index02.css?v=#scriptversion#" />
+		<link rel="stylesheet" href="../css/login/css/bgs.css?v=#scriptversion#" />
+		<link rel="stylesheet" href="../assets/css/detil.css?v=#scriptversion#" />
+		<script src="../assets/js/ace-extra.min.js"></script>
+		<!--[if lt IE 9]>
+		    <script src="../assets/ace/js/html5shiv.js"></script>
+		    <script src="../assets/ace/js/respond.min.js"></script>
+		<![endif]-->
+		<link rel="stylesheet" href="../css/pd/detailPop.css?v=#scriptversion#" />
+		<link rel="stylesheet" href="../assets/css/admin_common.css?v=#scriptversion#" />
+	</head>
+	<style type="text/css">
+		body {
+			background-color: inherit;
+			min-height: 100vh;
+		}
+		.ke-container.ke-container-default{
+		  	width: 500px!important;
+		}
+		.noticeTheme_wrap .ke-container.ke-container-default{ 
+		  	width: 450px!important; 
+		}
+		.layui-layer-page .layui-layer-content {
+		    overflow: unset!important;
+		}
+		p.detailTitle {
+    	float: left;
+		}
+		p.detailTitle label{
+			margin-bottom: 0;
+		}
+		p.detailTitle span{
+			vertical-align: middle;
+		}
+		p.detailTitle .numtext{
+			vertical-align: bottom;
+		}
+		.mValidate {
+			padding-left: 15px;
+			padding-top: 3px;
+		}
+	</style>
+
+	<body>
+		<form class="container-fluid shh searchForm">
+			<div class="row">
+				<div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
+					<label class="text-right w100s" for="">日期</label>
+					<input type="text" class=""
+						   onFocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" id="beginTime" name="beginTime">
+				</div>
+			</div>
+			<div class="row">
+				<p class="col-xs-12 pull-right chaxunss">
+					<button type="button" class="btn btn-danger btn-xs" id="J_search">查询</button>
+					<button type="reset" class="btn btn-danger btn-xs">重置</button>
+				</p>
+			</div>
+		</form>
+		<hr class="dotted">
+		<div class="container-fluid shh">
+			<div class="row">
+				<div class="col-sm-12">
+					<p class="pull-right buttonList"  id="buttonList">
+						<button id="export_btn" class="btn-color btn btn-danger btn-xs" mo="">导出数据</button>
+					</p>
+				</div>
+			</div>
+			<div class="row">
+				<!--查询列表-->
+				<div class="col-xs-12">
+					<div class="table-responsive">
+						<table id="sample-table-1" class="table table-striped table-bordered table-hover">
+							<thead>
+								<tr>
+									<!--<th class="center">
+										选择
+									</th>-->
+									<th>钱包总余额</th>
+									<th>未抢完的红包</th>
+									<th>开通广告分红手续费</th>
+									<th>申请分红手续费</th>
+									<th>群升级费用</th>
+									<th>提现手续费</th>
+									<th>实际提现总金额</th>
+									<th> = </th>
+									<th>会员充值总金额</th>
+									<th>状态</th>
+								</tr>
+							</thead>
+							<tbody id="J_tabletpl">
+							</tbody>
+						</table>
+					</div>
+					<div class="page-box clearfix martop10">
+		                <ul style="float: right;" id="pagination"></ul>
+		                <span style="float: right" class="totalNum" id="totalNum"></span>
+		            </div>
+				</div>
+			</div>
+		</div>
+		<script src="http://libs.baidu.com/jquery/2.0.3/jquery.min.js"></script>
+		<!--[if IE]>
+		<script src="http://libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
+
+		<![endif]-->
+		<script type="text/javascript">
+			window.jQuery || document.write("<script src='../assets/ace/js/jquery-2.0.3.min.js'>" + "<" + "script>");
+		</script>
+		<script type="text/javascript">
+			if("ontouchend" in document) document.write("<script src='../assets/ace/js/jquery.mobile.custom.min.js'>" + "<" + "script>");
+		</script>
+		<script src="../assets/ace/js/jquery.validate.min.js"></script>
+		<script src="../assets/lib/validate_extends.js"></script>
+		<script src="../assets/lib/wdatepicker/WdatePicker.js?v=#scriptversion#"></script>
+		<script src="../assets/ace/js/bootstrap.min.js"></script>
+		<script src="../assets/ace/js/typeahead-bs2.min.js"></script>
+		<script src="../assets/ace/js/ace-elements.min.js"></script>
+		<script src="../assets/ace/js/ace.min.js"></script>
+		<script src="../assets/ace/js/ace-extra.min.js"></script>
+		<!--[if lte IE 8]>
+		  <script src="../assets/ace/js/excanvas.min.js"></script>
+		<![endif]-->
+		<!-- 表格拖拽插件 -->
+        <script src="../assets/lib/colResizable-1.6.js"></script>
+		<script src="../assets/lib/paginator/bootstrap-paginator.js"></script>
+		<script type="text/javascript" src="../assets/js/admin_common.js?v=#scriptversion#"></script>
+		<script src='../assets/lib/kindeditor/kindeditor-all.js'></script>
+		<script src='../assets/lib/kindeditor/plugins/image/image.js'></script>
+		<script src='../assets/lib/kindeditor/plugins/insertfile/insertfile.js'></script>
+		<script src='../assets/lib/kindeditor/lang/zh-CN.js'></script>
+		<script src="../assets/lib/handlebars/1.3.0/handlebars.js"></script>
+		<script src="../assets/lib/layer/layer.min.js"></script>
+		<script src="../assets/lib/common.js?v=#scriptversion#"></script>
+		<script src="../js/member/moneyTotal.js?v=#scriptversion#"></script>
+		<!-- 会员投诉数据查询 -->
+		<script id="T_tabletpl" type="text/x-handlebars-template">
+			{{#if items}} 
+				{{#each items}}
+					<tr>
+						<!--<td class="center">
+							<label>
+								<input type="checkbox"  class="ace" name="taskbox" id="checkedId" data-id="{{id}}"
+									   data-sqlUrl="{{sqlUrl}}" value="{{id}}"/>
+								<span class="lbl"></span>
+							</label>
+						</td>-->
+						<td>{{walletAmount}}</td>
+						<td>{{allPackets}}</td>
+						<td>{{activateMoney}}</td>
+						<td>{{applyMoney}}</td>
+						<td>{{groupMoney}}</td>
+						<td>{{reflectMoney}}</td>
+						<td>{{relReflectMoney}}</td>
+						<td>{{balance}}</td>
+						<td>{{totalMoney}}</td>
+						<td>{{type}}</td>
+					</tr>
+				{{/each}} 
+			{{else}}
+				<tr>
+					<td colspan="10" style="text-align: center">无数据</td>
+				</tr>
+			{{/if}}
+		</script>
+	</body>
+
+</html>

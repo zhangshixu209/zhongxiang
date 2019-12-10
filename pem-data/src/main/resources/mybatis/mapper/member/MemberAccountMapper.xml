@@ -62,4 +62,27 @@
   <delete id="delMemberAccountInfo" parameterType="java.lang.Long">
     DELETE FROM zx_app_account_manage WHERE id = #{id,jdbcType=BIGINT}
   </delete>
+
+  <select id="queryMemberMoneyTotalList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      	IFNULL(CAST(sum(wallet_balance) AS DECIMAL(11,2)), '0') AS walletAmount
+        -- 四个为抢完红包
+        ,(select IFNULL(CAST(sum(red_packet_money) AS DECIMAL(11,2)), '0') from zx_app_red_packet_info where red_packet_user_id is NULL) AS redPacket
+        ,(select IFNULL(CAST(sum(red_packet_img_money) AS DECIMAL(11,2)), '0') from zx_app_img_red_packet_info where red_packet_img_user_id is NULL) AS redImgPacket
+        ,(select IFNULL(CAST(sum(red_packet_link_money) AS DECIMAL(11,2)), '0') from zx_app_link_red_packet_info where red_packet_link_user_id is NULL) AS redLinkPacket
+        ,(select IFNULL(CAST(sum(red_packet_video_money) AS DECIMAL(11,2)), '0') from zx_app_video_red_packet_info where red_packet_video_user_id is NULL) AS redVideoPacket
+        -- 激活分红
+        ,(select IFNULL(CAST(sum(wallet_info_money) AS DECIMAL(11,2)), '0') from zx_app_wallet_money_info where wallet_info_from = "激活分红") AS activateMoney
+        -- 申请分红
+        ,(select IFNULL(CAST(sum(wallet_info_money) AS DECIMAL(11,2)), '0') from zx_app_wallet_money_info where wallet_info_from = "追加分红") AS applyMoney
+        -- 升级群扣除
+        ,(select IFNULL(CAST(sum(wallet_info_money) AS DECIMAL(11,2)), '0') from zx_app_wallet_money_info where wallet_info_from = "升级群扣除") AS groupMoney
+        -- 实际提现钱数
+        ,(select IFNULL(CAST(sum(cash_amount) AS DECIMAL(11,2)), '0') from t_cash_audit where audit_type = 2) AS relReflectMoney
+        -- 提现钱数
+        ,(select IFNULL(CAST(sum(cash_amount) AS DECIMAL(11,2)), '0') from t_cash_audit) AS reflectMoney
+        -- 充值钱数
+        ,(select IFNULL(CAST(sum(recharge_amount) AS DECIMAL(11,2)), '0') from t_recharge_record where valid_sts_cd = 1) AS totalMoney
+    FROM  t_member
+  </select>
 </mapper>

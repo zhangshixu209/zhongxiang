@@ -88,4 +88,18 @@ public class MemberAssetsServiceImpl extends BaseServiceImpl implements IMemberA
         }
     }
 
+    /**
+     * 查询资金状况列表
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbServiceException 异常信息
+     */
+    @Override
+    public void queryMemberMoneyTotalList(InputDTO input, OutputDTO output) throws NzbServiceException {
+        input.setService("memberAssetsService");
+        input.setMethod("queryMemberMoneyTotalList");
+        getNzbDataService().execute(input, output);
+    }
+
 }

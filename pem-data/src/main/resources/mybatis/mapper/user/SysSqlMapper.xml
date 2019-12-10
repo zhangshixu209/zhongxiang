@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SysSqlMapper">
+    
+    <!-- 映射结果  -->
+  <resultMap id="BaseResultMap" type="map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="sql_url" jdbcType="VARCHAR" property="sqlUrl" />
+    <result column="opt_type" jdbcType="VARCHAR" property="optType" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_user_name" jdbcType="VARCHAR" property="crtUserName" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+    <result column="modf_user_id" jdbcType="BIGINT" property="modfUserId" />
+    <result column="modf_user_name" jdbcType="VARCHAR" property="modfUserName" />
+    <result column="modf_time" jdbcType="TIMESTAMP" property="modfTime" />
+  </resultMap>
+  
+  <!-- 列表查询 -->
+    <select id="queryMySqlList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+            id AS id,
+            IFNULL( a.sql_url, '' ) AS sqlUrl,
+            IFNULL( a.opt_type, '' ) AS optType,
+            IFNULL( a.crt_user_id, '' ) AS crtUserId,
+            IFNULL( a.crt_user_name, '' ) AS crtUserName,
+            IFNULL( a.crt_time, '' ) AS crtTime
+        FROM
+            sys_mysql a
+        <where>
+            <if test="optType != null and optType != ''">
+                AND a.opt_type = #{optType}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY a.crt_time DESC
+        <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+            LIMIT #{start}, #{limit}
+        </if>
+    </select>
+    <!-- 分页数量查询 -->
+    <select id="queryMySqlCount" parameterType="map" resultType="int">
+        SELECT
+            COUNT(1)
+        FROM
+            sys_mysql a
+        <where>
+            <if test="optType != null and optType != ''">
+                AND a.opt_type = #{optType}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+  
+   <!-- 新增 -->
+  <insert id="saveSysMysqlInfo" parameterType="map">
+    insert into sys_mysql
+        (id, 
+	    sql_url,
+	    opt_type,
+	    crt_user_id,
+	    crt_user_name,
+	    crt_time)values(
+        #{id,jdbcType=BIGINT},
+        #{sqlUrl,jdbcType=VARCHAR},
+        #{optType,jdbcType=VARCHAR},
+        #{crtUserId,jdbcType=BIGINT},
+        #{crtUserName,jdbcType=VARCHAR},
+        NOW())
+  </insert>
+  
+</mapper>

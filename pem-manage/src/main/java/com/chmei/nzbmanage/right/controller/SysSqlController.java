@@ -1,9 +1,11 @@
 package com.chmei.nzbmanage.right.controller;
 
 import com.chmei.nzbcommon.cmbean.OutputDTO;
+import com.chmei.nzbcommon.cmutil.BeanUtil;
 import com.chmei.nzbmanage.common.constant.Constants;
 import com.chmei.nzbmanage.common.controller.BaseController;
 import com.chmei.nzbmanage.configure.FileUploadPathConfig.UploadFilePathConfig;
+import com.chmei.nzbmanage.right.bean.SysSqlForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,18 @@ public class SysSqlController extends BaseController{
 	  */
 	 @Autowired
 	 private UploadFilePathConfig uploadFilePathConfig;
+
+	/**
+	 * 查询备份/还原列表
+	 * @param sysSqlForm 参数
+	 * @return outputDTO 返回结果
+	 */
+	@RequestMapping("/queryMySqlList")
+	 public OutputDTO queryMySqlList(SysSqlForm sysSqlForm){
+		 Map<String, Object> params = BeanUtil.convertBean2Map(sysSqlForm);
+		 OutputDTO outputDTO = getOutputDTO(params,"sysSqlService","queryMySqlList");
+		 return outputDTO;
+	 }
 
 	 /**
 	  * 数据库备份
@@ -70,23 +84,29 @@ public class SysSqlController extends BaseController{
 			 sb.append(path+"sql/"+Constants.DB_NAME+"-"+backName);
 			 LOGGER.info("===========开始备份数据============");
 			 Runtime runtime = Runtime.getRuntime();
-			 int i = 0;
+			 String i = "-1";
 			 if (os.toLowerCase().startsWith("win")) {
 				 Process process = runtime.exec("cmd /c" + sb.toString()); // window
 				 if(process.waitFor() == 0){
 					 Map<String,Object> map = new HashMap<>();
-					 map.put("url", "/uploadFiles/sql/" + Constants.DB_NAME + "-"+backName);
-					 i = 1; // mysqlService.insertMysql(map);
+					 map.put("sqlUrl", "/uploadFiles/sql/" + Constants.DB_NAME + "-"+backName);
+					 map.put("crtUserId", getCurrUserId());
+					 map.put("crtUserName", getCurrUserName());
+					 OutputDTO outputDTO = getOutputDTO(map,"sysSqlService","backupsDBInfo");
+					 i = outputDTO.getCode();
 				 }
 			 } else if (os.toLowerCase().startsWith("linux")) {
 				 Process process = runtime.exec("/bin/sh -c " + sb.toString()); // linux
 				 if(process.waitFor() == 0){
 					 Map<String,Object> map = new HashMap<>();
-					 map.put("url", "/uploadFiles/sql/" + Constants.DB_NAME + "-" + backName);
-					 i = 0; // mysqlService.insertMysql(map);
+					 map.put("crtUserId", getCurrUserId());
+					 map.put("crtUserName", getCurrUserName());
+					 map.put("sqlUrl", "/uploadFiles/sql/" + Constants.DB_NAME + "-" + backName);
+					 OutputDTO outputDTO = getOutputDTO(map,"sysSqlService","backupsDBInfo");
+					 i = outputDTO.getCode();
 				 }
 			 }
-			 if(i > 0){
+			 if("0".equals(i)){
 				 return new OutputDTO("0", "备份成功");
 			 }
 			 return new OutputDTO("-1", "备份失败");
@@ -110,32 +130,38 @@ public class SysSqlController extends BaseController{
 		} else if (os.toLowerCase().startsWith("linux")) {
 			sb.append("/user/bin/mysql");
 		}
-		sb.append(" -h" + Constants.DB_HOST);       // 数据库地址
+		sb.append(" -h " + Constants.DB_HOST);       // 数据库地址
 		sb.append(" -u" + Constants.USER_NAME);     // 数据库用户名
 		sb.append(" -p" + Constants.USER_PWD);      // 数据库密码
-		sb.append(" " + Constants.DB_NAME + " < "); // 数据库名称
-		sb.append(filePath);
+		sb.append(" --default-character-set=utf8 " + Constants.DB_NAME + " < "); // 数据库名称
+		sb.append("D:"+filePath);
 		System.out.println("cmd命令为："+sb.toString());
 		Runtime runtime = Runtime.getRuntime();
 		LOGGER.info("===========开始还原数据============");
 		try {
-			int i = 0;
+			String i = "-1";
 			if (os.toLowerCase().startsWith("win")) {
 				Process process = runtime.exec("cmd /c" + sb.toString()); // window
 				if(process.waitFor() == 0){
 					Map<String,Object> map = new HashMap<>();
-					map.put("url", filePath); // 数据库还原本地文件地址
-					i = 1; // mysqlService.insertMysql(map);  // 存储还原记录到数据库
+					map.put("sqlUrl", filePath); // 数据库还原本地文件地址
+					map.put("crtUserId", getCurrUserId());
+					map.put("crtUserName", getCurrUserName());
+					OutputDTO outputDTO = getOutputDTO(map,"sysSqlService","reductionDBInfo");
+					i = outputDTO.getCode();
 				}
 			} else if (os.toLowerCase().startsWith("linux")) {
 				Process process = runtime.exec("/bin/sh -c " + sb.toString()); // linux
 				if(process.waitFor() == 0){
 					Map<String,Object> map = new HashMap<>();
-					map.put("url", filePath); // 数据库还原本地文件地址
-					i = 0; // mysqlService.insertMysql(map); // 存储还原记录到数据库
+					map.put("sqlUrl", filePath); // 数据库还原本地文件地址
+					map.put("crtUserId", getCurrUserId());
+					map.put("crtUserName", getCurrUserName());
+					OutputDTO outputDTO = getOutputDTO(map,"sysSqlService","reductionDBInfo");
+					i = outputDTO.getCode();
 				}
 			}
-			if(i > 0){
+			if("0".equals(i)){
 				return new OutputDTO("0", "还原成功");
 			}
 			return new OutputDTO("-1", "还原失败");

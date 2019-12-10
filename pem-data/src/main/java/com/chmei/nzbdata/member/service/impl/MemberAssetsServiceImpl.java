@@ -8,6 +8,7 @@ import com.chmei.nzbdata.member.service.IMemberAssetsService;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -84,6 +85,48 @@ public class MemberAssetsServiceImpl extends BaseServiceImpl implements IMemberA
                 output.setItems(list);
             }
             output.setTotal(total);
+        } catch (Exception e) {
+            LOGGER.error("查询失败" + e);
+        }
+    }
+
+    /**
+     * 查询资金状况列表
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbDataException 异常信息
+     */
+    @Override
+    public void queryMemberMoneyTotalList(InputDTO input, OutputDTO output) throws NzbDataException {
+        Map<String, Object> params = input.getParams();
+        List<Map<String, Object>> listAll = new ArrayList<>();
+        try {
+            List<Map<String, Object>> list = getBaseDao().queryForList("MemberAccountMapper.queryMemberMoneyTotalList", params);
+            if(null != list && list.size() > 0){
+                Map<String, Object> map = list.get(0);
+                String redPacket = (String) map.get("redPacket");
+                String redImgPacket = (String) map.get("redImgPacket");
+                String redLinkPacket = (String) map.get("redLinkPacket");
+                String redVideoPacket = (String) map.get("redVideoPacket");
+                Double allPackets = (Double.valueOf(redPacket) + Double.valueOf(redImgPacket) +
+                        Double.valueOf(redLinkPacket) +Double.valueOf(redVideoPacket));
+                map.put("allPackets", allPackets);
+
+                Double balance = Double.valueOf(map.get("walletAmount")+"") + Double.valueOf(map.get("activateMoney")+"") +
+                        Double.valueOf(map.get("applyMoney")+"") +Double.valueOf(map.get("groupMoney")+"") +
+                        Double.valueOf(map.get("relReflectMoney")+"") + Double.valueOf(map.get("reflectMoney")+"");
+                balance = balance - Double.valueOf(map.get("totalMoney")+"");
+                if (balance == 0) {
+                    map.put("type", "平衡");
+                } else {
+                    map.put("type", "异常");
+                }
+                map.put("balance", balance);
+                listAll.add(map);
+            }
+            output.setItems(listAll);
+            output.setTotal(listAll.size());
         } catch (Exception e) {
             LOGGER.error("查询失败" + e);
         }
