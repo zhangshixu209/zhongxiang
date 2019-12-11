@@ -341,14 +341,14 @@
 										<input type="text" class=""
 											   onFocus="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'beginTime\')}', maxDate:'%y-%M-%d'})"  id="endTime" name="endTime">
 									</div>
-									<div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
+									<!--<div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
 										<label class="text-right w100s" for="isSee">是否已阅</label>
 										<select class="howlong" id="isSee" name="isSee">
 											<option value="" selected>全部</option>
 											<option value="0">否</option>
 											<option value="1">是</option>
 										</select>
-									</div>
+									</div>-->
 								</div>
 								<div class="row">
 									<p class="col-xs-12 pull-right chaxunss">
@@ -376,12 +376,12 @@
 														<th>公告编号</th>
 														<th>公告主题</th>
 														<th>公告分类</th>
-														<th>紧急程度</th>
+														<!--<th>紧急程度</th>-->
 														<th>公告发布人</th>
 														<th>公告发布部门</th>
-														<th>是否已阅</th>
+														<!--<th>是否已阅</th>-->
 														<th>发布时间</th>
-														<th>操作</th>
+														<!--<th>操作</th>-->
 													</tr>
 												</thead>
 												<tbody id="J_tabletpl">
@@ -559,12 +559,12 @@
 		<td>{{code}}</td>
 		<td><a class="name noticeName" href="javascript:;" onclick="queryNotceiDetail('{{id}}')">{{name}}</a></td>
 		<td>{{noticeTypeName}}</td>
-		<td>{{instancyLevelName}}</td>
+		<!--<td>{{instancyLevelName}}</td>-->
 		<td>{{publishName}}</td>
 		<td>{{publishDepartment}}</td>
-		<td>{{isReadName isRead}}</td>
+		<!--<td>{{isReadName isRead}}</td>-->
 		<td>{{publishTime}}</td>
-		<td><a href="javascript:;" class="a_blue_click" onclick="queryDetil('{{id}}')">查看详情</a></td>
+		<!--<td><a href="javascript:;" class="a_blue_click" onclick="queryDetil('{{id}}')">查看详情</a></td>-->
 	</tr>
 	{{/each}}
 	{{else}}
@@ -600,7 +600,7 @@
 					<textarea name="" id="editor" cols="30" rows="10"></textarea>
 				</div>
 			</div>
-			<div class="row">
+			<!--<div class="row">
 					<div class="rwbh" style="width: 426px;margin:auto;margin-top:5px;">
 						<p class="detailTitle">
 							<label class="text-right" for="">总人数:</label>
@@ -615,7 +615,7 @@
 							<span class="peopleNum numtext" id="">{{unReadCount}}</span>
 						</p>
 					</div>
-			</div>
+			</div>-->
 		</div>
 	</div>
 	<div class="btnrongqi btnWrap">

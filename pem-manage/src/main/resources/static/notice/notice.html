@@ -100,10 +100,14 @@
 		<label class="text-right w100s" for="">公告编号</label>
 		<input type="text" class="howlong" id="code" name="code" placeholder=""/>
 	</div>
-	<div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
+	<!--<div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
 		<label class="text-right w100s" for="">公告状态</label>
 		<select  class="howlong" id="status" name="status">
 		</select>
+	</div>-->
+	<div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
+		<label class="text-right w100s" for="">公告名称</label>
+		<input type="text" class="howlong" id="name" name="name" placeholder=""/>
 	</div>
 	<div class="form-group col-xs-6 col-sm-4 col-md-6 newshh">
 		<label class="text-right w80s" for="">发布时间</label>
@@ -112,10 +116,6 @@
 		<b>-</b>
 		<input type="text" class=""
 			   onFocus="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'beginTime\')}', maxDate:'%y-%M-%d'})"  id="endTime" name="endTime">
-	</div>
-	<div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
-		<label class="text-right w100s" for="">公告名称</label>
-		<input type="text" class="howlong" id="name" name="name" placeholder=""/>
 	</div>
 	<div class="row">
 		<p class="col-md-12 pull-right chaxunss">
@@ -152,13 +152,10 @@
 						<th>公告编号</th>
 						<th>公告主题</th>
 						<th>公告分类</th>
-						<th>公告状态</th>
-						<th>紧急程度</th>
+						<!--<th>公告状态</th>-->
 						<th>公告发布人</th>
-						<th>发送总人数</th>
-						<th>已阅人数</th>
 						<th>公告发布部门</th>
-						<th>操作</th>
+						<!--<th>操作</th>-->
 					</tr>
 					</thead>
 
@@ -281,7 +278,7 @@
 					<textarea name="" id="detailEditor" cols="30" rows="10"></textarea>
 				</div>
 			</div>
-			<div class="row">
+			<!--<div class="row">
 				<div class="rwbh" style="width: 426px;margin:auto;margin-top:5px;">
 					<p class="detailTitle">
 						<label class="text-right" for="">总人数:</label>
@@ -296,7 +293,7 @@
 						<span class="peopleNum numtext" id="">{{unReadCount}}</span>
 					</p>
 				</div>
-			</div>
+			</div>-->
 		</div>
 	</div>
 	<div class="btnrongqi btnWrap">
@@ -413,13 +410,13 @@
 						<select required="true" class="col-md-4 col-xs-4 col-sm-4" id="noticeType" name="noticeTypeId"></select>
 					</div>
 				</div>
-				<div class="row">
+				<!--<div class="row">
 					<div class="col-md-12 col-xs-12 col-sm-12 newshh">
 						<label for="" class="percent_18 col-md-3 col-xs-3 col-sm-3 ui-text"><span class="red f12"> * </span>紧急程度：</label>
-						<!-- <input  required="true" type="text" class="col-md-7 col-xs-7 col-sm-7" name="name" id="instancyLevel" value="{{name}}" > -->
+						&lt;!&ndash; <input  required="true" type="text" class="col-md-7 col-xs-7 col-sm-7" name="name" id="instancyLevel" value="{{name}}" > &ndash;&gt;
 						<select required="true" class="col-md-4 col-xs-4 col-sm-4" id="instancyLevel" name="instancyLevelId"></select>
 					</div>
-				</div>
+				</div>-->
 				<div class="row" style="height:220px;">
 					<div class="col-md-12 col-xs-12 col-sm-12 newshh">
 						<label for="" class="percent_18 col-md-3 col-xs-3 col-sm-3 ui-text" ><span class="red f12"> * </span>公告内容：</label>
@@ -428,7 +425,7 @@
 						<textarea name="" id="editor" style="height:228px;"></textarea>
 					</div>
 				</div>
-				<div class="row">
+				<!--<div class="row">
 					<div class="col-md-12 col-xs-12 col-sm-12 newshh">
 						<label for="" class="percent_18 col-md-3 col-xs-3 col-sm-3 ui-text">
 							<span class="red f12"> * </span>
@@ -443,11 +440,11 @@
 							<span class="radio-name fl">部分人员</span>
 						</label>
 					</div>
-				</div>
+				</div>-->
 			</div>
-			<div id="selectPeople" class="selectPeople">
+			<!--<div id="selectPeople" class="selectPeople">
 				<div id="departmentTree" class="ztree"></div>
-			</div>	
+			</div>	-->
 		</form>
 	</div>	
 	<div class="btnrongqi btnWrap">
@@ -484,13 +481,13 @@
 					</div>
 				</div>
 	
-				<div class="row">
+				<!--<div class="row">
 					<div class="col-md-12 col-xs-12 col-sm-12 newshh">
 						<label for="" class="percent_18 col-md-3 col-xs-3 col-sm-3 ui-text"><span class="red f12"> * </span>紧急程度：</label>
-						<!-- <input  required="true" type="text" class="col-md-7 col-xs-7 col-sm-7" name="name" id="instancyLevel" value="{{name}}" > -->
+						&lt;!&ndash; <input  required="true" type="text" class="col-md-7 col-xs-7 col-sm-7" name="name" id="instancyLevel" value="{{name}}" > &ndash;&gt;
 						<select required="true" class="col-md-4 col-xs-4 col-sm-4" id="editInstancyLevel" name="instancyLevelId"></select>
 					</div>
-				</div>
+				</div>-->
 				<div class="row" style="height:320px;">
 					<div class="col-md-12 col-xs-12 col-sm-12 newshh">
 						<label for="" class="percent_18 col-md-3 col-xs-3 col-sm-3 ui-text"><span class="red f12"> * </span>公告内容：</label>
@@ -499,7 +496,7 @@
 						<textarea name="" id="updateEditor" cols="30" rows="10"></textarea>
 					</div>
 				</div>
-				<div class="row">
+				<!--<div class="row">
 					<div class="col-md-12 col-xs-12 col-sm-12 newshh">
 						<label for="" class="percent_18 col-md-3 col-xs-3 col-sm-3 ui-text">
 							<span class="red f12"> * </span>
@@ -514,11 +511,11 @@
 							<span class="radio-name fl">部分人员</span>
 						</label>
 					</div>
-				</div>
+				</div>-->
 			</div>
-			<div id="selectPeople" class="selectPeople">
+			<!--<div id="selectPeople" class="selectPeople">
 				<div id="departmentTree" class="ztree"></div>
-			</div>
+			</div>-->
 		</form>
 	</div>
 	<div class="btnrongqi btnWrap">
@@ -548,17 +545,17 @@
 		<td>{{code}}</td>
 		<td><a class="name noticeName" href="javascript:;" onclick="queryNotceiDetail('{{id}}')">{{name}}</a></td>
 		<td>{{noticeTypeName}}</td>
-		<td>{{status}}</td>
-		<td>{{instancyLevelName}}</td>
+		<!--<td>{{status}}</td>-->
+		<!--<td>{{instancyLevelName}}</td>-->
 		<td>{{publishName}}</td>
-		<td>{{sendTotal}}</td>
+		<!--<td>{{sendTotal}}</td>-->
 		<!--<td>{{readTotal}}/<a href="javascript:;" class="a_blue_click" onclick="queryReadDetil('{{id}}')">查看</a></td>-->
-		<td><a href="javascript:;" class="a_blue_click" onclick="queryReadDetil('{{id}}')">{{readTotal}}</a></td>
+		<!--<td><a href="javascript:;" class="a_blue_click" onclick="queryReadDetil('{{id}}')">{{readTotal}}</a></td>-->
 		<td>{{publishDepartment}}</td>
-		<td>
+		<!--<td>
 			<a href="javascript:;" class="a_blue_click" onclick="queryDetil('{{id}}')">阅读信息</a>
-			<!--<a href="javascript:;" class="a_blue_click" onclick="queryUnReadDetil('{{id}}')">查看未阅读人</a>-->
-		</td>
+			&lt;!&ndash;<a href="javascript:;" class="a_blue_click" onclick="queryUnReadDetil('{{id}}')">查看未阅读人</a>&ndash;&gt;
+		</td>-->
 	</tr>
 	{{/each}} {{else}}
 	<tr>

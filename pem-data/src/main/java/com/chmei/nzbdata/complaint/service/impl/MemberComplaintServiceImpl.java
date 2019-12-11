@@ -6,6 +6,7 @@ import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
 import com.chmei.nzbdata.complaint.service.IMemberComplaintService;
 import com.chmei.nzbdata.im.service.impl.EasemobIMUsers;
+import com.chmei.nzbdata.util.Constants;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.slf4j.Logger;
@@ -86,6 +87,19 @@ public class MemberComplaintServiceImpl extends BaseServiceImpl implements IMemb
 			String status = (String) params.get("status");
 			if("1004".equals(status)){ // 冻结账号
 				Object result = easemobIMUsers.deactivateIMUser((String) params.get("memberAccount"));
+				if (null != result) {
+					@SuppressWarnings("unchecked")
+					Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
+							"MemberComplaintMapper.queryMemberComplaintDetail", params);
+					String content = "您投诉的用户：" + params.get("memberAccount") + "已被冻结";
+					map.put("id", getSequence());
+					map.put("messageTitle", "投诉结果查询");
+					map.put("messageContent", content);
+					map.put("messageType", Constants.MESSAGE_TYPE_1004);
+					map.put("memberAccount", map.get("complainant"));
+					// 添加推送消息
+					getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
+				}
 				LOGGER.info("deactivateIMUser============:"+gson.toJson(result));
 			} else if ("1005".equals(status)) { // 解冻账号
 				Object result = easemobIMUsers.activateIMUser((String) params.get("memberAccount"));

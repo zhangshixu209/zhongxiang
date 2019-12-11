@@ -90,10 +90,10 @@ public class FeedbackController extends BaseController {
     public OutputDTO insertSelective(@ModelAttribute FeedbackForm feedbackForm) {
         OutputDTO outputDTO = new OutputDTO();
         //获取当前登录人部门id
-        String userName = (String) getSession().getAttribute(Constants.SESSION_USER.USERNAME);
-        Long userId = (Long) getSession().getAttribute(Constants.SESSION_USER.ID);
-        feedbackForm.setStartPensonName(userName);
-        feedbackForm.setStartPensonId(userId+"");
+//        String userName = (String) getSession().getAttribute(Constants.SESSION_USER.USERNAME);
+//        Long userId = (Long) getSession().getAttribute(Constants.SESSION_USER.ID);
+//        feedbackForm.setStartPensonName(userName);
+//        feedbackForm.setStartPensonId(userId+"");
         feedbackForm.setStartPensonTime(new Date()); //工单提交时间
         Map<String, Object> params = BeanUtil.convertBean2Map(feedbackForm);
         outputDTO = getOutputDTO(params, "feedbackService", "insertSelective");

@@ -39,6 +39,8 @@ public class RealNameAuthServiceImpl extends BaseServiceImpl implements IRealNam
                 output.setCode("-1");
                 output.setMsg("新增失败");
             }
+            output.setCode("0");
+            output.setMsg("保存成功");
         } catch (Exception ex) {
             LOGGER.error("新增失败", ex);
         }
@@ -60,6 +62,8 @@ public class RealNameAuthServiceImpl extends BaseServiceImpl implements IRealNam
                 output.setCode("-1");
                 output.setMsg("保存失败");
             }
+            output.setCode("0");
+            output.setMsg("保存成功");
             output.setTotal(total);
         } catch (Exception ex) {
             LOGGER.error("查询失败" + ex);

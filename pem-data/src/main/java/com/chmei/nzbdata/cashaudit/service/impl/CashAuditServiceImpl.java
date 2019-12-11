@@ -5,6 +5,7 @@ import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbdata.cashaudit.service.ICashAuditService;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
+import com.chmei.nzbdata.util.Constants;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -110,7 +111,26 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 			if (count < 1) {
 				output.setCode("-1");
 				output.setMsg("更新失败");
+				return;
 			}
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
+					"CashAuditMapper.queryCashAuditDetail", params);
+			String auditType = (String) params.get("auditType");
+			String auditTypeCd = "";
+			if ("1".equals(auditType)) {
+				auditTypeCd = "已通过，请前往账户查看！";
+			} else if ("2".equals(auditType)) {
+				auditTypeCd = "未通过，提现金额已返回到钱包。";
+			}
+			String content = "您的提现申请审核" + auditTypeCd;
+			map.put("id", getSequence());
+			map.put("messageTitle", "提现审核结果");
+			map.put("messageContent", content);
+			map.put("messageType", Constants.MESSAGE_TYPE_1005);
+			map.put("memberAccount", map.get("memberAccount"));
+			// 添加推送消息
+			getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
 		} catch (Exception e) {
 			LOGGER.error("更新失败: " + e);
 		}

@@ -1004,4 +1004,21 @@
     WHERE
       a.valid_sts_cd = 1
     </select>
+
+    <select id="queryNoticeDetailInfo" resultType="map">
+        SELECT
+          rn.id AS id,
+          rn.code AS code,
+          rn.name AS name,
+          rn.status AS status,
+          rn.publish_id AS publishId,
+          rn.publish_name AS publishName,
+          rn.publish_time AS publishTime,
+          rn.content AS  content
+        FROM
+          r_notice rn
+        WHERE
+          rn.id=#{id}
+    </select>
+
 </mapper>

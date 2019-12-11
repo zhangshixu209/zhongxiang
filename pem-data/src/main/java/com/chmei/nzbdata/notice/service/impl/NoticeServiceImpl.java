@@ -95,6 +95,7 @@ public class NoticeServiceImpl extends BaseServiceImpl implements INoticeService
      * @param output 出参
      * @throws NzbDataException 异常信息
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void publishNoticeMessageInfo(InputDTO input, OutputDTO output) throws NzbDataException {
         Map<String, Object> params = input.getParams();
@@ -113,6 +114,15 @@ public class NoticeServiceImpl extends BaseServiceImpl implements INoticeService
                 output.setCode("-1");
                 output.setMsg("新增失败");
             }
+            // 添加推送
+            Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject("noticeMapper.queryNoticeDetailInfo", params);
+            map.put("id", getSequence());
+            map.put("messageTitle", map.get("name"));
+            map.put("messageContent", map.get("content"));
+            map.put("messageType", com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1002);
+            map.put("memberAccount", "9999");
+            // 添加推送消息
+            getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
             List<Map<String, Object>> noticePermissions = new ArrayList<>();
             //添加权限信息
             List<Long> userIds = (List<Long>) params.get("userIds");
@@ -218,6 +228,15 @@ public class NoticeServiceImpl extends BaseServiceImpl implements INoticeService
             //获取到公告id
             Map<String, Object> notice =(Map<String, Object>) params.get("notice");
             Long id = (Long) notice.get("id");
+            // 添加推送
+            Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject("noticeMapper.queryNoticeDetailInfo", params);
+            map.put("id", getSequence());
+            map.put("messageTitle", map.get("name"));
+            map.put("messageContent", map.get("content"));
+            map.put("messageType", com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1002);
+            map.put("memberAccount", "9999");
+            // 添加推送消息
+            getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
             //添加权限信息
             List<Map<String, Object>> noticePermissions = new ArrayList<>();
             List<Long> userIds =(List<Long>) params.get("userIds");
@@ -307,6 +326,15 @@ public class NoticeServiceImpl extends BaseServiceImpl implements INoticeService
                 //更新该条公告对应的权限信息状态为有效
                 params.put("permissionStatus", 1);
                 getBaseDao().update("noticePermissionMapper.updateNoticePermissionStatus", params);
+                // 添加推送
+                Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject("noticeMapper.queryNoticeDetailInfo", params);
+                map.put("id", getSequence());
+                map.put("messageTitle", map.get("name"));
+                map.put("messageContent", map.get("content"));
+                map.put("messageType", com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1002);
+                map.put("memberAccount", "9999");
+                // 添加推送消息
+                getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
             }
             if ("0".equals(output.getCode())) {
                 //保存成功插入操作日志信息

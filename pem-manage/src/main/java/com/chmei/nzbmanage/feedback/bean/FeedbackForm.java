@@ -82,6 +82,11 @@ public class FeedbackForm extends BaseFormReport {
      */
     private String filePaths;
 
+	/**
+	 * 反馈类型
+	 */
+	private String feedType;
+
 	public Long getId() {
 		return id;
 	}
@@ -193,7 +198,12 @@ public class FeedbackForm extends BaseFormReport {
 	public void setEndTime(String endTime) {
 		this.endTime = endTime;
 	}
-	
-    
-	
+
+	public String getFeedType() {
+		return feedType;
+	}
+
+	public void setFeedType(String feedType) {
+		this.feedType = feedType;
+	}
 }

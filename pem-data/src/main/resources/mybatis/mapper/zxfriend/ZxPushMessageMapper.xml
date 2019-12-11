@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ZxPushMessageMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="message_title" jdbcType="VARCHAR" property="messageTitle" />
+    <result column="message_content" jdbcType="VARCHAR" property="messageContent" />
+    <result column="message_status" jdbcType="VARCHAR" property="messageStatus" />
+    <result column="message_type" jdbcType="VARCHAR" property="messageType" />
+    <result column="member_account" jdbcType="VARCHAR" property="memberAccount" />
+    <result column="extend1" jdbcType="VARCHAR" property="extend1" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_user_name" jdbcType="VARCHAR" property="crtUserName" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, message_title, message_content, message_status, message_type, member_account, 
+    extend1, crt_user_id, crt_user_name, crt_time
+  </sql>
+  <!-- 查询推送列表 -->
+  <select id="queryPushMessageList" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zx_app_push_message
+    <where>
+      <if test="memberAccount != null and memberAccount != ''">
+        member_account = #{memberAccount,jdbcType=VARCHAR}
+      </if>
+      <if test="messageStatus != null and messageStatus != ''">
+        message_status = #{messageStatus,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from zx_app_push_message
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <!-- 新增推送消息 -->
+  <insert id="savePushMessageInfo" parameterType="java.util.Map">
+    insert into zx_app_push_message
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="messageTitle != null">
+        message_title,
+      </if>
+      <if test="messageContent != null">
+        message_content,
+      </if>
+        message_status,
+      <if test="messageType != null">
+        message_type,
+      </if>
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+      <if test="extend1 != null">
+        extend1,
+      </if>
+      <if test="crtUserId != null">
+        crt_user_id,
+      </if>
+      <if test="crtUserName != null">
+        crt_user_name,
+      </if>
+        crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="messageTitle != null">
+        #{messageTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="messageContent != null">
+        #{messageContent,jdbcType=VARCHAR},
+      </if>
+        '1',
+      <if test="messageType != null">
+        #{messageType,jdbcType=VARCHAR},
+      </if>
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="extend1 != null">
+        #{extend1,jdbcType=VARCHAR},
+      </if>
+      <if test="crtUserId != null">
+        #{crtUserId,jdbcType=BIGINT},
+      </if>
+      <if test="crtUserName != null">
+        #{crtUserName,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <!-- 修改阅读状态 -->
+  <update id="updatePushMessageStatus" parameterType="java.util.Map">
+    update zx_app_push_message
+    <set>
+      <if test="messageStatus != null">
+        message_status = #{messageStatus,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

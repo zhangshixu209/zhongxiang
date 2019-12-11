@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.chmei.nzbdata.util.Constants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -115,7 +116,14 @@ public class FeedbackServiceImpl extends BaseServiceImpl implements IFeedbackSer
 		getCrtInfo(params, input);
 		params.put("id", getSequence()); // 获取id
 		saveFile(params); // 保存附件
-		getBaseDao().insert("feedbackMapper.insertSelective", params);
+		int i = getBaseDao().insert("feedbackMapper.insertSelective", params);
+		if (i > 0) {
+			output.setCode("0");
+			output.setMsg("反馈成功");
+			return;
+		}
+		output.setCode("-1");
+		output.setMsg("反馈失败");
 	}
 
 	/**
@@ -135,10 +143,20 @@ public class FeedbackServiceImpl extends BaseServiceImpl implements IFeedbackSer
 		getModfInfo(params, input);
 		// 更新工单表
 		int count = getBaseDao().update("feedbackMapper.doUpdateFeedback", params);
+		if (count > 0) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
+					"feedbackMapper.selectByPrimaryKey", params);
+			map.put("id", getSequence());
+			map.put("messageTitle", map.get("titles"));
+			map.put("messageContent", map.get("replyContent"));
+			map.put("messageType", Constants.MESSAGE_TYPE_1006);
+			map.put("memberAccount", map.get("startPensonId"));
+			// 添加推送消息
+			getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
+		}
 		output.setTotal(count);
 	}
-
-
 
 	/**
 	 * 保存附件
