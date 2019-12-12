@@ -31,7 +31,7 @@
       <if test="zxFriendGroupingId != null">
         zx_friend_grouping_id,
       </if>
-      <if test="zxFriendId != null">
+      <if test="zxFriendUserId != null">
         zx_friend_id,
       </if>
       <if test="zxFriendGroupingName != null">
@@ -46,8 +46,8 @@
       <if test="zxFriendGroupingId != null">
         #{zxFriendGroupingId,jdbcType=BIGINT},
       </if>
-      <if test="zxFriendId != null">
-        #{zxFriendId,jdbcType=VARCHAR},
+      <if test="zxFriendUserId != null">
+        #{zxFriendUserId,jdbcType=VARCHAR},
       </if>
       <if test="zxFriendGroupingName != null">
         #{zxFriendGroupingName,jdbcType=VARCHAR},

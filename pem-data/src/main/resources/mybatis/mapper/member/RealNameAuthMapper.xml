@@ -76,14 +76,14 @@
       <if test="age != null">
         age,
       </if>
-      <if test="provinceId != null">
-        province_id,
+      <if test="provinceName != null">
+        province_name,
       </if>
-      <if test="cityId != null">
-        city_id,
+      <if test="cityName != null">
+        city_name,
       </if>
-      <if test="countyId != null">
-        county_id,
+      <if test="countyName != null">
+        county_name,
       </if>
       <if test="crtUserId != null">
         crt_user_id,
@@ -113,14 +113,14 @@
       <if test="age != null">
         #{age,jdbcType=INTEGER},
       </if>
-      <if test="provinceId != null">
-        #{provinceId,jdbcType=INTEGER},
+      <if test="provinceName != null">
+        #{provinceName,jdbcType=VARCHAR},
       </if>
-      <if test="cityId != null">
-        #{cityId,jdbcType=INTEGER},
+      <if test="cityName != null">
+        #{cityName,jdbcType=VARCHAR},
       </if>
-      <if test="countyId != null">
-        #{countyId,jdbcType=INTEGER},
+      <if test="countyName != null">
+        #{countyName,jdbcType=VARCHAR},
       </if>
       <if test="crtUserId != null">
         #{crtUserId,jdbcType=BIGINT},
@@ -135,29 +135,29 @@
   <update id="updateRealNameAuthInfo" parameterType="java.util.Map">
     update t_real_name_authentic
     <set>
-      <if test="realName != null">
+      <if test="realName != null and realName != ''">
         real_name = #{realName,jdbcType=VARCHAR},
       </if>
-      <if test="cardNum != null">
+      <if test="cardNum != null and realName != ''">
         card_num = #{cardNum,jdbcType=VARCHAR},
       </if>
-      <if test="sex != null">
+      <if test="sex != null and realName != ''">
         sex = #{sex,jdbcType=VARCHAR},
       </if>
-      <if test="birthday != null">
+      <if test="birthday != null and realName != ''">
         birthday = #{birthday,jdbcType=VARCHAR},
       </if>
-      <if test="age != null">
+      <if test="age != null and realName != ''">
         age = #{age,jdbcType=INTEGER},
       </if>
-      <if test="provinceId != null">
-        province_id = #{provinceId,jdbcType=INTEGER},
+      <if test="provinceName != null and provinceName != ''">
+          province_name = #{provinceName,jdbcType=VARCHAR},
       </if>
-      <if test="cityId != null">
-        city_id = #{cityId,jdbcType=INTEGER},
+      <if test="cityName != null and cityName != ''">
+        city_name = #{cityName,jdbcType=VARCHAR},
       </if>
-      <if test="countyId != null">
-        county_id = #{countyId,jdbcType=INTEGER},
+      <if test="countyName != null and countyName != ''">
+        county_name = #{countyName,jdbcType=VARCHAR},
       </if>
         modf_user_time = NOW(),
     </set>

@@ -25,7 +25,7 @@
     <where>
       <if test="memberAccount != null and memberAccount != ''">
         member_account = #{memberAccount,jdbcType=VARCHAR}
-        OR a.member_account = '9999'
+        OR member_account = '9999'
       </if>
       <if test="messageStatus != null and messageStatus != ''">
         AND message_status = #{messageStatus,jdbcType=VARCHAR}
@@ -107,4 +107,18 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="queryPushMessageDetail" resultType="java.util.Map">
+    SELECT
+      a.id AS id,
+      a.message_title AS messageTitle,
+      a.message_content AS messageContent,
+      a.message_status AS messageStatus,
+      a.message_type AS messageType,
+      a.member_account AS memberAccount,
+      a.crt_time AS crtTime
+    FROM
+      zx_app_push_message AS a
+    WHERE a.id = #{id}
+  </select>
 </mapper>

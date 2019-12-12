@@ -204,6 +204,7 @@
       IFNULL( a.nickname, '' ) AS nickname,
       IFNULL( a.member_pwd, '' ) AS memberPwd,
       IFNULL( a.head_img_url, '' ) AS headImgUrl,
+      IFNULL( b.real_name, '') AS realName,
       IFNULL( a.member_payment_pwd, '' ) AS memberPaymentPwd,
       IFNULL( a.recom_nick_name, '-' ) AS recomNickname,
       IFNULL( a.wallet_balance, '0' ) AS walletBalance,
@@ -215,6 +216,7 @@
       a.zx_my_team_id as zxMyTeamId
     FROM
         t_member a
+    LEFT JOIN t_real_name_authentic b ON a.member_account = b.member_account
     <where>
       <if test="id  != null and id != ''">
         a.id = #{id, jdbcType=BIGINT}

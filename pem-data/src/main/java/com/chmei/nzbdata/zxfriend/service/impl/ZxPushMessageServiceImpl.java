@@ -4,6 +4,7 @@ import com.chmei.nzbcommon.cmbean.InputDTO;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
+import com.chmei.nzbdata.util.StringUtil;
 import com.chmei.nzbdata.zxfriend.service.IZxPushMessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,15 +89,26 @@ public class ZxPushMessageServiceImpl extends BaseServiceImpl implements IZxPush
 	public void updatePushMessageStatus(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
-			// 添加推送消息
-			int i = getBaseDao().update("ZxPushMessageMapper.updatePushMessageStatus", params);
-			if (i < 0) {
-				output.setCode("-1");
-				output.setMsg("修改推送消息失败");
-				return;
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
+					"ZxPushMessageMapper.queryPushMessageDetail", params);
+			if (null != map) {
+				output.setCode("0");
+				output.setMsg("查询成功");
+				output.setItem(map);
 			}
-			output.setCode("0");
-			output.setMsg("修改推送消息成功");
+			String messageStatus = (String) params.get("messageStatus");
+			if (StringUtil.isNotEmpty(messageStatus)) {
+				// 添加推送消息
+				int i = getBaseDao().update("ZxPushMessageMapper.updatePushMessageStatus", params);
+				if (i < 0) {
+					output.setCode("-1");
+					output.setMsg("修改推送消息失败");
+					return;
+				}
+				output.setCode("0");
+				output.setMsg("修改推送消息成功");
+			}
 		} catch (Exception e) {
 			LOGGER.error("系统异常", e);
 		}

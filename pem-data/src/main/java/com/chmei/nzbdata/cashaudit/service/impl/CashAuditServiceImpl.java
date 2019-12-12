@@ -67,8 +67,11 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 			Integer count = getBaseDao().insert("CashAuditMapper.saveCashAuditInfo", params);
 			if (count < 1) {
 				output.setCode("-1");
-				output.setMsg("新增失败");
+				output.setMsg("提现申请失败");
+				return;
 			}
+			output.setCode("0");
+			output.setMsg("提现申请成功");
 		} catch (Exception e) {
 			LOGGER.error("新增失败: " + e);
 		}

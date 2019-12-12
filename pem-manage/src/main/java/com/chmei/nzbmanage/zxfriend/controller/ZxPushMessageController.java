@@ -3,7 +3,7 @@ package com.chmei.nzbmanage.zxfriend.controller;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbcommon.cmutil.BeanUtil;
 import com.chmei.nzbmanage.common.controller.BaseController;
-import com.chmei.nzbmanage.zxfriend.bean.ZxFriendForm;
+import com.chmei.nzbmanage.zxfriend.bean.ZxPushMessageForm;
 import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,9 +32,9 @@ public class ZxPushMessageController extends BaseController {
      * @return outputDTO 返回结果
      */
     @RequestMapping("/queryPushMessageList")
-    public OutputDTO queryPushMessageList(@ModelAttribute ZxFriendForm zxFriendForm) {
+    public OutputDTO queryPushMessageList(@ModelAttribute ZxPushMessageForm zxPushMessageForm) {
     	LOGGER.info("消息推送列表查询...ZxPushMessageController.queryPushMessageList()...");
-        Map<String, Object> params = BeanUtil.convertBean2Map(zxFriendForm);
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxPushMessageForm);
         OutputDTO outputDTO = getOutputDTO(params, "zxPushMessageService", "queryPushMessageList");
         return outputDTO;
     }
@@ -46,9 +46,9 @@ public class ZxPushMessageController extends BaseController {
      * @return outputDTO 返回结果
      */
     @RequestMapping("/updatePushMessageStatus")
-    public OutputDTO updatePushMessageStatus(@ModelAttribute ZxFriendForm zxFriendForm) {
+    public OutputDTO updatePushMessageStatus(@ModelAttribute ZxPushMessageForm zxPushMessageForm) {
         LOGGER.info("消息推送列表查询...ZxPushMessageController.updatePushMessageStatus()...");
-        Map<String, Object> params = BeanUtil.convertBean2Map(zxFriendForm);
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxPushMessageForm);
         OutputDTO outputDTO = getOutputDTO(params, "zxPushMessageService", "updatePushMessageStatus");
         return outputDTO;
     }

@@ -104,9 +104,7 @@
       <if test="complainant != null">
         complainant,
       </if>
-      <if test="complaintTime != null">
         complaint_time,
-      </if>
       <if test="complaintRemark != null">
         complaint_remark,
       </if>
@@ -135,9 +133,7 @@
       <if test="complainant != null">
         #{complainant,jdbcType=VARCHAR},
       </if>
-      <if test="complaintTime != null">
-        #{complaintTime,jdbcType=TIMESTAMP},
-      </if>
+        NOW(),
       <if test="complaintRemark != null">
         #{complaintRemark,jdbcType=VARCHAR},
       </if>
