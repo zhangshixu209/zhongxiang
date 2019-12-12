@@ -84,7 +84,7 @@ public interface IMemberService {
      * @param output 出参
      * @throws NzbDataException 异常信息
      */
-    void saveMemberAccountIfo(InputDTO input, OutputDTO output) throws NzbDataException;
+    void saveMemberAccountInfo(InputDTO input, OutputDTO output) throws NzbDataException;
 
     /**
      * 删除会员账户管理

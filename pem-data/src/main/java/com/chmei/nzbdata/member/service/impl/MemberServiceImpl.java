@@ -287,15 +287,18 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
      * @throws NzbDataException 异常信息
      */
     @Override
-    public void saveMemberAccountIfo(InputDTO input, OutputDTO output) throws NzbDataException {
+    public void saveMemberAccountInfo(InputDTO input, OutputDTO output) throws NzbDataException {
         Map<String, Object> params = input.getParams();
         try {
             params.put("id", getSequence()); // 获取id
-            int count = getBaseDao().insert("MemberAccountMapper.saveMemberAccountIfo", params);
+            int count = getBaseDao().insert("MemberAccountMapper.saveMemberAccountInfo", params);
             if (count < 1) {
                 output.setCode("-1");
-                output.setMsg("新增失败");
+                output.setMsg("新增账户失败");
+                return;
             }
+            output.setCode("-1");
+            output.setMsg("新增账户成功");
         } catch (Exception ex) {
             LOGGER.error("新增失败", ex);
         }
@@ -315,8 +318,11 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
             int count = getBaseDao().delete("MemberAccountMapper.delMemberAccountInfo", params);
             if (count < 1) {
                 output.setCode("-1");
-                output.setMsg("删除失败");
+                output.setMsg("删除账户失败");
+                return;
             }
+            output.setCode("-1");
+            output.setMsg("删除账户成功");
         } catch (Exception ex) {
             LOGGER.error("删除失败", ex);
         }
