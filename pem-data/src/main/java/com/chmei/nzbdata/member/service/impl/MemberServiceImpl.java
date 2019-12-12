@@ -297,7 +297,7 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
                 output.setMsg("新增账户失败");
                 return;
             }
-            output.setCode("-1");
+            output.setCode("0");
             output.setMsg("新增账户成功");
         } catch (Exception ex) {
             LOGGER.error("新增失败", ex);
@@ -321,7 +321,7 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
                 output.setMsg("删除账户失败");
                 return;
             }
-            output.setCode("-1");
+            output.setCode("0");
             output.setMsg("删除账户成功");
         } catch (Exception ex) {
             LOGGER.error("删除失败", ex);
