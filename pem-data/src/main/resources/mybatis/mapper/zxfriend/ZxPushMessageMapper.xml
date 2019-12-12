@@ -25,9 +25,10 @@
     <where>
       <if test="memberAccount != null and memberAccount != ''">
         member_account = #{memberAccount,jdbcType=VARCHAR}
+        OR a.member_account = '9999'
       </if>
       <if test="messageStatus != null and messageStatus != ''">
-        message_status = #{messageStatus,jdbcType=VARCHAR}
+        AND message_status = #{messageStatus,jdbcType=VARCHAR}
       </if>
     </where>
   </select>

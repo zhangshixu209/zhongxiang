@@ -33,7 +33,7 @@ public class ZxPushMessageController extends BaseController {
      */
     @RequestMapping("/queryPushMessageList")
     public OutputDTO queryPushMessageList(@ModelAttribute ZxFriendForm zxFriendForm) {
-    	LOGGER.info("消息推送列表查询...ZxPushMessageController.queryTheLower()...");
+    	LOGGER.info("消息推送列表查询...ZxPushMessageController.queryPushMessageList()...");
         Map<String, Object> params = BeanUtil.convertBean2Map(zxFriendForm);
         OutputDTO outputDTO = getOutputDTO(params, "zxPushMessageService", "queryPushMessageList");
         return outputDTO;
