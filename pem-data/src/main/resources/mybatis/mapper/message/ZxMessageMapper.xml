@@ -312,7 +312,7 @@
     </where>
   </select>
 
-  <!-- 查询朋友圈众享信息列表 -->
+  <!-- 查询java.util.Map众享信息列表 -->
   <select id="queryZxFriendMessageList" parameterType="java.util.Map" resultType="java.util.Map">
     SELECT
       a.zx_message_id AS zxMessageId,
