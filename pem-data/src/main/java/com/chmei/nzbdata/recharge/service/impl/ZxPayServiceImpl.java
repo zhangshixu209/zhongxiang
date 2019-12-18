@@ -2,6 +2,7 @@ package com.chmei.nzbdata.recharge.service.impl;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
+import com.alipay.api.CertAlipayRequest;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
@@ -66,6 +67,19 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 	@Value("${aliPay.app.alipayProductCode}")
 	String alipayProductCode;
 
+	@Value("${aliPay.app.alipayCertPath}")
+	String alipayCertPath;
+	@Value("${aliPay.app.alipayRootCertPath}")
+	String alipayRootCertPath;
+	@Value("${aliPay.app.appCertPath}")
+	String appCertPath;
+
+	/**
+	 * 文件跟路径
+	 */
+	@Value("${alipay_cert_file_path}")
+	private String AliPay_CERT_FILE_PATH;
+
 	/**
 	 * 支付宝支付
 	 *
@@ -76,7 +90,7 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 	@Override
 	public void alipay(InputDTO input, OutputDTO output) throws NzbDataException{
 		// 开始使用支付宝SDK中提供的API
-		AlipayClient alipayClient = new DefaultAlipayClient(aliPayGateway, aliPayAppId, rsaPrivatKey, alipayFormat, alipayCharset, rsaAlipayPublicKey, signType);
+//		AlipayClient alipayClient = new DefaultAlipayClient(aliPayGateway, aliPayAppId, rsaPrivatKey, alipayFormat, alipayCharset, rsaAlipayPublicKey, signType);
 		// 注意：不同接口这里的请求对象是不同的，这个可以查看蚂蚁金服开放平台的API文档查看
 		AlipayTradeAppPayRequest alipayRequest = new AlipayTradeAppPayRequest();
 		AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
@@ -95,10 +109,24 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 		// 支付成功后支付宝异步通知的接收地址url
 		alipayRequest.setNotifyUrl(alipayNotifyUrl);
 
+		//构造client
+		CertAlipayRequest certAlipayRequest = new CertAlipayRequest();
+		certAlipayRequest.setServerUrl(aliPayGateway);
+		certAlipayRequest.setAppId(aliPayAppId);
+		certAlipayRequest.setPrivateKey(rsaPrivatKey);
+		certAlipayRequest.setFormat(alipayFormat);
+		certAlipayRequest.setCharset(alipayCharset);
+		certAlipayRequest.setSignType(signType);
+		certAlipayRequest.setCertPath(AliPay_CERT_FILE_PATH + appCertPath);
+		certAlipayRequest.setAlipayPublicCertPath(AliPay_CERT_FILE_PATH + alipayCertPath);
+		certAlipayRequest.setRootCertPath(AliPay_CERT_FILE_PATH + alipayRootCertPath);
+
 		// 注意：每个请求的相应对象不同，与请求对象是对应。
 		AlipayTradeAppPayResponse alipayResponse = null;
 		Map<String,Object> insertMap = new HashMap<>();
 		try {
+			//构造client
+			AlipayClient alipayClient = new DefaultAlipayClient(certAlipayRequest);
 			alipayResponse = alipayClient.sdkExecute(alipayRequest);
 			//插入数据库
 			insertMap.put("id", getSequence());
@@ -382,5 +410,41 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 		}
 		return null;
 	}
+
+//	public static void main(String[] args) {
+//		AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
+//		//SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
+//		AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
+//		model.setBody("我是测试数据");
+//		model.setSubject("App支付测试Java");
+//		//请保证OutTradeNo值每次保证唯一
+//		model.setOutTradeNo("2017099966661939235");
+//		model.setTimeoutExpress("30m");
+//		model.setTotalAmount("0.01");
+//		model.setProductCode("QUICK_MSECURITY_PAY");
+//		request.setBizModel(model);
+//		request.setNotifyUrl("http://zhongxiang.natapp1.cc/aliPayCallback");
+//		//构造client
+//		CertAlipayRequest certAlipayRequest = new CertAlipayRequest();
+//		certAlipayRequest.setServerUrl(ZrkAliPayCertConfig.aliPayGateway);
+//		certAlipayRequest.setAppId(ZrkAliPayCertConfig.aliPayAppId);
+//		certAlipayRequest.setPrivateKey(ZrkAliPayCertConfig.rsaPrivatKey);
+//		certAlipayRequest.setFormat(ZrkAliPayCertConfig.alipayFormat);
+//		certAlipayRequest.setCharset(ZrkAliPayCertConfig.alipayCharset);
+//		certAlipayRequest.setSignType(ZrkAliPayCertConfig.signType);
+//		certAlipayRequest.setCertPath(ZrkAliPayCertConfig.appCertPath);
+//		certAlipayRequest.setAlipayPublicCertPath(ZrkAliPayCertConfig.alipayCertPath);
+//		certAlipayRequest.setRootCertPath(ZrkAliPayCertConfig.alipayRootCertPath);
+//		try {
+//			//构造client
+//			AlipayClient alipayClient = new DefaultAlipayClient(certAlipayRequest);
+//			//这里和普通的接口调用不同，使用的是sdkExecute
+//			AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
+//			System.out.println(response.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
+//		} catch (AlipayApiException e) {
+//			e.printStackTrace();
+//		}
+//	}
+
 
 }

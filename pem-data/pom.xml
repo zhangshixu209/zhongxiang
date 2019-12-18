@@ -187,10 +187,15 @@
 			<version>1.1.1</version>
 		</dependency>
 
-		<dependency>
+		<!--<dependency>
 			<groupId>com.alipay.sdk</groupId>
 			<artifactId>alipay-sdk-java</artifactId>
 			<version>3.1.0</version>
+		</dependency>-->
+		<dependency>
+			<groupId>com.alipay.sdk</groupId>
+			<artifactId>alipay-sdk-java</artifactId>
+			<version>4.8.73.ALL</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.wxpay</groupId>

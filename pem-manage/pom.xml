@@ -195,12 +195,17 @@
             <version>1.23</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.alipay.sdk</groupId>
             <artifactId>alipay-sdk-java</artifactId>
             <version>3.1.0</version>
             <scope>compile</scope>
-        </dependency>
+        </dependency>-->
+		<dependency>
+			<groupId>com.alipay.sdk</groupId>
+			<artifactId>alipay-sdk-java</artifactId>
+			<version>4.8.73.ALL</version>
+		</dependency>
     </dependencies>
 
 	<build>

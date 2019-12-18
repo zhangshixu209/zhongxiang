@@ -96,7 +96,7 @@
       <if test="memberNum != null">
         member_num,
       </if>
-      <if test="groupCrtTime != null">
+      <if test="groupCrtTime != null and groupCrtTime != ''">
         group_crt_time,
       </if>
       <if test="complainant != null">
@@ -142,7 +142,7 @@
       <if test="memberNum != null">
         #{memberNum,jdbcType=VARCHAR},
       </if>
-      <if test="groupCrtTime != null">
+      <if test="groupCrtTime != null and groupCrtTime != ''">
         #{groupCrtTime,jdbcType=TIMESTAMP},
       </if>
       <if test="complainant != null">

@@ -36,6 +36,7 @@
   <!-- 查询实名认证信息 -->
   <select id="queryRealNameInfo" parameterType="java.util.Map" resultType="java.util.Map">
     SELECT
+      a.id AS id,
       a.member_account AS memberAccount,
       a.real_name AS realName,
       a.card_num AS cardNum,
@@ -128,7 +129,7 @@
       <if test="crtUserName != null">
         #{crtUserName,jdbcType=VARCHAR},
       </if>
-        #{crtTime,jdbcType=TIMESTAMP},
+        NOW(),
     </trim>
   </insert>
   <!-- 修改实名认证信息 -->
@@ -161,7 +162,7 @@
       </if>
         modf_user_time = NOW(),
     </set>
-    where id = #{id,jdbcType=BIGINT}
+    where member_account = #{memberAccount}
   </update>
 
   <!-- 根据父ID查询区域信息 -->

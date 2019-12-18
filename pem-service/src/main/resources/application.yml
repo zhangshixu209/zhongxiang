@@ -29,7 +29,7 @@ server:
   context-path: /pem-service
   connection-timeout: 20000
   session:
-    timeout: 1800
+    timeout: 180000
   tomcat:
     accesslog:
       enabled: true
@@ -97,7 +97,7 @@ spring:
     password:
     database: 2
     port: 6379
-    timeout: 3000
+    timeout: 180000
     pool:
       max-active: 10000
       max-idle: 100
@@ -129,8 +129,8 @@ spring:
   profiles: prod
   redis:
     host: 127.0.0.1
-    password: 1qaz!QAZ
-    port: 6379
+    password: 2wsx!QAZZH
+    port: 26379
     database: 2
 logging:
   path: ./../pem_log/service
