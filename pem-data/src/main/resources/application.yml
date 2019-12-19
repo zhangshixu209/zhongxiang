@@ -15,7 +15,7 @@ aliPay:
     alipayBody: 众享信息-余额充值
     alipaySubject: 众享信息
     alipayProductCode: QUICK_MSECURITY_PAY
-    alipayNotifyUrl: http://39.99.166.24:8080/aliPayCallback
+    alipayNotifyUrl: http://39.99.166.24:8080/pem-manage/api/recharge/aliPayCallback
 
 wx:
   app:
@@ -26,11 +26,13 @@ wx:
     # 商户秘钥
     key: 1zhongxiangkejiyouxiangongsi2019
     # 回调地址
-    notifyUrl: http://39.99.166.24:8080/wxPayCallback
+    notifyUrl: http://39.99.166.24:8080/pem-manage/api/recharge/wxPayCallback
     # 商品描述
     body: 众享信息-余额充值
 
-alipay_cert_file_path: E:/zhongXiangPro/pem-data/src/main/resources/static/
+#alipay_cert_file_path: E:/zhongXiangPro/pem-data/src/main/resources/static/
+# 服务器crt文件地址
+alipay_cert_file_path: /usr/local/
 #id生成策略
 idgenerator:
   generators:
@@ -275,4 +277,8 @@ spring:
     port: 26379
     database: 2
 logging:
+  config: classpath:logback/logback-spring.xml
   path: ./../pem_log/data
+  file: pem-data.log
+  level:
+    root: INFO

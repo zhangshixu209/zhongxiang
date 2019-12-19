@@ -123,6 +123,9 @@
       <if test="serialId != null and serialId != ''">
         serial_id,
       </if>
+      <if test="validStsCd != null and validStsCd != ''">
+        valid_sts_cd,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       #{id},
@@ -156,6 +159,9 @@
       </if>
       <if test="serialId != null and serialId != ''">
         #{serialId,jdbcType=VARCHAR},
+      </if>
+      <if test="validStsCd != null and validStsCd != ''">
+        #{validStsCd,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -219,7 +225,7 @@
         valid_sts_cd = #{validStsCd,jdbcType=VARCHAR},
       </if>
     </set>
-    where a.serial_id = #{serialId}
+    where serial_id = #{serialId}
   </update>
 
 </mapper>

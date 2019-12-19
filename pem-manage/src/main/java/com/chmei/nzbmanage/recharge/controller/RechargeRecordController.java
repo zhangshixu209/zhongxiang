@@ -70,15 +70,20 @@ public class RechargeRecordController extends BaseController {
     String rsaAlipayPublicKey;
     @Value("${aliPay.app.signType}")
     String signType;
-
+    @Value("${aliPay.app.alipayCertPath}")
+    String alipayCertPath;
+    /**
+     * 文件跟路径
+     */
+    @Value("${alipay_cert_file_path}")
+    String AliPay_CERT_FILE_PATH;
     /**
      * 支付宝支付回调
      * @param request
      * @return
      */
-    @Transactional(rollbackFor=Exception.class)
     @RequestMapping(value = "/aliPayCallback", produces = "application/json;charset=UTF-8", method = {RequestMethod.GET, RequestMethod.POST })
-    public OutputDTO aliPayCallback(HttpServletRequest request) throws AlipayApiException {
+    public OutputDTO aliPayCallback(HttpServletRequest request) {
         Map<String, String> params = new HashMap<>();
         Map<String, Object> params_ = new HashMap<>();
         Map requestParams = request.getParameterMap();
@@ -92,12 +97,18 @@ public class RechargeRecordController extends BaseController {
             params.put(name, valueStr);
             params_.put(name, valueStr);
         }
-        boolean flag = AlipaySignature.rsaCheckV1(params, rsaAlipayPublicKey, alipayCharset,
-                signType);
         OutputDTO outputDTO = new OutputDTO();
-        if (flag) {
-            outputDTO = getOutputDTO(params_, "zxPayService", "aliPayCallback");
-        } else {
+        try {
+            boolean flag = AlipaySignature.rsaCertCheckV1(params, AliPay_CERT_FILE_PATH + alipayCertPath,
+                    alipayCharset, signType);
+            if (flag) {
+                outputDTO = getOutputDTO(params_, "zxPayService", "aliPayCallback");
+            } else {
+                outputDTO.setCode("-1");
+                outputDTO.setMsg("系统异常");
+            }
+        } catch (Exception e) {
+            LOGGER.error("系统异常", e);
             outputDTO.setCode("-1");
             outputDTO.setMsg("系统异常");
         }
@@ -125,7 +136,6 @@ public class RechargeRecordController extends BaseController {
      * @param request
      * @return
      */
-    @Transactional(rollbackFor=Exception.class)
     @RequestMapping(value = "/wxPayCallback", method = RequestMethod.POST)
     public OutputDTO wxPayCallback(@RequestBody HttpServletRequest request) {
         LOGGER.info("微信支付回调");

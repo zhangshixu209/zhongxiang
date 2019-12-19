@@ -172,15 +172,18 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 				Map<String,Object> result = (Map<String, Object>) getBaseDao().queryForObject(
 						"RechargeRecordMapper.queryRechargeRecordDetail", updateMap);
 				//TODO 先判断是否和数据库金钱一样
-				String totalMount = (String) result.get("rechargeAmount");
-				if(totalMount.equals(realPay)){
+				BigDecimal totalMount = (BigDecimal) result.get("rechargeAmount");
+				String totalMount_S = totalMount.toString();
+				if(totalMount_S.equals(realPay)){
 					//TODO 在进行修改数据库
 					updateMap.put("validStsCd", "1"); // 有效状态
 					getBaseDao().update("RechargeRecordMapper.updateSuccessOrderPay", updateMap);
 					//TODO 修改完成进行加钱
+					Map<String, Object> user_ = new HashMap<>();
+					user_.put("memberAccount", result.get("memberAccount"));
 					// 查询用户信息
 					Map<String, Object> zxAppUser =  (Map<String, Object>) getBaseDao().
-							queryForObject("MemberMapper.queryMemberDetail", result);
+							queryForObject("MemberMapper.queryMemberDetail", user_);
 					//TODO 存在就修改钱包
 					if(zxAppUser != null){
 						Map<String, Object> updateUser = new HashMap<>();
@@ -199,11 +202,13 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 						}
 						output.setCode("0");
 						output.setMsg("充值成功");
+						return;
 					}
 				}
 			} else if (TRADE_CLOSED.equals(tradeStatus)) {
 				output.setCode("-1");
 				output.setMsg("充值失败");
+				return;
 			}
 		} catch (Exception e) {
 			LOGGER.error("系统异常", e);
@@ -276,16 +281,18 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 						Map<String,Object> result = (Map<String, Object>) getBaseDao().queryForObject(
 								"RechargeRecordMapper.queryRechargeRecordDetail", updateMap);
 						//TODO 先判断是否和数据库金钱一样
-						String totalMount = (String) result.get("rechargeAmount");
-
-						if(totalMount.equals(totalFee)){
+						BigDecimal totalMount = (BigDecimal) result.get("rechargeAmount");
+						String totalMount_S = totalMount.toString();
+						if(totalMount_S.equals(totalFee)){
 							//TODO 在进行修改数据库
 							updateMap.put("validStsCd", "1"); // 有效状态
 							getBaseDao().update("RechargeRecordMapper.updateSuccessOrderPay", updateMap);
 							//TODO 修改完成进行加钱
+							Map<String, Object> user_ = new HashMap<>();
+							user_.put("memberAccount", result.get("memberAccount"));
 							// 查询用户信息
 							Map<String, Object> zxAppUser =  (Map<String, Object>) getBaseDao().
-									queryForObject("MemberMapper.queryMemberDetail", result);
+									queryForObject("MemberMapper.queryMemberDetail", user_);
 							//TODO 存在就修改钱包
 							if(zxAppUser != null){
 								Map<String, Object> updateUser = new HashMap<>();
@@ -366,13 +373,13 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 			Map<String, String> map = new LinkedHashMap<>();
 			String nonce_str = WXPayUtil.generateNonceStr();
 			Double v = payAmount.doubleValue() * 100;
-			Integer monry = BigDecimal.valueOf(v).movePointRight(2).intValue();
+			Integer money = BigDecimal.valueOf(v).movePointRight(2).intValue();
 			map.put("appid", appId);
 			map.put("mch_id", mch_id);
 			map.put("nonce_str", nonce_str);
 			map.put("body", body);
 			map.put("out_trade_no", orderNO);
-			map.put("total_fee", monry.toString());
+			map.put("total_fee", money.toString());
 			map.put("spbill_create_ip", ip);
 			map.put("notify_url", notify_url);
 			map.put("trade_type", "APP");
