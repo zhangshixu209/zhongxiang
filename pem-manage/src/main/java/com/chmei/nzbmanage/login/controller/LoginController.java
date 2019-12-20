@@ -14,9 +14,11 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.chmei.nzbcommon.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.shiro.session.Session;
+import org.omg.CORBA.OBJ_ADAPTER;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,12 +30,6 @@ import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbcommon.cmutil.BeanUtil;
 import com.chmei.nzbcommon.cmutil.ControlConstants.RETURN_CODE;
 import com.chmei.nzbcommon.enums.Validity;
-import com.chmei.nzbcommon.util.DateUtil;
-import com.chmei.nzbcommon.util.IpUtil;
-import com.chmei.nzbcommon.util.MD5Util;
-import com.chmei.nzbcommon.util.SecurityCode;
-import com.chmei.nzbcommon.util.SecurityImage;
-import com.chmei.nzbcommon.util.StringUtil;
 import com.chmei.nzbmanage.common.constant.Constants;
 import com.chmei.nzbmanage.common.controller.BaseController;
 import com.chmei.nzbmanage.common.exception.NzbManageException;
@@ -182,8 +178,13 @@ public class LoginController extends BaseController {
 			getSession().setAttribute(Constants.SESSION_USER.USER_DEPARTMENT_ID, output.getItem().get("userDepartmentId"));
 			// 获取该管理员拥有的橘色
 			queryRolesByUserId((Long) output.getItem().get("id"));
+			Map<String, Object> map = new HashMap<>();
+			map.put("userId", output.getItem().get("id"));
+			map.put("userMobile", mobile);
+			map.put("userName", output.getItem().get("userName"));
+			map.put("ipAddr", ipAddr);
 			// 登录成功,记录登录日志
-			//getOutputDTOPlatform(null, "operationLogService", "loginLog");
+			getOutputDTO(map, "operateLogService", "saveLoginLogInfo");
 			return new OutputDTO("0", "success");
 		} else {
 			OutputDTO dto = getOutputDTO(params, "userService", "addLimitedUserMobileTORedis"); // 将账号添加到redis中并设置过期时间是5分钟

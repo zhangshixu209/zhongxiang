@@ -83,7 +83,7 @@ public class RechargeRecordController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/aliPayCallback", produces = "application/json;charset=UTF-8", method = {RequestMethod.GET, RequestMethod.POST })
-    public OutputDTO aliPayCallback(HttpServletRequest request) {
+    public String aliPayCallback(HttpServletRequest request) {
         Map<String, String> params = new HashMap<>();
         Map<String, Object> params_ = new HashMap<>();
         Map requestParams = request.getParameterMap();
@@ -97,22 +97,29 @@ public class RechargeRecordController extends BaseController {
             params.put(name, valueStr);
             params_.put(name, valueStr);
         }
+        String success = "";
         OutputDTO outputDTO = new OutputDTO();
         try {
             boolean flag = AlipaySignature.rsaCertCheckV1(params, AliPay_CERT_FILE_PATH + alipayCertPath,
                     alipayCharset, signType);
             if (flag) {
                 outputDTO = getOutputDTO(params_, "zxPayService", "aliPayCallback");
+                if ("0".equals(outputDTO.getCode())) {
+                    success = "success";
+                    return success;  // 必须success，否则支付宝会一直回调
+                }
             } else {
                 outputDTO.setCode("-1");
                 outputDTO.setMsg("系统异常");
+                success = "fail";
+                return success;
             }
         } catch (Exception e) {
             LOGGER.error("系统异常", e);
             outputDTO.setCode("-1");
             outputDTO.setMsg("系统异常");
         }
-        return outputDTO;
+        return success;
     }
 
     /**
@@ -137,7 +144,7 @@ public class RechargeRecordController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/wxPayCallback", method = RequestMethod.POST)
-    public OutputDTO wxPayCallback(@RequestBody HttpServletRequest request) {
+    public String wxPayCallback(@RequestBody HttpServletRequest request) {
         LOGGER.info("微信支付回调");
         OutputDTO outputDTO = new OutputDTO();
         try {
@@ -156,18 +163,18 @@ public class RechargeRecordController extends BaseController {
             outputDTO = getOutputDTO(params_, "zxPayService", "wxPayCallback");
             if ("0".equals(outputDTO.getCode())) {
                 outputDTO.setCode("0");
-                outputDTO.setMsg(setXml("SUCCESS", "OK"));
-                return outputDTO;
+                outputDTO.setMsg("success");
+                return setXml("success", "ok");
             } else {
                 outputDTO.setCode("-1");
-                outputDTO.setMsg(setXml("fail", "付款失败"));
-                return outputDTO;
+                outputDTO.setMsg("fail");
+                return setXml("fail", "error");
             }
         } catch (Exception e) {
             LOGGER.info("微信支付回调发生异常{}", e);
             outputDTO.setCode("-1");
-            outputDTO.setMsg(setXml("fail", "付款失败"));
-            return outputDTO;
+            outputDTO.setMsg("fail");
+            return setXml("fail", "error");
         }
     }
 

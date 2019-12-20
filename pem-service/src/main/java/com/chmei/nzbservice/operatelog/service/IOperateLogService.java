@@ -27,5 +27,20 @@ public interface IOperateLogService {
      * @throws NzbServiceException  自定义异常
      */
     void saveOperateLogInfo(InputDTO input, OutputDTO output) throws NzbServiceException;
-    
+
+    /**
+     * 登录日志新增
+     * @param input 入參
+     * @param output 返回对象
+     * @throws NzbServiceException  自定义异常
+     */
+    void saveLoginLogInfo(InputDTO input, OutputDTO output) throws NzbServiceException;
+
+    /**
+     * 登录日志列表查询
+     * @param input 入參
+     * @param output 返回对象
+     * @throws NzbServiceException  自定义异常
+     */
+    void queryLoginLogList(InputDTO input, OutputDTO output) throws NzbServiceException;
 }

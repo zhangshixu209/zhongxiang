@@ -136,5 +136,104 @@
         NOW(),
     </trim>
   </insert>
-  
+
+    <!-- 登录日志新增 -->
+    <insert id="saveLoginLogInfo" parameterType="java.util.Map">
+        insert into t_login_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="userMobile != null">
+                user_mobile,
+            </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="ipAddr != null">
+                ip_addr,
+            </if>
+            crt_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="userMobile != null">
+                #{userMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="userName != null">
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="ipAddr != null">
+                #{ipAddr,jdbcType=VARCHAR},
+            </if>
+            NOW(),
+        </trim>
+    </insert>
+
+    <!-- 操作日志管理查询 -->
+    <select id="queryLoginLogList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+            a.id AS id,
+            a.user_id AS userId,
+            a.user_mobile AS userMobile,
+            a.user_name AS userName,
+            a.ip_addr AS ipAddr,
+            a.crt_time AS crtTime
+        FROM
+        t_login_log AS a
+        <where>
+            <if test="userId != null and userId != ''">
+                a.user_id = #{userId}
+            </if>
+            <if test="userMobile != null and userMobile != ''">
+                AND a.user_mobile = #{userMobile}
+            </if>
+            <if test="userName != null and userName != ''">
+                AND a.user_name LIKE CONCAT('%',#{userName},'%')
+            </if>
+            <if test="startTime != null and startTime !=''">
+                AND DATE_FORMAT(a.crt_time, '%Y-%m-%d') &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime !=''">
+                AND DATE_FORMAT(a.crt_time, '%Y-%m-%d') &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY a.crt_time DESC
+        <if test="start != null and start != '' or start==0 and limit != null and limit != ''">
+            LIMIT ${start},${limit}
+        </if>
+    </select>
+    <!-- 操作日志管理查询 -->
+    <select id="queryLoginLogCount" parameterType="java.util.Map" resultType="int">
+        SELECT
+            COUNT(1 )
+        FROM
+        t_login_log AS a
+        <where>
+            <if test="userId != null and userId != ''">
+                a.user_id = #{userId}
+            </if>
+            <if test="userMobile != null and userMobile != ''">
+                AND a.user_mobile = #{userMobile}
+            </if>
+            <if test="userName != null and userName != ''">
+                AND a.user_name LIKE CONCAT('%',#{userName},'%')
+            </if>
+            <if test="startTime != null and startTime !=''">
+                AND DATE_FORMAT(a.crt_time, '%Y-%m-%d') &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime !=''">
+                AND DATE_FORMAT(a.crt_time, '%Y-%m-%d') &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
 </mapper>

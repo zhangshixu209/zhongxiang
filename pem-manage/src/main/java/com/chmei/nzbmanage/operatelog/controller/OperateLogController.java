@@ -67,4 +67,23 @@ public class OperateLogController extends BaseController {
         }
         return outputDTO;
     }
+
+    /**
+     * 登录日志列表
+     * @param operateLogForm 入参
+     * @param request request 请求对象
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/queryLoginLogList")
+    public OutputDTO queryLoginLogList(@ModelAttribute OperateLogForm operateLogForm, HttpServletRequest request) {
+        OutputDTO outputDTO = new OutputDTO();
+        try {
+            Map<String, Object> params = BeanUtil.convertBean2Map(operateLogForm);
+            outputDTO = getOutputDTO(params, "operateLogService", "queryLoginLogList");
+        } catch (Exception ex) {
+            LOGGER.error("查询错误", ex);
+            outputDTO = new OutputDTO("1", "系统错误");
+        }
+        return outputDTO;
+    }
 }

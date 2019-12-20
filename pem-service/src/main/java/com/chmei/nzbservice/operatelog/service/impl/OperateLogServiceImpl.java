@@ -44,4 +44,32 @@ public class OperateLogServiceImpl extends BaseServiceImpl implements IOperateLo
         input.setMethod("saveOperateLogInfo");
         getNzbDataService().execute(input, output);
     }
+
+    /**
+     * 登录日志新增
+     *
+     * @param input  入參
+     * @param output 返回对象
+     * @throws NzbServiceException 自定义异常
+     */
+    @Override
+    public void saveLoginLogInfo(InputDTO input, OutputDTO output) throws NzbServiceException {
+        input.setService("operateLogService");
+        input.setMethod("saveLoginLogInfo");
+        getNzbDataService().execute(input, output);
+    }
+
+    /**
+     * 登录日志列表查询
+     *
+     * @param input  入參
+     * @param output 返回对象
+     * @throws NzbServiceException 自定义异常
+     */
+    @Override
+    public void queryLoginLogList(InputDTO input, OutputDTO output) throws NzbServiceException {
+        input.setService("operateLogService");
+        input.setMethod("queryLoginLogList");
+        getNzbDataService().execute(input, output);
+    }
 }

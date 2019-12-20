@@ -23,9 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -189,9 +187,9 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 						Map<String, Object> updateUser = new HashMap<>();
 						updateUser.put("memberAccount", zxAppUser.get("memberAccount"));
 						updateUser.put("walletBalance", Double.valueOf((String) zxAppUser.get("walletBalance")) + Double.parseDouble(realPay));
-						int i = getBaseDao().update("MemberMapper.updateMemberBalance", updateUser);
+						int wallet = getBaseDao().update("MemberMapper.updateMemberBalance", updateUser);
 						//TODO 加入记录
-						if(i > 0){
+						if(wallet > 0){
 							Map<String, Object> walletMoneyInfo = new HashMap<>();
 							walletMoneyInfo.put("walletInfoId", getSequence());
 							walletMoneyInfo.put("walletInfoAddOrMinus", "+");
@@ -201,7 +199,7 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 							getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
 						}
 						output.setCode("0");
-						output.setMsg("充值成功");
+						output.setMsg("success");
 						return;
 					}
 				}
@@ -212,6 +210,8 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 			}
 		} catch (Exception e) {
 			LOGGER.error("系统异常", e);
+			output.setCode("-1");
+			output.setMsg("充值失败");
 		}
 	}
 
@@ -313,7 +313,6 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 								output.setMsg("充值成功");
 							}
 						}
-
 					} else {
 						//TODO 失败处理
 						output.setCode("-1");
@@ -372,14 +371,15 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 		try {
 			Map<String, String> map = new LinkedHashMap<>();
 			String nonce_str = WXPayUtil.generateNonceStr();
-			Double v = payAmount.doubleValue() * 100;
-			Integer money = BigDecimal.valueOf(v).movePointRight(2).intValue();
+			//接口中参数支付金额单位为【分】，参数值不能带小数，所以乘以100
+			BigDecimal money = payAmount.multiply(new BigDecimal(100));
+			java.text.DecimalFormat df = new java.text.DecimalFormat("0");
 			map.put("appid", appId);
 			map.put("mch_id", mch_id);
 			map.put("nonce_str", nonce_str);
 			map.put("body", body);
 			map.put("out_trade_no", orderNO);
-			map.put("total_fee", money.toString());
+			map.put("total_fee", df.format(money));
 			map.put("spbill_create_ip", ip);
 			map.put("notify_url", notify_url);
 			map.put("trade_type", "APP");
@@ -405,7 +405,7 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 				insertMap.put("memberAccount", phone);
 				insertMap.put("serialId", orderNO);
 				insertMap.put("validStsCd",2);
-				insertMap.put("rechargeAmount", v/100);
+				insertMap.put("rechargeAmount", money.intValue()/100);
 				insertMap.put("status", "1003");
 				getBaseDao().insert("RechargeRecordMapper.saveRechargeRecordInfo", insertMap);
 				returnMap_.put("data", resultMap);
@@ -416,6 +416,20 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 			return null;
 		}
 		return null;
+	}
+
+	// 通过xml发给微信消息
+	private static String setXml(String return_code, String return_msg) {
+		SortedMap<String, String> parameters = new TreeMap<>();
+		parameters.put("return_code", return_code);
+		parameters.put("return_msg", return_msg);
+		try {
+			return WXPayUtil.mapToXml(parameters);
+		} catch (Exception e) {
+			LOGGER.error("返回微信消息时map转xml失败");
+			return "<xml><return_code><![CDATA[" + return_code + "]]>" + "</return_code><return_msg><![CDATA[" + return_msg
+					+ "]]></return_msg></xml>";
+		}
 	}
 
 //	public static void main(String[] args) {

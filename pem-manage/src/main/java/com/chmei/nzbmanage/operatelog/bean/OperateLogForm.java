@@ -95,6 +95,9 @@ public class OperateLogForm implements Serializable {
      */
     private Integer limit;
 
+    private String userId;
+    private String userMobile;
+
     public Integer getStart() {
         return start;
     }
@@ -224,4 +227,19 @@ public class OperateLogForm implements Serializable {
         this.modfTime = modfTime;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUserMobile() {
+        return userMobile;
+    }
+
+    public void setUserMobile(String userMobile) {
+        this.userMobile = userMobile;
+    }
 }

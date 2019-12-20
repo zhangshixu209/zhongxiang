@@ -76,4 +76,52 @@ public class OperateLogServiceImpl extends BaseServiceImpl implements IOperateLo
             LOGGER.error("新增失败: " + e);
         }
     }
+
+    /**
+     * 登录日志新增
+     *
+     * @param input  入參
+     * @param output 返回对象
+     * @throws NzbDataException 自定义异常
+     */
+    @Override
+    public void saveLoginLogInfo(InputDTO input, OutputDTO output) throws NzbDataException {
+        Map<String, Object> params = input.getParams();
+        try {
+            //生成主键ID
+            input.getParams().put("id", getSequence());
+            Integer count = getBaseDao().insert("operateLogMapper.saveLoginLogInfo", params);
+            if (count < 1) {
+                output.setCode("-1");
+                output.setMsg("新增失败");
+            }
+        } catch (Exception e) {
+            LOGGER.error("新增失败: " + e);
+        }
+    }
+
+    /**
+     * 登录日志列表查询
+     *
+     * @param input  入參
+     * @param output 返回对象
+     * @throws NzbDataException 自定义异常
+     */
+    @Override
+    public void queryLoginLogList(InputDTO input, OutputDTO output) throws NzbDataException {
+        Map<String, Object> params = input.getParams();
+        try {
+            int total = getBaseDao().getTotalCount("operateLogMapper.queryLoginLogCount", params);
+            if (total > 0) {
+                List<Map<String, Object>> list = getBaseDao()
+                        .queryForList("operateLogMapper.queryLoginLogList", params);
+                output.setItems(list);
+            }
+            output.setTotal(total);
+        } catch (Exception e) {
+            LOGGER.error("查询失败: " + e);
+            output.setCode("1");
+            output.setMsg("系统错误");
+        }
+    }
 }
