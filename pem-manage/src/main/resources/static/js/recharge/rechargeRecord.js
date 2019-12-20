@@ -234,7 +234,7 @@ function queryRealNameDetail(memberAccount) {
 		return;
 	}
 	var params = {memberAccount: memberAccount}
-	Chief.ajax.postJson('/member/queryRealNameInfo',params, function(data) {
+	Chief.ajax.postJson('/realNameAuth/queryRealNameInfo',params, function(data) {
 		if('0' == data.code){
 			var htmls = Handlebars.compile($("#T_realNameInfo").html());
 			var ht = htmls(data.item);
