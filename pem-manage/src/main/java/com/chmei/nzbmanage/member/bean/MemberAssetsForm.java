@@ -28,6 +28,8 @@ public class MemberAssetsForm extends BaseForm {
      */
     private String assetsType;
 
+    private String startTime;
+
     public Long getId() {
         return id;
     }
@@ -50,5 +52,13 @@ public class MemberAssetsForm extends BaseForm {
 
     public void setAssetsType(String assetsType) {
         this.assetsType = assetsType;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 }

@@ -426,10 +426,32 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 				// 根据好友账户批量查询众享信息
 				Map<String, Object> maps = new HashMap<>();
 				maps.put("memberAccounts", users); // 好友账户list
+				maps.put("start", params.get("start"));
+				maps.put("limit", params.get("limit"));
 				int total = getBaseDao().getTotalCount("ZxMessageMapper.queryZxFriendMessageCount", maps);
 				if (total > 0) {
 					List<Map<String, Object>> friendCircleList = getBaseDao().queryForList(
 							"ZxMessageMapper.queryZxFriendMessageList", maps);
+					if (null != friendCircleList && friendCircleList.size() > 0) {
+						for (Map<String, Object> map : friendCircleList) {
+							Map<String, Object> result = new HashMap<>();
+							// 查询附件
+							result.put("zxMessageId", map.get("zxMessageId"));       // 众享信息ID
+							List<Map<String, Object>> filePaths = getBaseDao().queryForList("ZxMessageMapper.queryFileList",
+									result);
+							// 统计当前众享信息总赞数
+							int praiseTotalAll = getBaseDao().getTotalCount("ZxMessageMapper.queryZxMessagePraiseCount", result);
+							result.put("memberAccount", params.get("zxFriendUserId"));   // 当前登录用户ID
+							int praiseTotal = queryZxMessagePraiseCount(result);     // 查询当前用户是否已点赞该众享信息
+							if (praiseTotal > 0) {
+								map.put("praiseStatus", "1"); // 已点赞
+							} else {
+								map.put("praiseStatus", "0"); // 未点赞
+							}
+							map.put("praiseTotalAll", praiseTotalAll); // 点赞数量
+							map.put("filePaths", filePaths);     	   // 图片信息
+						}
+					}
 					output.setMsg("查询成功");
 					output.setItems(friendCircleList);
 				}
@@ -441,6 +463,25 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 		} catch (Exception e) {
 			LOGGER.error("系统异常", e);
 		}
+	}
+
+	/**
+	 * 统计点赞次数
+	 * @param params 入参
+	 * @return
+	 */
+	private int queryZxMessagePraiseCount(Map<String, Object> params){
+		Long zxMessageId = (Long) params.get("zxMessageId");
+		if (null != zxMessageId){
+			// 查询当前用户是否已点赞该众享信息
+			int praiseTotal = getBaseDao().getTotalCount("ZxMessageMapper.queryZxMessagePraiseCount", params);
+			if (praiseTotal > 0) {
+				return 1; // 已点赞
+			} else {
+				return 0; // 未点赞
+			}
+		}
+		return 0;
 	}
 
 }

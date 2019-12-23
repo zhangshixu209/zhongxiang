@@ -18,14 +18,27 @@
     select 
     <include refid="Base_Column_List" />
     from zx_app_advertising_money_info
-    where advertising_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+    <where>
+      advertising_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(advertising_info_date,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+    </where>
     ORDER BY advertising_info_date DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
   </select>
   <select id="queryAdvertisingMoneyInfoCount" parameterType="java.util.Map" resultType="int">
     select
         COUNT(1)
     from zx_app_advertising_money_info
-    where advertising_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+    <where>
+      advertising_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(advertising_info_date,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+    </where>
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">

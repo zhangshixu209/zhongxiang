@@ -150,6 +150,7 @@ public class FeedbackServiceImpl extends BaseServiceImpl implements IFeedbackSer
 			map.put("id", getSequence());
 			map.put("messageTitle", map.get("titles"));
 			map.put("messageContent", map.get("replyContent"));
+			map.put("messageStatus", "1");
 			map.put("messageType", Constants.MESSAGE_TYPE_1006);
 			map.put("memberAccount", map.get("startPensonId"));
 			// 添加推送消息

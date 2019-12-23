@@ -119,6 +119,7 @@ public class NoticeServiceImpl extends BaseServiceImpl implements INoticeService
             map.put("id", getSequence());
             map.put("messageTitle", map.get("name"));
             map.put("messageContent", map.get("content"));
+            map.put("messageStatus", "2");
             map.put("messageType", com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1002);
             map.put("memberAccount", "9999");
             // 添加推送消息
@@ -233,6 +234,7 @@ public class NoticeServiceImpl extends BaseServiceImpl implements INoticeService
             map.put("id", getSequence());
             map.put("messageTitle", map.get("name"));
             map.put("messageContent", map.get("content"));
+            map.put("messageStatus", "2");
             map.put("messageType", com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1002);
             map.put("memberAccount", "9999");
             // 添加推送消息
@@ -331,6 +333,7 @@ public class NoticeServiceImpl extends BaseServiceImpl implements INoticeService
                 map.put("id", getSequence());
                 map.put("messageTitle", map.get("name"));
                 map.put("messageContent", map.get("content"));
+                map.put("messageStatus", "2");
                 map.put("messageType", com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1002);
                 map.put("memberAccount", "9999");
                 // 添加推送消息

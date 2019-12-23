@@ -74,6 +74,10 @@ public class RechargeRecordForm extends BaseForm {
 
 	private String ip;
 
+	private String startTime;
+
+	private String endTime;
+
 	private static final long serialVersionUID = 1L;
 
 	public Long getId() {
@@ -178,5 +182,21 @@ public class RechargeRecordForm extends BaseForm {
 
 	public void setIp(String ip) {
 		this.ip = ip;
+	}
+
+	public String getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+	public String getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
 	}
 }

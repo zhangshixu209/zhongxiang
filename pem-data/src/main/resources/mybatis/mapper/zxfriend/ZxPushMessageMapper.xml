@@ -50,7 +50,6 @@
       <if test="messageContent != null">
         message_content,
       </if>
-        message_status,
       <if test="messageType != null">
         message_type,
       </if>
@@ -67,6 +66,9 @@
         crt_user_name,
       </if>
         crt_time,
+      <if test="messageStatus != null and messageStatus != ''">
+        message_status,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -78,7 +80,6 @@
       <if test="messageContent != null">
         #{messageContent,jdbcType=VARCHAR},
       </if>
-        '1',
       <if test="messageType != null">
         #{messageType,jdbcType=VARCHAR},
       </if>
@@ -95,6 +96,9 @@
         #{crtUserName,jdbcType=VARCHAR},
       </if>
         NOW(),
+      <if test="messageStatus != null and messageStatus != ''">
+        #{messageStatus},
+      </if>
     </trim>
   </insert>
   <!-- 修改阅读状态 -->

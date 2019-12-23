@@ -48,6 +48,9 @@
       <if test="status != null and status != ''">
         AND a.status = #{status}
       </if>
+      <if test="memberStatus != null and memberStatus != ''">
+        AND b.status = #{memberStatus}
+      </if>
       <if test="startTime != null and startTime != ''">
         AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
       </if>
@@ -77,6 +80,9 @@
       </if>
       <if test="status != null and status != ''">
         AND a.status = #{status}
+      </if>
+      <if test="memberStatus != null and memberStatus != ''">
+        AND b.status = #{memberStatus}
       </if>
       <if test="startTime != null and startTime != ''">
         AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}

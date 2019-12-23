@@ -71,6 +71,10 @@ public class RotationChartForm extends BaseForm {
 	 */
 	private String filePaths;
 
+	private String startTime;
+
+	private String endTime;
+
 	private static final long serialVersionUID = 1L;
 
 	public Long getId() {
@@ -167,5 +171,21 @@ public class RotationChartForm extends BaseForm {
 
 	public void setFilePaths(String filePaths) {
 		this.filePaths = filePaths;
+	}
+
+	public String getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+	public String getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
 	}
 }

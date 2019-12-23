@@ -96,6 +96,10 @@ public class CashAuditForm extends BaseForm {
      */
     private Date modfUserTime;
 
+    private String startTime;
+
+    private String endTime;
+
     private static final long serialVersionUID = 1L;
 
     public Long getId() {
@@ -234,4 +238,19 @@ public class CashAuditForm extends BaseForm {
         this.modfUserTime = modfUserTime;
     }
 
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
 }

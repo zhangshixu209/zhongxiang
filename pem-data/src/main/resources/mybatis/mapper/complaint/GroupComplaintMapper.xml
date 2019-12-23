@@ -33,8 +33,11 @@
     <include refid="Base_Column_List" />
     from t_group_complaint_record
     <where>
-      <if test="memberAccount != null and memberAccount != ''">
-        member_account = #{memberAccount}
+      <if test="ownerAccount != null and ownerAccount != ''">
+        owner_account = #{ownerAccount}
+      </if>
+      <if test="status != null and status != ''">
+        AND status = #{status}
       </if>
       <if test="startTime != null and startTime != ''">
         AND DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
@@ -54,8 +57,11 @@
         COUNT(1)
     from t_group_complaint_record
     <where>
-      <if test="memberAccount != null and memberAccount != ''">
-        member_account = #{memberAccount}
+      <if test="ownerAccount != null and ownerAccount != ''">
+        owner_account = #{ownerAccount}
+      </if>
+      <if test="status != null and status != ''">
+        AND status = #{status}
       </if>
       <if test="startTime != null and startTime != ''">
         AND DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}

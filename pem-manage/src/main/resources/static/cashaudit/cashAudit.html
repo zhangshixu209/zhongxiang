@@ -69,13 +69,22 @@
 <body>
 <form class="container-fluid shh searchForm">
     <div class="row">
-        <div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
+        <!--<div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
             <label class="text-right w100s" >提现用户姓名</label>
             <input type="text" class="howlong" id="cashUserName" name="cashUserName">
-        </div>
+        </div>-->
         <div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
             <label class="text-right w100s" >提现用户账号</label>
             <input type="text" class="howlong" id="userAccount" name="userAccount">
+        </div>
+        <div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
+            <label class="text-right w100s" >账户类型</label>
+            <select class="howlong" id="accountType" name="accountType">
+                <option value="">请选择</option>
+                <option value="1001">支付宝</option>
+                <option value="1002">微信</option>
+                <option value="1003">银行卡</option>
+            </select>
         </div>
 		<div class="form-group col-xs-6 col-sm-4 col-md-6 newshh">
 				<label class="text-right w80s"  >提现申请时间</label>
@@ -85,15 +94,6 @@
 				<input type="text" autocomplete="off"
 							onFocus="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startTime\')}', maxDate:'%y-%M-%d'})"  id="endTime" name="endTime">
 		</div>
-        <div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
-            <label class="text-right w100s" >账号类型</label>
-            <select class="howlong" id="accountType" name="accountType">
-                <option value="">请选择</option>
-                <option value="1001">支付宝</option>
-                <option value="1002">微信</option>
-                <option value="1003">银行卡</option>
-            </select>
-        </div>
         <div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
             <label class="text-right w100s" >审核类型</label>
             <select class="howlong" id="auditType" name="auditType">

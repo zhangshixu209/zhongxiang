@@ -21,17 +21,30 @@
         a.wallet_info_add_or_minus AS addOrMinus,
         a.wallet_info_money AS walletInfoMoney,
         a.wallet_info_date AS walletInfoDate,
-        ( SELECT c.cmn_cd_val_nm FROM r_cmn_cd_val c WHERE c.cmn_cd_val = a.wallet_info_from AND c.cmn_cd = '1001' ) AS walletInfoFrom
+        a.wallet_info_from AS walletInfoFrom
     FROM
         zx_app_wallet_money_info a
-    where a.wallet_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+    <where>
+      a.wallet_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(a.wallet_info_date,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+    </where>
     ORDER BY a.wallet_info_date DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
   </select>
   <select id="queryWalletMoneyInfoCount" parameterType="java.util.Map" resultType="int">
     select
         COUNT(1)
     from zx_app_wallet_money_info
-    where wallet_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+    <where>
+      wallet_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(wallet_info_date,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+    </where>
   </select>
 
   <insert id="saveWalletMoneyInfo" parameterType="java.util.Map">

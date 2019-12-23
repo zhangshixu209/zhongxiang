@@ -557,6 +557,16 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 			if(i > 0){
 				output.setCode("0");
 				output.setMsg("分红成功！");
+				// 添加推送消息
+				Map<String, Object> map = new HashMap<>();
+				map.put("id", getSequence());
+				map.put("messageTitle", "分红成功");
+				map.put("messageStatus", "1");
+				map.put("messageContent", "分红成功，请到钱包和广告费明细查询！");
+				map.put("messageType", com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1001);
+				map.put("memberAccount", userId);
+				// 添加推送消息
+				getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
 				return;
 			}
 		} catch (Exception e) {

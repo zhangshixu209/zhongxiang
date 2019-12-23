@@ -16,6 +16,7 @@
         rn.instancy_level_name AS instancyLevelName,
         rn.publish_id AS publishId,
         rn.publish_name AS publishName,
+        rn.publish_time AS publishTime,
         (CASE rn.send_total
         when -9999 then (select count(1) from t_u_admin where valid_sts_cd=1)
         ELSE

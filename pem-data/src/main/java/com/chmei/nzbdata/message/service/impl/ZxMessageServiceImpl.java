@@ -160,6 +160,8 @@ public class ZxMessageServiceImpl extends BaseServiceImpl implements IZxMessageS
 				output.setCode("-1");
 				output.setMsg("保存失败");
 			}
+			output.setCode("0");
+			output.setMsg("保存成功");
 		} catch (Exception ex) {
 			LOGGER.error("系统错误: " + ex);
 		}

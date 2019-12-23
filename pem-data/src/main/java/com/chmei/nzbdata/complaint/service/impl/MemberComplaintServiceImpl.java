@@ -111,6 +111,7 @@ public class MemberComplaintServiceImpl extends BaseServiceImpl implements IMemb
 					map.put("id", getSequence());
 					map.put("messageTitle", "投诉结果查询");
 					map.put("messageContent", content);
+					map.put("messageStatus", "1");
 					map.put("messageType", Constants.MESSAGE_TYPE_1004);
 					map.put("memberAccount", map.get("complainant"));
 					// 添加推送消息

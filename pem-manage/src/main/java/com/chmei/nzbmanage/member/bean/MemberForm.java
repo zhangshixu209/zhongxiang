@@ -184,6 +184,9 @@ public class MemberForm extends BaseForm {
      */
     private String countyName;
 
+    private String startTime;
+
+    private String endTime;
 
     public String getUsername() {
         return username;
@@ -497,5 +500,21 @@ public class MemberForm extends BaseForm {
 
     public void setCountyName(String countyName) {
         this.countyName = countyName;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
     }
 }
