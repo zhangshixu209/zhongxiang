@@ -6,9 +6,12 @@ import com.chmei.nzbdata.cashaudit.service.ICashAuditService;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
 import com.chmei.nzbdata.util.Constants;
+import com.chmei.nzbdata.zxfriend.service.IZxMyTeamService;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +27,8 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 
 	/** LOGGER */
 	private static final Logger LOGGER = Logger.getLogger(CashAuditServiceImpl.class);
+	@Resource
+	private IZxMyTeamService iZxMyTeamService;
 
 	/**
 	 * 提现审核管理查询
@@ -40,6 +45,17 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 			if (total > 0) {
 				List<Map<String, Object>> list = getBaseDao()
 						.queryForList("CashAuditMapper.queryCashAuditList", params);
+				if (null != list && list.size() > 0) {
+					for (Map<String, Object> map : list) {
+						Map<String, Object> result = new HashMap<>();
+						result.put("memberAccount", map.get("memberAccount"));
+						InputDTO inputDTO = new InputDTO();
+						inputDTO.setParams(result);
+						// 根据当前用户ID 查询团队人数
+						int size1 = iZxMyTeamService.countMyTeam(inputDTO, output);
+						map.put("teamNum", size1); // 直推人数
+					}
+				}
 				output.setItems(list);
 			}
 			output.setTotal(total);

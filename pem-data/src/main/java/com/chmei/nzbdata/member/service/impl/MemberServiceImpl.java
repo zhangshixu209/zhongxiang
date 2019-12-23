@@ -8,6 +8,7 @@ import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
 import com.chmei.nzbdata.im.service.impl.EasemobIMUsers;
 import com.chmei.nzbdata.member.service.IMemberService;
 import com.chmei.nzbdata.util.StringUtil;
+import com.chmei.nzbdata.zxfriend.service.IZxMyTeamService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.swagger.client.model.NewPassword;
@@ -17,6 +18,7 @@ import io.swagger.client.model.User;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +38,8 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
     /** 调用环信接口 */
     private static final EasemobIMUsers easemobIMUsers = new EasemobIMUsers();
     private static final Gson gson = new GsonBuilder().serializeNulls().create();
+    @Resource
+    private IZxMyTeamService iZxMyTeamService;
 
     /**
      * 新增会员信息
@@ -118,17 +122,13 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
                 List<Map<String, Object>> list = getBaseDao().queryForList("MemberMapper.queryMemberList", params);
                 if (null != list && list.size() > 0) {
                     for (Map<String, Object> map : list) {
-                        int teamNum = 1;
                         Map<String, Object> result = new HashMap<>();
-                        String memberAccount = (String) map.get("memberAccount");
-                        result.put("recomAccount", memberAccount);
-                        int totals = getBaseDao().getTotalCount("MemberMapper.queryMemberCount", result);
-                        if (totals == 0) {
-                            teamNum = 0;
-                        }
-                        teamNum += totals;
-                        map.put("teamNum", teamNum); // 直推人数
-                        // TODO 团队人数目前存在问题，后续解决
+                        result.put("memberAccount", map.get("memberAccount"));
+                        InputDTO inputDTO = new InputDTO();
+                        inputDTO.setParams(result);
+                        // 根据当前用户ID 查询团队人数
+                        int size1 = iZxMyTeamService.countMyTeam(inputDTO, output);
+                        map.put("teamNum", size1); // 直推人数
                     }
                 }
                 output.setItems(list);
@@ -344,6 +344,8 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
                 output.setCode("-1");
                 output.setMsg("保存失败");
             }
+            output.setCode("0");
+            output.setMsg("修改成功");
         } catch (Exception ex) {
             LOGGER.error("保存失败", ex);
         }

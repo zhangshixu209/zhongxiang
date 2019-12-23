@@ -7,12 +7,15 @@ import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
 import com.chmei.nzbdata.complaint.service.IMemberComplaintService;
 import com.chmei.nzbdata.im.service.impl.EasemobIMUsers;
 import com.chmei.nzbdata.util.Constants;
+import com.chmei.nzbdata.zxfriend.service.IZxMyTeamService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +35,8 @@ public class MemberComplaintServiceImpl extends BaseServiceImpl implements IMemb
 	/** 调用环信接口 */
 	private static final EasemobIMUsers easemobIMUsers = new EasemobIMUsers();
 	private static final Gson gson = new GsonBuilder().serializeNulls().create();
+	@Resource
+	private IZxMyTeamService iZxMyTeamService;
 
 	/**
 	 * 列表查询
@@ -47,6 +52,17 @@ public class MemberComplaintServiceImpl extends BaseServiceImpl implements IMemb
 		int total = getBaseDao().getTotalCount("MemberComplaintMapper.queryMemberComplaintCount", params);
 		if (total > 0) {
 			List<Map<String, Object>> list = getBaseDao().queryForList("MemberComplaintMapper.queryMemberComplaintList", params);
+			if (null != list && list.size() > 0) {
+				for (Map<String, Object> map : list) {
+					Map<String, Object> result = new HashMap<>();
+					result.put("memberAccount", map.get("memberAccount"));
+					InputDTO inputDTO = new InputDTO();
+					inputDTO.setParams(result);
+					// 根据当前用户ID 查询团队人数
+					int size1 = iZxMyTeamService.countMyTeam(inputDTO, output);
+					map.put("teamNum", size1); // 直推人数
+				}
+			}
 			output.setItems(list);
 		}
 		output.setTotal(total);

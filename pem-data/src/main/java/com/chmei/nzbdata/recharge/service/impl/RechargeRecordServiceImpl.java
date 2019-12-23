@@ -6,12 +6,14 @@ import com.chmei.nzbcommon.orderutils.IdGeneratorUtils;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
 import com.chmei.nzbdata.recharge.service.IRechargeRecordService;
+import com.chmei.nzbdata.zxfriend.service.IZxMyTeamService;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,8 @@ public class RechargeRecordServiceImpl extends BaseServiceImpl implements IRecha
 	 * log對象
 	 */
 	private static final Logger LOGGER = LoggerFactory.getLogger(RechargeRecordServiceImpl.class);
+	@Resource
+	private IZxMyTeamService iZxMyTeamService;
 
 	/**
 	 * 初始化加载充值记录查询列表
@@ -46,6 +50,17 @@ public class RechargeRecordServiceImpl extends BaseServiceImpl implements IRecha
 			if (total > 0) {
 				List<Map<String, Object>> list = getBaseDao().queryForList(
 						"RechargeRecordMapper.queryRechargeRecordList", params);
+				if (null != list && list.size() > 0) {
+					for (Map<String, Object> map : list) {
+						Map<String, Object> result = new HashMap<>();
+						result.put("memberAccount", map.get("memberAccount"));
+						InputDTO inputDTO = new InputDTO();
+						inputDTO.setParams(result);
+						// 根据当前用户ID 查询团队人数
+						int size1 = iZxMyTeamService.countMyTeam(inputDTO, output);
+						map.put("teamNum", size1); // 直推人数
+					}
+				}
 				output.setItems(list);
 			}
 			output.setTotal(total);

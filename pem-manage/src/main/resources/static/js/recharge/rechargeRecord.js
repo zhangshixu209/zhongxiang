@@ -291,7 +291,7 @@ function queryComplaintRecordList(pageno,limit) {
 		var dsa = Handlebars.compile($("#T_complaintRecord").html());
 		$("#J_complaintRecord").html(dsa(data));
 		//初始化分页数据(当前页码，总数，回调查询函数)
-		initPaginator(pageno,data.total, queryMemberComplaintRecord,"pagination2","totalNum2");
+		initPaginator(pageno,data.total, queryComplaintRecordList,"pagination2","totalNum2");
 	});
 }
 
