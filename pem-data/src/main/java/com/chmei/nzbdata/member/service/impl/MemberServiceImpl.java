@@ -84,7 +84,7 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
                 }
                 Map<String, Object> friendGroup = new HashMap<>();
                 friendGroup.put("zxFriendGroupingId", getSequence());
-                friendGroup.put("zxFriendId", memberAccount);
+                friendGroup.put("zxFriendUserId", memberAccount);
                 friendGroup.put("zxFriendGroupingName", "默认分组");
                 friendGroup.put("zxFriendGroupingType", "Y"); // 默认分组标识
                 // 为用户添加默认分组

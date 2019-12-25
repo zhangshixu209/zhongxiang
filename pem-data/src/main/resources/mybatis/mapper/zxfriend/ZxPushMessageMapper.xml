@@ -24,8 +24,8 @@
     from zx_app_push_message
     <where>
       <if test="memberAccount != null and memberAccount != ''">
-        member_account = #{memberAccount,jdbcType=VARCHAR}
-        OR member_account = '9999'
+        (member_account = #{memberAccount,jdbcType=VARCHAR}
+        OR member_account = '9999')
       </if>
       <if test="messageStatus != null and messageStatus != ''">
         AND message_status = #{messageStatus,jdbcType=VARCHAR}

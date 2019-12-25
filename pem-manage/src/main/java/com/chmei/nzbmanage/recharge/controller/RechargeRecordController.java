@@ -1,6 +1,5 @@
 package com.chmei.nzbmanage.recharge.controller;
 
-import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbcommon.cmutil.BeanUtil;
@@ -10,7 +9,6 @@ import com.chmei.nzbmanage.recharge.bean.RechargeRecordForm;
 import com.github.wxpay.sdk.WXPayUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -144,14 +142,14 @@ public class RechargeRecordController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/wxPayCallback", method = RequestMethod.POST)
-    public String wxPayCallback(@RequestBody HttpServletRequest request) {
+    @ResponseBody
+    public String wxPayCallback(HttpServletRequest request) {
         LOGGER.info("微信支付回调");
         OutputDTO outputDTO = new OutputDTO();
         try {
             // 读取参数
             // 解析xml成map
             Map<String, String> map = WXPayUtil.xmlToMap(getParam(request));
-            LOGGER.info("微信支付回调返回的信息{}", (Throwable) map);
             //校验（验证订单号，付款金额等是否正确）
             String orderNo = map.get("out_trade_no");
             String resultCode = map.get("result_code");
@@ -163,8 +161,8 @@ public class RechargeRecordController extends BaseController {
             outputDTO = getOutputDTO(params_, "zxPayService", "wxPayCallback");
             if ("0".equals(outputDTO.getCode())) {
                 outputDTO.setCode("0");
-                outputDTO.setMsg("success");
-                return setXml("success", "ok");
+                outputDTO.setMsg("SUCCESS");
+                return setXml("SUCCESS", "OK");
             } else {
                 outputDTO.setCode("-1");
                 outputDTO.setMsg("fail");

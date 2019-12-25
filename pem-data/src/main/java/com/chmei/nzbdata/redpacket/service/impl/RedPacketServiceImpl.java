@@ -431,6 +431,22 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 			Map<String, Object> checkMap = (Map<String, Object>) getBaseDao().queryForObject(
 					"RedPacketMapper.selectStockByRedPacketId", params);
 			if (Optional.ofNullable(checkMap).isPresent()) {
+				// 通过用户账号和红包ID查询出红包信息:
+				Long redPacketId = (Long) params.get("redPacketId");
+				String robUserId = (String) params.get("memberAccount");
+				if(check == 0){
+					//判断是否已经答错过
+					Map<String,Object> ismap = new HashMap<>();
+					ismap.put("redPacketId", redPacketId);
+					ismap.put("userId", robUserId);
+					ismap.put("tableName","zx_app_red_packet_scrape");
+					int ishave = getBaseDao().getTotalCount("RedPacketMapper.isScrapeRedPacket", ismap);
+					if (ishave != 0) {
+						output.setCode("-1"); // 8
+						output.setMsg("答案错误,祝下次好运!");
+						return;
+					}
+				}
 				checkMap.put("isRobRedPacket",check > 0 ? "1" : "0");
 				output.setMsg("成功");
 				output.setItem(checkMap);

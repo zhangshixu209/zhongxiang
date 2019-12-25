@@ -139,16 +139,16 @@
       <if test="realName != null and realName != ''">
         real_name = #{realName,jdbcType=VARCHAR},
       </if>
-      <if test="cardNum != null and realName != ''">
+      <if test="cardNum != null and cardNum != ''">
         card_num = #{cardNum,jdbcType=VARCHAR},
       </if>
-      <if test="sex != null and realName != ''">
+      <if test="sex != null and sex != ''">
         sex = #{sex,jdbcType=VARCHAR},
       </if>
-      <if test="birthday != null and realName != ''">
+      <if test="birthday != null and birthday != ''">
         birthday = #{birthday,jdbcType=VARCHAR},
       </if>
-      <if test="age != null and realName != ''">
+      <if test="age != null and age != ''">
         age = #{age,jdbcType=INTEGER},
       </if>
       <if test="provinceName != null and provinceName != ''">

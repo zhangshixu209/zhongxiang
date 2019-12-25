@@ -416,50 +416,47 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 		try {
 			// 1 根据用户账户查询拥有的众享好友
 			List<Map<String, Object>> list = getBaseDao().queryForList("ZxFriendMapper.queryZxFriendList", params);
+			List<String> userList = new ArrayList<>();
 			if (null != list && list.size() > 0) {
-				List<String> userList = new ArrayList<>();
 				for (Map<String, Object> map : list) {
 					userList.add((String) map.get("zxFriendFriendId"));
 				}
-				userList.add((String) params.get("zxFriendUserId")); // 当前登录用户账户
-				String users = String.join(",", userList);
-				// 根据好友账户批量查询众享信息
-				Map<String, Object> maps = new HashMap<>();
-				maps.put("memberAccounts", users); // 好友账户list
+			}
+			userList.add((String) params.get("zxFriendUserId")); // 当前登录用户账户
+			String users = String.join(",", userList);
+			// 根据好友账户批量查询众享信息
+			Map<String, Object> maps = new HashMap<>();
+			maps.put("memberAccounts", users.subSequence(1, users.length())); // 好友账户list
+			int total = getBaseDao().getTotalCount("ZxMessageMapper.queryZxFriendMessageCount", maps);
+			if (total > 0) {
 				maps.put("start", params.get("start"));
 				maps.put("limit", params.get("limit"));
-				int total = getBaseDao().getTotalCount("ZxMessageMapper.queryZxFriendMessageCount", maps);
-				if (total > 0) {
-					List<Map<String, Object>> friendCircleList = getBaseDao().queryForList(
-							"ZxMessageMapper.queryZxFriendMessageList", maps);
-					if (null != friendCircleList && friendCircleList.size() > 0) {
-						for (Map<String, Object> map : friendCircleList) {
-							Map<String, Object> result = new HashMap<>();
-							// 查询附件
-							result.put("zxMessageId", map.get("zxMessageId"));       // 众享信息ID
-							List<Map<String, Object>> filePaths = getBaseDao().queryForList("ZxMessageMapper.queryFileList",
-									result);
-							// 统计当前众享信息总赞数
-							int praiseTotalAll = getBaseDao().getTotalCount("ZxMessageMapper.queryZxMessagePraiseCount", result);
-							result.put("memberAccount", params.get("zxFriendUserId"));   // 当前登录用户ID
-							int praiseTotal = queryZxMessagePraiseCount(result);     // 查询当前用户是否已点赞该众享信息
-							if (praiseTotal > 0) {
-								map.put("praiseStatus", "1"); // 已点赞
-							} else {
-								map.put("praiseStatus", "0"); // 未点赞
-							}
-							map.put("praiseTotalAll", praiseTotalAll); // 点赞数量
-							map.put("filePaths", filePaths);     	   // 图片信息
+				List<Map<String, Object>> friendCircleList = getBaseDao().queryForList(
+						"ZxMessageMapper.queryZxFriendMessageList", maps);
+				if (null != friendCircleList && friendCircleList.size() > 0) {
+					for (Map<String, Object> map : friendCircleList) {
+						Map<String, Object> result = new HashMap<>();
+						// 查询附件
+						result.put("zxMessageId", map.get("zxMessageId"));       // 众享信息ID
+						List<Map<String, Object>> filePaths = getBaseDao().queryForList("ZxMessageMapper.queryFileList",
+								result);
+						// 统计当前众享信息总赞数
+						int praiseTotalAll = getBaseDao().getTotalCount("ZxMessageMapper.queryZxMessagePraiseCount", result);
+						result.put("memberAccount", params.get("zxFriendUserId"));   // 当前登录用户ID
+						int praiseTotal = queryZxMessagePraiseCount(result);     // 查询当前用户是否已点赞该众享信息
+						if (praiseTotal > 0) {
+							map.put("praiseStatus", "1"); // 已点赞
+						} else {
+							map.put("praiseStatus", "0"); // 未点赞
 						}
+						map.put("praiseTotalAll", praiseTotalAll); // 点赞数量
+						map.put("filePaths", filePaths);     	   // 图片信息
 					}
-					output.setMsg("查询成功");
-					output.setItems(friendCircleList);
 				}
-				output.setTotal(total);
-			} else {
-				output.setCode("-1");
-				output.setMsg("查询失败");
+				output.setMsg("查询成功");
+				output.setItems(friendCircleList);
 			}
+			output.setTotal(total);
 		} catch (Exception e) {
 			LOGGER.error("系统异常", e);
 		}
