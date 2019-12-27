@@ -179,6 +179,13 @@ public class ZxMessageServiceImpl extends BaseServiceImpl implements IZxMessageS
 		LOGGER.info("ZxMessageServiceImpl.saveZxMessageCollection, input::" + input.getParams().toString());
 		Map<String, Object> params = input.getParams();
 		try {
+			// 校验是否收藏众享信息
+			int total = getBaseDao().getTotalCount("ZxMessageMapper.checkMessageCollection", params);
+			if (total > 0) {
+				output.setCode("-1");
+				output.setMsg("众享信息已收藏");
+				return;
+			}
 			// 新增众享信息收藏
 			int count = getBaseDao().insert("ZxMessageMapper.saveZxMessageCollection", params);
 			if (count < 1) {
@@ -210,6 +217,8 @@ public class ZxMessageServiceImpl extends BaseServiceImpl implements IZxMessageS
 				output.setCode("-1");
 				output.setMsg("删除失败");
 			}
+			output.setCode("0");
+			output.setMsg("取消成功");
 		} catch (Exception ex) {
 			LOGGER.error("系统错误: " + ex);
 		}
@@ -233,6 +242,8 @@ public class ZxMessageServiceImpl extends BaseServiceImpl implements IZxMessageS
 				output.setCode("-1");
 				output.setMsg("删除失败");
 			}
+			output.setCode("0");
+			output.setMsg("删除成功");
 		} catch (Exception ex) {
 			LOGGER.error("系统错误: " + ex);
 		}

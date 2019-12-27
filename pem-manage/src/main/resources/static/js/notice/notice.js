@@ -814,7 +814,7 @@ function isDataNull(str) {
 function addEditor(){
      editor = KindEditor.create('#editor', {
         //上传文件管理  指定上传文件的服务器端程序。
-        uploadJson: '/report-manage/api/noticefilemanage/uploadImg',
+        uploadJson: '/pem-manage/api/noticefilemanage/uploadImg',
         //文件管理  指定浏览远程图片的服务器端程序。
         // fileManagerJson: 'handler/file_manager_json.ashx',
         height:"220",
@@ -850,7 +850,7 @@ function addEditor(){
 function updateEditor(){
     upEditor = KindEditor.create('#updateEditor', {
         //上传文件管理  指定上传文件的服务器端程序。
-        uploadJson: '/report-manage/api/noticefilemanage/uploadImg',
+        uploadJson: '/pem-manage/api/noticefilemanage/uploadImg',
         //文件管理  指定浏览远程图片的服务器端程序。
         // fileManagerJson: 'handler/file_manager_json.ashx',
         height:"300px",
@@ -895,7 +895,7 @@ function updateEditor(){
 function loadEditorDetail(){
     loadEditor = KindEditor.create('#detailEditor', {
         //上传文件管理  指定上传文件的服务器端程序。
-        uploadJson: '/report-manage/api/workordermanage/uploadImg',
+        uploadJson: '/pem-manage/api/workordermanage/uploadImg',
         //文件管理  指定浏览远程图片的服务器端程序。
         // fileManagerJson: 'handler/file_manager_json.ashx',
         height:"250",

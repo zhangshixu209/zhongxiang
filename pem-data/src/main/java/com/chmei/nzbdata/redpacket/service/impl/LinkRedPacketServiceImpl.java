@@ -291,7 +291,7 @@ public class LinkRedPacketServiceImpl extends BaseServiceImpl implements ILinkRe
 									// 广告钱包记录
 									Map<String, Object> adRecord = new HashMap<>();
 									adRecord.put("advertisingInfoId", getSequence());
-									adRecord.put("advertisingInfoAddOrMinus", "-");
+									adRecord.put("advertisingInfoAddOrMinus", "+");
 									adRecord.put("advertisingInfoUserId", robUserId);
 									adRecord.put("advertisingInfoMoney", money);
 									adRecord.put("advertisingInfoFrom", "钱包红包--来自" + zxAppUser1.get("nickname"));

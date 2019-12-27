@@ -164,7 +164,7 @@ function outTips(){
 
 // 查询聊天记录
 function queryChatRecord(chatRecord) {
-	var chatList = chatRecord.split(",");
+	var chatList = chatRecord.split("$");
 	var htmls = Handlebars.compile($("#T_chartDetail").html());
 	var fileList = [];
 	$.each(chatList, function (i, v) {

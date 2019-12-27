@@ -80,5 +80,5 @@ function checkForm(){
 }
 //验证码图片
 function checkcodemethod(){	
-	$("#codeImage").attr('src','/report-manage/api/index/main/imgCode?codetime='+new Date().getTime());
+	$("#codeImage").attr('src','/pem-manage/api/index/main/imgCode?codetime='+new Date().getTime());
 }

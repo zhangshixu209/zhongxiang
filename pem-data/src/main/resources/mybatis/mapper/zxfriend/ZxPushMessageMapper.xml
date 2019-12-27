@@ -125,4 +125,9 @@
       zx_app_push_message AS a
     WHERE a.id = #{id}
   </select>
+
+  <!-- 校验是否收藏众享信息 -->
+  <select id="checkMessageCollection" parameterType="java.util.Map" resultType="int">
+    SELECT COUNT(1) FROM zx_app_message_collection WHERE zx_message_id = #{zxMessageId} AND member_account = #{memberAccount}
+  </select>
 </mapper>

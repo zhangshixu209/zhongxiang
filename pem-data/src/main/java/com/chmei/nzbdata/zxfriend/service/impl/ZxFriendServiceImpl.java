@@ -426,7 +426,10 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 			String users = String.join(",", userList);
 			// 根据好友账户批量查询众享信息
 			Map<String, Object> maps = new HashMap<>();
-			maps.put("memberAccounts", users.subSequence(1, users.length())); // 好友账户list
+			if (",".equals(users.subSequence(0, 1))) {
+				users = users.subSequence(1, users.length()).toString();
+			}
+			maps.put("memberAccounts", users); // 好友账户list
 			int total = getBaseDao().getTotalCount("ZxMessageMapper.queryZxFriendMessageCount", maps);
 			if (total > 0) {
 				maps.put("start", params.get("start"));

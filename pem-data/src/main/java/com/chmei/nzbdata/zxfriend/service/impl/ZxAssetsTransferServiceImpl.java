@@ -345,7 +345,7 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 				// 将取消信息插入到取消表中记录:
 				Map<String, Object> record_ = new HashMap<>();
 				record_.put("zxAppDealRecordId", getSequence());
-				record_.put("zxAppDealRecordDate", (zxAppDeals != null && zxAppDeals.size() > 0) ? zxAppDeals.get(0).get("delaDate") : new Date());
+				record_.put("zxAppDealRecordDate", (zxAppDeals != null && zxAppDeals.size() > 0) ? zxAppDeals.get(0).get("dealDate") : new Date());
 				record_.put("zxAppDealRecordUserId", params.get("memberAccount"));
 				record_.put("zxAppDealRecordMoney", 100D);
 				// 此字段是标注字段 0 是取消记录 1 自己购买记录 2 是被购买记录

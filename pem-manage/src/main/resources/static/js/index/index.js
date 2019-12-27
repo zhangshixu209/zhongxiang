@@ -215,7 +215,7 @@ Handlebars.registerHelper('isReadName',function(v){
 function addEditor(){
     indexEditor = KindEditor.create('#editor', {
         //上传文件管理  指定上传文件的服务器端程序。
-        uploadJson: '/report-manage/api/workordermanage/uploadImg',
+        uploadJson: '/pem-manage/api/workordermanage/uploadImg',
         //文件管理  指定浏览远程图片的服务器端程序。
         // fileManagerJson: 'handler/file_manager_json.ashx',
         height:"260px",

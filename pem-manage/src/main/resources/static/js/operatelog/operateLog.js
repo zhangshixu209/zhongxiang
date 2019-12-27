@@ -76,8 +76,8 @@ Handlebars.registerHelper('operatePageCd', function(v) {
 		return '权限管理';
 	} else if(v == '1017') {
 		return '参数配置';
-	} else if(v == '1018') {
-		return '数据表管理';
+	} else if(v == '1019') {
+		return '数据库管理';
 	}
 });
 //操作类型代码
@@ -158,5 +158,11 @@ Handlebars.registerHelper('operateTypeCd', function(v) {
         return "提交测试"
     }else if (v == '1038') {
         return "发布上线"
-    }
+    }else if (v == '1053') {
+		return "备份数据库"
+	}else if (v == '1054') {
+		return "还原数据库"
+	}else if (v == '1052') {
+		return "后台充值"
+	}
 });

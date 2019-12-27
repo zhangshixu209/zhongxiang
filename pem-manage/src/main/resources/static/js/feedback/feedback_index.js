@@ -81,7 +81,7 @@ function uploaderInit(picker) {
         // swf文件路径
         swf: '../assets/js/Uploader.swf',
         // 文件接收服务端。
-        server: '/report-manage/api/workordermanage/uploadImg',
+        server: '/pem-manage/api/workordermanage/uploadImg',
         // 选择文件的按钮。可选。
         // 内部根据当前运行是创建，可能是input元素，也可能是flash.
         pick: picker,

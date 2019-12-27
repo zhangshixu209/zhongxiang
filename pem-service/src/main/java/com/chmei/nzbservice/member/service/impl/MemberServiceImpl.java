@@ -115,7 +115,7 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
         if ("0".equals(output.getCode())) {
             // 成功插入操作日志信息
             input.getParams().put("operatePage", Constants.OPERATE_PAGE_CD.MEMBER_MANAGE_CD); // 操作页面代码
-            input.getParams().put("operateType", Constants.OPERATE_TYPE_CD.OPERATE_INSERT_CD); // 操作类型代码
+            input.getParams().put("operateType", Constants.OPERATE_TYPE_CD.RECHARGE_TYPE_CD); // 操作类型代码
             operateLogService.saveOperateLogInfo(input, output);
         }
         input.setService("memberService");
