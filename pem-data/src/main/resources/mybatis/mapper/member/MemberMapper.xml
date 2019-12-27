@@ -219,7 +219,8 @@
       IFNULL( a.STATUS, '' ) AS status,
       IFNULL( a.bind_phone, '' ) AS bindPhone,
       a.crt_time AS crtTime,
-      a.zx_my_team_id as zxMyTeamId
+      a.zx_my_team_id as zxMyTeamId,
+      a.activate_status AS activateStatus
     FROM
         t_member a
     LEFT JOIN t_real_name_authentic b ON a.member_account = b.member_account

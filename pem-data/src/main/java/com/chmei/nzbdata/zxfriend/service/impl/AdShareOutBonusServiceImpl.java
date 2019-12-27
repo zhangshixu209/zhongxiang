@@ -67,28 +67,29 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				Map<String, Object> outBonus = new HashMap<>();
 				outBonus.put("adShareOutBonusUserId", memberAccount); // 广告分红表用户账户
 				// 额度:
-				BigDecimal adShareOutBonusLimit = (BigDecimal) shareOutBonus.get("adShareOutBonusLimit");
+				BigDecimal adShareOutBonusLimits = (BigDecimal) shareOutBonus.get("adShareOutBonusLimit");
 				// 剩余额度:
-				BigDecimal adShareOutBonusResidueLimit = (BigDecimal) shareOutBonus.get("adShareOutBonusResidueLimit");
-
+				BigDecimal adShareOutBonusResidueLimits = (BigDecimal) shareOutBonus.get("adShareOutBonusResidueLimit");
+				Double adShareOutBonusLimit = adShareOutBonusLimits.doubleValue();
+				Double adShareOutBonusResidueLimit = adShareOutBonusResidueLimits.doubleValue();
 				// 定义初始涨幅参数:
 				Double limit = 0D;
 				if (size > 0) {
 					if (size >= 2 && size < 5) {
 						// 额度增长1000:
-						limit = 2000D;
+						limit = 1000D;
 					} else if (size >= 5 && allPersonnel != null && (size1 >= 25 && size1 <50)) {
 						// 额度增长3000
-						limit = 5000D;
+						limit = 3000D;
 					} else if (size >= 5 && allPersonnel != null && size1 >= 50) {
 						// 额度增长5000
-						limit = 10000D;
+						limit = 5000D;
 					}
 					if (Constants.limit1.equals(adShareOutBonusLimit) && Constants.limit1.equals(limit) ||
 							Constants.limit2.equals(adShareOutBonusLimit) && Constants.limit3.equals(limit) ||
 							Constants.limit5.equals(adShareOutBonusLimit) && Constants.limit5.equals(limit)) {
-						outBonus.put("adShareOutBonusLimit", adShareOutBonusLimit.doubleValue() + limit);
-						outBonus.put("adShareOutBonusResidueLimit", adShareOutBonusResidueLimit.doubleValue() + limit);
+						outBonus.put("adShareOutBonusLimit", adShareOutBonusLimit + limit);
+						outBonus.put("adShareOutBonusResidueLimit", adShareOutBonusResidueLimit + limit);
 						int i = getBaseDao().update("ShareOutBonusMapper.updateShareOutBonusInfo", outBonus);
 						if (i <= 0) {
 							output.setCode("-1");
@@ -106,9 +107,9 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 						Constants.limit2.equals(adShareOutBonusLimit) && Constants.limit3.equals(limit) ||
 						Constants.limit5.equals(adShareOutBonusLimit) && Constants.limit5.equals(limit)) {
 					// 广告分红总额度:
-					map.put("adShareOutBonusLimit", adShareOutBonusLimit.doubleValue() + limit);
+					map.put("adShareOutBonusLimit", adShareOutBonusLimit + limit);
 					// 剩余分红额度金额
-					map.put("adShareOutBonusResidueLimit", adShareOutBonusResidueLimit.doubleValue() + limit);
+					map.put("adShareOutBonusResidueLimit", adShareOutBonusResidueLimit + limit);
 				} else {
 					// 广告分红总额度:
 					map.put("adShareOutBonusLimit", adShareOutBonusLimit);
@@ -151,15 +152,16 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 					return;
 				}
 				if (i > 0) {
+					Map<String, Object> map_ = new HashMap<>();
 					// 分红任务金额
-					shareOutBonus.put("money", 0);
+					map_.put("money", 0);
 					// 分红时间周期
-					shareOutBonus.put("circleDate",0);
+					map_.put("circleDate",0);
 					// 是否有分红任务周期的标志
-					shareOutBonus.put("mark", Constants.N);
+					map_.put("mark", Constants.N);
 					output.setCode("0");
 					output.setMsg("激活成功！");
-					output.setItem(shareOutBonus);
+					output.setItem(map_);
 				}
 			}
 

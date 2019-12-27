@@ -269,7 +269,7 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 		Map<String, Object> params = input.getParams();
 		try {
 			String resultCode = (String) params.get("resultCode");
-			String orderNo = (String) params.get("outTradeNo");
+			String orderNo = (String) params.get("orderNo");
 			String totalFee =  (String) params.get("totalFee");
 			if(check(params)){
 				executorService.execute(() -> {
@@ -340,7 +340,7 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 	 * @return
 	 */
 	private Boolean check(Map<String, Object> params) {
-		String outTradeNo = (String) params.get("out_trade_no");
+		String outTradeNo = (String) params.get("orderNo");
 		// 1、商户需要验证该通知数据中的out_trade_no是否为商户系统中创建的订单号，
 		Map<String,Object> maps = new HashMap<>();
 		maps.put("serialId",outTradeNo);
@@ -351,9 +351,9 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 			return false;
 		}
 		// 2、判断total_amount是否确实为该订单的实际金额（即商户订单创建时的金额），
-		Integer totalAmount = (Integer) params.get("total_fee");
-		Integer beforeAmount = (Integer) objectMap.get("rechargeAmount");
-		if (!totalAmount.equals(beforeAmount)) {
+		String totalAmount = (String) params.get("totalFee");
+		BigDecimal beforeAmount = (BigDecimal) objectMap.get("rechargeAmount");
+		if (!totalAmount.equals(beforeAmount.toString())) {
 			return false;
 		}
 		return true;
@@ -405,7 +405,7 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 				insertMap.put("memberAccount", phone);
 				insertMap.put("serialId", orderNO);
 				insertMap.put("validStsCd",2);
-				insertMap.put("rechargeAmount", money.intValue()/100);
+				insertMap.put("rechargeAmount", payAmount);
 				insertMap.put("status", "1003");
 				getBaseDao().insert("RechargeRecordMapper.saveRechargeRecordInfo", insertMap);
 				returnMap_.put("data", resultMap);

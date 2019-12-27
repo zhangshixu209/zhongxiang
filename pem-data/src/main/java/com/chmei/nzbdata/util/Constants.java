@@ -61,8 +61,8 @@ public final class Constants {
 	 */
 	public static final Double limit1 = 1000D;
 	public static final Double limit2 = 2000D;
-	public static final Double limit3 = 5000D;
-	public static final Double limit5 = 10000D;
+	public static final Double limit3 = 3000D;
+	public static final Double limit5 = 5000D;
 
 	public static final double MONEY = 100D; // 默认额度1000
 

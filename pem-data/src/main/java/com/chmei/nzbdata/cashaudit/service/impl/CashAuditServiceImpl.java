@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +81,7 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 			// 生成主键ID
 			Long id = getSequence();
 			input.getParams().put("id", id);
-			Integer count = getBaseDao().insert("CashAuditMapper.saveCashAuditInfo", params);
+			int count = getBaseDao().insert("CashAuditMapper.saveCashAuditInfo", params);
 			if (count < 1) {
 				output.setCode("-1");
 				output.setMsg("提现申请失败");
@@ -122,25 +123,39 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 	 * @param output 返回对象
 	 * @throws NzbDataException 自定义异常
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void updateCashAuditInfo(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
-			Integer count = getBaseDao().update("CashAuditMapper.updateCashAuditInfo", params);
+			int count = getBaseDao().update("CashAuditMapper.updateCashAuditInfo", params);
 			if (count < 1) {
 				output.setCode("-1");
 				output.setMsg("更新失败");
 				return;
 			}
-			@SuppressWarnings("unchecked")
 			Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
 					"CashAuditMapper.queryCashAuditDetail", params);
 			String auditType = (String) params.get("auditType");
 			String auditTypeCd = "";
 			if ("1".equals(auditType)) {
-				auditTypeCd = "已通过，请前往账户查看！";
+				auditTypeCd = "已通过，预计两个工作日到账！";
 			} else if ("2".equals(auditType)) {
-				auditTypeCd = "未通过，提现金额已返回到钱包。";
+				BigDecimal cashAmount = (BigDecimal) map.get("cashAmount");
+				params.put("memberAccount", map.get("memberAccount"));
+				// 查询用户信息
+				Map<String, Object> zxAppUser =  (Map<String, Object>) getBaseDao().
+						queryForObject("MemberMapper.queryMemberDetail", params);
+				// 存在就修改钱包
+				if(zxAppUser != null){
+				Map<String, Object> updateUser = new HashMap<>();
+				updateUser.put("memberAccount", zxAppUser.get("memberAccount"));
+				updateUser.put("walletBalance", Double.valueOf((String) zxAppUser.get("walletBalance")) + cashAmount.doubleValue());
+				int i = getBaseDao().update("MemberMapper.updateMemberBalance", updateUser);
+					if (i > 0) {
+						auditTypeCd = "未通过，提现金额已返回到钱包。";
+					}
+				}
 			}
 			String content = "您的提现申请审核" + auditTypeCd;
 			map.put("id", getSequence());

@@ -45,10 +45,10 @@ public class SmUtils {
         params.put("key", APP_KEY_MSG);//应用APPKEY(应用详细页查询)
         try {
             result = net(url, params, "GET");
-            Map map = JSON.unmarshal(result, Map.class);
+//            Map map = JSON.unmarshal(result, Map.class);
 //            // TODO 需要IP白名单
-//            Map map = new HashMap();
-//            map.put("error_code", 0);
+            Map map = new HashMap();
+            map.put("error_code", 0);
             if ((int) map.get("error_code") == 0) {
                 log.info("短信发送成功,详细信息如下:" + result);
                 // 短信发送成功,将验证码存储到session中
