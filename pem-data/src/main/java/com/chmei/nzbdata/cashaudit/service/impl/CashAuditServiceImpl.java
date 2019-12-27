@@ -87,8 +87,23 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 				output.setMsg("提现申请失败");
 				return;
 			}
-			output.setCode("0");
-			output.setMsg("提现申请成功");
+			BigDecimal cashAmount = (BigDecimal) params.get("cashAmount");
+			params.put("memberAccount", params.get("memberAccount"));
+			// 查询用户信息
+			@SuppressWarnings("unchecked")
+			Map<String, Object> zxAppUser =  (Map<String, Object>) getBaseDao().
+					queryForObject("MemberMapper.queryMemberDetail", params);
+			// 存在就修改钱包
+			if(zxAppUser != null){
+				Map<String, Object> updateUser = new HashMap<>();
+				updateUser.put("memberAccount", zxAppUser.get("memberAccount"));
+				updateUser.put("walletBalance", Double.valueOf((String) zxAppUser.get("walletBalance")) - cashAmount.doubleValue());
+				int i = getBaseDao().update("MemberMapper.updateMemberBalance", updateUser);
+				if (i > 0) {
+					output.setCode("0");
+					output.setMsg("提现申请成功");
+				}
+			}
 		} catch (Exception e) {
 			LOGGER.error("新增失败: " + e);
 		}

@@ -257,8 +257,11 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 			// 1 减少购买方我的钱包金额,增加广告费钱包金额
 			Map<String, Object> userBuy = new HashMap<>();
 			userBuy.put("memberAccount", params.get("memberAccount"));
-			userBuy.put("walletBalance", Double.valueOf(user.get("walletBalance")+"") - 100d);
-			userBuy.put("advertisingFee", Double.valueOf(user.get("advertisingFee")+"") + 100d);
+			Map<String, Object> userByt = (Map<String, Object>) getBaseDao().
+					queryForObject("MemberMapper.queryMemberDetail", userBuy);
+			// 自己买自己的话金额不增不减
+			userBuy.put("walletBalance", Double.valueOf(userByt.get("walletBalance")+"") - 100d);
+			userBuy.put("advertisingFee", Double.valueOf(userByt.get("advertisingFee")+"") + 100d);
 			int i = getBaseDao().update("MemberMapper.updateMemberBalance", userBuy);
 			if (i > 0) {
 				// 1.1 进行钱包金额记录 购买方

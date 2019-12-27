@@ -103,7 +103,7 @@
       <if test="memberAccount != null">
         member_account,
       </if>
-      <if test="nickname != null">
+      <if test="nickname != null and nickname != ''">
         nickname,
       </if>
       <if test="memberPwd != null">
@@ -127,7 +127,7 @@
       <if test="memberAccount != null">
         #{memberAccount,jdbcType=VARCHAR},
       </if>
-      <if test="nickname != null">
+      <if test="nickname != null and nickname != ''">
         #{nickname,jdbcType=VARCHAR},
       </if>
       <if test="memberPwd != null">

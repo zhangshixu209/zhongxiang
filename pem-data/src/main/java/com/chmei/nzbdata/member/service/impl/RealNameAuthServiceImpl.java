@@ -5,6 +5,7 @@ import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
 import com.chmei.nzbdata.member.service.IRealNameAuthService;
+import com.chmei.nzbdata.util.StringUtil;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,12 @@ public class RealNameAuthServiceImpl extends BaseServiceImpl implements IRealNam
     public void saveRealNameAuthInfo(InputDTO input, OutputDTO output) throws NzbDataException {
         Map<String, Object> params = input.getParams();
         try {
+            String cardNum = (String) params.get("cardNum");
+            if (!StringUtil.isEmpty(cardNum)) {
+                Map<String, Object> map = StringUtil.getCarInfo(cardNum);
+                params.put("sex", map.get("sex")); // 截取身份证性别
+                params.put("age", map.get("age")); // 截取身份证年龄
+            }
             params.put("id", getSequence()); // 获取id
             int count = getBaseDao().insert("RealNameAuthMapper.saveRealNameAuthInfo", params);
             if (count < 1) {
@@ -57,6 +64,12 @@ public class RealNameAuthServiceImpl extends BaseServiceImpl implements IRealNam
     public void updateRealNameAuthInfo(InputDTO input, OutputDTO output) throws NzbDataException {
         Map<String, Object> params = input.getParams();
         try {
+            String cardNum = (String) params.get("cardNum");
+            if (!StringUtil.isEmpty(cardNum)) {
+                Map<String, Object> map = StringUtil.getCarInfo(cardNum);
+                params.put("sex", map.get("sex")); // 截取身份证性别
+                params.put("age", map.get("age")); // 截取身份证年龄
+            }
             int total = getBaseDao().update("RealNameAuthMapper.updateRealNameAuthInfo", params);
             if (total < 1) {
                 output.setCode("-1");

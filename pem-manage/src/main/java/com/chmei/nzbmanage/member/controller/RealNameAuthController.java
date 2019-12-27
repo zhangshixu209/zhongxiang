@@ -100,7 +100,7 @@ public class RealNameAuthController extends BaseController {
                     return  new OutputDTO("1", "编辑实名信息"); // 如果身份证号存在代表实名信息已添加（请修改）
                 }
             } else {
-                return  new OutputDTO("0", "新增实名信息"); // 第一次添加实名信息
+                return  new OutputDTO("2", "新增实名信息"); // 第一次添加实名信息
             }
         } catch (Exception e) {
             LOGGER.error("查询失败", e);
