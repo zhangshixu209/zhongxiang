@@ -180,7 +180,7 @@ public class ZxMessageServiceImpl extends BaseServiceImpl implements IZxMessageS
 		Map<String, Object> params = input.getParams();
 		try {
 			// 校验是否收藏众享信息
-			int total = getBaseDao().getTotalCount("ZxMessageMapper.checkMessageCollection", params);
+			int total = getBaseDao().getTotalCount("ZxPushMessageMapper.checkMessageCollection", params);
 			if (total > 0) {
 				output.setCode("-1");
 				output.setMsg("众享信息已收藏");

@@ -5,6 +5,7 @@ import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
 import com.chmei.nzbdata.complaint.service.IGroupComplaintService;
+import com.chmei.nzbdata.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -77,11 +78,24 @@ public class GroupComplaintServiceImpl extends BaseServiceImpl implements IGroup
 	public void updateGroupComplaintInfo(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
+			params.put("status", "1003");
 			int count = getBaseDao().update("GroupComplaintMapper.updateGroupComplaintInfo", params);
 			if (count < 1) {
 				output.setCode("-1");
 				output.setMsg("保存失败");
 			}
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
+					"GroupComplaintMapper.queryGroupComplaintDetail", params);
+			String content = map.get("complaintRemark") + "，多次警告将会冻结您的账号！";
+			map.put("id", getSequence());
+			map.put("messageTitle", map.get("groupChatName"));
+			map.put("messageContent", content);
+			map.put("messageStatus", "1");
+			map.put("messageType", Constants.MESSAGE_TYPE_1004);
+			map.put("memberAccount", map.get("ownerAccount"));
+			// 添加推送消息
+			getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
 		} catch (Exception ex) {
 			LOGGER.error("保存失败", ex);
 		}

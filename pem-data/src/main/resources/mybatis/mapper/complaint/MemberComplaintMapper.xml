@@ -39,11 +39,12 @@
       a.audit_opinion AS auditOpinion,
       IFNULL( b.wallet_balance, '0' ) AS walletBalance,
       IFNULL( b.advertising_fee, '0' ) AS advertisingFee,
-      b.recom_nick_name AS recomNickname,
+      IFNULL( d.team_user_name, '-' ) AS recomNickname,
       <include refid="total_Column_List"></include>
     FROM
         t_member_complaint_record AS a
     LEFT JOIN t_member b ON a.member_account = b.member_account
+    LEFT JOIN zx_app_my_team d ON a.member_account = d.team_recommended_user_id
 	<where>
       <if test="memberAccount != null and memberAccount != ''">
         a.member_account = #{memberAccount}
@@ -111,9 +112,7 @@
       <if test="chatRecord != null">
         chat_record,
       </if>
-      <if test="status != null">
         `status`,
-      </if>
       <if test="crtUserId != null">
         crt_user_id,
       </if>
@@ -123,7 +122,7 @@
         crt_time,
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-        id,
+        #{id},
       <if test="memberAccount != null">
         #{memberAccount,jdbcType=VARCHAR},
       </if>
@@ -140,9 +139,7 @@
       <if test="chatRecord != null">
         #{chatRecord,jdbcType=VARCHAR},
       </if>
-      <if test="status != null">
-        #{status,jdbcType=VARCHAR},
-      </if>
+        '1001',
       <if test="crtUserId != null">
         #{crtUserId,jdbcType=BIGINT},
       </if>

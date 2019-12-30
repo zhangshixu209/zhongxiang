@@ -44,13 +44,14 @@
             IFNULL( a.audit_user_name, '' ) AS auditUserName,
             IFNULL( b.wallet_balance, '0' ) AS walletBalance,
             IFNULL( b.crt_time, '' ) AS registerTime,
-            b.recom_nick_name AS recomNickname,
+            IFNULL( d.team_user_name, '-' ) AS recomNickname,
             c.real_name AS realName,
             <include refid="total_Column_List" />
         FROM
             t_cash_audit a
         LEFT JOIN t_member b ON a.member_account = b.member_account
         LEFT JOIN t_real_name_authentic c ON a.member_account = c.member_account
+        LEFT JOIN zx_app_my_team d ON a.member_account = d.team_recommended_user_id
         <where>
             <if test="cashUserName != null and cashUserName != ''">
                 AND a.cash_user_name LIKE concat('%',#{cashUserName},'%')

@@ -101,12 +101,14 @@ public class MemberComplaintServiceImpl extends BaseServiceImpl implements IMemb
 		try {
 			// 投诉状态
 			String status = (String) params.get("status");
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
+					"MemberComplaintMapper.queryMemberComplaintDetail", params);
+			Map<String, Object> maps = new HashMap<>();
+			maps.put("memberAccount", map.get("memberAccount"));
 			if("1004".equals(status)){ // 冻结账号
 				Object result = easemobIMUsers.deactivateIMUser((String) params.get("memberAccount"));
 				if (null != result) {
-					@SuppressWarnings("unchecked")
-					Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
-							"MemberComplaintMapper.queryMemberComplaintDetail", params);
 					String content = "您投诉的用户：" + params.get("memberAccount") + "已被冻结";
 					map.put("id", getSequence());
 					map.put("messageTitle", "投诉结果查询");
@@ -114,6 +116,7 @@ public class MemberComplaintServiceImpl extends BaseServiceImpl implements IMemb
 					map.put("messageStatus", "1");
 					map.put("messageType", Constants.MESSAGE_TYPE_1004);
 					map.put("memberAccount", map.get("complainant"));
+					maps.put("status", "3");
 					// 添加推送消息
 					getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
 				}
@@ -121,9 +124,22 @@ public class MemberComplaintServiceImpl extends BaseServiceImpl implements IMemb
 			} else if ("1005".equals(status)) { // 解冻账号
 				Object result = easemobIMUsers.activateIMUser((String) params.get("memberAccount"));
 				LOGGER.info("deactivateIMUser============:"+gson.toJson(result));
+			} else if ("1003".equals(status)) {
+				map.put("id", getSequence());
+				map.put("messageTitle", "投诉结果查询");
+				map.put("messageContent", map.get("complaintRemark"));
+				map.put("messageStatus", "1");
+				map.put("messageType", Constants.MESSAGE_TYPE_1004);
+				map.put("memberAccount", map.get("memberAccount"));
+				maps.put("status", "2");
+				// 添加推送消息
+				getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
 			}
 			int count = getBaseDao().update("MemberComplaintMapper.updateMemberComplaintInfo", params);
-			if (count < 1) {
+			if (count > 0) {
+				// 同步修改会会员状态
+				getBaseDao().update("MemberMapper.updateMemberInfo", maps);
+			} else {
 				output.setCode("-1");
 				output.setMsg("保存失败");
 			}

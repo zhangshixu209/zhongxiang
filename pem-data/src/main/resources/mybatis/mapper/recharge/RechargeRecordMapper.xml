@@ -28,7 +28,7 @@
         a.`status` AS `status`,
         a.crt_time AS crtTime,
         b.nickname AS nickname,
-        b.recom_nick_name AS recomNickname,
+        IFNULL( d.team_user_name, '-' ) AS recomNickname,
         b.advertising_fee AS advertisingFee,
         b.wallet_balance AS walletBalance,
         b.`status` AS memberStatus,
@@ -38,6 +38,7 @@
         t_recharge_record AS a
     LEFT JOIN t_member b ON a.member_account = b.member_account
     LEFT JOIN t_real_name_authentic c ON a.member_account = c.member_account
+    LEFT JOIN zx_app_my_team d ON a.member_account = d.team_recommended_user_id
     <where>
       <if test="memberAccount != null and memberAccount != ''">
         a.member_account = #{memberAccount}

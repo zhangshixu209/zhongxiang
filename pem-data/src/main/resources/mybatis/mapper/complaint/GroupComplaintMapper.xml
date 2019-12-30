@@ -115,9 +115,7 @@
       <if test="groupChatRecord != null">
         group_chat_record,
       </if>
-      <if test="status != null">
         `status`,
-      </if>
       <if test="crtUserId != null">
         crt_user_id,
       </if>
@@ -161,9 +159,7 @@
       <if test="groupChatRecord != null">
         #{groupChatRecord,jdbcType=VARCHAR},
       </if>
-      <if test="status != null">
-        #{status,jdbcType=VARCHAR},
-      </if>
+        '1001',
       <if test="crtUserId != null">
         #{crtUserId,jdbcType=BIGINT},
       </if>
@@ -251,5 +247,20 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <!-- 群投诉详情查询 -->
+  <select id="queryGroupComplaintDetail" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_group_complaint_record
+    <where>
+      <if test="id != null and id != ''">
+        id = #{id}
+      </if>
+      <if test="ownerAccount != null and ownerAccount != ''">
+        AND owner_account = #{ownerAccount}
+      </if>
+    </where>
+  </select>
 
 </mapper>

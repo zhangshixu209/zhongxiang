@@ -87,17 +87,18 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 				output.setMsg("提现申请失败");
 				return;
 			}
-			BigDecimal cashAmount = (BigDecimal) params.get("cashAmount");
-			params.put("memberAccount", params.get("memberAccount"));
+			String cashAmount = (String) params.get("cashAmount");
+			Map<String, Object> map = new HashMap<>();
+			map.put("memberAccount", params.get("memberAccount"));
 			// 查询用户信息
 			@SuppressWarnings("unchecked")
 			Map<String, Object> zxAppUser =  (Map<String, Object>) getBaseDao().
-					queryForObject("MemberMapper.queryMemberDetail", params);
+					queryForObject("MemberMapper.queryMemberDetail", map);
 			// 存在就修改钱包
 			if(zxAppUser != null){
 				Map<String, Object> updateUser = new HashMap<>();
 				updateUser.put("memberAccount", zxAppUser.get("memberAccount"));
-				updateUser.put("walletBalance", Double.valueOf((String) zxAppUser.get("walletBalance")) - cashAmount.doubleValue());
+				updateUser.put("walletBalance", Double.valueOf((String) zxAppUser.get("walletBalance")) - Double.valueOf(cashAmount));
 				int i = getBaseDao().update("MemberMapper.updateMemberBalance", updateUser);
 				if (i > 0) {
 					output.setCode("0");
@@ -156,16 +157,17 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 			if ("1".equals(auditType)) {
 				auditTypeCd = "已通过，预计两个工作日到账！";
 			} else if ("2".equals(auditType)) {
-				BigDecimal cashAmount = (BigDecimal) map.get("cashAmount");
-				params.put("memberAccount", map.get("memberAccount"));
+				String cashAmount = (String) map.get("cashAmount");
+				Map<String, Object> map_ = new HashMap<>();
+				map_.put("memberAccount", map.get("memberAccount"));
 				// 查询用户信息
 				Map<String, Object> zxAppUser =  (Map<String, Object>) getBaseDao().
-						queryForObject("MemberMapper.queryMemberDetail", params);
+						queryForObject("MemberMapper.queryMemberDetail", map_);
 				// 存在就修改钱包
 				if(zxAppUser != null){
 				Map<String, Object> updateUser = new HashMap<>();
 				updateUser.put("memberAccount", zxAppUser.get("memberAccount"));
-				updateUser.put("walletBalance", Double.valueOf((String) zxAppUser.get("walletBalance")) + cashAmount.doubleValue());
+				updateUser.put("walletBalance", Double.valueOf((String) zxAppUser.get("walletBalance")) + Double.valueOf(cashAmount));
 				int i = getBaseDao().update("MemberMapper.updateMemberBalance", updateUser);
 					if (i > 0) {
 						auditTypeCd = "未通过，提现金额已返回到钱包。";

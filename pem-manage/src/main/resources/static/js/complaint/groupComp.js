@@ -118,22 +118,21 @@ $('.pull-right').on('click','#audit_btn', function (){
 	}
 	// 获取该条数据详情
 	var id = checked.eq(0).attr("data-id");
-	var auditType = checked.eq(0).attr("data-auditType");
 	var paramId = {
 		id: id
 	};
-	Chief.ajax.postJson('/complaint/queryMemberComplaintDetail',paramId, function(data) {
-		if('0' == data.code){
-			var htmls = Handlebars.compile($("#T_complaintTpl").html());
-			var ht = htmls(data.item);
-			//弹框编辑
-			dialog("投诉状态审核", ht);
-			//初始化表单验证规则
-			formValidate("#memberComplaintForm");
-			$("#complaintStatus").find("option[value="+data.item.status+"]").attr("selected", "true");
-		}else {
-			Chief.layer.tips("系统异常", 1500);
-		}
+	Chief.layer.confirm('是否警告群主?', function(index){
+		//执行删除
+		Chief.ajax.postJson('/groupComplaint/updateGroupComplaintInfo',paramId, function(data) {
+			if('0' == data.code){
+				Chief.layer.tips("已警告该群主", 800);
+				queryList();
+			}else {
+				Chief.layer.tips("系统异常", 800);
+			}
+		});
+
+		Chief.layer.close(index);
 	});
 });
 
