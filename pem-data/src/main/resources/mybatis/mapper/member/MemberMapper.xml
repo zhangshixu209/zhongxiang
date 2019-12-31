@@ -223,7 +223,7 @@
       IFNULL( a.STATUS, '' ) AS status,
       IFNULL( a.bind_phone, '' ) AS bindPhone,
       a.crt_time AS crtTime,
-      a.zx_my_team_id as zxMyTeamId,
+      IFNULL(a.zx_my_team_id, 0) as zxMyTeamId,
       a.activate_status AS activateStatus
     FROM
         t_member a

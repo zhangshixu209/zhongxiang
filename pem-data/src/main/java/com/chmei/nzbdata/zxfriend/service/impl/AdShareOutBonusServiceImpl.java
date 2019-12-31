@@ -129,11 +129,11 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				if (shareOutBonusInfo != null && Constants.S.equals(shareOutBonusInfo.get("adShareOutBonusInfoDone"))) {
 					// 获取广告分红任务开始时间,结束时间和周期天数
 					map.put("money",shareOutBonusInfo.get("adShareOutBonusInfoMoney"));
-					String startDate = (String) shareOutBonusInfo.get("adShareOutBonusInfoStart");
+					Date startDate = (Date) shareOutBonusInfo.get("adShareOutBonusInfoStart");
 					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					if (StringUtil.isNotEmpty(startDate)) {
+					if (StringUtil.isNotEmpty(startDate.toString())) {
 						ParsePosition pos = new ParsePosition(0);
-						Date starToDate = formatter.parse(startDate, pos);
+						Date starToDate = formatter.parse(startDate.toString(), pos);
 						int endDay = (int) shareOutBonusInfo.get("adShareOutBonusInfoDayNum");
 						map.put("circleDate",starToDate.getTime() + (endDay * 24 * 3600 * 1000));
 					} else {
@@ -706,10 +706,10 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				Date nowDate = new Date();
 				long nowTime = nowDate.getTime();
 				// 注册时间
-				String startDate = (String) user1.get("crtTime");
+				Date startDate = (Date) user1.get("crtTime");
 				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				ParsePosition pos = new ParsePosition(0);
-				Date registerDate = formatter.parse(startDate, pos);
+				Date registerDate = formatter.parse(startDate.toString(), pos);
 				long oldTime = registerDate.getTime();
 				// 证明是在30天以内进行的激活,为有效人员
 				if (((nowTime - oldTime) / (24 * 3600 * 1000) <= 30)){
@@ -724,9 +724,9 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 					walletMoneyInfo.put("walletInfoUserId", outBonusInfo.get("adShareOutBonusInfoUserId"));
 					// 记录扣除当人金额的 1% 手续费
 					walletMoneyInfo.put("walletInfoMoney", Double.valueOf(outBonusInfo.get("adShareOutBonusInfoMoney")+"") * 0.01);
-					walletMoneyInfo.put("walletInfoFrom", "追加分红");
+					walletMoneyInfo.put("walletInfoFrom", "追加分红手续费扣除");
 					getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
-					if(1 == (int) user1.get("zxMyTeamId")){
+					if(1 == (long) user1.get("zxMyTeamId")){
 						Map<String, Object> record = new HashMap<>();
 						record.put("teamType", "Y");
 						record.put("teamRecommendedUserId", outBonusInfo.get("adShareOutBonusInfoUserId"));

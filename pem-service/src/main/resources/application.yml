@@ -36,7 +36,7 @@ server:
       directory: access-logs
       rename-on-rotate: true
 #    basedir: ../tomcat
-    max-http-post-size: 52428800 #50MB
+    max-http-post-size: 104857600 #100MB,50MB:52428800
     max-connections: 10000
     min-spare-threads: 10
     max-threads: 200

@@ -49,16 +49,18 @@ public class ZxMyTeamServiceImpl extends BaseServiceImpl implements IZxMyTeamSer
 			//说明此人下面还有推荐人 否则说明此人下面再无推荐人 直接返回上一层为0  在此只判断二级人员
 			if(effs != null && effs.size() > 0){
 				for (Map<String, Object> eff : effs) {
+					Map<String, Object> maps = new HashMap<>();
+					maps.put("memberAccount", eff.get("teamRecommendedUserId"));
 					// 首先判断当前此人是否存在 eff.get("teamRecommendedUserId"))
 					Map<String, Object> appUser = (Map<String, Object>) getBaseDao().queryForObject(
-							"MemberMapper.queryMemberDetail", eff.get("teamRecommendedUserId"));
+							"MemberMapper.queryMemberDetail", maps);
 					if(null != appUser){
 						//存在以后 判断是不是有效的推荐人
 						//此人目前不是有效人员 继续往下查询 只要子系有一个是 那么他就是
-						String teamDate = (String) eff.get("teamDate");
+						Date teamDate = (Date) eff.get("teamDate");
 						SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						ParsePosition pos = new ParsePosition(0);
-						Date strtodate = formatter.parse(teamDate, pos);
+						Date strtodate = formatter.parse(teamDate.toString(), pos);
 						if((System.currentTimeMillis() - strtodate.getTime()) / (24 * 3600 * 1000) > 30){
 							Map<String, Object> param = new HashMap<>();
 							param.put("memberAccount", eff.get("teamRecommendedUserId"));
