@@ -282,8 +282,11 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 								"RechargeRecordMapper.queryRechargeRecordDetail", updateMap);
 						//TODO 先判断是否和数据库金钱一样
 						BigDecimal totalMount = (BigDecimal) result.get("rechargeAmount");
-						String totalMount_S = totalMount.toString();
-						if(totalMount_S.equals(totalFee)){
+						//接口中参数支付金额单位为【分】，参数值不能带小数，所以乘以100
+						BigDecimal money = totalMount.multiply(new BigDecimal(100));
+						java.text.DecimalFormat df = new java.text.DecimalFormat("0");
+						String noMoney = df.format(money);
+						if(noMoney.equals(totalFee)){
 							//TODO 在进行修改数据库
 							updateMap.put("validStsCd", "1"); // 有效状态
 							getBaseDao().update("RechargeRecordMapper.updateSuccessOrderPay", updateMap);
@@ -297,7 +300,7 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 							if(zxAppUser != null){
 								Map<String, Object> updateUser = new HashMap<>();
 								updateUser.put("memberAccount", zxAppUser.get("memberAccount"));
-								updateUser.put("walletBalance", Double.valueOf((String) zxAppUser.get("walletBalance")) + Double.parseDouble(totalFee));
+								updateUser.put("walletBalance", Double.valueOf((String) zxAppUser.get("walletBalance")) + totalMount.doubleValue());
 								int i = getBaseDao().update("MemberMapper.updateMemberBalance", updateUser);
 								//TODO 加入记录
 								if(i > 0){
@@ -305,7 +308,7 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 									walletMoneyInfo.put("walletInfoId", getSequence());
 									walletMoneyInfo.put("walletInfoAddOrMinus", "+");
 									walletMoneyInfo.put("walletInfoUserId", zxAppUser.get("memberAccount"));
-									walletMoneyInfo.put("walletInfoMoney", Double.parseDouble(totalFee));
+									walletMoneyInfo.put("walletInfoMoney", totalMount.doubleValue());
 									walletMoneyInfo.put("walletInfoFrom", "微信-钱包充值");
 									getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
 								}
@@ -353,7 +356,11 @@ public class ZxPayServiceImpl extends BaseServiceImpl implements IZxPayService {
 		// 2、判断total_amount是否确实为该订单的实际金额（即商户订单创建时的金额），
 		String totalAmount = (String) params.get("totalFee");
 		BigDecimal beforeAmount = (BigDecimal) objectMap.get("rechargeAmount");
-		if (!totalAmount.equals(beforeAmount.toString())) {
+		//接口中参数支付金额单位为【分】，参数值不能带小数，所以乘以100
+		BigDecimal money = beforeAmount.multiply(new BigDecimal(100));
+		java.text.DecimalFormat df = new java.text.DecimalFormat("0");
+		String noMoney = df.format(money);
+		if (!totalAmount.equals(noMoney)) {
 			return false;
 		}
 		return true;

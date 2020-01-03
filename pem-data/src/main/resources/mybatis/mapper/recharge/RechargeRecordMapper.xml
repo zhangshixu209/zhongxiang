@@ -58,6 +58,7 @@
       <if test="endTime != null and endTime != ''">
         AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &lt;= #{endTime}
       </if>
+      AND a.valid_sts_cd = '1'
     </where>
     ORDER BY a.crt_time DESC
     <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
@@ -91,6 +92,7 @@
       <if test="endTime != null and endTime != ''">
         AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &lt;= #{endTime}
       </if>
+      AND a.valid_sts_cd = '1'
     </where>
   </select>
 

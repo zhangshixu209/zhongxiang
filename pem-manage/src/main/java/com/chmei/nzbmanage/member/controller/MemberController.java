@@ -299,7 +299,7 @@ public class MemberController extends BaseController {
             outputDTO.setItem(output.getItem());
             return outputDTO;
         } else {
-            return new OutputDTO("-1", "帐号或密码错误");
+            return new OutputDTO("-1", "密码错误");
         }
     }
 
