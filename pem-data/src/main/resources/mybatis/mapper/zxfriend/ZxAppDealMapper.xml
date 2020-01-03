@@ -109,6 +109,25 @@
   </update>
 
   <!-- 资产转让信息列表查询 -->
+  <select id="queryDealRecordList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+    a.zx_app_deal_record_id AS dealRecordId,
+    a.zx_app_deal_record_money AS dealRecordMoney,
+    a.zx_app_deal_record_user_id AS dealRecordUserId,
+    a.zx_app_deal_record_date AS dealRecordDate,
+    a.zx_app_deal_type AS dealRecordType
+    FROM
+    zx_app_deal_record AS a
+    <where>
+      zx_app_deal_record_user_id = #{memberAccount}
+    </where>
+    ORDER BY  a.zx_app_deal_record_date asc
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+
+  <!-- 新增交易记录信息 -->
   <select id="queryNewAssetsTransferList" parameterType="java.util.Map" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
@@ -122,7 +141,7 @@
       ORDER BY update_deal_date DESC
   </select>
 
-  <!-- 新增交易记录信息 -->
+  <!-- 查询交易记录信息 -->
   <insert id="saveZxDealRecordInfo" parameterType="java.util.Map">
     insert into zx_app_deal_record
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -160,24 +179,6 @@
       </if>
     </trim>
   </insert>
-
-  <!-- 查询交易记录信息 -->
-  <select id="queryDealRecordList" parameterType="java.util.Map" resultType="java.util.Map">
-    SELECT
-      a.zx_app_deal_record_id AS dealRecordId,
-      a.zx_app_deal_record_money AS dealRecordMoney,
-      a.zx_app_deal_record_user_id AS dealRecordUserId,
-      a.zx_app_deal_record_date AS dealRecordDate,
-      a.zx_app_deal_type AS dealRecordType
-    FROM
-      zx_app_deal_record AS a
-    <where>
-      zx_app_deal_record_user_id = #{memberAccount}
-    </where>
-    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
-      LIMIT #{start}, #{limit}
-    </if>
-  </select>
   <!-- 查询交易记录统计 -->
   <select id="queryDealRecordCount" parameterType="java.util.Map" resultType="int">
     SELECT
@@ -187,6 +188,22 @@
     <where>
       zx_app_deal_record_user_id = #{memberAccount}
     </where>
+  </select>
+
+  <select id="queryDealRecordDate" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+    a.zx_app_deal_record_id AS dealRecordId,
+    a.zx_app_deal_record_money AS dealRecordMoney,
+    a.zx_app_deal_record_user_id AS dealRecordUserId,
+    a.zx_app_deal_record_date AS dealRecordDate,
+    a.zx_app_deal_type AS dealRecordType
+    FROM
+    zx_app_deal_record AS a
+    <where>
+      zx_app_deal_record_user_id = #{memberAccount}
+      AND a.zx_app_deal_type = '1'
+    </where>
+    ORDER BY  a.zx_app_deal_record_date asc
   </select>
 
 </mapper>

@@ -620,7 +620,7 @@ public class LinkRedPacketServiceImpl extends BaseServiceImpl implements ILinkRe
 			switch (type) {
 				case WALLET_TYPE:
 					String zxMyWalletAmount = (String) item.get("walletBalance");
-					if (Double.valueOf(zxMyWalletAmount) < money) {
+					if (Double.valueOf(zxMyWalletAmount) < redPacketLinkMoneyCount.doubleValue()) {
 						output.setMsg("钱包余额不足!");
 						output.setCode("-1");
 						return output;
@@ -628,7 +628,7 @@ public class LinkRedPacketServiceImpl extends BaseServiceImpl implements ILinkRe
 					break;
 				case RED_PACKET_TYPE:
 					String zxMyHbAmount = (String) item.get("redEnveBalance");
-					if (Double.valueOf(zxMyHbAmount) < money) {
+					if (Double.valueOf(zxMyHbAmount) < redPacketLinkMoneyCount.doubleValue()) {
 						output.setMsg("红包余额不足!");
 						output.setCode("-1");
 						return output;
@@ -636,7 +636,7 @@ public class LinkRedPacketServiceImpl extends BaseServiceImpl implements ILinkRe
 					break;
 				case ADVERSING_TYPE:
 					String zxMyAdvertisingAmount = (String) item.get("advertisingFee");
-					if (Double.valueOf(zxMyAdvertisingAmount) < money) {
+					if (Double.valueOf(zxMyAdvertisingAmount) < redPacketLinkMoneyCount.doubleValue()) {
 						output.setMsg("广告钱包余额不足!");
 						output.setCode("-1");
 						return output;

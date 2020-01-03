@@ -78,6 +78,19 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 	public void saveCashAuditInfo(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
+			String cashAmount = (String) params.get("cashAmount");
+			Map<String, Object> map = new HashMap<>();
+			map.put("memberAccount", params.get("memberAccount"));
+			// 查询用户信息
+			@SuppressWarnings("unchecked")
+			Map<String, Object> zxAppUser =  (Map<String, Object>) getBaseDao().
+					queryForObject("MemberMapper.queryMemberDetail", map);
+			String walletBalance = (String) zxAppUser.get("walletBalance");
+			if(Double.valueOf(walletBalance) - Double.valueOf(cashAmount) < 0){
+				output.setCode("-1");
+				output.setMsg("钱包余额不足!");
+				return;
+			}
 			// 生成主键ID
 			Long id = getSequence();
 			input.getParams().put("id", id);
@@ -87,13 +100,6 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 				output.setMsg("提现申请失败");
 				return;
 			}
-			String cashAmount = (String) params.get("cashAmount");
-			Map<String, Object> map = new HashMap<>();
-			map.put("memberAccount", params.get("memberAccount"));
-			// 查询用户信息
-			@SuppressWarnings("unchecked")
-			Map<String, Object> zxAppUser =  (Map<String, Object>) getBaseDao().
-					queryForObject("MemberMapper.queryMemberDetail", map);
 			// 存在就修改钱包
 			if(zxAppUser != null){
 				Map<String, Object> updateUser = new HashMap<>();

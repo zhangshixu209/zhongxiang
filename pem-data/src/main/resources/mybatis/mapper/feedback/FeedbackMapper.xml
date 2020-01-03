@@ -34,11 +34,23 @@
   </sql>
   
   <!-- 列表查询 -->
-    <select id="queryList" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <select id="queryList" parameterType="java.lang.Long" resultType="java.util.Map">
         SELECT
-        	<include refid="Base_Column_List" />
+            a.id AS id,
+            a.titles AS titles,
+            a.contents AS contents,
+            a.start_penson_id AS startPensonId,
+            IFNULL( b.nickname, b.member_account ) AS startPensonName,
+            a.start_penson_time AS startPensonTime,
+            a.`status` AS `status`,
+            a.reply_content AS replyContent,
+            a.end_penson_id AS endPensonId,
+            a.end_penson_name AS endPensonName,
+            a.end_penson_time AS endPensonTime,
+            a.extend1 AS extend1
         FROM 
         	r_feedback a
+        LEFT JOIN t_member AS b ON b.member_account = a.start_penson_id
         <where>
             <if test="startPensonId != null and startPensonId != ''">
                 AND a.start_penson_id = #{startPensonId}

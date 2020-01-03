@@ -122,18 +122,18 @@ dubbo:
 spring:
   datasource:
     druid:
-#      url: jdbc:mysql://127.0.0.1:3306/pem_manage_db?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
-#      username: root
-#      password: GW7AgS9Tsypy8XXmpW5l5n4ZWOyUgUNpxtO7R/l5szVy5I0v3DHPzbXJnZXGLqrPVsmV7A8b0Tlpfp5fur8lyg==
-#      driver-class-name: com.mysql.jdbc.Driver
-#      filters: config
-#      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIKbnMEE7ON1C+p57UpDFgtmDptgnVJhI45ah6HTcUeV/SVX+ufJi35FMmSgmQyLxEENCNndUpwcs19Pd9FzpJUCAwEAAQ==
-      url: jdbc:mysql://39.99.166.24:3306/pem_manage_db?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
+      url: jdbc:mysql://127.0.0.1:3306/pem_manage_db?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
       username: root
-      password: YUfL4lSMba2Pg6B28lOjY7K1xXhmF2wwB8K+SePc7i/AC80/YRFxxytlJ0gJxYklfODh/une+lb2jeGJT1I3Cw==
+      password: GW7AgS9Tsypy8XXmpW5l5n4ZWOyUgUNpxtO7R/l5szVy5I0v3DHPzbXJnZXGLqrPVsmV7A8b0Tlpfp5fur8lyg==
       driver-class-name: com.mysql.jdbc.Driver
       filters: config
-      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAI5VjpwIER68bDIdQgOHeZgIixB+9gds36uT2OJBuezOzJAzzvtFjt95U4mkZ2bL5A/lDahk5qKP2uxsIs2CA80CAwEAAQ==
+      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIKbnMEE7ON1C+p57UpDFgtmDptgnVJhI45ah6HTcUeV/SVX+ufJi35FMmSgmQyLxEENCNndUpwcs19Pd9FzpJUCAwEAAQ==
+#      url: jdbc:mysql://39.99.166.24:3306/pem_manage_db?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
+#      username: root
+#      password: YUfL4lSMba2Pg6B28lOjY7K1xXhmF2wwB8K+SePc7i/AC80/YRFxxytlJ0gJxYklfODh/une+lb2jeGJT1I3Cw==
+#      driver-class-name: com.mysql.jdbc.Driver
+#      filters: config
+#      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAI5VjpwIER68bDIdQgOHeZgIixB+9gds36uT2OJBuezOzJAzzvtFjt95U4mkZ2bL5A/lDahk5qKP2uxsIs2CA80CAwEAAQ==
       connection-error-retry-attempts: 0
       initial-size: 1
       max-active: 200

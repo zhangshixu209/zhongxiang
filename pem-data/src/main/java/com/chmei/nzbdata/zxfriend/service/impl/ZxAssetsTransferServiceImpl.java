@@ -102,7 +102,7 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 					List<Map<String, Object>> shareOutBonusInfo = getBaseDao().queryForList("ShareOutBonusMapper.findTaskByUserIdAndMarkS", params);
 					//查看广告费 最近一次的情况
 					List<Map<String, Object>> zxAppDeals_ = getBaseDao().queryForList(
-							"AssetsTransferMapper.queryNewAssetsTransferList", params);
+							"AssetsTransferMapper.queryDealRecordDate", params);
 					// 无广告费分红任务:
 					long count = iAdShareOutBonusService.findTaskCountByMemberAccount(input, output);
 					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -110,7 +110,7 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 					if(count == 0){
 						// 没有分红任务的也可以进行发布交易,要一个月发布一次广告费
 						if(zxAppDeals_ != null && zxAppDeals_.size() > 0){
-							Date startDate = (Date) zxAppDeals_.get(0).get("updateDealDate");
+							Date startDate = (Date) zxAppDeals_.get(0).get("dealRecordDate");
 							long time = startDate.getTime();
 							if(-((time - System.currentTimeMillis()) / (24 * 3600 * 1000)) <= 30){
 								output.setCode("-1");
@@ -139,7 +139,7 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 							//没有有效直推 每个月发布一次
 							if (size == 0) {
 								if(zxAppDeals_ != null && zxAppDeals_.size() > 0){
-									Date delaDate = (Date) zxAppDeals_.get(0).get("updateDealDate");
+									Date delaDate = (Date) zxAppDeals_.get(0).get("dealRecordDate");
 									long time = delaDate.getTime();
 									if(-((time - System.currentTimeMillis()) / (24 * 3600 * 1000)) <= 30){
 										output.setCode("-1");
