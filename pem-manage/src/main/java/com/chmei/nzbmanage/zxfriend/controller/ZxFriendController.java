@@ -179,4 +179,18 @@ public class ZxFriendController extends BaseController {
         return outputDTO;
     }
 
+    /**
+     * 修改好友备注
+     *
+     * @param zxFriendForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/updateZxFriendRemarkInfo")
+    public OutputDTO updateZxFriendRemarkInfo(@ModelAttribute ZxFriendForm zxFriendForm) {
+        LOGGER.info("修改好友备注...ZxFriendController.updateZxFriendRemarkInfo()...");
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxFriendForm);
+        OutputDTO outputDTO = getOutputDTO(params, "zxFriendService", "updateZxFriendRemarkInfo");
+        return outputDTO;
+    }
+
 }

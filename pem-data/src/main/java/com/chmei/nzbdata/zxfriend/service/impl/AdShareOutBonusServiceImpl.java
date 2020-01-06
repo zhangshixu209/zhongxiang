@@ -148,7 +148,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				int i = activate(input, output); // 调用广告分红激活
 				if (i == -1) {
 					output.setCode("-1");
-					output.setMsg("余额不足，请及时充值！");
+					output.setMsg("钱包余额不足");
 					return;
 				}
 				if (i > 0) {
@@ -160,7 +160,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 					// 是否有分红任务周期的标志
 					map_.put("mark", Constants.N);
 					output.setCode("0");
-					output.setMsg("激活成功！");
+					output.setMsg("开通成功！");
 					output.setItem(map_);
 				}
 			}
@@ -191,7 +191,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				if (zxMyWalletAmount != null) {
 					if (zxMyWalletAmount < Constants.MONEY) {
 						output.setCode("-1");
-						output.setMsg("余额不足，请及时充值！");
+						output.setMsg("钱包余额不足");
 						return -1;
 					}
 					map.put("id", item.get("id")); // 用户ID

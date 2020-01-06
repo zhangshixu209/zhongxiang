@@ -2,7 +2,6 @@ package com.chmei.nzbdata.message.service.impl;
 
 import com.chmei.nzbcommon.cmbean.InputDTO;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
-import com.chmei.nzbcommon.cmutil.JsonUtil;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
 import com.chmei.nzbdata.message.service.IZxMessageService;
@@ -154,6 +153,12 @@ public class ZxMessageServiceImpl extends BaseServiceImpl implements IZxMessageS
 		LOGGER.info("ZxMessageServiceImpl.saveZxMessagePraiseCount, input::" + input.getParams().toString());
 		Map<String, Object> params = input.getParams();
 		try {
+			int i = getBaseDao().getTotalCount("ZxMessageMapper.queryMessageViewCount", params);
+			if (i > 0) {
+				output.setCode("2");
+				output.setMsg("已新增浏览次数");
+				return;
+			}
 			// 新增众享信息浏览次数
 			int count = getBaseDao().insert("ZxMessageMapper.saveZxMessageBrowseCount", params);
 			if (count < 1) {

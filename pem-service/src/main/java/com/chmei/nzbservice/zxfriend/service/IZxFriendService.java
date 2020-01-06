@@ -112,4 +112,12 @@ public interface IZxFriendService {
 	 */
 	void queryZxFriendCircleList(InputDTO input, OutputDTO output) throws NzbServiceException;
 
+	/**
+	 * 修改好友备注
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	void updateZxFriendRemarkInfo(InputDTO input, OutputDTO output) throws NzbServiceException;
 }

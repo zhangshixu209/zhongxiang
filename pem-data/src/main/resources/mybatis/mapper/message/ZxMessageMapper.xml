@@ -323,7 +323,8 @@
       a.zx_message_text AS zxMessageText,
       ( SELECT COUNT( 1 ) FROM zx_app_message_view_count v WHERE v.zx_message_id = a.zx_message_id ) AS zxMessageViewCount,
       b.head_img_url AS headImgUrl,
-      b.nickname AS nickname
+      b.nickname AS nickname,
+      a.zx_message_date AS zxMessageDate
     FROM zx_app_message AS a
     LEFT JOIN t_member b ON a.member_account = b.member_account
     <where>
@@ -348,5 +349,21 @@
       </if>
     </where>
   </select>
+
+  <!-- 统计是否浏览过该众享信息 -->
+  <select id="queryMessageViewCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+    COUNT(1)
+    FROM zx_app_message_view_count a
+    <where>
+      <if test="memberAccount != null and memberAccount != ''">
+        a.member_account = #{memberAccount}
+      </if>
+      <if test="zxMessageId != null and zxMessageId != ''">
+        AND a.zx_message_id = #{zxMessageId}
+      </if>
+    </where>
+  </select>
+
 
 </mapper>

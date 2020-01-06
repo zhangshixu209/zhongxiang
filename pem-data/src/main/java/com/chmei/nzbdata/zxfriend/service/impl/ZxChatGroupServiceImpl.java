@@ -80,7 +80,7 @@ public class ZxChatGroupServiceImpl extends BaseServiceImpl implements IZxChatGr
 			String walletBalance = (String) item.get("walletBalance");
 			if(Double.valueOf(walletBalance) < money){
 				output.setCode("-1");
-				output.setMsg("余额不足，请及时充值！");
+				output.setMsg("钱包余额不足");
 				return;
 			}
 			item.put("walletBalance", Double.valueOf(walletBalance) - money);

@@ -241,4 +241,16 @@
       #{id}
     </foreach>
   </update>
+
+  <!-- 修改好友备注 -->
+  <update id="updateZxFriendRemarkInfo" parameterType="java.util.Map">
+    update zx_app_friend
+    <set>
+      <if test="zxFriendRemark != null and zxFriendRemark != ''">
+        zx_friend_remark = #{zxFriendRemark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where zx_friend_user_id = #{zxFriendUserId} AND zx_friend_friend_id = #{zxFriendFriendId}
+  </update>
+
 </mapper>

@@ -95,7 +95,7 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 					String advertisingMoney = (String) item.get("advertisingFee");
 					if(Double.valueOf(advertisingMoney) < Constants.TRANSFER_MONEY){
 						output.setCode("-1");
-						output.setMsg("广告费钱包余额不足!");
+						output.setMsg("广告费不足!");
 						return;
 					}
 					// 判断是否有分红任务 去最后一条
@@ -205,7 +205,7 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 				}
 			} else {
 				output.setCode("-1");
-				output.setMsg("请先去激活分红模块!");
+				output.setMsg("请先开通广告分红功能!");
 				return;
 			}
 		} catch (Exception e) {
