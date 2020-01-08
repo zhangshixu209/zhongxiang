@@ -322,9 +322,8 @@
       a.zx_message_date AS zxMessageDate,
       a.zx_message_text AS zxMessageText,
       ( SELECT COUNT( 1 ) FROM zx_app_message_view_count v WHERE v.zx_message_id = a.zx_message_id ) AS zxMessageViewCount,
-      b.head_img_url AS headImgUrl,
-      b.nickname AS nickname,
-      a.zx_message_date AS zxMessageDate
+      IFNULL(b.head_img_url, '') AS headImgUrl,
+      IFNULL(b.nickname, b.member_account) AS nickname
     FROM zx_app_message AS a
     LEFT JOIN t_member b ON a.member_account = b.member_account
     <where>

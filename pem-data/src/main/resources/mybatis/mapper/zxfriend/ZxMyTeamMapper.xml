@@ -124,6 +124,7 @@
 		a.id AS id,
 		a.member_account AS memberAccount,
 		IFNULL( b.real_name, a.nickname ) AS realName,
+		IFNULL(a.head_img_url, '') AS headImgUrl,
 		(select count(1) FROM zx_app_my_team WHERE zx_app_my_team.team_parent_id = #{memberAccount,jdbcType=VARCHAR}) AS count
       FROM
 		t_member a

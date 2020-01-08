@@ -212,8 +212,8 @@
       a.zx_friend_friend_id AS zxFriendFriendId,
       a.zx_friend_grouping_id AS zxFriendGroupingId,
       a.zx_friend_friend_type AS zxFriendFriendType,
-      a.zx_friend_remark AS zxFriendRemark,
-      b.head_img_url AS headImgUrl,
+      IFNULL( a.zx_friend_remark, '') AS zxFriendRemark,
+      IFNULL( b.head_img_url, '') AS headImgUrl,
       IFNULL( b.nickname, b.member_account ) AS nickName
   FROM
       zx_app_friend AS a

@@ -211,7 +211,7 @@
     SELECT
       a.id AS id,
       IFNULL( a.member_account, '' ) AS memberAccount,
-      IFNULL( a.nickname, '' ) AS nickname,
+      IFNULL( a.nickname, a.member_account ) AS nickname,
       IFNULL( a.member_pwd, '' ) AS memberPwd,
       IFNULL( a.head_img_url, '' ) AS headImgUrl,
       IFNULL( b.real_name, '') AS realName,

@@ -208,7 +208,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 						walletMoneyInfo.put("walletInfoAddOrMinus", "-");
 						walletMoneyInfo.put("walletInfoUserId", item.get("memberAccount"));
 						walletMoneyInfo.put("walletInfoMoney", 100.0);
-						walletMoneyInfo.put("walletInfoFrom", "激活分红");
+						walletMoneyInfo.put("walletInfoFrom", "开通广告分红手续费");
 						getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
 						// 记录结束
 						// 广告分红激活
@@ -265,7 +265,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 			if (null != item) {
 				if ((Double.valueOf(advertisingFee) < money)) {
 					output.setCode("-1");
-					output.setMsg("余额不足，不允许追加！");
+					output.setMsg("广告费不足");
 					return;
 				}
 			}
@@ -454,12 +454,12 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 	 * @param output 返回对象
 	 * @throws NzbDataException 自定义异常
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void queryRecommendInfo(InputDTO input, OutputDTO output) throws NzbDataException {
 		LOGGER.info("AdShareOutBonusServiceImpl.queryRecommendInfo, input::" + input.getParams().toString());
 		Map<String, Object> params = input.getParams();
 		try {
-			@SuppressWarnings("unchecked")
 			Map<String, Object> item = (Map<String, Object>) getBaseDao().queryForObject(
 					"MemberMapper.queryMemberDetail", params);
 			if (null != item) {
@@ -473,12 +473,20 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				String match = "^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$";
 				if (!memberAccount.matches(match)) {
 					output.setCode("-1");
-					output.setMsg("推荐人不存在！");
+					output.setMsg("请输入正确的推荐人账号！");
+					return;
+				}
+				// 查询广告分红信息
+				Map<String, Object> shareOutBonus = (Map<String, Object>) getBaseDao().queryForObject(
+						"ShareOutBonusMapper.queryShareOutBonusDetail", params);
+				if (null == shareOutBonus && "N".equals(shareOutBonus.get("adShareOutBonusType"))) {
+					output.setCode("-1");
+					output.setMsg("此会员不具备推荐资格！");
 					return;
 				}
 			} else {
 				output.setCode("-1");
-				output.setMsg("推荐人不存在！");
+				output.setMsg("请输入正确的推荐人账号！");
 				return;
 			}
 			output.setCode("0");
@@ -506,7 +514,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 			Integer money_  = (Integer) params.get("money");
 			if (Integer.MAX_VALUE < money_  || Integer.MIN_VALUE > money_) {
 				output.setCode("-1");
-				output.setMsg("请输入正确的金额！");
+				output.setMsg("可用分红金额不足！");
 				return;
 			}
 			Double money = money_ / 1.0;
@@ -529,7 +537,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				Double poundage = money * 0.01;
 				if(zxMyWalletAmount < poundage){
 					output.setCode("-1");
-					output.setMsg("余额不足，请及时充值！");
+					output.setMsg("钱包余额不足");
 					return;
 				}
 			}
@@ -560,15 +568,15 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				output.setCode("0");
 				output.setMsg("分红成功！");
 				// 添加推送消息
-				Map<String, Object> map = new HashMap<>();
-				map.put("id", getSequence());
-				map.put("messageTitle", "分红成功");
-				map.put("messageStatus", "1");
-				map.put("messageContent", "分红成功，请到钱包和广告费明细查询！");
-				map.put("messageType", com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1001);
-				map.put("memberAccount", userId);
-				// 添加推送消息
-				getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
+//				Map<String, Object> map = new HashMap<>();
+//				map.put("id", getSequence());
+//				map.put("messageTitle", "分红成功");
+//				map.put("messageStatus", "1");
+//				map.put("messageContent", "分红成功，请到钱包和广告费明细查询！");
+//				map.put("messageType", com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1001);
+//				map.put("memberAccount", userId);
+//				// 添加推送消息
+//				getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
 				return;
 			}
 		} catch (Exception e) {
@@ -616,22 +624,24 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				// 3. 计算分红天数: 新会员分红周期为10天，推荐一位有效会员，周期为8天，两位6天，3位4天，4位2天，5位以上1天
 				// 3.2 30天后，如果你2个直推没再推荐新人，你2000的额度不滑落，但是分红周期由6天重新滑落到10天。如果是分够了10轮，分红周期滑落到30天。
 				int day = 10;
-				switch (size){
-					case 1 :
-						day = 8;
-						break;
-					case 2 :
-						day = 6;
-						break;
-					case 3 :
-						day = 4;
-						break;
-					case 4 :
-						day = 2;
-						break;
-					default:
-						day = 1;
-						break;
+				if (size > 0) {
+					switch (size){
+						case 1 :
+							day = 8;
+							break;
+						case 2 :
+							day = 6;
+							break;
+						case 3 :
+							day = 4;
+							break;
+						case 4 :
+							day = 2;
+							break;
+						default:
+							day = 1;
+							break;
+					}
 				}
 				map.put("days",day);
 				map.put("persons",size);

@@ -93,6 +93,7 @@
       <if test="countyName != null and countyName != ''">
         county_name,
       </if>
+      red_packet_img_type,
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="redPacketImgId != null">
@@ -147,6 +148,7 @@
       <if test="countyName != null and countyName != ''">
         #{countyName,jdbcType=VARCHAR},
       </if>
+        #{redPacketImgType}
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
@@ -238,6 +240,7 @@
           a.red_packet_img_id = #{redPacketImgId}
         </if>
       </where>
+    ORDER BY a.red_packet_img_date ASC
   </select>
 
   <!-- 新增抢红包记录 -->
@@ -282,9 +285,13 @@
       DATE_FORMAT(a.red_packet_img_date,'%m月%d日') AS redPacketDate,
       (red_packet_img_count - red_packet_img_stock) AS robRedPacketCount,
       '图文广告' AS redPacketType
-  FROM
+    FROM
       zx_app_img_red_packet AS a
-  WHERE a.member_account = #{memberAccount}
+    WHERE a.member_account = #{memberAccount}
+    ORDER BY a.red_packet_img_date DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
   </select>
 
   <!--根据用户ID和红包ID查询红包详细信息 -->
@@ -305,7 +312,8 @@
       a.red_packet_img_sex AS redPacketImgSex,
       a.red_packet_img_age_start AS redPacketImgAgeStart,
       a.red_packet_img_age_end AS redPacketImgAgeEnd,
-      a.red_packet_img_date AS redPacketImgDate
+      a.red_packet_img_date AS redPacketImgDate,
+      a.red_packet_img_type AS redPacketImgType
   FROM
       zx_app_img_red_packet a
       WHERE a.red_packet_img_id = #{redPacketImgId} AND a.member_account = #{memberAccount}

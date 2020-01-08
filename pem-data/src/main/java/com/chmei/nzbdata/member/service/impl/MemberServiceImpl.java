@@ -193,8 +193,35 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
     public void saveMemberRechargeInfo(InputDTO input, OutputDTO output) throws NzbDataException {
         Map<String, Object> params = input.getParams();
         try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> item = (Map<String, Object>) getBaseDao().
+                    queryForObject("MemberMapper.queryMemberDetail", params);
+            String oldWalletBalance = (String) item.get("walletBalance");
+            String oldAdvertisingFee = (String) item.get("advertisingFee");
             int count = getBaseDao().update("MemberMapper.saveMemberRechargeInfo", params);
-            if (count < 1) {
+            if (count > 0) {
+                String walletBalance = (String) params.get("walletBalance");
+                String advertisingFee = (String) params.get("advertisingFee");
+                if (StringUtil.isNotEmpty(advertisingFee)) {
+                    // 后台充值广告费
+                    Map<String, Object> adRecord = new HashMap<>();
+                    adRecord.put("advertisingInfoId", getSequence());
+                    adRecord.put("advertisingInfoAddOrMinus", "+");
+                    adRecord.put("advertisingInfoUserId", item.get("memberAccount"));
+                    adRecord.put("advertisingInfoMoney", Double.valueOf(advertisingFee) - Double.valueOf(oldAdvertisingFee));
+                    adRecord.put("advertisingInfoFrom", "后台充值");
+                    getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
+                } else {
+                    // 后台充值钱包
+                    Map<String, Object> walletMoneyInfo = new HashMap<>();
+                    walletMoneyInfo.put("walletInfoId", getSequence());
+                    walletMoneyInfo.put("walletInfoAddOrMinus", "+");
+                    walletMoneyInfo.put("walletInfoUserId", item.get("memberAccount"));
+                    walletMoneyInfo.put("walletInfoMoney", Double.valueOf(walletBalance) - Double.valueOf(oldWalletBalance));
+                    walletMoneyInfo.put("walletInfoFrom", "后台充值");
+                    getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
+                }
+            } else {
                 output.setCode("-1");
                 output.setMsg("保存失败");
             }

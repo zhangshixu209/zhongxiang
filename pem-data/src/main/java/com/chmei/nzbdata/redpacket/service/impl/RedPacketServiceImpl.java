@@ -281,8 +281,13 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 							updateUser.put("memberAccount", params.get("robUserId"));
 							// 使用那个发布的就进入那个钱包
 							BigDecimal money = (BigDecimal) maps.get("redPacketMoney");
+							String walletBalance = (String) appUser.get("walletBalance");
 							String advertisingFee = (String) appUser.get("advertisingFee");
-							updateUser.put("advertisingFee", BigDecimal.valueOf(Double.valueOf(advertisingFee)).doubleValue() + money.doubleValue());
+							if ("0".equals(redPacket.get("redPacketType"))) {
+								updateUser.put("walletBalance", BigDecimal.valueOf(Double.valueOf(walletBalance)).doubleValue() + money.doubleValue());
+							} else {
+								updateUser.put("advertisingFee", BigDecimal.valueOf(Double.valueOf(advertisingFee)).doubleValue() + money.doubleValue());
+							}
 							int i = getBaseDao().update("MemberMapper.updateMemberBalance", updateUser);
 							if (i > 0) {
 								Map<String, Object> redPac = new HashMap<>();
@@ -290,14 +295,25 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 								Map<String, Object> zxAppUser1 = (Map<String, Object>) getBaseDao().queryForObject(
 										"MemberMapper.queryMemberDetail", redPac);
 								if (null != zxAppUser1) {
-									// 广告钱包记录
-									Map<String, Object> adRecord = new HashMap<>();
-									adRecord.put("advertisingInfoId", getSequence());
-									adRecord.put("advertisingInfoAddOrMinus", "+");
-									adRecord.put("advertisingInfoUserId", robUserId);
-									adRecord.put("advertisingInfoMoney", money);
-									adRecord.put("advertisingInfoFrom", "钱包红包--来自" + zxAppUser1.get("nickname"));
-									getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
+									if ("0".equals(redPacket.get("redPacketType"))) {
+										// 钱包记录
+										Map<String, Object> walletMoneyInfo = new HashMap<>();
+										walletMoneyInfo.put("walletInfoId", getSequence());
+										walletMoneyInfo.put("walletInfoAddOrMinus", "+");
+										walletMoneyInfo.put("walletInfoUserId", robUserId);
+										walletMoneyInfo.put("walletInfoMoney", money);
+										walletMoneyInfo.put("walletInfoFrom", "众享广告红包--来自" + zxAppUser1.get("nickname"));
+										getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
+									} else {
+										// 广告钱包记录
+										Map<String, Object> adRecord = new HashMap<>();
+										adRecord.put("advertisingInfoId", getSequence());
+										adRecord.put("advertisingInfoAddOrMinus", "+");
+										adRecord.put("advertisingInfoUserId", robUserId);
+										adRecord.put("advertisingInfoMoney", money);
+										adRecord.put("advertisingInfoFrom", "众享广告红包--来自" + zxAppUser1.get("nickname"));
+										getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
+									}
 								}
 								maps = (Map<String, Object>) getBaseDao().queryForObject("RedPacketMapper.selectRedPacketInfoByInfoId", maps);
 								output.setCode("0"); // 3

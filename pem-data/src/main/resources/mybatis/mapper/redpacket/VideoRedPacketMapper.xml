@@ -101,6 +101,7 @@
       <if test="redPacketVideoUrl != null">
         red_packet_video_url,
       </if>
+      red_packet_video_type,
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
         #{redPacketVideoId,jdbcType=BIGINT},
@@ -162,6 +163,7 @@
       <if test="redPacketVideoUrl != null">
         #{redPacketVideoUrl,jdbcType=VARCHAR},
       </if>
+        #{redPacketVideoType}
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
@@ -254,6 +256,7 @@
         a.red_packet_video_id = #{redPacketVideoId}
       </if>
     </where>
+    ORDER BY a.red_packet_video_date ASC
   </select>
 
   <!-- 新增抢红包记录 -->
@@ -298,9 +301,13 @@
       DATE_FORMAT(a.red_packet_video_date,'%m月%d日') AS redPacketDate,
       (a.red_packet_video_count - a.red_packet_video_stock) AS robRedPacketCount,
       '视频广告' AS redPacketType
-  FROM
+    FROM
       zx_app_video_red_packet AS a
-  WHERE a.red_packet_video_user_id = #{memberAccount}
+    WHERE a.red_packet_video_user_id = #{memberAccount}
+    ORDER BY a.red_packet_video_date DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
   </select>
 
   <!--根据用户ID和红包ID查询红包详细信息 -->
@@ -321,7 +328,8 @@
       a.red_packet_video_sex AS redPacketVideoSex,
       a.red_packet_video_age_start AS redPacketVideoAgeStart,
       a.red_packet_video_age_end AS redPacketVideoAgeEnd,
-      a.red_packet_video_date AS redPacketVideoDate
+      a.red_packet_video_date AS redPacketVideoDate,
+      a.red_packet_video_type AS redPacketVideoType
   FROM
       zx_app_video_red_packet a
       WHERE a.red_packet_video_id = #{redPacketVideoId} AND a.red_packet_video_user_id = #{memberAccount}

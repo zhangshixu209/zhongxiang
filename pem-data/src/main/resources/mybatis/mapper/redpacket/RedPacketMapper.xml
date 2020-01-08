@@ -92,6 +92,7 @@
       <if test="countyName != null and countyName != ''">
           county_name,
       </if>
+        red_packet_type,
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="redPacketId != null">
@@ -146,6 +147,7 @@
         <if test="countyName != null and countyName != ''">
             #{countyName,jdbcType=VARCHAR},
         </if>
+            #{redPacketType},
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
@@ -236,6 +238,7 @@
             a.red_packet_id = #{redPacketId}
         </if>
       </where>
+      ORDER BY a.red_packet_date ASC
   </select>
 
   <!-- 新增抢红包记录 -->
@@ -280,9 +283,13 @@
       DATE_FORMAT(a.red_packet_date,'%m月%d日') AS redPacketDate,
       (red_packet_count - red_packet_stock) AS robRedPacketCount,
       '众享红包' AS redPacketType
-  FROM
+    FROM
       zx_app_red_packet AS a
-  WHERE a.member_account = #{memberAccount}
+    WHERE a.member_account = #{memberAccount}
+    ORDER BY a.red_packet_date DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+        LIMIT #{start}, #{limit}
+    </if>
   </select>
 
   <!-- 判断是否已经答错过 -->
@@ -309,7 +316,8 @@
       a.red_packet_sex AS redPacketSex,
       a.red_packet_age_start AS redPacketAgeStart,
       a.red_packet_age_end AS redPacketAgeEnd,
-      a.red_packet_date AS redPacketDate
+      a.red_packet_date AS redPacketDate,
+      a.red_packet_type AS redPacketType
   FROM
       zx_app_red_packet a
       WHERE a.red_packet_id = #{redPacketId} AND member_account = #{memberAccount}

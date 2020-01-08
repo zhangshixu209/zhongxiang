@@ -5,10 +5,12 @@ import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
 import com.chmei.nzbdata.member.service.ITransferAccountsService;
+import com.chmei.nzbdata.util.StringUtil;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -74,14 +76,36 @@ public class TransferAccountsServiceImpl extends BaseServiceImpl implements ITra
                 }
                 // 更新用户余额
                 getBaseDao().update("MemberMapper.saveMemberRechargeInfo", userInfo1);
-
+                // 1 根据用户账户查询拥有的众享好友
+                Map<String, Object> friend = new HashMap<>();
+                friend.put("zxFriendUserId", memberAccount);
+                friend.put("zxFriendFriendId", friendMemberAccount);
+                List<Map<String, Object>> friendList = getBaseDao().queryForList("ZxFriendMapper.queryZxFriendList", friend);
+                String friendRemark = ""; // 好友备注
+                if (null != friendList && friendList.size() > 0) {
+                    friendRemark = (String) friendList.get(0).get("zxFriendRemark");
+                    if (StringUtil.isEmpty(friendRemark)) {
+                        friendRemark = (String) item2.get("nickname");
+                    }
+                }
+                // 1 根据用户账户查询拥有的众享好友
+                Map<String, Object> mine = new HashMap<>();
+                mine.put("zxFriendUserId", friendMemberAccount);
+                mine.put("zxFriendFriendId", memberAccount);
+                List<Map<String, Object>> mineList = getBaseDao().queryForList("ZxFriendMapper.queryZxFriendList", mine);
+                String mineRemark = ""; // 好友对我的备注
+                if (null != mineList && mineList.size() > 0) {
+                    mineRemark = (String) mineList.get(0).get("zxFriendRemark");
+                    if (StringUtil.isEmpty(mineRemark)) {
+                        mineRemark = (String) item.get("nickname");
+                    }
+                }
                 //增加记录
                 if("0".equals(accountType)){
-                    addMessage(memberAccount,transferMoney,memberAccount,friendMemberAccount,"0",1);
+                    addMessage(memberAccount,transferMoney,mineRemark,friendRemark,"0",1);
                 } else {
-                    addMessage(memberAccount,transferMoney,memberAccount,friendMemberAccount,"1",1);
+                    addMessage(memberAccount,transferMoney,mineRemark,friendRemark,"1",1);
                 }
-
                 Map<String, Object> userInfo2 = new HashMap<>();
                 //第二步增加收账人余额
                 userInfo2.put("id", item2.get("id")); // 会员ID
@@ -95,9 +119,9 @@ public class TransferAccountsServiceImpl extends BaseServiceImpl implements ITra
 
                 //增加记录
                 if("0".equals(accountType)){
-                    addMessage(friendMemberAccount,transferMoney,memberAccount,friendMemberAccount,"0",0);
+                    addMessage(friendMemberAccount,transferMoney,mineRemark,friendRemark,"0",0);
                 } else {
-                    addMessage(friendMemberAccount,transferMoney,memberAccount,friendMemberAccount,"1",0);
+                    addMessage(friendMemberAccount,transferMoney,mineRemark,friendRemark,"1",0);
                 }
                 output.setCode("0");
                 output.setMsg("转账成功!");

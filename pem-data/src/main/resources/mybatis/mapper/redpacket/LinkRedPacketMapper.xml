@@ -96,6 +96,7 @@
       <if test="redPacketLinkUrl != null and redPacketLinkUrl != ''">
         red_packet_link_url,
       </if>
+        red_packet_link_type,
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="redPacketLinkId != null">
@@ -153,6 +154,7 @@
       <if test="redPacketLinkUrl != null and redPacketLinkUrl != ''">
         #{redPacketLinkUrl,jdbcType=VARCHAR},
       </if>
+        #{redPacketLinkType},
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
@@ -244,6 +246,7 @@
         a.red_packet_link_id = #{redPacketLinkId}
       </if>
     </where>
+    ORDER BY a.red_packet_link_date ASC
   </select>
 
   <!-- 新增抢红包记录 -->
@@ -288,9 +291,13 @@
       DATE_FORMAT(a.red_packet_link_date,'%m月%d日') AS redPacketDate,
       (red_packet_link_count - red_packet_link_stock) AS robRedPacketCount,
       '链接广告' AS redPacketType
-  FROM
+    FROM
       zx_app_link_red_packet AS a
-  WHERE a.member_account = #{memberAccount}
+    WHERE a.member_account = #{memberAccount}
+    ORDER BY a.red_packet_link_date DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
   </select>
 
   <!--根据用户ID和红包ID查询红包详细信息 -->
@@ -311,7 +318,8 @@
       a.red_packet_link_sex AS redPacketLinkSex,
       a.red_packet_link_age_start AS redPacketLinkAgeStart,
       a.red_packet_link_age_end AS redPacketLinkAgeEnd,
-      a.red_packet_link_date AS redPacketLinkDate
+      a.red_packet_link_date AS redPacketLinkDate,
+      a.red_packet_link_type AS redPacketLinkType
   FROM
       zx_app_link_red_packet a
       WHERE a.red_packet_link_id = #{redPacketLinkId} AND a.member_account = #{memberAccount}

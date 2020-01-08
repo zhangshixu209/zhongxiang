@@ -183,7 +183,7 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 						adRecord.put("advertisingInfoAddOrMinus", "-");
 						adRecord.put("advertisingInfoUserId", memberAccount);
 						adRecord.put("advertisingInfoMoney", Constants.TRANSFER_MONEY);
-						adRecord.put("advertisingInfoFrom", "广告费转让");
+						adRecord.put("advertisingInfoFrom", "转让广告费");
 						getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
 						// 进行记录转让信息
 						Map<String, Object> record_ = new HashMap<>();
@@ -369,7 +369,7 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 					adRecord.put("advertisingInfoAddOrMinus", "+");
 					adRecord.put("advertisingInfoUserId", params.get("memberAccount"));
 					adRecord.put("advertisingInfoMoney", 100d);
-					adRecord.put("advertisingInfoFrom", "取消广告费转让");
+					adRecord.put("advertisingInfoFrom", "取消转让");
 					getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
 				}
 				output.setCode("0");
