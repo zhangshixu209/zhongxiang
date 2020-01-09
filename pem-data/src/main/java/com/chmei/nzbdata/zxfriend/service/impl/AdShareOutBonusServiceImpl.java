@@ -525,7 +525,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 					"ShareOutBonusMapper.findTaskByUserIdAndMarkS", params);
 			if (taskByUserIdAndMarkS != null) {
 				output.setCode("-1");
-				output.setMsg("分红任务正在进行,请结束之后再申请下一个！");
+				output.setMsg("请于此次分红结束后再次申请！");
 				return;
 			}
 			// 查询用户信息

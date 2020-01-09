@@ -4,6 +4,7 @@ import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbcommon.cmutil.BeanUtil;
 import com.chmei.nzbcommon.util.StringUtil;
 import com.chmei.nzbmanage.common.controller.BaseController;
+import com.chmei.nzbmanage.common.util.SmUtils;
 import com.chmei.nzbmanage.member.bean.MemberForm;
 import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -54,7 +55,19 @@ public class RealNameAuthController extends BaseController {
         OutputDTO outputDTO;
         try {
             Map<String, Object> map = BeanUtil.convertBean2Map(memberForm);
-            outputDTO = getOutputDTO(map, "realNameAuthService", "saveRealNameAuthInfo");
+            // 修改实名信息
+            if (StringUtil.isNotEmpty(memberForm.getCardNum())) {
+                OutputDTO output = SmUtils.authcIdCardReal(memberForm.getCardNum(), memberForm.getRealName());
+                if ("0".equals(output.getCode())) {
+                    output = getOutputDTO(map, "realNameAuthService", "saveRealNameAuthInfo");
+                    return output;
+                } else {
+                    return output;
+                }
+            } else {
+                // 修改更多信息
+                outputDTO = getOutputDTO(map, "realNameAuthService", "saveRealNameAuthInfo");
+            }
         } catch (Exception e) {
             LOGGER.error("保存失败", e);
             outputDTO = new OutputDTO("1", "系统错误");
@@ -72,7 +85,19 @@ public class RealNameAuthController extends BaseController {
         OutputDTO outputDTO;
         try {
             Map<String, Object> map = BeanUtil.convertBean2Map(memberForm);
-            outputDTO = getOutputDTO(map, "realNameAuthService", "updateRealNameAuthInfo");
+            // 修改实名信息
+            if (StringUtil.isNotEmpty(memberForm.getCardNum())) {
+                OutputDTO output = SmUtils.authcIdCardReal(memberForm.getCardNum(), memberForm.getRealName());
+                if ("0".equals(output.getCode())) {
+                    output = getOutputDTO(map, "realNameAuthService", "updateRealNameAuthInfo");
+                    return output;
+                } else {
+                    return output;
+                }
+            } else {
+                // 修改更多信息
+                outputDTO = getOutputDTO(map, "realNameAuthService", "updateRealNameAuthInfo");
+            }
         } catch (Exception e) {
             LOGGER.error("保存失败", e);
             outputDTO = new OutputDTO("1", "系统错误");

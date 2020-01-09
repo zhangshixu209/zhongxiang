@@ -250,7 +250,7 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 				walletMoneyInfo.put("walletInfoAddOrMinus", "+");
 				walletMoneyInfo.put("walletInfoUserId", params.get("fromMemberAccount"));
 				walletMoneyInfo.put("walletInfoMoney", 100d);
-				walletMoneyInfo.put("walletInfoFrom", "购买广告费");
+				walletMoneyInfo.put("walletInfoFrom", "出售广告费");
 				getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
 			}
 			// 成交后，购买方减少我的钱包100，广告费钱包增加100，出售方刚好相反。

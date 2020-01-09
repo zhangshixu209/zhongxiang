@@ -75,24 +75,32 @@ public class SmUtils {
         }
     }
 
-    public static AjaxResult authcIdCardReal(String idCardNo,String realName){
+    public static OutputDTO authcIdCardReal(String idCardNo,String realName){
+        OutputDTO outputDTO = new OutputDTO();
         String url = "http://op.juhe.cn/idcard/query";
         Map<String,String> params = new HashMap();//请求参数
         params.put("idcard",idCardNo);
         params.put("realname",realName);
-        params.put("key","4f8bc1dc4eb3f1d6ef3092a3f98d5e49");
+        params.put("key",APP_KEY_CARD);
         try {
             String result = net(url, params, "GET");
             Map map = JSON.unmarshal(result, Map.class);
             if((int) map.get("error_code") == 0){
-                Object obj = map.get("result");
-                return AjaxResult.success(0,"验证成功!",obj);
+                Map obj = (Map) map.get("result");
+                if ((int) obj.get("res") == 1) {
+                    outputDTO.setCode("0");
+                    outputDTO.setMsg("验证成功！");
+                    outputDTO.setItem(obj);
+                } else {
+                    return new OutputDTO("-1", "身份证号与姓名不一致!");
+                }
+                return outputDTO;
             }
             log.info("身份验证失败,详细信息如下:" + result);
-            return AjaxResult.error(1,"验证失败!",null);
+            return new OutputDTO("1", "验证失败!");
         } catch (Exception e) {
             e.printStackTrace();
-            return AjaxResult.error(500,"服务器错误(1,-1)",null);
+            return new OutputDTO("500", "服务器错误(1,-1)!");
         }
     }
 
@@ -193,7 +201,7 @@ public class SmUtils {
          *
          */
 
-        System.out.println(authcIdCardReal("411422199103285159", "时柳青"));
+        System.out.println(authcIdCardReal("410526199312176979", "张士旭"));
     }
 
     /**

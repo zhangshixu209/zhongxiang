@@ -461,6 +461,8 @@ public class MemberController extends BaseController {
             if (StringUtil.isEmpty(paymentPwd)){
                 return new OutputDTO("-1", "请设置支付密码");
             }
+            outputDTO.setCode("0");
+            outputDTO.setMsg("查询成功");
         } catch (Exception e) {
             LOGGER.error("保存失败", e);
             outputDTO = new OutputDTO("1", "系统错误");
