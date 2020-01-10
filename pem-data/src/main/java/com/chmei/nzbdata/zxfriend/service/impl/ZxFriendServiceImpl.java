@@ -2,6 +2,7 @@ package com.chmei.nzbdata.zxfriend.service.impl;
 
 import com.chmei.nzbcommon.cmbean.InputDTO;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
+import com.chmei.nzbcommon.cmutil.JsonUtil;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
 import com.chmei.nzbdata.zxfriend.service.IZxFriendService;
@@ -489,6 +490,40 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 			}
 			output.setCode("0");
 			output.setMsg("修改备注成功");
+		} catch (Exception e) {
+			LOGGER.error("系统异常", e);
+		}
+	}
+
+	/**
+	 * 查询众享好友手机通讯录列表
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void queryZxFriendPhoneList(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		List<Map<String, Object>> listAll = new ArrayList<>(); // 存储组合好的List
+		try {
+			String mobileContacts = (String) params.get("mobileContacts"); // 手机通讯录联系人
+			@SuppressWarnings("unchecked")
+			List<Map<String, Object>> mobileList = JsonUtil.convertJson2Object(mobileContacts, List.class);
+			// 2 查询出所有的注册用户
+			List<Map<String, Object>> memberList = getBaseDao().queryForList("MemberMapper.queryMemberAccountList", params);
+			if (null != mobileList && mobileList.size() > 0) {
+				for (Map<String, Object> map : mobileList) {
+					for (Map<String, Object> map_ : memberList) {
+						// 对比两个list中的字段信息
+						if (map.get("phoneNumber").equals(map_.get("memberAccount"))) {
+							listAll.add(map);
+						}
+					}
+				}
+			}
+			output.setMsg("查询成功");
+			output.setItems(listAll);
 		} catch (Exception e) {
 			LOGGER.error("系统异常", e);
 		}

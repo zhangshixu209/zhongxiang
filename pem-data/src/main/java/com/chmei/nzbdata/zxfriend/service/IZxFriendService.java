@@ -121,4 +121,13 @@ public interface IZxFriendService {
 	 */
 	void updateZxFriendRemarkInfo(InputDTO input, OutputDTO output) throws NzbDataException;
 
+	/**
+	 * 查询众享好友手机通讯录列表
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	void queryZxFriendPhoneList(InputDTO input, OutputDTO output) throws NzbDataException;
+
 }

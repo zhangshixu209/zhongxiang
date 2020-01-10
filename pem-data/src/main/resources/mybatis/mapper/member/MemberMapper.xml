@@ -332,4 +332,15 @@
     where member_account = #{memberAccount}
   </update>
 
+  <!-- 批量查询用户账号 -->
+  <select id="queryMemberAccountList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        member_account AS memberAccount
+    FROM t_member
+    <!--WHERE member_account IN
+    <foreach item="mobileContacts" index="index" collection="mobileContacts"
+             open="(" separator="," close=")"> ${mobileContacts}
+    </foreach>-->
+  </select>
+
 </mapper>

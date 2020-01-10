@@ -87,6 +87,11 @@ public class ZxFriendForm extends BaseForm {
 
 	private String zxFriendGroupingName;
 
+	/**
+	 * 手机通讯录
+	 */
+	private String mobileContacts;
+
 	public String getGroupId() {
 		return groupId;
 	}
@@ -205,5 +210,13 @@ public class ZxFriendForm extends BaseForm {
 
 	public void setZxFriendGroupingName(String zxFriendGroupingName) {
 		this.zxFriendGroupingName = zxFriendGroupingName;
+	}
+
+	public String getMobileContacts() {
+		return mobileContacts;
+	}
+
+	public void setMobileContacts(String mobileContacts) {
+		this.mobileContacts = mobileContacts;
 	}
 }
