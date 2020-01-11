@@ -39,4 +39,18 @@ public class ZxChatGroupController extends BaseController {
         return outputDTO;
     }
 
+    /**
+     * 校验当前群组升级费用
+     *
+     * @param zxFriendForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/checkGradeChatGroupInfo")
+    public OutputDTO checkGradeChatGroupInfo(@ModelAttribute ZxFriendForm zxFriendForm) {
+        LOGGER.info("校验当前群组升级费用...ZxChatGroupController.checkGradeChatGroupInfo()...");
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxFriendForm);
+        OutputDTO outputDTO = getOutputDTO(params, "zxChatGroupService", "checkGradeChatGroupInfo");
+        return outputDTO;
+    }
+
 }

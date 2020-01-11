@@ -92,7 +92,7 @@ public class ZxChatGroupServiceImpl extends BaseServiceImpl implements IZxChatGr
 			walletMoneyInfo.put("walletInfoAddOrMinus", "-");
 			walletMoneyInfo.put("walletInfoUserId", item.get("memberAccount"));
 			walletMoneyInfo.put("walletInfoMoney", money);
-			walletMoneyInfo.put("walletInfoFrom", "升级群扣除");
+			walletMoneyInfo.put("walletInfoFrom", "支付群升级费用");
 			getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
 			// 修改环信相对应的群容量信息
 			ModifyGroup modifyGroup = new ModifyGroup();
@@ -101,6 +101,61 @@ public class ZxChatGroupServiceImpl extends BaseServiceImpl implements IZxChatGr
 			Map<String,Object> maps = gson.fromJson(obj.toString(), map.getClass());
 			output.setCode("0");
 			output.setMsg("群升级成功！");
+			output.setItem(maps);
+		} catch (Exception e) {
+			LOGGER.error("系统异常", e);
+		}
+	}
+
+	/**
+	 * 校验当前群组升级费用
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public void checkGradeChatGroupInfo(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			String groupId = (String) params.get("groupId");
+			Integer goal = (Integer) params.get("goal");
+			String[] groupIds = { groupId }; // 单纯String 转数组org.apache.commons.lang3.ArrayUtils.toArray(groupId);
+			Object result = easemobChatGroup.getChatGroupDetails(groupIds);
+			LOGGER.info("imGroup============:"+gson.toJson(result));
+			if(result == null){
+				output.setCode("-1");
+				output.setMsg("群组不存在！");
+				return;
+			}
+			Map<String, Object> map = new HashMap<>();
+			map = gson.fromJson(result.toString(), map.getClass());
+			List<Map<String,Object>> data =  (ArrayList)map.get("data");
+			Double d = Double.parseDouble(data.get(0).get("maxusers").toString());
+			Integer maxusers = d.intValue();
+			Map<String,Object> maps = new HashMap<>();
+			if(maxusers == 2000) { // 最大2000人
+				output.setCode("2");
+				output.setMsg("群容量最大为2000人！");
+				return;
+			}
+			if(maxusers >= goal){
+				output.setCode("-1");
+				output.setMsg("不可升级！");
+				if (maxusers == 1000) {
+					goal = 1500;
+				} else if (maxusers == 1500){
+					goal = 2000;
+				}
+				Double money = groupGoal(maxusers, goal); // 计算群升级费用
+				maps.put("money", money);
+			} else {
+				Double money = groupGoal(maxusers, goal); // 计算群升级费用
+				maps.put("money", money);
+				output.setCode("0");
+				output.setMsg("查询成功！");
+			}
 			output.setItem(maps);
 		} catch (Exception e) {
 			LOGGER.error("系统异常", e);

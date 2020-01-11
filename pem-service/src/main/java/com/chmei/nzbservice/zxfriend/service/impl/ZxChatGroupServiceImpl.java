@@ -30,4 +30,19 @@ public class ZxChatGroupServiceImpl extends BaseServiceImpl implements IZxChatGr
 		input.setMethod("upgradeChatGroupInfo");
 		getNzbDataService().execute(input, output);
 	}
+
+	/**
+	 * 校验当前群组升级费用
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void checkGradeChatGroupInfo(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxChatGroupService");
+		input.setMethod("checkGradeChatGroupInfo");
+		getNzbDataService().execute(input, output);
+	}
+
 }

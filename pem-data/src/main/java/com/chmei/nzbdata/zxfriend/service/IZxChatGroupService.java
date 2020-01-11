@@ -21,5 +21,13 @@ public interface IZxChatGroupService {
 	 */
 	void upgradeChatGroupInfo(InputDTO input, OutputDTO output) throws NzbDataException;
 
+	/**
+	 * 校验当前群组升级费用
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	void checkGradeChatGroupInfo(InputDTO input, OutputDTO output) throws NzbDataException;
 
 }

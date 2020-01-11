@@ -4,8 +4,6 @@ import com.chmei.nzbcommon.cmbean.InputDTO;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 
-import java.util.Map;
-
 /**
  * 我的团队dao接口
  * 
