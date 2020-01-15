@@ -79,17 +79,18 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 			// 反向判断是否添加过好友
 			Map<String, Object> friendTo = (Map<String, Object>) getBaseDao().queryForObject(
 					"ZxFriendMapper.queryZxFriendDetail", maps);
+			maps.put("zxFriendId", getSequence());
+			// 用好友账号查询好友的默认分组ID
+			Map<String, Object> groupCount = (Map<String, Object>) getBaseDao().queryForObject(
+					"ZxFriendGroupingMapper.queryZxFriendGroupingInfo", maps);
 			if (null == friendTo) {
-				maps.put("zxFriendId", getSequence());
-				// 用好友账号查询好友的默认分组ID
-				Map<String, Object> groupCount = (Map<String, Object>) getBaseDao().queryForObject(
-						"ZxFriendGroupingMapper.queryZxFriendGroupingInfo", maps);
 				if (null != groupCount) {
 					maps.put("zxFriendGroupingId", groupCount.get("zxFriendGroupingId"));
 					maps.put("zxFriendFriendType", "Y");   // 是否好友状态
 					getBaseDao().insert("ZxFriendMapper.saveZxFriendInfo", maps);
 				}
 			} else {
+				maps.put("zxFriendGroupingId", groupCount.get("zxFriendGroupingId"));
 				maps.put("zxFriendFriendType", "Y");   // 是否好友状态
 				getBaseDao().update("ZxFriendMapper.updateZxFriendInfo", maps);
 			}

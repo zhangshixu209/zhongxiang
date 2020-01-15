@@ -255,20 +255,6 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 			// 推荐人姓名
 			String userName = (String) params.get("userName");
 
-			// 根据当前用户ID查询剩余额度是否小于追加的钱数,如果小于不允许追加,判断广告红包余额是否充足,不足,不允许追加
-			// 查询当前用户信息
-			Map<String, Object> param = new HashMap<>();
-			param.put("memberAccount", coverMemberAccount); // 被推荐人账户
-			Map<String, Object> item = (Map<String, Object>) getBaseDao().queryForObject(
-					"MemberMapper.queryMemberDetail", param);
-			String advertisingFee = (String) item.get("advertisingFee");
-			if (null != item) {
-				if ((Double.valueOf(advertisingFee) < money)) {
-					output.setCode("-1");
-					output.setMsg("广告费不足");
-					return;
-				}
-			}
 			// 查询广告分红信息
 			Map<String, Object> shareOutBonus = (Map<String, Object>) getBaseDao().queryForObject(
 					"ShareOutBonusMapper.queryShareOutBonusDetail", params);
@@ -283,6 +269,20 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				if ((adShareOutBonusResidueLimit.doubleValue() < money)) {
 					output.setCode("-1");
 					output.setMsg("剩余额度小于追加额度,不允许追加！");
+					return;
+				}
+			}
+			// 根据当前用户ID查询剩余额度是否小于追加的钱数,如果小于不允许追加,判断广告红包余额是否充足,不足,不允许追加
+			// 查询当前用户信息
+			Map<String, Object> param = new HashMap<>();
+			param.put("memberAccount", coverMemberAccount); // 被推荐人账户
+			Map<String, Object> item = (Map<String, Object>) getBaseDao().queryForObject(
+					"MemberMapper.queryMemberDetail", param);
+			String advertisingFee = (String) item.get("advertisingFee");
+			if (null != item) {
+				if ((Double.valueOf(advertisingFee) < money)) {
+					output.setCode("-1");
+					output.setMsg("广告费不足");
 					return;
 				}
 			}
@@ -476,10 +476,12 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 					output.setMsg("请输入正确的推荐人账号！");
 					return;
 				}
+				Map<String, Object> map = new HashMap<>();
+				map.put("coverMemberAccount", params.get("memberAccount"));
 				// 查询广告分红信息
 				Map<String, Object> shareOutBonus = (Map<String, Object>) getBaseDao().queryForObject(
-						"ShareOutBonusMapper.queryShareOutBonusDetail", params);
-				if (null == shareOutBonus && "N".equals(shareOutBonus.get("adShareOutBonusType"))) {
+						"ShareOutBonusMapper.queryShareOutBonusDetail", map);
+				if (null == shareOutBonus) {
 					output.setCode("-1");
 					output.setMsg("此会员不具备推荐资格！");
 					return;
@@ -528,19 +530,6 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				output.setMsg("请于此次分红结束后再次申请！");
 				return;
 			}
-			// 查询用户信息
-			Map<String, Object> item = (Map<String, Object>) getBaseDao().queryForObject(
-					"MemberMapper.queryMemberDetail", params);
-			if (Optional.ofNullable(item).isPresent()) {
-				Double zxMyWalletAmount = Double.valueOf(item.get("walletBalance") + "");
-				// 扣除的手续费
-				Double poundage = money * 0.01;
-				if(zxMyWalletAmount < poundage){
-					output.setCode("-1");
-					output.setMsg("钱包余额不足");
-					return;
-				}
-			}
 			params.put("coverMemberAccount", userId);
 			// 1.查询追加可分红的金额:
 			@SuppressWarnings("unchecked")
@@ -551,7 +540,20 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				BigDecimal bMoney = (BigDecimal) bonusMoney.get("adShareOutBonusMoney");
 				if (bMoney.doubleValue() < money) {
 					output.setCode("-1");
-					output.setMsg("申请分红金额大于可用分红金额！");
+					output.setMsg("申请分红金额不能大于可用分红金额！");
+					return;
+				}
+			}
+			// 查询用户信息
+			Map<String, Object> item = (Map<String, Object>) getBaseDao().queryForObject(
+					"MemberMapper.queryMemberDetail", params);
+			if (Optional.ofNullable(item).isPresent()) {
+				Double zxMyWalletAmount = Double.valueOf(item.get("walletBalance") + "");
+				// 扣除的手续费
+				Double poundage = money * 0.01;
+				if(zxMyWalletAmount < poundage){
+					output.setCode("-1");
+					output.setMsg("钱包余额不足");
 					return;
 				}
 			}
@@ -566,7 +568,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 			int i = insert(outBonusInfo);
 			if(i > 0){
 				output.setCode("0");
-				output.setMsg("分红成功！");
+				output.setMsg("申请分红成功！");
 				// 添加推送消息
 //				Map<String, Object> map = new HashMap<>();
 //				map.put("id", getSequence());
@@ -734,7 +736,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 					walletMoneyInfo.put("walletInfoUserId", outBonusInfo.get("adShareOutBonusInfoUserId"));
 					// 记录扣除当人金额的 1% 手续费
 					walletMoneyInfo.put("walletInfoMoney", Double.valueOf(outBonusInfo.get("adShareOutBonusInfoMoney")+"") * 0.01);
-					walletMoneyInfo.put("walletInfoFrom", "追加分红手续费扣除");
+					walletMoneyInfo.put("walletInfoFrom", "申请分红手续费");
 					getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
 					if(1 == (long) user1.get("zxMyTeamId")){
 						Map<String, Object> record = new HashMap<>();

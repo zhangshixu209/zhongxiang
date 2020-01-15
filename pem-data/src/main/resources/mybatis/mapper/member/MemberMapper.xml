@@ -242,10 +242,10 @@
   <update id="saveMemberRechargeInfo" parameterType="java.util.Map">
     update t_member
     <set>
-      <if test="walletBalance != null and walletBalance != ''">
+      <if test="walletBalance != null and walletBalance != '' or walletBalance == 0">
         wallet_balance = #{walletBalance,jdbcType=VARCHAR},
       </if>
-      <if test="advertisingFee != null and advertisingFee != ''">
+      <if test="advertisingFee != null and advertisingFee != '' or advertisingFee == 0">
         advertising_fee = #{advertisingFee,jdbcType=VARCHAR},
       </if>
       <if test="modfUserId != null and modfUserId != ''">

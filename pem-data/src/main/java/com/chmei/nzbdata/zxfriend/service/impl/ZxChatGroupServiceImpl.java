@@ -140,9 +140,7 @@ public class ZxChatGroupServiceImpl extends BaseServiceImpl implements IZxChatGr
 				output.setMsg("群容量最大为2000人！");
 				return;
 			}
-			if(maxusers >= goal){
-				output.setCode("-1");
-				output.setMsg("不可升级！");
+			if(maxusers >= goal){ // 处理第一次进来升级费用计算
 				if (maxusers == 1000) {
 					goal = 1500;
 				} else if (maxusers == 1500){
@@ -153,9 +151,9 @@ public class ZxChatGroupServiceImpl extends BaseServiceImpl implements IZxChatGr
 			} else {
 				Double money = groupGoal(maxusers, goal); // 计算群升级费用
 				maps.put("money", money);
-				output.setCode("0");
-				output.setMsg("查询成功！");
 			}
+			output.setCode("0");
+			output.setMsg("查询成功！");
 			output.setItem(maps);
 		} catch (Exception e) {
 			LOGGER.error("系统异常", e);

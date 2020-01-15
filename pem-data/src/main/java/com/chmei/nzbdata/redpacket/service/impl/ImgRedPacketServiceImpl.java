@@ -551,8 +551,16 @@ public class ImgRedPacketServiceImpl extends BaseServiceImpl implements IImgRedP
 						if (redPacketSex == 3 || sex.equals(redPacketSex + "")) {
 							sexFlag = 1;
 						}
+						int minePacket = 0;
+						if (params.get("memberAccount").equals(map.get("redPacketUserId"))){
+							minePacket = 1;
+						}
 						// 校验红包年龄
 						int checkAge = checkAge(age, redPacketAgeStart, (redPacketAgeEnd));
+						if (minePacket == 1 ){
+							listAll.add(map);
+							continue;
+						}
 						if (sexFlag == 1 && checkAge == 1 && checkArea == 3 || checkArea == 1) {
 							listAll.add(map);
 						}

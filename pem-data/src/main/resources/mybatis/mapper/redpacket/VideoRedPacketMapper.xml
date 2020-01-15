@@ -299,7 +299,8 @@
       a.red_packet_video_count AS redPacketCount,
       a.red_packet_video_stock AS redPacketStock,
       DATE_FORMAT(a.red_packet_video_date,'%m月%d日') AS redPacketDate,
-      (a.red_packet_video_count - a.red_packet_video_stock) AS robRedPacketCount,
+      #(a.red_packet_video_count - a.red_packet_video_stock) AS robRedPacketCount,
+      a.red_packet_video_stock AS robRedPacketCount,
       '视频广告' AS redPacketType
     FROM
       zx_app_video_red_packet AS a
