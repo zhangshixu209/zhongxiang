@@ -135,9 +135,11 @@ public class ZxChatGroupServiceImpl extends BaseServiceImpl implements IZxChatGr
 			Double d = Double.parseDouble(data.get(0).get("maxusers").toString());
 			Integer maxusers = d.intValue();
 			Map<String,Object> maps = new HashMap<>();
+			maps.put("maxusers", maxusers);
 			if(maxusers == 2000) { // 最大2000人
-				output.setCode("2");
+				output.setCode("0");
 				output.setMsg("群容量最大为2000人！");
+				output.setItem(maps);
 				return;
 			}
 			if(maxusers >= goal){ // 处理第一次进来升级费用计算

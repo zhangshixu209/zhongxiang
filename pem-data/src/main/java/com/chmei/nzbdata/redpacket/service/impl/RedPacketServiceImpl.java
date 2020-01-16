@@ -141,7 +141,7 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 					int i = this.insertListRedPacketImgInfo(doubles, (Long) params.get("redPacketId"));
 					if(i > 0 && stringObjectMap != null){
 						output.setCode("0");
-						output.setMsg("发布红包成功!");
+						output.setMsg("信息发布成功!");
 						output.setItem(stringObjectMap);
 					}
 				} else {

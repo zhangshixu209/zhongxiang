@@ -139,7 +139,7 @@ public class LinkRedPacketServiceImpl extends BaseServiceImpl implements ILinkRe
 					int i = this.insertListRedPacketImgInfo(doubles, (Long) params.get("redPacketLinkId"));
 					if(i > 0 && stringObjectMap != null){
 						output.setCode("0");
-						output.setMsg("发布红包成功!");
+						output.setMsg("信息发布成功!");
 						output.setItem(stringObjectMap);
 					}
 				} else {

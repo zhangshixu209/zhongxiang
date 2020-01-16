@@ -259,6 +259,27 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
+  <!-- 会员充值（钱包余额、广告费） -->
+  <update id="saveMemberRechargeManaInfo" parameterType="java.util.Map">
+    update t_member
+    <set>
+      <if test="walletBalance != null and walletBalance != ''">
+        wallet_balance = #{walletBalance,jdbcType=VARCHAR},
+      </if>
+      <if test="advertisingFee != null and advertisingFee != ''">
+        advertising_fee = #{advertisingFee,jdbcType=VARCHAR},
+      </if>
+      <if test="modfUserId != null and modfUserId != ''">
+        modf_user_id = #{modfUserId,jdbcType=BIGINT},
+      </if>
+      <if test="modfUserName != null and modfUserName != ''">
+        modf_user_name = #{modfUserName,jdbcType=VARCHAR},
+      </if>
+      modf_user_time = NOW(),
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
   <update id="updateMemberBalance" parameterType="java.util.Map">
     update t_member
     <set>

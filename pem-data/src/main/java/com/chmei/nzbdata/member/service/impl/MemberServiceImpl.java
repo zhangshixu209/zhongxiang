@@ -198,7 +198,7 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
                     queryForObject("MemberMapper.queryMemberDetail", params);
             String oldWalletBalance = (String) item.get("walletBalance");
             String oldAdvertisingFee = (String) item.get("advertisingFee");
-            int count = getBaseDao().update("MemberMapper.saveMemberRechargeInfo", params);
+            int count = getBaseDao().update("MemberMapper.saveMemberRechargeManaInfo", params);
             if (count > 0) {
                 String walletBalance = (String) params.get("walletBalance");
                 String advertisingFee = (String) params.get("advertisingFee");
