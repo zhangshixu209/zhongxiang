@@ -543,11 +543,11 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 						result.put("redCountyName", map.get("countyName"));               // 区县名称
 						// 校验红包地区
 						int checkArea = checkArea(item, result);
-						if(checkArea == 2){
-							output.setCode("-1");
-							output.setMsg("请完善个人信息！");
-							return;
-						}
+//						if(checkArea == 2){
+//							output.setCode("-1");
+//							output.setMsg("请完善个人信息！");
+//							return;
+//						}
 						int sexFlag = 0; // 性别为3不限制年龄
 						if (redPacketSex == 3 || sex.equals(redPacketSex + "")) {
 							sexFlag = 1;
@@ -562,7 +562,7 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 							listAll.add(map);
 							continue;
 						}
-						if (sexFlag == 1 && checkAge == 1 && checkArea == 3 || checkArea == 1) {
+						if (sexFlag == 1 && checkAge == 1 && checkArea == 3) {
 							listAll.add(map);
 						}
 					}
@@ -600,7 +600,7 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 	 */
 	private int checkArea(Map<String, Object> item, Map<String, Object> result){
 		if ("-1".equals(result.get("redProvName"))) {
-			return 1; // 全国状态
+			return 3; // 全国状态
 		}
 		if (StringUtil.isEmpty((String) item.get("provinceName"))) {
 			return 2; // 请完善个人信息

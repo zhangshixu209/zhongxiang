@@ -408,18 +408,18 @@
   </select>
 
   <!--根据图文红包id和用户id查询红包和用户信息-->
-  <select id="selectUserRedPacketInfoAndRedPacketByUserId" parameterType="java.util.Map" resultType="java.util.Map">
+  <!--<select id="selectUserRedPacketInfoAndRedPacketByUserId" parameterType="java.util.Map" resultType="java.util.Map">
       SELECT
-        b.member_account AS memberAccount,-- 用户账号
-        b.head_img_url AS headImgUrl,-- 头像图片链接
-        IFNULL( b.nickname, b.member_account ) AS nickName,-- 昵称
-        c.red_packet_video_info AS redPacketInfo,-- 红包广告标语
-        c.red_packet_video_count AS redPacketCount,-- 红包总个数
-        c.red_packet_video_stock AS redPacketStock,-- 红包剩余个数
-        c.red_packet_video_url AS redPacketVideoUrl,-- 红包视频链接地址
-        UNIX_TIMESTAMP( c.red_packet_video_end_time ) - UNIX_TIMESTAMP( c.red_packet_video_start_time ) AS timeSum,-- 抢红包总耗时
-        a.red_packet_video_money AS redPacketMoney,-- 抢红包金额
-        a.red_packet_video_date AS redPacketDate -- 抢红包时间
+        b.member_account AS memberAccount,&#45;&#45; 用户账号
+        b.head_img_url AS headImgUrl,&#45;&#45; 头像图片链接
+        IFNULL( b.nickname, b.member_account ) AS nickName,&#45;&#45; 昵称
+        c.red_packet_video_info AS redPacketInfo,&#45;&#45; 红包广告标语
+        c.red_packet_video_count AS redPacketCount,&#45;&#45; 红包总个数
+        c.red_packet_video_stock AS redPacketStock,&#45;&#45; 红包剩余个数
+        c.red_packet_video_url AS redPacketVideoUrl,&#45;&#45; 红包视频链接地址
+        UNIX_TIMESTAMP( c.red_packet_video_end_time ) - UNIX_TIMESTAMP( c.red_packet_video_start_time ) AS timeSum,&#45;&#45; 抢红包总耗时
+        a.red_packet_video_money AS redPacketMoney,&#45;&#45; 抢红包金额
+        a.red_packet_video_date AS redPacketDate &#45;&#45; 抢红包时间
     FROM
         zx_app_video_red_packet_info a
         LEFT JOIN zx_app_video_red_packet c ON c.red_packet_video_id = a.red_packet_video_id
@@ -427,6 +427,23 @@
     WHERE
         a.red_packet_video_user_id = #{robUserId} AND a.red_packet_video_id = #{redPacketVideoId}
         LIMIT 1
+  </select>-->
+
+  <select id="selectUserRedPacketInfoAndRedPacketByUserId" parameterType="java.util.Map" resultType="java.util.Map">
+      SELECT
+          b.member_account AS memberAccount,-- 用户账号
+          b.head_img_url AS headImgUrl,-- 头像图片链接
+          IFNULL( b.nickname, b.member_account ) AS nickName,-- 昵称
+          c.red_packet_video_info AS redPacketInfo,-- 红包广告标语
+          c.red_packet_video_count AS redPacketCount,-- 红包总个数
+          c.red_packet_video_stock AS redPacketStock,-- 红包剩余个数
+          c.red_packet_video_url AS redPacketVideoUrl,-- 红包视频链接地址
+          UNIX_TIMESTAMP( c.red_packet_video_end_time ) - UNIX_TIMESTAMP( c.red_packet_video_start_time ) AS timeSum -- 抢红包总耗时
+      FROM
+          zx_app_video_red_packet c
+          LEFT JOIN t_member b ON b.member_account = c.red_packet_video_user_id
+      WHERE
+          c.red_packet_video_id = #{redPacketVideoId}
   </select>
 
   <!-- 根据红包id和用户id查询抢红包的详细信息,那个人抢了多少钱-->

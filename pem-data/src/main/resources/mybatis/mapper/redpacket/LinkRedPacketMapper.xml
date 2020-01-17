@@ -399,23 +399,20 @@
   <!--根据图文红包id和用户id查询红包和用户信息-->
   <select id="selectUserRedPacketInfoAndRedPacketByUserId" parameterType="java.util.Map" resultType="java.util.Map">
       SELECT
-        b.member_account AS memberAccount,-- 用户账号
-        b.head_img_url AS headImgUrl,-- 头像图片链接
-        IFNULL( b.nickname, b.member_account ) AS nickName,-- 昵称
-        c.red_packet_link_info AS redPacketInfo,-- 红包广告标语
-        c.red_packet_link_count AS redPacketCount,-- 红包总个数
-        c.red_packet_link_stock AS redPacketStock,-- 红包剩余个数
-        c.red_packet_link_url AS redPacketLinkUrl,-- 红包视频链接地址
-        UNIX_TIMESTAMP( c.red_packet_link_end_time ) - UNIX_TIMESTAMP( c.red_packet_link_start_time ) AS timeSum,-- 抢红包总耗时
-        a.red_packet_link_money AS redPacketMoney,-- 抢红包金额
-        a.red_packet_link_date AS redPacketDate -- 抢红包时间
-    FROM
-        zx_app_link_red_packet_info a
-        LEFT JOIN zx_app_link_red_packet c ON c.red_packet_link_id = a.red_packet_link_id
-        LEFT JOIN t_member b ON b.member_account = a.red_packet_link_user_id
-    WHERE
-        a.red_packet_link_user_id = #{robUserId} AND a.red_packet_link_id = #{redPacketLinkId}
-        LIMIT 1
+          b.member_account AS memberAccount,-- 用户账号
+          b.head_img_url AS headImgUrl,-- 头像图片链接
+          IFNULL( b.nickname, b.member_account ) AS nickName,-- 昵称
+          c.red_packet_link_info AS redPacketInfo,-- 红包广告标语
+          c.red_packet_link_count AS redPacketCount,-- 红包总个数
+          c.red_packet_link_stock AS redPacketStock,-- 红包剩余个数
+          c.red_packet_link_url AS redPacketLinkUrl,-- 红包视频链接地址
+          UNIX_TIMESTAMP( c.red_packet_link_end_time ) - UNIX_TIMESTAMP( c.red_packet_link_start_time ) AS timeSum -- 抢红包总耗时
+
+      FROM
+          zx_app_link_red_packet c
+          LEFT JOIN t_member b ON b.member_account = c.member_account
+      WHERE
+          c.red_packet_link_id = #{redPacketLinkId}
   </select>
 
   <!-- 根据红包id和用户id查询抢红包的详细信息,那个人抢了多少钱-->

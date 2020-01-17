@@ -231,6 +231,7 @@
       <if test="zxFriendGroupingId != null and zxFriendGroupingId != ''" >
         AND zx_friend_grouping_id = #{zxFriendGroupingId}
       </if>
+        AND zx_friend_friend_type = 'Y'
     </where>
   </select>
 
