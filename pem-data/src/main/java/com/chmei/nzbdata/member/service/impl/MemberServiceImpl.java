@@ -253,10 +253,10 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
                     LOGGER.info("newPassword============:"+gson.toJson(result));
                 }
                 output.setCode("0");
-                output.setMsg("修改成功");
+                output.setMsg("设置成功");
             } else {
                 output.setCode("-1");
-                output.setMsg("修改密码失败");
+                output.setMsg("设置失败");
             }
         } catch (Exception ex) {
             LOGGER.error("保存失败", ex);
@@ -321,11 +321,11 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
             int count = getBaseDao().insert("MemberAccountMapper.saveMemberAccountInfo", params);
             if (count < 1) {
                 output.setCode("-1");
-                output.setMsg("新增账户失败");
+                output.setMsg("添加失败！");
                 return;
             }
             output.setCode("0");
-            output.setMsg("新增账户成功");
+            output.setMsg("添加成功！");
         } catch (Exception ex) {
             LOGGER.error("新增失败", ex);
         }
