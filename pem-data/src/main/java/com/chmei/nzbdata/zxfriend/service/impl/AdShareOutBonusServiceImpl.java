@@ -469,6 +469,23 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 					output.setMsg("推荐人不能为当前用户！");
 					return;
 				}
+				params.put("teamParentId", params.get("coverMemberAccount"));
+				// 查询我的团队信息
+				List<Map<String, Object>> effs = getBaseDao().queryForList(
+						"ZxMyTeamMapper.queryMyTeamInfo", params);
+				int flag = 0;
+				if (null != effs && effs.size() > 0) {
+					for (Map<String, Object> eff : effs) {
+						if(eff.get("teamParentId").equals(params.get("coverMemberAccount"))){
+							flag = 1;
+						}
+					}
+				}
+				if(flag == 1){
+					output.setCode("-1");
+					output.setMsg("此会员不具备推荐资格！");
+					return;
+				}
 				// 判断是否为正确的手机号
 				String match = "^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$";
 				if (!memberAccount.matches(match)) {
@@ -614,6 +631,13 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 			int size = iZxMyTeamService.checkedDay(input, output);
 			// 2.1 查询完成了几个分红周期:
 			long count = findTaskCountByMemberAccount(input, output);
+			Map<String, Object> findTaskCount = findTaskCount(input, output);
+			if(null != findTaskCount){
+				map.put("adShareOutBonusInfoStart", findTaskCount.get("adShareOutBonusInfoStart"));
+				map.put("taskStatus", "1");
+			} else {
+				map.put("taskStatus", "0");
+			}
 			// 3.1 新会员分红满10个周期后，如仍未有一位有效直推，再次申请分红的周期延长为30天。
 			if(count > 10L && size == 0){
 				map.put("days",30);
@@ -678,6 +702,28 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 			e.printStackTrace();
 		}
 		return taskCount;
+	}
+
+	/**
+	 * 根据当前登录用户账号查询是否存在分红任务
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	public Map<String, Object> findTaskCount(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		Map<String, Object> item = new HashMap<>();
+		try {
+			Map<String, Object> map = new HashMap<>();
+			map.put("memberAccount", params.get("memberAccount")); // 申请分红用户账号
+			map.put("adShareOutBonusInfoDoneS", Constants.S); // 申请分红是否完成(D 已经分红结束完成 S 已经开始,不结束不允许开始下一个,N 没有分红任务)'
+			// 查询我的团队信息
+			item = (Map<String, Object>) getBaseDao().queryForObject("ShareOutBonusMapper.findTaskByUserIdAndMarkS", map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return item;
 	}
 
 	/**

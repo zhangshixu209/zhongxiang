@@ -419,6 +419,7 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 			Map<String, Object> item_ = new HashMap<>();
 			item_.put("zxFriendFriendId", params.get("zxFriendUserId"));
 			list.add(item_);
+			int allTotal = 0;
 			if (null != list && list.size() > 0) {
 				for (Map<String, Object> map_ : list) {
 					String users = (String) map_.get("zxFriendFriendId");
@@ -427,6 +428,7 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 					maps.put("memberAccounts", users); // 好友账户list
 					int total = getBaseDao().getTotalCount("ZxMessageMapper.queryZxFriendMessageCount", maps);
 					if (total > 0) {
+						allTotal += 1;
 						maps.put("start", params.get("start"));
 						maps.put("limit", params.get("limit"));
 						List<Map<String, Object>> friendCircleList = getBaseDao().queryForList(
@@ -465,7 +467,7 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 				});
 				output.setMsg("查询成功");
 				output.setItems(friendAllList);
-				output.setTotal(friendAllList.size());
+				output.setTotal(allTotal);
 			}
 		} catch (Exception e) {
 			LOGGER.error("系统异常", e);

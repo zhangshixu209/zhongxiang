@@ -288,7 +288,7 @@
       a.red_packet_link_money_count AS redPacketMoneyCount,
       a.red_packet_link_count AS redPacketCount,
       a.red_packet_link_stock AS redPacketStock,
-      DATE_FORMAT(a.red_packet_link_date,'%m月%d日') AS redPacketDate,
+      DATE_FORMAT(a.red_packet_link_date,'%m月%d日%H:%i') AS redPacketDate,
       (red_packet_link_count - red_packet_link_stock) AS robRedPacketCount,
       '链接广告' AS redPacketType
     FROM
