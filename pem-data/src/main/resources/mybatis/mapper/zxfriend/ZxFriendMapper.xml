@@ -214,7 +214,8 @@
       a.zx_friend_friend_type AS zxFriendFriendType,
       IFNULL( a.zx_friend_remark, '') AS zxFriendRemark,
       IFNULL( b.head_img_url, '') AS headImgUrl,
-      IFNULL( b.nickname, b.member_account ) AS nickName
+      IFNULL( b.nickname, b.member_account ) AS nickName,
+      a.zx_friend_notes_type AS zxFriendNotesType
   FROM
       zx_app_friend AS a
       LEFT JOIN t_member AS b ON b.member_account = a.zx_friend_friend_id

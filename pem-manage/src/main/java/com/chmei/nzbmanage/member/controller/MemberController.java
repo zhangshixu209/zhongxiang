@@ -163,6 +163,15 @@ public class MemberController extends BaseController {
             outputDTO.setMsg("非法手机号码!");
             return outputDTO;
         }
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("memberAccount", phoneNumber);
+        outputDTO = getOutputDTO(map, "memberService", "queryMemberDetail");
+        if(null != outputDTO.getItem()){
+            outputDTO.setCode("-1");
+            outputDTO.setMsg("此手机号已被注册！");
+            return outputDTO;
+        }
 //        String codeIp = IpUtil.getIpAddr(request);
         HttpSession session = request.getSession();
         LOGGER.info("存储session对象 {}  " + session);

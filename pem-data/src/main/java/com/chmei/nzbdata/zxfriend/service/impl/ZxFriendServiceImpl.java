@@ -62,6 +62,7 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 				params.put("zxFriendId", getSequence());   // 众享好友ID
 				params.put("zxFriendFriendType", "Y");     // 是否好友状态
 				params.put("zxFriendAddDate", "Y"); // 添加好友时间
+				params.put("zxFriendNotesType", "N");   // 是否关注状态
 				params.put("zxFriendGroupingId", groupCountA.get("zxFriendGroupingId"));
 //				getBaseDao().update("ZxFriendMapper.updateZxFriendInfo", params);
 				// 新增众享好友信息
@@ -86,11 +87,13 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 			if (null == friendTo) {
 				if (null != groupCount) {
 					maps.put("zxFriendGroupingId", groupCount.get("zxFriendGroupingId"));
+					params.put("zxFriendNotesType", "N");   // 是否关注状态
 					maps.put("zxFriendFriendType", "Y");   // 是否好友状态
 					getBaseDao().insert("ZxFriendMapper.saveZxFriendInfo", maps);
 				}
 			} else {
 				maps.put("zxFriendGroupingId", groupCount.get("zxFriendGroupingId"));
+				params.put("zxFriendNotesType", "N");   // 是否关注状态
 				maps.put("zxFriendFriendType", "Y");   // 是否好友状态
 				getBaseDao().update("ZxFriendMapper.updateZxFriendInfo", maps);
 			}

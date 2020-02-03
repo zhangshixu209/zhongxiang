@@ -821,7 +821,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 									// 分红赠送获取的钱数
 									redRecord.put("redPacketInfoAddOrMinus", "+");
 									redRecord.put("redPacketInfoUserId", outBonusInfo.get("adShareOutBonusInfoUserId"));
-									redRecord.put("redPacketInfoMoney", Double.valueOf((String) outBonusInfo.get("adShareOutBonusInfoMoney")) * 0.05);
+									redRecord.put("redPacketInfoMoney", (Double) outBonusInfo.get("adShareOutBonusInfoMoney") * 0.05);
 									redRecord.put("redPacketInfoFrom", "分红赠送");
 									getBaseDao().insert("RedRecordMoneyInfoMapper.saveRedRecordMoneyInfo", redRecord);
 									// 获取分红的钱数
@@ -829,16 +829,16 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 									adRecord.put("advertisingInfoId", getSequence());
 									adRecord.put("advertisingInfoAddOrMinus", "+");
 									adRecord.put("advertisingInfoUserId", outBonusInfo.get("adShareOutBonusInfoUserId"));
-									adRecord.put("advertisingInfoMoney", Double.valueOf((String) outBonusInfo.get("adShareOutBonusInfoMoney")) * 0.1);
+									adRecord.put("advertisingInfoMoney", (Double) outBonusInfo.get("adShareOutBonusInfoMoney") * 0.1);
 									adRecord.put("advertisingInfoFrom", "获得分红");
 									getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
 									// 将可用分红额度恢复
 									Map<String, Object> bonusMoney = (Map<String, Object>) getBaseDao().queryForObject(
 											"ShareOutBonusMapper.findAdShareOutBonusMoney", outBonusInfo);
 									Map<String, Object> record_ = new HashMap<>();
-									String adShareOutBonusMoney = (String) bonusMoney.get("adShareOutBonusMoney");
-									String  outAdShareOutBonusInfoMoney = (String) outBonusInfo.get("adShareOutBonusInfoMoney");
-									record_.put("adShareOutBonusMoney", Double.valueOf(adShareOutBonusMoney) + Double.valueOf(outAdShareOutBonusInfoMoney));
+									BigDecimal adShareOutBonusMoney = (BigDecimal) bonusMoney.get("adShareOutBonusMoney");
+									Double  outAdShareOutBonusInfoMoney = (Double) outBonusInfo.get("adShareOutBonusInfoMoney");
+									record_.put("adShareOutBonusMoney", adShareOutBonusMoney.doubleValue() + outAdShareOutBonusInfoMoney);
 									record_.put("adShareOutBonusUserId", outBonusInfo.get("adShareOutBonusInfoUserId"));
 									int j = getBaseDao().update("ShareOutBonusMapper.updateShareOutBonusInfo", record_);
 									// 将交易表中的取消数据删除
