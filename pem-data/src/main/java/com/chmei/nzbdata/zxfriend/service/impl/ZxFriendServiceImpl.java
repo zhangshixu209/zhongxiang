@@ -536,6 +536,25 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 	}
 
 	/**
+	 * 查询众享好友
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void queryZxFriendDetail(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			Map<String, Object> friend = (Map<String, Object>) getBaseDao().queryForObject(
+					"ZxFriendMapper.queryZxFriendDetail", params);
+			output.setItem(friend);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * 统计点赞次数
 	 * @param params 入参
 	 * @return

@@ -199,4 +199,18 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 		getNzbDataService().execute(input, output);
 	}
 
+	/**
+	 * 查询众享好友手机通讯录列表
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void queryZxFriendDetail(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxFriendService");
+		input.setMethod("queryZxFriendDetail");
+		getNzbDataService().execute(input, output);
+	}
+
 }

@@ -207,4 +207,18 @@ public class ZxFriendController extends BaseController {
         return outputDTO;
     }
 
+    /**
+     * 查询众享好友
+     *
+     * @param zxFriendForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/queryZxFriendDetail")
+    public OutputDTO queryZxFriendDetail(@ModelAttribute ZxFriendForm zxFriendForm) {
+        LOGGER.info("查询众享好友手机通讯录列表...ZxFriendController.queryZxFriendDetail()...");
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxFriendForm);
+        OutputDTO outputDTO = getOutputDTO(params, "zxFriendService", "queryZxFriendDetail");
+        return outputDTO;
+    }
+
 }
