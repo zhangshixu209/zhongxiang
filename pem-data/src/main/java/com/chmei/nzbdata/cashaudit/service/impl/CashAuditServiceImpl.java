@@ -6,6 +6,7 @@ import com.chmei.nzbdata.cashaudit.service.ICashAuditService;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
 import com.chmei.nzbdata.util.Constants;
+import com.chmei.nzbdata.util.StringUtil;
 import com.chmei.nzbdata.zxfriend.service.IZxMyTeamService;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -107,6 +108,14 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 				updateUser.put("walletBalance", Double.valueOf((String) zxAppUser.get("walletBalance")) - Double.valueOf(cashAmount));
 				int i = getBaseDao().update("MemberMapper.updateMemberBalance", updateUser);
 				if (i > 0) {
+					// 钱包扣除金额记录:
+					Map<String, Object> walletMoneyInfo = new HashMap<>();
+					walletMoneyInfo.put("walletInfoId", getSequence());
+					walletMoneyInfo.put("walletInfoAddOrMinus", "-");
+					walletMoneyInfo.put("walletInfoUserId", params.get("memberAccount"));
+					walletMoneyInfo.put("walletInfoMoney", cashAmount);
+					walletMoneyInfo.put("walletInfoFrom", "提现");
+					getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
 					output.setCode("0");
 					output.setMsg("提现申请成功");
 				}
@@ -179,6 +188,10 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 						auditTypeCd = "未通过，提现金额已返回到钱包。";
 					}
 				}
+			}
+			String auditOpinion = (String) params.get("auditOpinion");
+			if(StringUtil.isNotEmpty(auditOpinion)){
+				auditTypeCd += "审核意见：" + auditOpinion;
 			}
 			String content = "您的提现申请审核" + auditTypeCd;
 			map.put("id", getSequence());

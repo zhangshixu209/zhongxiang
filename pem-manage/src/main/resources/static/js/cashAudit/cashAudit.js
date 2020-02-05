@@ -132,12 +132,12 @@ function updateCashAudit(val){
 	//发起请求
 	Chief.ajax.postJson("/cashAudit/updateCashAuditInfo", data, function (data) {
 		if("0" == data.code){
-			Chief.layer.tips("保存成功", 1500);
+			Chief.layer.tips("处理成功", 1500);
 			setTimeout('outTips()', 1000 );
 		} else if("-1" == data.code){
 			Chief.layer.tips(data.msg, 2000);
 		} else {
-			Chief.layer.tips("保存失败", 1500);
+			Chief.layer.tips("处理失败", 1500);
 		}
 	});
 };
@@ -154,6 +154,21 @@ function formValidate(){
 		}
 	});
 }
+
+//任务导出
+$("#export_btn").on("click",function(){
+	Chief.ajax.postJson('/cashAudit/queryCashAuditList', {}, function(data){
+		if (data.code=="0") {
+			if (data.total>0) {
+				window.location.href="../api/cashAudit/exportMoney";
+			} else {
+				Chief.layer.tips('没有数据导出');
+			}
+		} else {
+			Chief.layer.tips(data.msg);
+		}
+	});
+});
 
 //校验非空
 function isDataNull(str) {

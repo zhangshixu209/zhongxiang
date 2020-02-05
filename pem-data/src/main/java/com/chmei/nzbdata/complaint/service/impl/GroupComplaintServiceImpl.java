@@ -87,13 +87,21 @@ public class GroupComplaintServiceImpl extends BaseServiceImpl implements IGroup
 			@SuppressWarnings("unchecked")
 			Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
 					"GroupComplaintMapper.queryGroupComplaintDetail", params);
-			String content = map.get("complaintRemark") + "，多次警告将会冻结您的账号！";
+			String content = map.get("complaintRemark") + "，若再次被投诉，您的账号您的账号将会被冻结！";
 			map.put("id", getSequence());
 			map.put("messageTitle", map.get("groupChatName"));
 			map.put("messageContent", content);
 			map.put("messageStatus", "1");
 			map.put("messageType", Constants.MESSAGE_TYPE_1004);
 			map.put("memberAccount", map.get("ownerAccount"));
+			// 添加推送消息
+			getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
+			map.put("id", getSequence());
+			map.put("messageTitle", map.get("groupChatName"));
+			map.put("messageContent", "你所投诉的群已被警告");
+			map.put("messageStatus", "1");
+			map.put("messageType", Constants.MESSAGE_TYPE_1004);
+			map.put("memberAccount", map.get("complainant"));
 			// 添加推送消息
 			getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
 		} catch (Exception ex) {

@@ -35,23 +35,35 @@
             IFNULL( a.member_account, '' ) AS memberAccount,
             IFNULL( a.cash_user_name, '' ) AS cashUserName,
             IFNULL( a.account_type, '' ) AS accountType,
+            CASE
+                a.account_type
+                WHEN '1001' THEN '支付宝'
+                WHEN '1002' THEN '微信'
+                ELSE '银行卡'
+            END AS accountTypeCd,
             IFNULL( a.user_account, '' ) AS userAccount,
             IFNULL( a.cash_amount, '' ) AS cashAmount,
             IFNULL( a.cash_apply_time, '' ) AS cashApplyTime,
             IFNULL( a.audit_type, '' ) AS auditType,
+            CASE
+                a.audit_type
+                WHEN '1' THEN '审核通过'
+                WHEN '2' THEN '审核不通过'
+                ELSE '待审核'
+            END AS auditTypeCd,
             IFNULL( a.audit_opinion, '' ) AS auditOpinion,
             IFNULL( a.audit_time, '' ) AS auditTime,
             IFNULL( a.audit_user_name, '' ) AS auditUserName,
             IFNULL( b.wallet_balance, '0' ) AS walletBalance,
             IFNULL( b.crt_time, '' ) AS registerTime,
-            IFNULL( d.team_user_name, '-' ) AS recomNickname,
+            IFNULL( (SELECT DISTINCT d.team_user_name FROM zx_app_my_team d WHERE a.member_account = d.team_recommended_user_id) , '-' ) AS recomNickname,
             c.real_name AS realName,
             <include refid="total_Column_List" />
         FROM
             t_cash_audit a
         LEFT JOIN t_member b ON a.member_account = b.member_account
         LEFT JOIN t_real_name_authentic c ON a.member_account = c.member_account
-        LEFT JOIN zx_app_my_team d ON a.member_account = d.team_recommended_user_id
+        #LEFT JOIN zx_app_my_team d ON a.member_account = d.team_recommended_user_id
         <where>
             <if test="cashUserName != null and cashUserName != ''">
                 AND a.cash_user_name LIKE concat('%',#{cashUserName},'%')

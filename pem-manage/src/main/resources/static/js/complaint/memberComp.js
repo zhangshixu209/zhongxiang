@@ -127,7 +127,7 @@ $('.pull-right').on('click','#audit_btn', function (){
 			var htmls = Handlebars.compile($("#T_complaintTpl").html());
 			var ht = htmls(data.item);
 			//弹框编辑
-			dialog("投诉状态审核", ht);
+			dialog("投诉处理", ht);
 			//初始化表单验证规则
 			formValidate("#memberComplaintForm");
 			$("#complaintStatus").find("option[value="+data.item.status+"]").attr("selected", "true");
@@ -148,7 +148,7 @@ function updateMemberComplaintInfo() {
 	//发起请求
 	Chief.ajax.postJson("/complaint/updateMemberComplaintInfo", data, function (data) {
 		if(data.code == '0'){
-			Chief.layer.tips("保存成功！");
+			Chief.layer.tips("操作成功！");
 			setTimeout('outTips()', 1000 );
 		}else{
 			Chief.layer.tips(data.msg);

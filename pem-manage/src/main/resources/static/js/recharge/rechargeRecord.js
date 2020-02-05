@@ -173,7 +173,7 @@ function saveMemberRechargeInfo() {
 	//发起请求
 	Chief.ajax.postJson("/member/saveMemberRechargeInfo", data, function (data) {
 		if(data.code == '0'){
-			Chief.layer.tips("保存成功！");
+			Chief.layer.tips("充值成功！");
 			setTimeout('outTips()', 1000 );
 		}else{
 			Chief.layer.tips(data.msg);

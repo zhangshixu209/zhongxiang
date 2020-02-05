@@ -229,6 +229,7 @@ public class NoticeServiceImpl extends BaseServiceImpl implements INoticeService
             //获取到公告id
             Map<String, Object> notice =(Map<String, Object>) params.get("notice");
             Long id = (Long) notice.get("id");
+            params.put("id", id);
             // 添加推送
             Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject("noticeMapper.queryNoticeDetailInfo", params);
             map.put("id", getSequence());

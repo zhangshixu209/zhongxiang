@@ -175,7 +175,8 @@
     SELECT
       a.id AS id,
       a.member_account AS memberAccount,
-      a.member_nickname AS memberNickname,
+      (SELECT b.nickname FROM t_member b WHERE a.member_account = b.member_account) AS memberNickname,
+	  #a.member_nickname AS memberNickname,
       a.complainant AS complainant,
       a.complaint_time AS complaintTime,
       a.complaint_remark AS complaintRemark,

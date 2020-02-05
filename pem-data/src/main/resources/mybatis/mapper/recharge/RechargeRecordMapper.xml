@@ -21,6 +21,7 @@
   <!-- 充值记录列表查询（1001广告费充值，1002钱包余额充值，1003会员充值） -->
   <select id="queryRechargeRecordList" parameterType="java.util.Map" resultType="java.util.Map">
     SELECT
+        DISTINCT(a.id),
         a.id AS id,
         a.member_account AS memberAccount,
         a.recharge_amount AS rechargeAmount,
