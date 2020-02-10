@@ -191,7 +191,7 @@ function insertSelective(orderStatus) {
 	 Chief.ajax.postJson("/feedback/insertSelective", data, function (data) {
 	     if ("0" == data.code) {
 	         Chief.layer.tips("保存成功", 1500);
-	         setTimeout('outTips()', 1000 );
+	         setTimeout('outTips()', 2000 );
 	     } else {
 	         Chief.layer.tips(data.msg);
 	     }

@@ -85,6 +85,10 @@
         -- 充值钱数
         ,(select IFNULL(CAST(sum(recharge_amount) AS DECIMAL(11,2)), '0') from t_recharge_record where valid_sts_cd = 1) AS totalMoney
     FROM  t_member
-    where DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
+    <where>
+        <if test="startTime != null and startTime != ''">
+            DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
+        </if>
+    </where>
   </select>
 </mapper>

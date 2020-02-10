@@ -29,7 +29,8 @@
   </sql>
   <!-- 群投诉列表查询 -->
   <select id="queryGroupComplaintList" parameterType="java.util.Map" resultMap="BaseResultMap">
-    select 
+    select
+    (SELECT COUNT(1) FROM t_group_complaint_record w WHERE t_group_complaint_record.group_id = w.group_id) AS complaintTotal,
     <include refid="Base_Column_List" />
     from t_group_complaint_record
     <where>

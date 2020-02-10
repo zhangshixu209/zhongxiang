@@ -183,8 +183,8 @@ function addHoverDom(treeId, treeNode) {
 		//发起请求
 	    Chief.ajax.postJson("/organizaManage/saveOrganizaManageInfo", data, function (data) {
 	        if("0" == data.code){
-	        	Chief.layer.tips("保存成功", 800);
-	        	setTimeout('outTips()', 1000 );
+	        	Chief.layer.tips("保存成功", 1500);
+	        	setTimeout('outTips()', 2000 );
 				var zTree = $.fn.zTree.getZTreeObj("treeDemo");
 				zTree.addNodes(treeNode, {id:data.item.organizaId, pId:treeNode.id, orgId:data.item.orgId, name:"新增部门" + newCount});
 				var len = treeNode.children.length -1; // 获取要编辑的节点位置

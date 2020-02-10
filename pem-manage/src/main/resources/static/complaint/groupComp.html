@@ -119,6 +119,7 @@
 									<th>投诉原因</th>
 									<th>投诉时间</th>
 									<th>聊天记录</th>
+									<th>被投诉次数</th>
 									<th>状态</th>
 								</tr>
 							</thead>
@@ -189,6 +190,7 @@
 						<td>{{complaintTime}}</td>
 						<!--<td>{{groupChatRecord}}</td>-->
 						<td><a href="javascript:;" class="a_blue_click" onclick="queryChatRecord('{{groupChatRecord}}')">查看</a></td>
+						<td>{{complaintTotal}}</td>
 						<td>{{complaintCd status}}</td>
 					</tr>
 				{{/each}} 

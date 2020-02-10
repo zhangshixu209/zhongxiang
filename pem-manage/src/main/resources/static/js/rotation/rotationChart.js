@@ -91,7 +91,7 @@ function saveRotationChart(){
 	Chief.ajax.postJson("/rotation/saveRotationChartInfo", data, function (data) {
 		if(data.code == '0'){
 			Chief.layer.tips("保存成功！");
-			setTimeout('outTips()', 1000 );
+			setTimeout('outTips()', 2000 );
 		}else{
 			Chief.layer.tips(data.msg);
 		}
@@ -122,7 +122,7 @@ function delRotationChart(id) {
 		Chief.ajax.postJson('/rotation/deleteRotationChartInfo',{"id":id},function(data){
 			if(data.code == '0'){
 				Chief.layer.tips("删除成功！");
-				setTimeout('outTips()', 1000 );
+				setTimeout('outTips()', 2000 );
 			}else{
 				Chief.layer.tips(data.msg);
 			}
@@ -151,6 +151,7 @@ $('.pull-right').on('click','#edit_btn', function (){
 			//初始化表单验证规则
 			formValidate("#editRotatonChartForm");
 			initUpload(); // 初始化上传组件
+			$("#filePaths").val(data.item.fileList[0].filePath+"#"+data.item.fileList[0].fileName)
 			if (data.item.onlineStatus == "1") {
 				$("input:radio[name='onlineStatus'][value='1']").prop('checked',true);
 			} else {
@@ -181,7 +182,7 @@ function updateRotationChart(){
 	Chief.ajax.postJson("/rotation/updateRotationChartInfo", data, function (data) {
 		if("0" == data.code){
 			Chief.layer.tips("保存成功", 1500);
-			setTimeout('outTips()', 1000 );
+			setTimeout('outTips()', 2000 );
 		} else if("-1" == data.code){
 			Chief.layer.tips(data.msg, 2000);
 		} else {
@@ -259,7 +260,7 @@ function updateOnlineStatus(param){
 	Chief.ajax.postJson("/rotation/updateOnlineStatus", param, function (data) {
 		if("0" == data.code){
 			Chief.layer.tips("保存成功", 1500);
-			setTimeout('outTips()', 1000 );
+			setTimeout('outTips()', 2000 );
 		} else if("-1" == data.code){
 			Chief.layer.tips(data.msg, 2000);
 		} else {
@@ -310,6 +311,11 @@ function writeFilePaths(data) {
 
 		return pathArry.join("$");
 	}
+}
+
+//取消按钮关闭弹窗
+function doCancel(){
+	Chief.layer.close();
 }
 
 /** 下方是文件上传相关代码 */

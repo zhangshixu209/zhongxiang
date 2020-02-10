@@ -51,11 +51,11 @@ $("#J_search").click(function(){
 
 //任务导出
 $("#export_btn").on("click",function(){
-
-	Chief.ajax.postJson('/memberAssets/queryMemberMoneyTotalList', {}, function(data){
+	var params = $('.searchForm').serialize();
+	Chief.ajax.postJson('/memberAssets/queryMemberMoneyTotalList', params, function(data){
 		if (data.code=="0") {
 			if (data.total>0) {
-				window.location.href="../api/memberAssets/exportMoney";
+				window.location.href="../api/memberAssets/exportMoney?" + encodeURI(encodeURI(params));
 			} else {
 				Chief.layer.tips('没有数据导出');
 			}

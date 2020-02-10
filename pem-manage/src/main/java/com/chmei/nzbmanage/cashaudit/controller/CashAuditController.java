@@ -105,7 +105,7 @@ public class CashAuditController extends BaseController {
      */
     @RequestMapping("/exportMoney")
     @ResponseBody
-    public OutputDTO exportExcel(@ModelAttribute MemberAssetsForm bean, HttpServletResponse response) {
+    public OutputDTO exportExcel(@ModelAttribute CashAuditForm bean, HttpServletResponse response) {
         OutputDTO outputDTO = new OutputDTO();
         try {
             Map<String, Object> params = BeanUtil.convertBean2Map(bean);

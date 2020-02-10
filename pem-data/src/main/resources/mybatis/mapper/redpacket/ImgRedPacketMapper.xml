@@ -283,6 +283,7 @@
       a.red_packet_img_count AS redPacketCount,
       a.red_packet_img_stock AS redPacketStock,
       DATE_FORMAT(a.red_packet_img_date,'%m月%d日%H:%i') AS redPacketDate,
+      a.red_packet_img_date AS redPacketDateSort,
       (red_packet_img_count - red_packet_img_stock) AS robRedPacketCount,
       '图文广告' AS redPacketType
     FROM

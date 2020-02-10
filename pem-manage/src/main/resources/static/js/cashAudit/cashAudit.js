@@ -133,7 +133,7 @@ function updateCashAudit(val){
 	Chief.ajax.postJson("/cashAudit/updateCashAuditInfo", data, function (data) {
 		if("0" == data.code){
 			Chief.layer.tips("处理成功", 1500);
-			setTimeout('outTips()', 1000 );
+			setTimeout('outTips()', 2000 );
 		} else if("-1" == data.code){
 			Chief.layer.tips(data.msg, 2000);
 		} else {
@@ -157,10 +157,11 @@ function formValidate(){
 
 //任务导出
 $("#export_btn").on("click",function(){
-	Chief.ajax.postJson('/cashAudit/queryCashAuditList', {}, function(data){
+	var params = $('.searchForm').serialize();
+	Chief.ajax.postJson('/cashAudit/queryCashAuditList', params, function(data){
 		if (data.code=="0") {
 			if (data.total>0) {
-				window.location.href="../api/cashAudit/exportMoney";
+				window.location.href="../api/cashAudit/exportMoney?" + encodeURI(encodeURI(params));
 			} else {
 				Chief.layer.tips('没有数据导出');
 			}

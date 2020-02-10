@@ -149,7 +149,7 @@ function updateMemberComplaintInfo() {
 	Chief.ajax.postJson("/complaint/updateMemberComplaintInfo", data, function (data) {
 		if(data.code == '0'){
 			Chief.layer.tips("操作成功！");
-			setTimeout('outTips()', 1000 );
+			setTimeout('outTips()', 2000 );
 		}else{
 			Chief.layer.tips(data.msg);
 		}

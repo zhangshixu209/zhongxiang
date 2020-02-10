@@ -417,6 +417,7 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 		Map<String, Object> params = input.getParams();
 		List<Map<String, Object>> friendAllList = new ArrayList<>();
 		try {
+			params.put("zxFriendNotesType", "Y");
 			// 1 根据用户账户查询拥有的众享好友
 			List<Map<String, Object>> list = getBaseDao().queryForList("ZxFriendMapper.queryZxFriendList", params);
 			Map<String, Object> item_ = new HashMap<>();

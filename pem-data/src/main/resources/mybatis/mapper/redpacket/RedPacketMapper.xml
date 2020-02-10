@@ -281,6 +281,7 @@
       a.red_packet_count AS redPacketCount,
       a.red_packet_stock AS redPacketStock,
       DATE_FORMAT(a.red_packet_date,'%m月%d日%H:%i') AS redPacketDate,
+      a.red_packet_date AS redPacketDateSort,
       (red_packet_count - red_packet_stock) AS robRedPacketCount,
       '众享红包' AS redPacketType
     FROM

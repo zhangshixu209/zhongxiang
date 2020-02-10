@@ -238,7 +238,7 @@
     </where>
   </select>
 
-  <!-- 会员充值（钱包余额、广告费） -->
+  <!-- java.util.Map（钱包余额、广告费） -->
   <update id="saveMemberRechargeInfo" parameterType="java.util.Map">
     update t_member
     <set>

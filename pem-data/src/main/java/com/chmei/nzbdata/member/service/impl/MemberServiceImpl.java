@@ -19,10 +19,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 会员管理接口实现类
@@ -211,6 +208,15 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
                     adRecord.put("advertisingInfoMoney", Double.valueOf(advertisingFee) - Double.valueOf(oldAdvertisingFee));
                     adRecord.put("advertisingInfoFrom", "后台充值");
                     getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
+                    // 后台充值记录
+                    Map<String,Object> insertMap = new HashMap<>();
+                    insertMap.put("id", getSequence());
+                    insertMap.put("memberAccount", item.get("memberAccount"));
+//                insertMap.put("serialId","");
+                    insertMap.put("validStsCd","1");
+                    insertMap.put("rechargeAmount", Double.valueOf(advertisingFee) - Double.valueOf(oldAdvertisingFee));
+                    insertMap.put("status", "1001");
+                    getBaseDao().insert("RechargeRecordMapper.saveRechargeRecordInfo", insertMap);
                 } else {
                     // 后台充值钱包
                     Map<String, Object> walletMoneyInfo = new HashMap<>();
@@ -220,6 +226,16 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
                     walletMoneyInfo.put("walletInfoMoney", Double.valueOf(walletBalance) - Double.valueOf(oldWalletBalance));
                     walletMoneyInfo.put("walletInfoFrom", "后台充值");
                     getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
+                    // 后台充值记录
+                    Map<String,Object> insertMap = new HashMap<>();
+                    insertMap.put("id", getSequence());
+                    insertMap.put("memberAccount", item.get("memberAccount"));
+//                insertMap.put("serialId","");
+                    insertMap.put("validStsCd","1");
+                    insertMap.put("rechargeAmount", Double.valueOf(walletBalance) - Double.valueOf(oldWalletBalance));
+                    insertMap.put("status", "1002");
+                    getBaseDao().insert("RechargeRecordMapper.saveRechargeRecordInfo", insertMap);
+
                 }
             } else {
                 output.setCode("-1");
@@ -442,6 +458,15 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
             listAll.addAll(imgRedPacketMap);
             listAll.addAll(videoRedPacketMap);
             listAll.addAll(linkRedPacketMap);
+            // 排序
+            listAll.sort((Map<String, Object> o1, Map<String, Object> o2) -> {
+                long beginMillisecond = ((Date) o1.get("redPacketDateSort")).getTime();
+                long endMillisecond = ((Date) o2.get("redPacketDateSort")).getTime();
+                if(beginMillisecond > endMillisecond){
+                    return -1;
+                }
+                return 1;
+            });
             output.setItems(listAll);
             output.setTotal(listAll.size());
         } catch (Exception e) {

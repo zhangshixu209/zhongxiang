@@ -186,6 +186,16 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 				int i = getBaseDao().update("MemberMapper.updateMemberBalance", updateUser);
 					if (i > 0) {
 						auditTypeCd = "未通过，提现金额已返回到钱包。";
+						// 钱包扣除金额记录:
+						Map<String, Object> walletMoneyInfo = new HashMap<>();
+						walletMoneyInfo.put("walletInfoId", getSequence());
+						walletMoneyInfo.put("walletInfoAddOrMinus", "+");
+						walletMoneyInfo.put("walletInfoUserId", zxAppUser.get("memberAccount"));
+						walletMoneyInfo.put("walletInfoMoney", cashAmount);
+						walletMoneyInfo.put("walletInfoFrom", "提现失败");
+						getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
+						output.setCode("0");
+						output.setMsg("提现失败");
 					}
 				}
 			}
