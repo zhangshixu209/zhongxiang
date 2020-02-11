@@ -123,6 +123,7 @@ public class MemberComplaintServiceImpl extends BaseServiceImpl implements IMemb
 				LOGGER.info("deactivateIMUser============:"+gson.toJson(result));
 			} else if ("1005".equals(status)) { // 解冻账号
 				Object result = easemobIMUsers.activateIMUser((String) params.get("memberAccount"));
+				maps.put("status", "1");
 				LOGGER.info("deactivateIMUser============:"+gson.toJson(result));
 			} else if ("1003".equals(status)) {
 				String tx = "你已被投诉存在" + map.get("complaintRemark") +"行为，再次被投诉，您的账号将会被冻结！";

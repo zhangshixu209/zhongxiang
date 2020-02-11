@@ -13,10 +13,10 @@ aliPay:
     alipayRootCertPath: CRT/alipayRootCert.crt
 
     alipayBody: 众享信息-余额充值
-    alipaySubject: 众享信息
+    alipaySubject: 发布众享信息
     alipayProductCode: QUICK_MSECURITY_PAY
-    alipayNotifyUrl: http://39.99.166.24:8080/pem-manage/api/recharge/aliPayCallback
-    #alipayNotifyUrl: http://118.190.38.191:8080/pem-manage/api/recharge/aliPayCallback
+    #alipayNotifyUrl: http://39.99.166.24:8080/pem-manage/api/recharge/aliPayCallback
+    alipayNotifyUrl: http://118.190.38.191:8080/pem-manage/api/recharge/aliPayCallback
 
 wx:
   app:
@@ -27,8 +27,8 @@ wx:
     # 商户秘钥
     key: 1zhongxiangkejiyouxiangongsi2019
     # 回调地址
-    #notifyUrl: http://118.190.38.191:8080/pem-manage/api/recharge/wxPayCallback
-    notifyUrl: http://39.99.166.24:8080/pem-manage/api/recharge/wxPayCallback
+    notifyUrl: http://118.190.38.191:8080/pem-manage/api/recharge/wxPayCallback
+    #notifyUrl: http://39.99.166.24:8080/pem-manage/api/recharge/wxPayCallback
     # 商品描述
     body: 众享信息-余额充值
 
@@ -257,13 +257,13 @@ spring:
   profiles: prod
   datasource:
     druid:
-      #url: jdbc:mysql://118.190.38.191:3306/pem_manage_db?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
-      url: jdbc:mysql://39.99.166.24:3306/pem_manage_db?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
+      url: jdbc:mysql://118.190.38.191:3306/pem_manage_db?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
+      #url: jdbc:mysql://39.99.166.24:3306/pem_manage_db?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
       username: root
-      password: YUfL4lSMba2Pg6B28lOjY7K1xXhmF2wwB8K+SePc7i/AC80/YRFxxytlJ0gJxYklfODh/une+lb2jeGJT1I3Cw==
+      password: cslCBMhO7pLqdBaNUMcSxLFAKRarX4mRqttpoUgpOAlAscFvdLz4tijVaewjKnBLvtr1VHd2or13RxlLXxr+Pg==
       driver-class-name: com.mysql.jdbc.Driver
       filters: config
-      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAI5VjpwIER68bDIdQgOHeZgIixB+9gds36uT2OJBuezOzJAzzvtFjt95U4mkZ2bL5A/lDahk5qKP2uxsIs2CA80CAwEAAQ==
+      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALepZSzKFzpDSEWa3fwJ/soFxUZ8V4qJlfNh9YvYz5bvUNx+2svBkxIuNcmE9WcHDh0qQ/dQHqXJ4foBpW01XyMCAwEAAQ==
       connection-error-retry-attempts: 0
       initial-size: 1
       max-active: 200

@@ -75,7 +75,7 @@ public class SysSqlController extends BaseController{
 			 if (os.toLowerCase().startsWith("win")) {
 				 sb.append("D:/user/bin/mysqldump");
 			 } else if (os.toLowerCase().startsWith("linux")) {
-				 sb.append("/user/bin/mysqldump");
+				 sb.append("/usr/local/mysql/bin/mysqldump");
 			 }
 			 sb.append(" -h" + Constants.DB_HOST);       // 数据库地址
 			 sb.append(" -u" + Constants.USER_NAME);     // 数据库用户名
@@ -96,12 +96,12 @@ public class SysSqlController extends BaseController{
 					 i = outputDTO.getCode();
 				 }
 			 } else if (os.toLowerCase().startsWith("linux")) {
-				 Process process = runtime.exec("/bin/sh -c " + sb.toString()); // linux
+				 Process process = runtime.exec(new String[] { "sh", "-c", sb.toString()}); // linux
 				 if(process.waitFor() == 0){
 					 Map<String,Object> map = new HashMap<>();
 					 map.put("crtUserId", getCurrUserId());
 					 map.put("crtUserName", getCurrUserName());
-					 map.put("sqlUrl", "/uploadFiles/sql/" + Constants.DB_NAME + "-" + backName);
+					 map.put("sqlUrl", "/home/lymanage/cm_uploadFiles/sql/" + Constants.DB_NAME + "-" + backName);
 					 OutputDTO outputDTO = getOutputDTO(map,"sysSqlService","backupsDBInfo");
 					 i = outputDTO.getCode();
 				 }
@@ -128,14 +128,14 @@ public class SysSqlController extends BaseController{
 		if (os.toLowerCase().startsWith("win")) {
 			sb.append("D:/user/bin/mysql");
 		} else if (os.toLowerCase().startsWith("linux")) {
-			sb.append("/user/bin/mysql");
+			sb.append("/usr/local/mysql/bin/mysql");
 		}
 		sb.append(" -h " + Constants.DB_HOST);       // 数据库地址
 		sb.append(" -u" + Constants.USER_NAME);     // 数据库用户名
 		sb.append(" -p" + Constants.USER_PWD);      // 数据库密码
 		sb.append(" --default-character-set=utf8 " + Constants.DB_NAME + " < "); // 数据库名称
-		sb.append("D:"+filePath);
-		System.out.println("cmd命令为："+sb.toString());
+		sb.append(filePath);
+		LOGGER.info("cmd命令为："+sb.toString());
 		Runtime runtime = Runtime.getRuntime();
 		LOGGER.info("===========开始还原数据============");
 		try {
@@ -151,8 +151,9 @@ public class SysSqlController extends BaseController{
 					i = outputDTO.getCode();
 				}
 			} else if (os.toLowerCase().startsWith("linux")) {
-				Process process = runtime.exec("/bin/sh -c " + sb.toString()); // linux
+				Process process = runtime.exec(new String[] { "sh", "-c", sb.toString()}); // linux
 				if(process.waitFor() == 0){
+					LOGGER.info("===========还原数据============");
 					Map<String,Object> map = new HashMap<>();
 					map.put("sqlUrl", filePath); // 数据库还原本地文件地址
 					map.put("crtUserId", getCurrUserId());

@@ -13,10 +13,10 @@ aliPay:
     alipayRootCertPath: CRT/alipayRootCert.crt
 
     alipayBody: 众享信息-余额充值
-    alipaySubject: 众享信息
+    alipaySubject: 发布众享信息
     alipayProductCode: QUICK_MSECURITY_PAY
-    #alipayNotifyUrl: http://118.190.38.191:8080/pem-manage/api/recharge/aliPayCallback
-    alipayNotifyUrl: http://39.99.166.24:8080/pem-manage/api/recharge/aliPayCallback
+    alipayNotifyUrl: http://118.190.38.191:8080/pem-manage/api/recharge/aliPayCallback
+    #alipayNotifyUrl: http://39.99.166.24:8080/pem-manage/api/recharge/aliPayCallback
 reportmanage:
   session-timeout: 180000 #180000 2天
   login-need-msg: 0  #1表示需要发送短信验证码0则反之
