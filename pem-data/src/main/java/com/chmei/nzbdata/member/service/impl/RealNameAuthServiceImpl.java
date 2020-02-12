@@ -35,6 +35,12 @@ public class RealNameAuthServiceImpl extends BaseServiceImpl implements IRealNam
         Map<String, Object> params = input.getParams();
         try {
             String cardNum = (String) params.get("cardNum");
+            int check = getBaseDao().getTotalCount("RealNameAuthMapper.checkCardNum", params);
+            if (check > 0) {
+                output.setCode("-1");
+                output.setMsg("此证件已被使用");
+                return;
+            }
             if (!StringUtil.isEmpty(cardNum)) {
                 Map<String, Object> map = StringUtil.getCarInfo(cardNum);
                 params.put("sex", map.get("sex")); // 截取身份证性别
@@ -65,6 +71,12 @@ public class RealNameAuthServiceImpl extends BaseServiceImpl implements IRealNam
         Map<String, Object> params = input.getParams();
         try {
             String cardNum = (String) params.get("cardNum");
+            int check = getBaseDao().getTotalCount("RealNameAuthMapper.checkCardNum", params);
+            if (check > 0) {
+                output.setCode("-1");
+                output.setMsg("此证件已被使用");
+                return;
+            }
             if (!StringUtil.isEmpty(cardNum)) {
                 Map<String, Object> map = StringUtil.getCarInfo(cardNum);
                 params.put("sex", map.get("sex")); // 截取身份证性别

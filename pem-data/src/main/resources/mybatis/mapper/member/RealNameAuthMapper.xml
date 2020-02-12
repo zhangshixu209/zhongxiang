@@ -174,4 +174,10 @@
 			t_bs_area_info
 		WHERE parent_area_code = #{parentAreaCode,jdbcType=INTEGER}
 	</select>
+
+  <!-- 校验身份证号是否存在 -->
+  <select id="checkCardNum" parameterType="java.util.Map" resultType="int">
+    SELECT COUNT(1) FROM t_real_name_authentic AS a WHERE a.card_num = #{cardNum}
+  </select>
+
 </mapper>

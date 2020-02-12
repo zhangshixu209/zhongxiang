@@ -38,7 +38,7 @@
         AND zx_friend_grouping_id = #{zxFriendGroupingId}
       </if>
       <if test="zxFriendNotesType != null and zxFriendNotesType != ''">
-        AND zx_friend_notes_type = #{zxFriendNotesType} OR zx_friend_friend_type = #{zxFriendNotesType}
+        AND (zx_friend_friend_type = #{zxFriendNotesType} OR zx_friend_notes_type = #{zxFriendNotesType})
       </if>
     </where>
 

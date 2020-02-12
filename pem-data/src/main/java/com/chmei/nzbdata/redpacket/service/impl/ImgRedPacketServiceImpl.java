@@ -224,7 +224,7 @@ public class ImgRedPacketServiceImpl extends BaseServiceImpl implements IImgRedP
 			int ishave = getBaseDao().getTotalCount("ImgRedPacketMapper.isScrapeRedPacket", ismap);
 			if (ishave != 0) {
 				output.setCode("-1"); // 8
-				output.setMsg("答案错误,祝下次好运!");
+				output.setMsg("答题错误,祝下次好运!");
 				return;
 			}
 			// 根据用户ID和红包ID查询红包详细信息
@@ -464,7 +464,7 @@ public class ImgRedPacketServiceImpl extends BaseServiceImpl implements IImgRedP
 					int ishave = getBaseDao().getTotalCount("ImgRedPacketMapper.isScrapeRedPacket", ismap);
 					if (ishave != 0) {
 						output.setCode("-1"); // 8
-						output.setMsg("答案错误,祝下次好运!");
+						output.setMsg("答题错误,祝下次好运!");
 						return;
 					}
 				}

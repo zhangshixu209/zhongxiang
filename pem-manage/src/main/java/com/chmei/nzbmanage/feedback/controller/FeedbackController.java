@@ -57,12 +57,12 @@ public class FeedbackController extends BaseController {
         OutputDTO outputDTO = new OutputDTO();
         Map<String, Object> params = BeanUtil.convertBean2Map(feedbackForm);
         //过滤权限
-        Long user_Id = (Long) getSession().getAttribute(Constants.SESSION_USER.ID);
-        String user_roles = (String) getSession().getAttribute(Constants.SESSION_USER.ROLE_IDS);
-        params.put("startPensonId", user_Id);
-        if((user_roles).indexOf(Constants.ROOT_ROLE) > -1){
-        	params.put("startPensonId", null);
-        }
+//        Long user_Id = (Long) getSession().getAttribute(Constants.SESSION_USER.ID);
+//        String user_roles = (String) getSession().getAttribute(Constants.SESSION_USER.ROLE_IDS);
+//        params.put("startPensonId", user_Id);
+//        if((user_roles).indexOf(Constants.ROOT_ROLE) > -1){
+//        	params.put("startPensonId", null);
+//        }
         outputDTO = getOutputDTO(params, "feedbackService", "queryList");
         return outputDTO;
     }

@@ -22,7 +22,7 @@ public class FilterConfiguration {
 		FilterRegistrationBean regBean = new FilterRegistrationBean();
 		SessionFilter sessionFilter = new SessionFilter();
 		sessionFilter.initWhiteList("/login/login.html,/noRight.html,/api/pb/admin/.*," +
-				"/api/member/.*,/api/recharge/.*,/api/rotation/*,/api/friend/*");
+				"/api/member/.*,/api/recharge/.*,/api/rotation/*,/api/friend/*,/api/shareOutBonus/*");
 		sessionFilter.initWhitePostFix("js,css,png,jpg,gif,mp3,mp4,icon,ico");
 		sessionFilter.initNotLoginUrl("/login/login.html");
 		regBean.setFilter(sessionFilter);
@@ -41,7 +41,7 @@ public class FilterConfiguration {
 		FilterRegistrationBean regBean = new FilterRegistrationBean();
 		RightFilter rightFilter = rightFilterBean();
 		rightFilter.initWhiteList("/index.html,/noRight.html,/login/login.html," +
-				"/api/pb/admin/.*,/assets/.*,/api/adminRight/.*,/api/member/.*,/api/recharge/.*,/api/rotation/*,/api/friend/*");
+				"/api/pb/admin/.*,/assets/.*,/api/adminRight/.*,/api/member/.*,/api/recharge/.*,/api/rotation/*,/api/friend/*,/api/shareOutBonus/*");
 		rightFilter.initWhitePostFix("js,css,png,jpg,gif,mp3,mp4,icon,ico");
 		rightFilter.initNotLoginUrl("/login/login.html");
 		rightFilter.initNotRightUrl("/noRight.html");
@@ -56,7 +56,7 @@ public class FilterConfiguration {
 		FilterRegistrationBean regBean = new FilterRegistrationBean();
 		XSSFilter xSSFilter = new XSSFilter();
 		xSSFilter.initWhiteList("/api/adminRight/btnAuthorize,/api/sys/right/addRight," +
-				"/api/sys/right/editRight,/api/pb/admin/login,/api/member/.*,/api/recharge/.*,/api/rotation/*,/api/friend/*");
+				"/api/sys/right/editRight,/api/pb/admin/login,/api/member/.*,/api/recharge/.*,/api/rotation/*,/api/friend/*,/api/shareOutBonus/*");
 		regBean.setFilter(xSSFilter);
 		regBean.setUrlPatterns(Arrays.asList("/api/*"));
 		regBean.setOrder(400);

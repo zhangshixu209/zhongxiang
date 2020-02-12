@@ -122,6 +122,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				map.put("circleDate", 0);
 				// 是否有分红任务周期的标志
 				map.put("mark", Constants.N);
+				params.put("adShareOutBonusInfoDoneS", "S");
 				// 查询额度和剩余额度, 看是否有广告分红任务
 				Map<String, Object> shareOutBonusInfo = (Map<String, Object>) getBaseDao().queryForObject(
 						"ShareOutBonusMapper.findTaskByUserIdAndMarkS", params);
@@ -268,7 +269,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				}
 				if ((adShareOutBonusResidueLimit.doubleValue() < money)) {
 					output.setCode("-1");
-					output.setMsg("剩余额度小于追加额度,不允许追加！");
+					output.setMsg("追加金额不能大于剩余额度！");
 					return;
 				}
 			}
@@ -333,7 +334,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 						getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
 					}
 					output.setCode("0");
-					output.setMsg("追加分红成功");
+					output.setMsg("追加成功");
 					return;
 				}
 			} else { // 没有填写过推荐人,第一次填写,需要跟新团队表数据
@@ -395,7 +396,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 					if (i1 > 0) {
 						// 设置之后启动定时器,去监控此人下的人是否有直推有效人员,如果有则没问题,如果没有则将推荐人修改为无效人员
 						output.setCode("0");
-						output.setMsg("追加分红成功");
+						output.setMsg("追加成功");
 						return;
 					}
 				}
@@ -539,6 +540,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 			Double money = money_ / 1.0;
 			// 申请分红时间周期
 			Integer date = (Integer) params.get("date");
+			params.put("adShareOutBonusInfoDoneS", "S");
 			// 判断是否有正在执行的分红任务
 			Map<String, Object> taskByUserIdAndMarkS = (Map<String, Object>) getBaseDao().queryForObject(
 					"ShareOutBonusMapper.findTaskByUserIdAndMarkS", params);
@@ -843,7 +845,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 									int j = getBaseDao().update("ShareOutBonusMapper.updateShareOutBonusInfo", record_);
 									// 将交易表中的取消数据删除
 									Map<String, Object> examplee = new HashMap<>();
-									examplee.put("dealUserId", userRun.get("memberAccount"));
+									examplee.put("memberAccount", userRun.get("memberAccount"));
 									examplee.put("dealMoneyMark", "0");
 									getBaseDao().delete("AssetsTransferMapper.deleteDealInfo", examplee);
 									LOGGER.info("用户{ " + outBonusInfo.get("adShareOutBonusInfoUserId") +" }分红任务结束");
