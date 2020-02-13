@@ -268,7 +268,7 @@
   <select id="checkGroupComplaintCount" parameterType="java.util.Map" resultType="int">
     select
     COUNT(1)
-    from t_group_complaint_record
+    from t_group_complaint_record a
     <where>
       a.complainant = #{complainant}
       AND DATE_FORMAT(a.complaint_time, '%Y-%m-%d') = #{complaintTime}
