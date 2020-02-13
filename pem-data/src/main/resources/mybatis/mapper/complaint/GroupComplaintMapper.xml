@@ -264,4 +264,14 @@
     </where>
   </select>
 
+  <!-- 校验投诉次数 -->
+  <select id="checkGroupComplaintCount" parameterType="java.util.Map" resultType="int">
+    select
+    COUNT(1)
+    from t_group_complaint_record
+    <where>
+      a.complainant = #{complainant}
+      AND DATE_FORMAT(a.complaint_time, '%Y-%m-%d') = #{complaintTime}
+    </where>
+  </select>
 </mapper>

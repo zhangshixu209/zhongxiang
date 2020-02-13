@@ -87,4 +87,19 @@ public class ComplaintController extends BaseController {
         return outputDTO;
     }
 
+    /**
+     *
+     * 校验会员投诉次数
+     * @param memberComplaintForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/checkComplaintCount")
+    public OutputDTO checkComplaintCount(@ModelAttribute MemberComplaintForm memberComplaintForm) {
+        LOGGER.info("校验会员投诉次数...ComplaintController.checkComplaintCount()...");
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(memberComplaintForm);
+        outputDTO = getOutputDTO(params, "memberComplaintService", "checkComplaintCount");
+        return outputDTO;
+    }
+
 }

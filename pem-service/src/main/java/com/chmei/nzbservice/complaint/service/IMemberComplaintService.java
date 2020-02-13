@@ -48,4 +48,13 @@ public interface IMemberComplaintService {
 	 */
 	void saveMemberComplaintInfo(InputDTO input, OutputDTO output) throws NzbServiceException;
 
+	/**
+	 * 会员投诉次数
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	void checkComplaintCount(InputDTO input, OutputDTO output) throws NzbServiceException;
+
 }

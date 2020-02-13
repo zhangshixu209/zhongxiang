@@ -115,4 +115,18 @@ public class MemberComplaintServiceImpl extends BaseServiceImpl implements IMemb
 		getNzbDataService().execute(input, output);
 	}
 
+	/**
+	 * 会员投诉次数
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void checkComplaintCount(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("memberComplaintService");
+		input.setMethod("checkComplaintCount");
+		getNzbDataService().execute(input, output);
+	}
+
 }

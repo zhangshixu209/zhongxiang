@@ -508,14 +508,17 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 	 * @param output 返回对象
 	 * @throws NzbDataException 自定义异常
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void queryAllRedPacketByAuth(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		List<Map<String, Object>> listAll = new ArrayList<>();
 		try {
-			@SuppressWarnings("unchecked")
 			Map<String, Object> item = (Map<String, Object>) getBaseDao().
 					queryForObject("RealNameAuthMapper.queryRealNameInfo", params);
+			// 查询用户信息
+			Map<String, Object> zxAppUser =  (Map<String, Object>) getBaseDao().
+					queryForObject("MemberMapper.queryMemberDetail", params);
 			List<Map<String, Object>> list = getBaseDao().queryForList("RedPacketMapper.queryRedPacketLog", params);
 			if (Optional.ofNullable(item).isPresent()) {
 				Integer age = (Integer) item.get("age");
@@ -534,6 +537,12 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 						result.put("redProvName", map.get("provinceName"));                // 省名称
 						result.put("redCityName", map.get("cityName"));                   // 市名称
 						result.put("redCountyName", map.get("countyName"));               // 区县名称
+
+						Date crtTime = (Date) zxAppUser.get("crtTime"); // 注册时间
+						Date redPacketDate = (Date) map.get("redPacketDate"); // 红包发布时间
+						if (crtTime.getTime() > redPacketDate.getTime()) { // 校验用户注册时间是否大于红包发布时间（小于红包发布时间可见红包）
+							continue;
+						}
 						// 校验红包地区
 						int checkArea = checkArea(item, result);
 

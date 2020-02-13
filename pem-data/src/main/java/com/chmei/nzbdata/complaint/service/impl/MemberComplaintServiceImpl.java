@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -171,6 +173,35 @@ public class MemberComplaintServiceImpl extends BaseServiceImpl implements IMemb
 			output.setMsg("投诉成功");
 		} catch (Exception ex) {
 			LOGGER.error("保存失败", ex);
+		}
+	}
+
+	/**
+	 * 校验投诉次数
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void checkComplaintCount(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			Date d = new Date();
+			SimpleDateFormat now = new SimpleDateFormat("yyyy-MM-dd");
+			params.put("complaintTime", now.format(d));
+			int count = getBaseDao().getTotalCount("MemberComplaintMapper.checkComplaintCount", params);
+			int gcount = getBaseDao().getTotalCount("GroupComplaintMapper.checkGroupComplaintCount", params);
+			int i = count + gcount;
+			if (i >= 3) {
+				output.setCode("-1");
+				output.setMsg("投诉次数每天不能超过三次！");
+				return;
+			}
+			output.setCode("0");
+			output.setMsg("查询成功");
+		} catch (Exception ex) {
+			LOGGER.error("查询失败", ex);
 		}
 	}
 
