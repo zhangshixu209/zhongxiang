@@ -224,18 +224,18 @@
       LEFT JOIN t_member AS b ON b.member_account = a.zx_friend_friend_id
     <where>
       <if test="zxFriendId != null and zxFriendId != ''">
-        zx_friend_id = #{zxFriendId,jdbcType=BIGINT}
+        a.zx_friend_id = #{zxFriendId,jdbcType=BIGINT}
       </if>
       <if test="zxFriendUserId != null and zxFriendUserId != ''" >
-        AND zx_friend_user_id = #{zxFriendUserId}
+        AND a.zx_friend_user_id = #{zxFriendUserId}
       </if>
       <if test="zxFriendFriendId != null and zxFriendFriendId != ''" >
-        AND zx_friend_friend_id = #{zxFriendFriendId}
+        AND a.zx_friend_friend_id = #{zxFriendFriendId}
       </if>
       <if test="zxFriendGroupingId != null and zxFriendGroupingId != ''" >
-        AND zx_friend_grouping_id = #{zxFriendGroupingId}
+        AND a.zx_friend_grouping_id = #{zxFriendGroupingId}
       </if>
-        AND zx_friend_friend_type = 'Y'
+        AND a.zx_friend_friend_type = 'Y'
     </where>
   </select>
 
@@ -257,5 +257,22 @@
     </set>
     where zx_friend_user_id = #{zxFriendUserId} AND zx_friend_friend_id = #{zxFriendFriendId}
   </update>
+
+  <!-- 统计分组人数 -->
+  <select id="queryZxFriendTotal" parameterType="java.util.Map" resultType="int">
+    SELECT
+      COUNT(1)
+    FROM
+    zx_app_friend AS a
+    <where>
+      <if test="zxFriendUserId != null and zxFriendUserId != ''" >
+        a.zx_friend_user_id = #{zxFriendUserId}
+      </if>
+      <if test="zxFriendGroupingId != null and zxFriendGroupingId != ''" >
+        AND a.zx_friend_grouping_id = #{zxFriendGroupingId}
+      </if>
+      AND zx_friend_friend_type = 'Y'
+    </where>
+  </select>
 
 </mapper>

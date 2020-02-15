@@ -48,7 +48,7 @@
       a.city_name AS cityName,
       a.county_name AS countyName,
       (SELECT COUNT(1) FROM zx_app_friend f WHERE f.zx_friend_user_id = a.member_account AND f.zx_friend_friend_type = "Y") AS friendTotal,
-	  (SELECT COUNT(1) FROM zx_app_friend f WHERE f.zx_friend_user_id = a.member_account AND f.zx_friend_notes_type = "Y") AS notesTotal
+	  (SELECT COUNT(1) FROM zx_app_friend f WHERE f.zx_friend_friend_id = a.member_account AND f.zx_friend_notes_type = "Y") AS notesTotal
   FROM
       t_real_name_authentic AS a
   WHERE a.member_account = #{memberAccount}

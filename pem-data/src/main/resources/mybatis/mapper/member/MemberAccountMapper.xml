@@ -73,17 +73,19 @@
         ,(select IFNULL(CAST(sum(red_packet_link_money) AS DECIMAL(11,2)), '0') from zx_app_link_red_packet_info where red_packet_link_user_id is NULL) AS redLinkPacket
         ,(select IFNULL(CAST(sum(red_packet_video_money) AS DECIMAL(11,2)), '0') from zx_app_video_red_packet_info where red_packet_video_user_id is NULL) AS redVideoPacket
         -- 激活分红
-        ,(select IFNULL(CAST(sum(wallet_info_money) AS DECIMAL(11,2)), '0') from zx_app_wallet_money_info where wallet_info_from = "激活分红") AS activateMoney
+        ,(select IFNULL(CAST(sum(wallet_info_money) AS DECIMAL(11,2)), '0') from zx_app_wallet_money_info where wallet_info_from = "开通广告分红手续费") AS activateMoney
         -- 申请分红
-        ,(select IFNULL(CAST(sum(wallet_info_money) AS DECIMAL(11,2)), '0') from zx_app_wallet_money_info where wallet_info_from = "追加分红") AS applyMoney
+        ,(select IFNULL(CAST(sum(wallet_info_money) AS DECIMAL(11,2)), '0') from zx_app_wallet_money_info where wallet_info_from = "申请分红手续费") AS applyMoney
+        -- 提现手续费
+        ,(select IFNULL(CAST(sum(wallet_info_money) AS DECIMAL(11,2)), '0') from zx_app_wallet_money_info where wallet_info_from = "提现手续费") AS txsxMoney
         -- 升级群扣除
-        ,(select IFNULL(CAST(sum(wallet_info_money) AS DECIMAL(11,2)), '0') from zx_app_wallet_money_info where wallet_info_from = "升级群扣除") AS groupMoney
+        ,(select IFNULL(CAST(sum(wallet_info_money) AS DECIMAL(11,2)), '0') from zx_app_wallet_money_info where wallet_info_from = "支付群升级费用") AS groupMoney
         -- 实际提现钱数
-        ,(select IFNULL(CAST(sum(cash_amount) AS DECIMAL(11,2)), '0') from t_cash_audit where audit_type = 2) AS relReflectMoney
+        ,(select IFNULL(CAST(sum(cash_amount) AS DECIMAL(11,2)), '0') from t_cash_audit where audit_type = 1) AS relReflectMoney
         -- 提现钱数
         ,(select IFNULL(CAST(sum(cash_amount) AS DECIMAL(11,2)), '0') from t_cash_audit) AS reflectMoney
         -- 充值钱数
-        ,(select IFNULL(CAST(sum(recharge_amount) AS DECIMAL(11,2)), '0') from t_recharge_record where valid_sts_cd = 1) AS totalMoney
+        ,(select IFNULL(CAST(sum(recharge_amount) AS DECIMAL(11,2)), '0') from t_recharge_record where valid_sts_cd = 1 AND `status` != '1001') AS totalMoney
     FROM  t_member
     <where>
         <if test="startTime != null and startTime != ''">

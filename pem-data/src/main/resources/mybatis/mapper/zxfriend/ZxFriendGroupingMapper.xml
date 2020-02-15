@@ -107,6 +107,12 @@
     <where>
       a.zx_friend_id = #{zxFriendUserId}
     </where>
-    ORDER BY a.zx_friend_crt_time DESC
+    ORDER BY a.zx_friend_crt_time ASC
+  </select>
+
+  <!-- 校验分组名称是否重复 -->
+  <select id="checkZxFriendGroupInfo" parameterType="java.util.Map" resultType="int">
+    SELECT COUNT(1) FROM zx_app_friend_grouping AS a WHERE a.zx_friend_id = #{zxFriendUserId}
+    AND a.zx_friend_grouping_name = #{zxFriendGroupingName}
   </select>
 </mapper>

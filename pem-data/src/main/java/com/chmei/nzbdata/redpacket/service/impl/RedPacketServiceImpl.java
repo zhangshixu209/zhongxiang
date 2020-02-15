@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -244,7 +246,7 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 				}
 				if(0 == (int) redPacket.get("redPacketStock")) { // 判断红包剩余数量
 					output.setCode("-1"); // 5
-					output.setMsg("很遗憾，红包已被领完!");
+					output.setMsg("该红包已被领完！");
 					return;
 				}
 				String answer = (String) params.get("redPacketAnswer"); // 判断回答问题答案
@@ -252,7 +254,7 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 					ismap.put("scrapeId", getSequence());
 					getBaseDao().insert("RedPacketMapper.insertScrapeRedPacket", ismap);
 					output.setCode("-1"); // 3
-					output.setMsg("回答错误，下次要用心哟!");
+					output.setMsg("答题错误，祝下次好运！");
 					return;
 				}
 				// 返回一个随意产生的红包给用户,并保存到数据库:
@@ -438,14 +440,38 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 	 * @param output 返回对象
 	 * @throws NzbDataException 自定义异常
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void checkUserIsRobRedPacket(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
 			int check =  getBaseDao().getTotalCount("RedPacketMapper.checkUserIsRobRedPacket", params);
-			@SuppressWarnings("unchecked")
 			Map<String, Object> checkMap = (Map<String, Object>) getBaseDao().queryForObject(
 					"RedPacketMapper.selectStockByRedPacketId", params);
+			// 根据用户ID和红包ID查询红包详细信息
+			Map<String, Object> map = new HashMap<>();
+			map.put("redPacketId", params.get("redPacketId"));
+			Map<String, Object> redPacket = (Map<String, Object>) getBaseDao().queryForObject(
+					"RedPacketMapper.queryRedPacketDetail", map);
+			Date d = new Date();
+			Date redPacketDate = (Date) redPacket.get("redPacketDate");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String dateNowStr = sdf.format(d);
+			long days = getDaySub(sdf.format(redPacketDate), dateNowStr);
+			String msg;
+			if(days > 3) {
+				if (params.get("memberAccount").equals(redPacket.get("redPacketUserId"))) {
+					msg = "此红包已超过72小时！";
+					output.setCode("-2"); // 4
+					output.setMsg(msg);
+					return;
+				} else {
+					msg = "该红包已超过72小时，如果已领取，请在钱包记录中查询！";
+					output.setCode("-3"); // 4
+					output.setMsg(msg);
+					return;
+				}
+			}
 			if (Optional.ofNullable(checkMap).isPresent()) {
 				// 通过用户账号和红包ID查询出红包信息:
 				Long redPacketId = (Long) params.get("redPacketId");
@@ -460,6 +486,11 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 					if (ishave != 0) {
 						output.setCode("-1"); // 8
 						output.setMsg("答题错误,祝下次好运!");
+						return;
+					}
+					if(0 == (int) redPacket.get("redPacketStock")) { // 判断红包剩余数量
+						output.setCode("-1"); // 5
+						output.setMsg("此红包已被领完！");
 						return;
 					}
 				}
@@ -537,7 +568,16 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 						result.put("redProvName", map.get("provinceName"));                // 省名称
 						result.put("redCityName", map.get("cityName"));                   // 市名称
 						result.put("redCountyName", map.get("countyName"));               // 区县名称
-
+						Map<String, Object> resultMap = new HashMap<>();
+						resultMap.put("redPacketId", map.get("redPacketId"));
+//						resultMap.put("memberAccount", params.get("memberAccount"));
+						resultMap.put("robUserId", params.get("memberAccount"));
+						int checkRed = checkOldRedPacket(resultMap); // 校验红包颜色
+						if(checkRed == 1){
+							map.put("redPacketColor", "1"); // 浅颜色
+						} else {
+							map.put("redPacketColor", "0"); // 红色
+						}
 						Date crtTime = (Date) zxAppUser.get("crtTime"); // 注册时间
 						Date redPacketDate = (Date) map.get("redPacketDate"); // 红包发布时间
 						if (crtTime.getTime() > redPacketDate.getTime()) { // 校验用户注册时间是否大于红包发布时间（小于红包发布时间可见红包）
@@ -779,6 +819,75 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 			return max;
 		}
 		return 0D;
+	}
+
+	/**
+	 * 校验红包颜色
+	 * @param item
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private int checkOldRedPacket(Map<String, Object> item) {
+		// 通过用户账号和红包ID查询出红包信息:
+		Long redPacketId = (Long) item.get("redPacketId");
+		String robUserId = (String) item.get("robUserId");
+		//判断是否已经答错过
+		Map<String, Object> ismap = new HashMap<>();
+		ismap.put("redPacketId", redPacketId);
+		ismap.put("userId", robUserId);
+		ismap.put("tableName", "zx_app_red_packet_scrape");
+		int ishave = getBaseDao().getTotalCount("RedPacketMapper.isScrapeRedPacket", ismap);
+		if (ishave != 0) { // 答题错误,祝下次好运!
+			return 1;
+		}
+		// 根据用户ID和红包ID查询红包详细信息
+		Map<String, Object> redPacket = (Map<String, Object>) getBaseDao().queryForObject(
+				"RedPacketMapper.queryRedPacketDetail", item);
+		// 抢红包的人存在和红包信息存在才可以进行抢红包操作
+		if (Optional.ofNullable(redPacket).isPresent()) {
+			// 先判断是否抢过红包:
+			Map<String, Object> one = (Map<String, Object>) getBaseDao().queryForObject(
+					"RedPacketMapper.queryRedPacketInfoDetail", item);
+			if (Optional.ofNullable(one).isPresent() && StringUtil.isNotEmpty((String) one.get("redPacketUserId"))) { // 不能重复抢红包
+				return 1;
+			}
+			if (0 == (int) redPacket.get("redPacketStock")) { // 判断红包剩余数量 很遗憾，红包已被领完!
+				return 1;
+			}
+			Date d = new Date();
+			Date redPacketDate = (Date) redPacket.get("redPacketDate");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String dateNowStr = sdf.format(d);
+			long days = getDaySub(sdf.format(redPacketDate), dateNowStr);
+			if(days > 3) {
+				return 1;
+			}
+		}
+		return 0;
+	}
+
+	/**
+	 * 校验红包天数
+	 * @param beginDateStr
+	 * @param endDateStr
+	 * @return
+	 */
+	public static long getDaySub(String beginDateStr,String endDateStr) {
+
+		long day = 0;
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date beginDate;
+		Date endDate;
+		try {
+			beginDate = format.parse(beginDateStr);
+			endDate = format.parse(endDateStr);
+			day = (endDate.getTime()-beginDate.getTime())/(24*60*60*1000);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		System.out.println("day:"+day);
+
+		return day;
 	}
 
 }

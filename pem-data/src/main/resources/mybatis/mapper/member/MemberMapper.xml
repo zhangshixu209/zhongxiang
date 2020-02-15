@@ -24,8 +24,9 @@
   <sql id="total_Column_List">
     (SELECT COUNT(1) FROM t_member_complaint_record w WHERE a.member_account = w.member_account AND w.`status` != '1001' AND w.`status` != '1002') AS complaintTotal,
 	(SELECT IFNULL(CAST(SUM(w.recharge_amount) AS CHAR), '0') FROM t_recharge_record w WHERE a.member_account = w.member_account
-	AND w.`status` = '1003') AS rechargeTotal,
-	(SELECT IFNULL(CAST(SUM(w.cash_amount) AS CHAR), '0') FROM t_cash_audit w WHERE a.member_account = w.user_account) AS cashTotal,
+	AND w.`status` != '1001') AS rechargeTotal,
+-- 	(SELECT IFNULL(CAST(SUM(w.cash_amount) AS CHAR), '0') FROM t_cash_audit w WHERE a.member_account = w.user_account) AS cashTotal,
+	(SELECT IFNULL(CAST(SUM(w.cash_amount) AS CHAR), '0') FROM t_cash_audit w WHERE a.member_account = w.member_account AND w.audit_type = '1') AS cashTotal,
 	(SELECT IFNULL(CAST(SUM(w.bonus_amount) AS CHAR), '0') FROM t_member_bonus_record w WHERE a.member_account = w.member_account) AS bonusTotal
   </sql>
   <!-- 查询会员列表 -->
@@ -226,7 +227,7 @@
       IFNULL(a.zx_my_team_id, 0) as zxMyTeamId,
       a.activate_status AS activateStatus,
       (SELECT COUNT(1) FROM zx_app_friend f WHERE f.zx_friend_user_id = a.member_account AND f.zx_friend_friend_type = "Y") AS friendTotal,
-      (SELECT COUNT(1) FROM zx_app_friend f WHERE f.zx_friend_user_id = a.member_account AND f.zx_friend_notes_type = "Y") AS notesTotal
+      (SELECT COUNT(1) FROM zx_app_friend f WHERE f.zx_friend_friend_id = a.member_account AND f.zx_friend_notes_type = "Y") AS notesTotal
     FROM
         t_member a
     LEFT JOIN t_real_name_authentic b ON a.member_account = b.member_account

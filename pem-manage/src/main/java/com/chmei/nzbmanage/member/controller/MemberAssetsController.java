@@ -104,6 +104,7 @@ public class MemberAssetsController extends BaseController {
         map.put("allPackets", "未抢完的红包");
         map.put("activateMoney", "开通广告分红手续费");
         map.put("applyMoney", "申请分红手续费");
+        map.put("txsxMoney", "提现手续费");
         map.put("groupMoney", "群升级费用");
         map.put("reflectMoney", "提现手续费");
         map.put("relReflectMoney", "实际提现总金额");

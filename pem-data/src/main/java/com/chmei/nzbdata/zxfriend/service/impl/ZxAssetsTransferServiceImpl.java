@@ -126,10 +126,10 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 						if (count < 10L) {
 							if(shareOutBonusInfo != null && shareOutBonusInfo.size() > 0){
 								Map<String, Object> share = shareOutBonusInfo.get(0); // 获取第一条
-								String startDate = (String) share.get("adShareOutBonusInfoStart"); // 申请分红开始时间
-								Date starToDate = formatter.parse(startDate, pos);
+								Date startDate = (Date) share.get("adShareOutBonusInfoStart"); // 申请分红开始时间
+//								Date starToDate = formatter.parse(startDate, pos);
 								int endDay = (int) share.get("adShareOutBonusInfoDayNum"); // 申请分红倒计时天数
-								if(System.currentTimeMillis() < starToDate.getTime() + (endDay * 24 * 3600 * 1000)){
+								if(System.currentTimeMillis() < startDate.getTime() + (endDay * 24 * 3600 * 1000)){
 									output.setCode("-1");
 									output.setMsg("请于下一分红周期再次发布!");
 									return;
@@ -151,10 +151,10 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 								//有有效直推 按照发布广告费周期走 查看是不是在上次周期时间之内
 								if (shareOutBonusInfo != null && shareOutBonusInfo.size() >0){
 										Map<String, Object> share = shareOutBonusInfo.get(0); // 获取第一条
-										String startDate = (String) share.get("adShareOutBonusInfoStart"); // 申请分红开始时间
-										Date starToDate = formatter.parse(startDate, pos);
+										Date startDate = (Date) share.get("adShareOutBonusInfoStart"); // 申请分红开始时间
+//										Date starToDate = formatter.parse(startDate, pos);
 										int endDay = (int) share.get("adShareOutBonusInfoDayNum"); // 申请分红倒计时天数
-									if(System.currentTimeMillis() < starToDate.getTime() + (endDay * 24 * 3600 * 1000)){
+									if(System.currentTimeMillis() < startDate.getTime() + (endDay * 24 * 3600 * 1000)){
 										output.setCode("-1");
 										output.setMsg("请于下一分红周期再次发布!");
 										return;
@@ -292,7 +292,7 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 			// 记录购买信息到取消表中,之后删除那个发布表信息
 			Map<String, Object> record_ = new HashMap<>();
 			record_.put("zxAppDealRecordId", getSequence());
-			record_.put("zxAppDealRecordDate", (zxAppDeals != null && zxAppDeals.size() > 0) ? zxAppDeals.get(0).get("dealDate") : new Date());
+			record_.put("zxAppDealRecordDate", new Date());
 			record_.put("zxAppDealRecordUserId", params.get("memberAccount"));
 			record_.put("zxAppDealRecordMoney", 100D);
 			// 此字段是标注字段 0 是取消记录 1 自己购买记录 2 是被购买记录
@@ -307,7 +307,7 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 					// 记录被购买人信息
 					Map<String, Object> cancelRecorded = new HashMap<>();
 					cancelRecorded.put("zxAppDealRecordId", getSequence());
-					cancelRecorded.put("zxAppDealRecordDate", new Date());
+					cancelRecorded.put("zxAppDealRecordDate", (zxAppDeals != null && zxAppDeals.size() > 0) ? zxAppDeals.get(0).get("dealDate") : new Date());
 					cancelRecorded.put("zxAppDealRecordUserId", params.get("fromMemberAccount"));
 					cancelRecorded.put("zxAppDealRecordMoney", 100D);
 					// 此字段是标注字段 0 是取消记录 1 自己购买记录 2 是被购买记录

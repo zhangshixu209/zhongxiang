@@ -227,7 +227,8 @@
       a.red_packet_img_age_end AS redPacketAgeEnd,
       a.red_packet_img_date AS redPacketDate,
       b.head_img_url AS headImgUrl,
-      b.nickname AS nickname,
+      #b.nickname AS nickname,
+      IFNULL(b.nickname,b.member_account) AS nickname, -- 发布红包用户昵称
       b.member_account AS memberAccount,
       a.province_name AS provinceName,
       a.city_name AS cityName,
@@ -317,7 +318,10 @@
       a.red_packet_img_type AS redPacketImgType
   FROM
       zx_app_img_red_packet a
-      WHERE a.red_packet_img_id = #{redPacketImgId} AND a.member_account = #{memberAccount}
+      WHERE a.red_packet_img_id = #{redPacketImgId}
+    <if test="memberAccount != null and memberAccount != ''">
+      AND a.member_account = #{memberAccount}
+    </if>
   </select>
 
   <!--根据用户账号和红包id查询-->

@@ -26,6 +26,7 @@
     <sql id="total_Column_List">
         (SELECT IFNULL(CAST(SUM(w.recharge_amount) AS CHAR), '0') FROM t_recharge_record w WHERE a.member_account = w.member_account
         AND w.`status` = '1003') AS rechargeTotal,
+        (SELECT IFNULL(CAST(SUM(w.cash_amount) AS CHAR), '0') FROM t_cash_audit w WHERE a.member_account = w.member_account AND w.audit_type = '1') AS cashTotal,
         (SELECT IFNULL(CAST(SUM(w.bonus_amount) AS CHAR), '0') FROM t_member_bonus_record w WHERE a.member_account = w.member_account) AS bonusTotal
     </sql>
     <!-- 提现审核列表查询 -->
@@ -84,7 +85,7 @@
                 AND DATE_FORMAT(a.cash_apply_time,'%Y-%m-%d') &lt;= #{endTime}
             </if>
         </where>
-        ORDER BY a.audit_type DESC, a.cash_apply_time DESC
+        ORDER BY a.cash_apply_time DESC
         <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
             LIMIT #{start}, #{limit}
         </if>

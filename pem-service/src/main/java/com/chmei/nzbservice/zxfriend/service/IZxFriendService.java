@@ -138,4 +138,14 @@ public interface IZxFriendService {
 	 * @throws NzbServiceException 自定义异常
 	 */
 	void queryZxFriendDetail(InputDTO input, OutputDTO output) throws NzbServiceException;
+
+	/**
+	 * 校验分组名称是否重复
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 */
+	void checkZxFriendGroupInfo(InputDTO input, OutputDTO output) throws NzbServiceException;
+
 }

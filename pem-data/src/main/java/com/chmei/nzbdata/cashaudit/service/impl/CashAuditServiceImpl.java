@@ -171,6 +171,15 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 			String auditTypeCd = "";
 			if ("1".equals(auditType)) {
 				auditTypeCd = "已通过，预计两个工作日到账！";
+				String cashAmount = (String) map.get("cashAmount");
+				// 钱包扣除金额记录:
+				Map<String, Object> walletMoneyInfo = new HashMap<>();
+				walletMoneyInfo.put("walletInfoId", getSequence());
+				walletMoneyInfo.put("walletInfoAddOrMinus", "-");
+				walletMoneyInfo.put("walletInfoUserId", map.get("memberAccount"));
+				walletMoneyInfo.put("walletInfoMoney", Double.valueOf(cashAmount) * 0.1);
+				walletMoneyInfo.put("walletInfoFrom", "提现手续费");
+				getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
 			} else if ("2".equals(auditType)) {
 				String cashAmount = (String) map.get("cashAmount");
 				Map<String, Object> map_ = new HashMap<>();

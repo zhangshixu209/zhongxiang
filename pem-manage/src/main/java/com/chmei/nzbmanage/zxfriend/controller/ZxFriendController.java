@@ -221,4 +221,18 @@ public class ZxFriendController extends BaseController {
         return outputDTO;
     }
 
+    /**
+     * 校验分组名称是否重复
+     *
+     * @param zxFriendForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/checkZxFriendGroupInfo")
+    public OutputDTO checkZxFriendGroupInfo(@ModelAttribute ZxFriendForm zxFriendForm) {
+        LOGGER.info("校验分组名称是否重复...ZxFriendController.checkZxFriendGroupInfo()...");
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxFriendForm);
+        OutputDTO outputDTO = getOutputDTO(params, "zxFriendService", "checkZxFriendGroupInfo");
+        return outputDTO;
+    }
+
 }

@@ -134,6 +134,7 @@ public class CashAuditController extends BaseController {
         map.put("registerTime", "注册日期");
         map.put("rechargeTotal", "累计充值");
         map.put("bonusTotal", "累计分红");
+        map.put("cashTotal", "累计提现");
         map.put("walletBalance", "钱包余额");
         map.put("realName", "实名信息");
         map.put("userAccount", "提现账户");
