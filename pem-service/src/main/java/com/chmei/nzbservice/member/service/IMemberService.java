@@ -115,4 +115,13 @@ public interface IMemberService {
      * @throws NzbServiceException 自定义异常
      */
     void queryAllRedPacketList(InputDTO input, OutputDTO output) throws NzbServiceException;
+
+    /**
+     * 会员警告、冻结和解冻
+     * @param input 入参
+     * @param output 出参
+     * @throws NzbServiceException 自定义异常
+     */
+    void memberHandle(InputDTO input, OutputDTO output) throws NzbServiceException;
+
 }

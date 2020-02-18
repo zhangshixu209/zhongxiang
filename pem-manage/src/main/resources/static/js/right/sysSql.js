@@ -54,9 +54,9 @@ function dialog(title, ht) {
 	var height = Math.round($('body').height() * 0.95); //
 	var top = Math.round(($('body').height() - height) * 0.5) + "px";
 	var width = Math.round($('body').width() * 0.5) + "px"; //弹窗后为单行单列展示
-	// Chief.layer.newEmptyDiv(title, ht, width, height + "px", top);
+	Chief.layer.newEmptyDiv(title, ht, "548px", "247px", top);
 	//弹窗中间内容的高度-自动
-	Chief.layer.newEmptyDiv(title, ht, width, "auto", top);
+	// Chief.layer.newEmptyDiv(title, ht, width, "auto", top);
 	//弹窗中间内容的高度-自动
  	var popup_outline_height = ($(".layui-layer-content").height() - 50) + "px";
 	// var popup_outline_height = (height - 42 - 50) + "px";
@@ -65,24 +65,29 @@ function dialog(title, ht) {
 
 // 后台充值广告费，钱包余额
 $('.pull-right').on('click','#bf_btn', function (){
-	// var checked = $("#J_tabletpl input[type=checkbox]:checked");
-	// if(checked.length != 1) {
-	// 	Chief.layer.tips("请选择一条数据！");
-	// 	return;
-	// }
-	// 获取该条数据详情
-	// var id = checked.eq(0).attr("data-id");
-	Chief.layer.confirm("确认备份数据库信息吗？",function() {
-		Chief.ajax.postJson('/sys/backups/backupsDBInfo',{},function(data){
-			if(data.code == '0'){
-				Chief.layer.tips("备份成功！");
-				setTimeout('outTips()', 1000 );
-			} else {
-				Chief.layer.tips(data.msg);
-			}
-		})
-	})
+	var htmls = Handlebars.compile($("#T_complaintTpl").html());
+	var ht = htmls();
+	//弹框编辑
+	dialog("备份", ht);
 });
+
+// 备份
+function updateMemberComplaintInfo() {
+	var flag = $("#memberComplaintForm").validate().form(); //若全部通过验证则form方法返回true
+	if(!flag) {
+		return false;
+	}
+	//获取表单数据
+	var data = $('#memberComplaintForm').serialize();
+	Chief.ajax.postJson('/sys/backups/backupsDBInfo',data,function(data){
+		if(data.code == '0'){
+			Chief.layer.tips("备份成功！");
+			setTimeout('outTips()', 1000 );
+		} else {
+			Chief.layer.tips(data.msg);
+		}
+	});
+}
 
 // 后台充值广告费，钱包余额
 $('.pull-right').on('click','#hy_btn', function (){
@@ -91,19 +96,41 @@ $('.pull-right').on('click','#hy_btn', function (){
 		Chief.layer.tips("请选择一条数据！");
 		return;
 	}
-	// 获取该条数据详情
-	var sqlUrl = checked.eq(0).attr("data-sqlUrl");
-	Chief.layer.confirm("确认还原数据库信息吗？",function() {
-		Chief.ajax.postJson('/sys/backups/reductionDBInfo',{"filePath": sqlUrl},function(data){
-			if(data.code == '0'){
-				Chief.layer.tips("还原成功！");
-				setTimeout('outTips()', 1000 );
-			} else {
-				Chief.layer.tips(data.msg);
-			}
-		})
-	})
+	var id = checked.eq(0).attr("data-id");
+	$("#sqlUrl").val(id);
+	var paramId = {
+		id: id
+	};
+	Chief.ajax.postJson('/sys/backups/queryMySqlList',paramId, function(data) {
+		if('0' == data.code){
+			var htmls = Handlebars.compile($("#T_complaintHYTpl").html());
+			var ht = htmls(data.items[0]);
+			//弹框编辑
+			dialog("还原", ht);
+			//初始化表单验证规则
+		} else {
+			Chief.layer.tips("系统异常", 1500);
+		}
+	});
+
 });
+
+function updateMemberComplaintHYInfo() {
+	var flag = $("#memberComplaintHYForm").validate().form(); //若全部通过验证则form方法返回true
+	if(!flag) {
+		return false;
+	}
+	//获取表单数据
+	var data = $('#memberComplaintHYForm').serialize();
+	Chief.ajax.postJson('/sys/backups/reductionDBInfo',data,function(data){
+		if(data.code == '0'){
+			Chief.layer.tips("还原成功！");
+			setTimeout('outTips()', 1000 );
+		} else {
+			Chief.layer.tips(data.msg);
+		}
+	});
+}
 
 //成功提示
 function outTips(){

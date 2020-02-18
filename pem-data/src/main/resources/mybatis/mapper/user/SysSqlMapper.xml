@@ -23,10 +23,14 @@
             IFNULL( a.opt_type, '' ) AS optType,
             IFNULL( a.crt_user_id, '' ) AS crtUserId,
             IFNULL( a.crt_user_name, '' ) AS crtUserName,
-            IFNULL( a.crt_time, '' ) AS crtTime
+            IFNULL( a.crt_time, '' ) AS crtTime,
+            IFNULL( a.remark, '' ) AS remark
         FROM
             sys_mysql a
         <where>
+            <if test="id != null and id != ''">
+                a.id = #{id}
+            </if>
             <if test="optType != null and optType != ''">
                 AND a.opt_type = #{optType}
             </if>
@@ -49,6 +53,9 @@
         FROM
             sys_mysql a
         <where>
+            <if test="id != null and id != ''">
+                a.id = #{id}
+            </if>
             <if test="optType != null and optType != ''">
                 AND a.opt_type = #{optType}
             </if>
@@ -69,12 +76,14 @@
 	    opt_type,
 	    crt_user_id,
 	    crt_user_name,
+	    remark,
 	    crt_time)values(
         #{id,jdbcType=BIGINT},
         #{sqlUrl,jdbcType=VARCHAR},
         #{optType,jdbcType=VARCHAR},
         #{crtUserId,jdbcType=BIGINT},
         #{crtUserName,jdbcType=VARCHAR},
+        #{remark,jdbcType=VARCHAR},
         NOW())
   </insert>
   

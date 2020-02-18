@@ -188,6 +188,8 @@ public class MemberForm extends BaseForm {
 
     private String endTime;
 
+    private String auditOpinion;
+
     public String getUsername() {
         return username;
     }
@@ -516,5 +518,13 @@ public class MemberForm extends BaseForm {
 
     public void setEndTime(String endTime) {
         this.endTime = endTime;
+    }
+
+    public String getAuditOpinion() {
+        return auditOpinion;
+    }
+
+    public void setAuditOpinion(String auditOpinion) {
+        this.auditOpinion = auditOpinion;
     }
 }

@@ -235,4 +235,18 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
         getNzbDataService().execute(input, output);
     }
 
+    /**
+     * 会员警告、冻结和解冻
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbServiceException 自定义异常
+     */
+    @Override
+    public void memberHandle(InputDTO input, OutputDTO output) throws NzbServiceException {
+        input.setService("memberService");
+        input.setMethod("memberHandle");
+        getNzbDataService().execute(input, output);
+    }
+
 }

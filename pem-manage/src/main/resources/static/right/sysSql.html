@@ -113,6 +113,7 @@
 									<th>创建时间</th>
 									<th>操作人姓名</th>
 									<th>操作类型</th>
+									<th>备注</th>
 								</tr>
 							</thead>
 							<tbody id="J_tabletpl">
@@ -177,6 +178,7 @@
 						<td>{{crtTime}}</td>
 						<td>{{crtUserName}}</td>
 						<td>{{statusCd optType}}</td>
+						<td>{{remark}}</td>
 					</tr>
 				{{/each}} 
 			{{else}}
@@ -184,6 +186,51 @@
 					<td colspan="6" style="text-align: center">无数据</td>
 				</tr>
 			{{/if}}
+		</script>
+
+		<!-- 会员投诉状态审核 -->
+		<script id="T_complaintTpl" type="text/x-handlebars-template">
+			<div class="popup_outline">
+				<form class="clearfix" id="memberComplaintForm" name="memberComplaintForm" style="padding-top:18px;">
+					<div class="col-sm-12">
+						<label class="col-sm-3 text-right"><span class="red f12"> * </span>备注：</label>
+						<div class="col-sm-8">
+							<div class="clearfix">
+								<textarea class="" required="true" cols="45" rows="5" id="remark" name="remark"
+										  maxlength="200" placeholder="最多支持200个字"></textarea>
+							</div>
+						</div>
+						<div class="col-sm-8 promport"></div>
+					</div>
+				</form>
+			</div>
+			<div class="btnrongqi btnWrap">
+				<button class="btn"  onclick="doCancel()">取消</button>
+				<button class="btn btn-danger ml10 nofloat"  onclick="updateMemberComplaintInfo();">确认</button>
+			</div>
+		</script>
+
+		<!-- 会员投诉状态审核 -->
+		<script id="T_complaintHYTpl" type="text/x-handlebars-template">
+			<div class="">
+				<form class="clearfix" id="memberComplaintHYForm" name="memberComplaintHYForm" style="padding-top:18px;">
+					<input type="hidden" name="sqlUrl" value="{{sqlUrl}}">
+					<div class="col-sm-12">
+						<label class="col-sm-3 text-right"><span class="red f12"> * </span>备注：</label>
+						<div class="col-sm-8">
+							<div class="clearfix">
+								<textarea class="" required="true" cols="45" rows="5" name="remark"
+										  maxlength="200" placeholder="最多支持200个字"></textarea>
+							</div>
+						</div>
+						<div class="col-sm-8 promport"></div>
+					</div>
+				</form>
+			</div>
+			<div class="btnrongqi btnWrap" style="height: 145px;">
+				<button class="btn"  onclick="doCancel()">取消</button>
+				<button class="btn btn-danger ml10 nofloat"  onclick="updateMemberComplaintHYInfo();">确认</button>
+			</div>
 		</script>
 	</body>
 

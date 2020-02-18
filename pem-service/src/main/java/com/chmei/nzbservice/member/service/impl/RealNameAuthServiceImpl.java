@@ -5,7 +5,10 @@ import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbservice.common.exception.NzbServiceException;
 import com.chmei.nzbservice.common.service.impl.BaseServiceImpl;
 import com.chmei.nzbservice.member.service.IRealNameAuthService;
+import com.chmei.nzbservice.util.StringUtil;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * 实名认证接口实现类
@@ -55,6 +58,17 @@ public class RealNameAuthServiceImpl extends BaseServiceImpl implements IRealNam
         input.setService("realNameAuthService");
         input.setMethod("queryRealNameInfo");
         getNzbDataService().execute(input, output);
+        Map<String, Object> item = output.getItem();
+        if (null != item) { // realName
+            String credNum = (String) item.get("cardNum");
+            String realName = (String) item.get("realName");
+            if (!StringUtil.isEmpty(credNum)) {
+                item.put("cardNum", StringUtil.desensitizationCredNum(credNum));
+            }
+            if (!StringUtil.isEmpty(realName)) {
+                item.put("realName", StringUtil.desensitiveName(realName));
+            }
+        }
     }
 
 }

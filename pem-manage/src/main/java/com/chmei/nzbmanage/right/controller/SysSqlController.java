@@ -9,6 +9,7 @@ import com.chmei.nzbmanage.right.bean.SysSqlForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,7 +44,7 @@ public class SysSqlController extends BaseController{
 	 * @return outputDTO 返回结果
 	 */
 	@RequestMapping("/queryMySqlList")
-	 public OutputDTO queryMySqlList(SysSqlForm sysSqlForm){
+	 public OutputDTO queryMySqlList(@ModelAttribute SysSqlForm sysSqlForm){
 		 Map<String, Object> params = BeanUtil.convertBean2Map(sysSqlForm);
 		 OutputDTO outputDTO = getOutputDTO(params,"sysSqlService","queryMySqlList");
 		 return outputDTO;
@@ -55,7 +56,7 @@ public class SysSqlController extends BaseController{
 	  * @return
 	  */
 	 @RequestMapping("/backupsDBInfo")
-     public OutputDTO backupsDBInfo() throws Exception{
+     public OutputDTO backupsDBInfo(@ModelAttribute SysSqlForm sysSqlForm) throws Exception{
 		 String backName = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date())+".sql";
 		 String path = uploadFilePathConfig.getUploadFolder();
 		 File fileSql = new File(path+"sql");
@@ -92,6 +93,7 @@ public class SysSqlController extends BaseController{
 					 map.put("sqlUrl", "/uploadFiles/sql/" + Constants.DB_NAME + "-"+backName);
 					 map.put("crtUserId", getCurrUserId());
 					 map.put("crtUserName", getCurrUserName());
+					 map.put("remark", sysSqlForm.getRemark());
 					 OutputDTO outputDTO = getOutputDTO(map,"sysSqlService","backupsDBInfo");
 					 i = outputDTO.getCode();
 				 }
@@ -101,6 +103,7 @@ public class SysSqlController extends BaseController{
 					 Map<String,Object> map = new HashMap<>();
 					 map.put("crtUserId", getCurrUserId());
 					 map.put("crtUserName", getCurrUserName());
+					 map.put("remark", sysSqlForm.getRemark());
 					 map.put("sqlUrl", "/home/lymanage/cm_uploadFiles/sql/" + Constants.DB_NAME + "-" + backName);
 					 OutputDTO outputDTO = getOutputDTO(map,"sysSqlService","backupsDBInfo");
 					 i = outputDTO.getCode();
@@ -122,7 +125,7 @@ public class SysSqlController extends BaseController{
 	 * @return
 	 */
 	@RequestMapping("/reductionDBInfo")
-	public OutputDTO reductionDBInfo(@RequestParam String filePath) throws Exception{
+	public OutputDTO reductionDBInfo(@ModelAttribute SysSqlForm sysSqlForm) throws Exception{
 		String os = System.getProperty("os.name"); // 系统名称
 		StringBuilder sb = new StringBuilder();
 		if (os.toLowerCase().startsWith("win")) {
@@ -134,7 +137,8 @@ public class SysSqlController extends BaseController{
 		sb.append(" -u" + Constants.USER_NAME);     // 数据库用户名
 		sb.append(" -p" + Constants.USER_PWD);      // 数据库密码
 		sb.append(" --default-character-set=utf8 " + Constants.DB_NAME + " < "); // 数据库名称
-		sb.append(filePath);
+//		sb.append("D:" + sysSqlForm.getSqlUrl());
+		sb.append(sysSqlForm.getSqlUrl());
 		LOGGER.info("cmd命令为："+sb.toString());
 		Runtime runtime = Runtime.getRuntime();
 		LOGGER.info("===========开始还原数据============");
@@ -144,9 +148,10 @@ public class SysSqlController extends BaseController{
 				Process process = runtime.exec("cmd /c" + sb.toString()); // window
 				if(process.waitFor() == 0){
 					Map<String,Object> map = new HashMap<>();
-					map.put("sqlUrl", filePath); // 数据库还原本地文件地址
+					map.put("sqlUrl", sysSqlForm.getSqlUrl()); // 数据库还原本地文件地址
 					map.put("crtUserId", getCurrUserId());
 					map.put("crtUserName", getCurrUserName());
+					map.put("remark", sysSqlForm.getRemark());
 					OutputDTO outputDTO = getOutputDTO(map,"sysSqlService","reductionDBInfo");
 					i = outputDTO.getCode();
 				}
@@ -155,9 +160,10 @@ public class SysSqlController extends BaseController{
 				if(process.waitFor() == 0){
 					LOGGER.info("===========还原数据============");
 					Map<String,Object> map = new HashMap<>();
-					map.put("sqlUrl", filePath); // 数据库还原本地文件地址
+					map.put("sqlUrl", sysSqlForm.getSqlUrl()); // 数据库还原本地文件地址
 					map.put("crtUserId", getCurrUserId());
 					map.put("crtUserName", getCurrUserName());
+					map.put("remark", sysSqlForm.getRemark());
 					OutputDTO outputDTO = getOutputDTO(map,"sysSqlService","reductionDBInfo");
 					i = outputDTO.getCode();
 				}

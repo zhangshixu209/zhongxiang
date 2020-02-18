@@ -103,7 +103,6 @@
       <if test="dealMoneyMark != null">
         deal_money_mark = #{dealMoneyMark,jdbcType=VARCHAR},
       </if>
-        #deal_date = NOW(),
     </set>
     where deal_id = #{dealId,jdbcType=BIGINT}
   </update>

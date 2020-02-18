@@ -51,7 +51,22 @@ public interface UserService {
 	 * 判断redis中是否包含过期key
 	 * @param mobile
 	 */
+	public void getUserMobileTORedis(InputDTO input, OutputDTO output);
+
+
+	/**
+	 * 将输入次数3次的 添加到redis中,5分钟内不让登录;
+	 * @param mobile
+	 */
+	public void addUserMobileTORedis(InputDTO input, OutputDTO output);
+
+
+	/**
+	 * 判断redis中是否包含过期key
+	 * @param mobile
+	 */
 	public void getLimitedUserMobileTORedis(InputDTO input, OutputDTO output);
+
 	
 	/**
 	 * 判断改mobile是否存在被限制5分钟登录

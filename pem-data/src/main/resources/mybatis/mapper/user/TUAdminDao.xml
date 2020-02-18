@@ -59,7 +59,12 @@
         order by a.id desc
 		limit #{offset}, #{limit}
 	</select>
-	
+
+	<select id="queryRoleName" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT GROUP_CONCAT(b.role_name) AS roleName FROM t_u_role_user a
+		LEFT JOIN t_u_role b ON  a.role_id = b.id WHERE a.user_id = #{userId}
+	</select>
+
 	<select id="queryAdminByLoginId" resultMap="tUAdminMap">
 		select  <include refid="Base_Column_List" />
 		from t_u_admin where login_id=#{loginId} and id != #{id} limit 1

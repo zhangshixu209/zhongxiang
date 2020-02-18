@@ -74,7 +74,51 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService   {
 		getCacheService().setex(redis_mobile+mobile, ""+num, 60*5);
 		output.setData(num);
 	}
-	
+
+	/**
+	 * 判断redis中是否包含过期key
+	 *
+	 * @param input
+	 * @param output
+	 */
+	@Override
+	public void getUserMobileTORedis(InputDTO input, OutputDTO output) {
+		String mobile = input.getParams().get("mobile").toString();
+		String redis_mobile = Constants.REDIS_SYS_FAILURE_MOBILE;
+		boolean exist = getCacheService().isExist(redis_mobile+mobile);
+		if(!exist){
+			output.setData(false);
+			return;
+		}
+		Integer num = Integer.parseInt(getCacheService().getString(redis_mobile+mobile));
+		if(num == 3){
+			output.setData(true);
+		}else{
+			output.setData(false);
+		}
+	}
+
+	/**
+	 * 将输入次数3次的 添加到redis中,24小时内不让实名;
+	 *
+	 * @param input
+	 * @param output
+	 */
+	@Override
+	public void addUserMobileTORedis(InputDTO input, OutputDTO output) {
+		//将改用户放到redis中,让其在10分钟内不允许登录;  redis的key  limitedUserMobile:用户名(mobile号)
+		String mobile = input.getParams().get("mobile").toString();
+		String redis_mobile = Constants.REDIS_SYS_FAILURE_MOBILE;
+		if(!getCacheService().isExist(redis_mobile+mobile)){
+			getCacheService().setex(redis_mobile+mobile, "1", 60*1440);
+			output.setData(1);
+			return ;
+		}
+		Integer num = Integer.parseInt(getCacheService().getString(redis_mobile+mobile)) + 1;
+		getCacheService().setex(redis_mobile+mobile, ""+num, 60*1440);
+		output.setData(num);
+	}
+
 	/**
 	 * 将账号添加到redis中 过期时间是5分钟
 	 * @param mobile

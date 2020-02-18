@@ -109,7 +109,8 @@
 			<div class="row">
 				<div class="col-sm-12">
 					<p class="pull-right buttonList"  id="buttonList">
-						<button id="recharge_btn" class="btn-color btn btn-danger btn-xs" mo="F3E26562C36647269B7615702A541731">充值</button>
+						<button id="recharge_btn" class="btn-color btn btn-danger btn-xs hideBtn" mo="F3E26562C36647269B7615702A541731">充值</button>
+						<button id="audit_btn" class="btn-color btn btn-danger btn-xs hideBtn" mo="E1E5EC72C89A4C9F88F37DD736095C26">操作</button>
 					</p>
 				</div>
 			</div>
@@ -181,6 +182,7 @@
 		<script src='../assets/lib/kindeditor/lang/zh-CN.js'></script>
 		<script src="../assets/lib/handlebars/1.3.0/handlebars.js"></script>
 		<script src="../assets/lib/layer/layer.min.js"></script>
+		<script src="../js/common/right_button.js"></script>
 		<script src="../assets/lib/common.js?v=#scriptversion#"></script>
 		<script src="../js/member/member.js?v=#scriptversion#"></script>
 		<!-- 公告数据查询 -->
@@ -399,5 +401,63 @@
 				<button class="btn btn-danger ml10 nofloat"  onclick="saveMemberRechargeInfo();">确认</button>
 			</div>
 		</script>
+
+		<!-- 会员投诉状态审核 -->
+		<script id="T_complaintTpl" type="text/x-handlebars-template">
+			<div class="popup_outline">
+				<form class="clearfix" id="memberComplaintForm" name="memberComplaintForm" style="padding-top:18px;">
+					<input type="hidden" value="{{id}}" id="memberId" name="id">
+					<input type="hidden" value="{{memberAccount}}" name="memberAccount">
+					<div class="col-sm-12">
+						<label class="col-sm-3 text-right" for="">用户账号：</label>
+						<div class="col-sm-8">
+							<div class="clearfix">
+								<label class="col-sm-8 too-long" for="">{{memberAccount}}</label>
+							</div>
+						</div>
+						<div class="col-sm-8 promport"></div>
+					</div>
+					<div class="col-sm-12">
+						<label class="col-sm-3 text-right" for="">用户昵称：</label>
+						<div class="col-sm-8">
+							<div class="clearfix">
+								<label class="col-sm-8 too-long" for="">{{nickname}}</label>
+							</div>
+						</div>
+						<div class="col-sm-8 promport"></div>
+					</div>
+					<div class="col-sm-12">
+						<label class="col-sm-3 text-right" for=""><span class="red f12"> * </span>处理方式：</label>
+						<div class="col-sm-8">
+							<div class="clearfix">
+								<select class="howlong" required="true" style="width: 165px;" id="complaintStatus" name="status">
+									<option value="">请选择</option>
+									<!--<option value="1002">忽略</option>-->
+									<option value="1003">警告</option>
+									<option value="1004">冻结</option>
+									<option value="1005">解冻</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-sm-8 promport"></div>
+					</div>
+					<div class="col-sm-12">
+						<label class="col-sm-3 text-right" for="">处理通知：</label>
+						<div class="col-sm-8">
+							<div class="clearfix">
+								<textarea class="" cols="45" rows="5" id="auditOpinion" name="auditOpinion"
+										  maxlength="200" placeholder="最多支持200个字">{{auditOpinion}}</textarea>
+							</div>
+						</div>
+						<div class="col-sm-8 promport"></div>
+					</div>
+				</form>
+			</div>
+			<div class="btnrongqi btnWrap">
+				<button class="btn"  onclick="doCancel()">取消</button>
+				<button class="btn btn-danger ml10 nofloat"  onclick="updateMemberComplaintInfo();">确认</button>
+			</div>
+		</script>
+
 	</body>
 </html>

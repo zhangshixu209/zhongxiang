@@ -79,17 +79,6 @@ public class AdShareOutBonusController extends BaseController {
     public OutputDTO queryRecommendInfo(@ModelAttribute AdShareOutBonusForm adShareOutBonusForm) {
         LOGGER.info("追加广告分红...AdShareOutBonusController.queryRecommendInfo()...");
         OutputDTO outputDTO = new OutputDTO();
-        Map<String, Object> map = new HashMap<>();
-        String memberAccount = adShareOutBonusForm.getMemberAccount();
-        if (!StringUtil.isEmpty(memberAccount)) {
-            if("88888888".equals(memberAccount)) {
-                map.put("memberAccount", "88888888");
-                map.put("nickname", "众享平台");
-                outputDTO.setCode("0");
-                outputDTO.setItem(map);
-                return outputDTO;
-            }
-        }
         Map<String, Object> params = BeanUtil.convertBean2Map(adShareOutBonusForm);
         outputDTO = getOutputDTO(params, "adShareOutBonusService", "queryRecommendInfo");
         return outputDTO;

@@ -99,7 +99,8 @@ public final class StringUtil {
 	 */
 	public static String desensitiveName(String name) {
 		if(isNotEmpty(name)) {
-			return name.substring(0, 1)+"**";
+//			return name.substring(0, 1)+"**";
+			return "*"+name.substring(1, name.length());
 		}
 		return "";
 	}

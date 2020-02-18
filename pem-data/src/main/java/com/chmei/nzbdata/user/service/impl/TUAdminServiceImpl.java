@@ -55,6 +55,13 @@ public class TUAdminServiceImpl extends BaseServiceImpl implements TUAdminServic
         if (count > 0) {
             // 存在数据
             List<Map<String, Object>> list = getBaseDao().queryForList("TUAdminMapper.queryList", input.getParams());
+            for (Map<String, Object> map : list) {
+                long userId = (long) map.get("id");
+                Map<String, Object> result = new HashMap<>();
+                result.put("userId", userId);
+                Map<String, Object> map_ = (Map<String, Object>) getBaseDao().queryForObject("TUAdminMapper.queryRoleName", result);
+                map.put("roleName", map_.get("roleName"));
+            }
             output.setItems(list);
         }
     }

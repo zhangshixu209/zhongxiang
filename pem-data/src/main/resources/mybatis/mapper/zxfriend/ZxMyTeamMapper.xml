@@ -152,4 +152,8 @@
     </where>
   </update>
 
+  <select id="checkManageRecommended" parameterType="java.util.Map" resultType="int">
+    SELECT COUNT(1) FROM zx_app_my_team WHERE team_user_phone = #{memberAccount}
+  </select>
+
 </mapper>

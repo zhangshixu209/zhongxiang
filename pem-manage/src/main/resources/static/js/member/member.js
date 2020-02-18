@@ -188,6 +188,52 @@ function addNum (num1, num2) {
 	return (num1 * m + num2 * m) / m;
 }
 
+// 后台充值广告费，钱包余额
+$('.pull-right').on('click','#audit_btn', function (){
+	var checked = $("#J_tabletpl input[type=checkbox]:checked");
+	if(checked.length != 1) {
+		Chief.layer.tips("请选择一条数据！");
+		return;
+	}
+	// 获取该条数据详情
+	var id = checked.eq(0).attr("data-id");
+	var paramId = {
+		id: id
+	};
+	Chief.ajax.postJson('/member/queryMemberDetail',paramId, function(data) {
+		if('0' == data.code){
+			var htmls = Handlebars.compile($("#T_complaintTpl").html());
+			var ht = htmls(data.item);
+			//弹框编辑
+			dialog("会员处理", ht);
+			//初始化表单验证规则
+			formValidate("#memberComplaintForm");
+			$("#complaintStatus").find("option[value="+data.item.status+"]").attr("selected", "true");
+		}else {
+			Chief.layer.tips("系统异常", 1500);
+		}
+	});
+});
+
+// 修改会员投诉状态
+function updateMemberComplaintInfo() {
+	var flag = $("#memberComplaintForm").validate().form(); //若全部通过验证则form方法返回true
+	if(!flag) {
+		return false;
+	}
+	//获取表单数据
+	var data = $('#memberComplaintForm').serialize();
+	//发起请求
+	Chief.ajax.postJson("/member/memberHandle", data, function (data) {
+		if(data.code == '0'){
+			Chief.layer.tips("处理成功！");
+			setTimeout('outTips()', 2000 );
+		}else{
+			Chief.layer.tips(data.msg);
+		}
+	});
+}
+
 //成功提示
 function outTips(){
 	Chief.layer.close();

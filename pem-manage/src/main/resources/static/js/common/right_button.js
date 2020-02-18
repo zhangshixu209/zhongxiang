@@ -9,13 +9,10 @@ function btnAuthorize(obj) {
 	var params = [];
 	var ele = $('[mo]');
 	var sw = false;
-	if(obj != undefined){//特殊处理handlebars初始化结束模板中的按钮
-		sw = true;
-	}
-	/*if(obj && obj instanceof jQuery) {
+	if(obj && obj instanceof jQuery) {
 		ele = obj.find('[mo]');
 		sw = true;
-	}*/
+	}
 	ele.each(function() {
 		var _this = $(this);
 		var tempVal = {
@@ -23,29 +20,35 @@ function btnAuthorize(obj) {
 			'btnId' : _this.attr('id')
 		};
 		params.push(tempVal);
-	});	
+	});
 	if(params.length) {
 		var btns = JSON.stringify(params);
-		Chief.ajax.postJson('/adminRight/btnAuthorize',{'btns':btns},function(result){
-			if("0" == result.code && result.items && result.items.length > 0) {
-				var len = result.items.length;
-				for(var i = 0; i < len; i++){
-					var tmp = result.items[i];
-					var tgt = sw ? $('.btn-danger[mo='+tmp.mo+']') : $('#'+tmp['btnId']);
-					if(tgt) {
-						if (tmp['btnCd'] == '1') {
-							if(tgt.attr("callback") != undefined) {
-								tgt.show('normal', doCallback(tgt.attr("callback")));
-							} else {
-								tgt.show();
+		Chief.ajax.postJson(
+			'/adminRight/btnAuthorize',
+			{
+				'btns' : btns
+			},
+			function(result){
+				if("0" == result.code && result.items && result.items.length > 0) {
+					var len = result.items.length;
+					for(var i = 0; i < len; i++){
+						var tmp = result.items[i];
+						var tgt = sw ? obj.find('#'+tmp['btnId']) : $('#'+tmp['btnId']);
+						if(tgt) {
+							if (tmp['btnCd'] == '1') {
+								if(tgt.attr("callback") != undefined) {
+									tgt.show('normal', doCallback(tgt.attr("callback")));
+								} else {
+									tgt.show();
+								}
+							}else{
+								tgt.hide();
 							}
-						}else{
-							tgt.hide();
 						}
 					}
-		    	}
+				}
 			}
-		});
+		);
 	}
 }
 

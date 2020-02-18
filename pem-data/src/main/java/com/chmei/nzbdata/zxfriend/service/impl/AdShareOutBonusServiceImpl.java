@@ -461,6 +461,22 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 		LOGGER.info("AdShareOutBonusServiceImpl.queryRecommendInfo, input::" + input.getParams().toString());
 		Map<String, Object> params = input.getParams();
 		try {
+			Map<String, Object> result_ = new HashMap<>();
+			if (!StringUtil.isEmpty((String) params.get("memberAccount"))) {
+				if("88888888".equals(params.get("memberAccount"))) {
+					int i = getBaseDao().getTotalCount("ZxMyTeamMapper.checkManageRecommended", params);
+					if (i > 0) {
+						output.setCode("-1");
+						output.setMsg("此推荐人无效！");
+						return;
+					}
+					result_.put("memberAccount", "88888888");
+					result_.put("nickname", "众享平台");
+					output.setCode("0");
+					output.setItem(result_);
+					return;
+				}
+			}
 			Map<String, Object> item = (Map<String, Object>) getBaseDao().queryForObject(
 					"MemberMapper.queryMemberDetail", params);
 			if (null != item) {
@@ -484,7 +500,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				}
 				if(flag == 1){
 					output.setCode("-1");
-					output.setMsg("此会员不具备推荐资格！");
+					output.setMsg("此用户不具备推荐资格！");
 					return;
 				}
 				// 判断是否为正确的手机号
@@ -501,8 +517,16 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 						"ShareOutBonusMapper.queryShareOutBonusDetail", map);
 				if (null == shareOutBonus) {
 					output.setCode("-1");
-					output.setMsg("此会员不具备推荐资格！");
+					output.setMsg("此用户不具备推荐资格！");
 					return;
+				} else {
+					BigDecimal adShareOutBonusMoney = (BigDecimal) shareOutBonus.get("adShareOutBonusMoney");
+					System.out.println(adShareOutBonusMoney);
+					if (adShareOutBonusMoney.doubleValue() == 0) {
+						output.setCode("-1");
+						output.setMsg("此用户不具备推荐资格！");
+						return;
+					}
 				}
 			} else {
 				output.setCode("-1");
@@ -636,6 +660,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 			Map<String, Object> findTaskCount = findTaskCount(input, output);
 			if(null != findTaskCount){
 				map.put("adShareOutBonusInfoStart", findTaskCount.get("adShareOutBonusInfoStart"));
+				map.put("adShareOutBonusInfoMoney", findTaskCount.get("adShareOutBonusInfoMoney"));
 				map.put("taskStatus", "1");
 			} else {
 				map.put("taskStatus", "0");

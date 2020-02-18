@@ -57,11 +57,29 @@ public class RealNameAuthController extends BaseController {
             Map<String, Object> map = BeanUtil.convertBean2Map(memberForm);
             // 修改实名信息
             if (StringUtil.isNotEmpty(memberForm.getCardNum())) {
+                map.put("mobile", memberForm.getMemberAccount());
+                //锁定密码判断是否释放
+                OutputDTO dto = getOutputDTO(map, "userService", "getUserMobileTORedis");
+                boolean data = (boolean) dto.getData();
+                if(data){
+                    return new OutputDTO("-1", "输入信息有误，请于24小时后再次提交！");
+                }
                 OutputDTO output = SmUtils.authcIdCardReal(memberForm.getCardNum(), memberForm.getRealName());
                 if ("0".equals(output.getCode())) {
                     output = getOutputDTO(map, "realNameAuthService", "saveRealNameAuthInfo");
                     return output;
                 } else {
+                    map.put("mobile", memberForm.getMemberAccount());
+                    OutputDTO dto_ = getOutputDTO(map, "userService", "addUserMobileTORedis"); // 将账号添加到redis中并设置过期时间是5分钟
+                    Integer num = (Integer) dto_.getData();
+                    System.out.println(num);
+                    if (num == 3) {
+                        return new OutputDTO("-1", "输入信息有误，请于24小时后再次提交！");
+                    } else if (num == 1) {
+                        return new OutputDTO("-1", "输入信息有误，您还有两次机会！");
+                    } else if(num == 2) {
+                        return new OutputDTO("-1", "输入信息有误，您还有一次机会！");
+                    }
                     return output;
                 }
             } else {
@@ -87,11 +105,29 @@ public class RealNameAuthController extends BaseController {
             Map<String, Object> map = BeanUtil.convertBean2Map(memberForm);
             // 修改实名信息
             if (StringUtil.isNotEmpty(memberForm.getCardNum())) {
+                map.put("mobile", memberForm.getMemberAccount());
+                //锁定密码判断是否释放
+                OutputDTO dto = getOutputDTO(map, "userService", "getUserMobileTORedis");
+                boolean data = (boolean) dto.getData();
+                if(data){
+                    return new OutputDTO("-1", "输入信息有误，请于24小时后再次提交！");
+                }
                 OutputDTO output = SmUtils.authcIdCardReal(memberForm.getCardNum(), memberForm.getRealName());
                 if ("0".equals(output.getCode())) {
                     output = getOutputDTO(map, "realNameAuthService", "updateRealNameAuthInfo");
                     return output;
                 } else {
+                    map.put("mobile", memberForm.getMemberAccount());
+                    OutputDTO dto_ = getOutputDTO(map, "userService", "addUserMobileTORedis"); // 将账号添加到redis中并设置过期时间是5分钟
+                    Integer num = (Integer) dto_.getData();
+                    System.out.println(num);
+                    if (num == 3) {
+                        return new OutputDTO("-1", "输入信息有误，请于24小时后再次提交！");
+                    } else if (num == 1) {
+                        return new OutputDTO("-1", "输入信息有误，您还有两次机会！");
+                    } else if(num == 2) {
+                        return new OutputDTO("-1", "输入信息有误，您还有一次机会！");
+                    }
                     return output;
                 }
             } else {

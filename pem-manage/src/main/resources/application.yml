@@ -55,8 +55,9 @@ server:
   port: ${port:8080}
   context-path: /pem-manage
   connection-timeout: 200000
-  session:
-    timeout: 180000
+  servlet:
+    session:
+      timeout: 180000
   tomcat:
     accesslog:
       enabled: true

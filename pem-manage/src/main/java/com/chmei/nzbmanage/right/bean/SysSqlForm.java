@@ -61,6 +61,8 @@ public class SysSqlForm extends BaseForm {
 	 */
 	private String filePaths;
 
+	private String remark;
+
 	private static final long serialVersionUID = 1L;
 
 	public Long getId() {
@@ -141,5 +143,13 @@ public class SysSqlForm extends BaseForm {
 
 	public void setFilePaths(String filePaths) {
 		this.filePaths = filePaths;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 }

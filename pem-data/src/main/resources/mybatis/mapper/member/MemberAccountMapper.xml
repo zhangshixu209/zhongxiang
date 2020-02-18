@@ -68,10 +68,22 @@
     SELECT
       	IFNULL(CAST(sum(wallet_balance) AS DECIMAL(11,2)), '0') AS walletAmount
         -- 四个为抢完红包
-        ,(select IFNULL(CAST(sum(red_packet_money) AS DECIMAL(11,2)), '0') from zx_app_red_packet_info where red_packet_user_id is NULL) AS redPacket
-        ,(select IFNULL(CAST(sum(red_packet_img_money) AS DECIMAL(11,2)), '0') from zx_app_img_red_packet_info where red_packet_img_user_id is NULL) AS redImgPacket
-        ,(select IFNULL(CAST(sum(red_packet_link_money) AS DECIMAL(11,2)), '0') from zx_app_link_red_packet_info where red_packet_link_user_id is NULL) AS redLinkPacket
-        ,(select IFNULL(CAST(sum(red_packet_video_money) AS DECIMAL(11,2)), '0') from zx_app_video_red_packet_info where red_packet_video_user_id is NULL) AS redVideoPacket
+        ,(select IFNULL(CAST(sum(a.red_packet_money) AS DECIMAL(11,2)), '0') from zx_app_red_packet_info a
+          LEFT JOIN zx_app_red_packet b ON b.red_packet_id = a.red_packet_id
+          where a.red_packet_user_id is NULL
+          AND b.red_packet_type = '0') AS redPacket
+        ,(select IFNULL(CAST(sum(a.red_packet_img_money) AS DECIMAL(11,2)), '0') from zx_app_img_red_packet_info a
+          LEFT JOIN zx_app_img_red_packet b ON b.red_packet_img_id = a.red_packet_img_id
+          where a.red_packet_img_user_id is NULL
+          AND b.red_packet_img_type = '0') AS redImgPacket
+          ,(select IFNULL(CAST(sum(a.red_packet_link_money) AS DECIMAL(11,2)), '0') from zx_app_link_red_packet_info a
+          LEFT JOIN zx_app_link_red_packet b ON b.red_packet_link_id = a.red_packet_link_id
+          where a.red_packet_link_user_id is NULL
+          AND b.red_packet_link_type = '0') AS redLinkPacket
+        ,(select IFNULL(CAST(sum(a.red_packet_video_money) AS DECIMAL(11,2)), '0') from zx_app_video_red_packet_info a
+         LEFT JOIN zx_app_video_red_packet b ON b.red_packet_video_id = a.red_packet_video_id
+         where a.red_packet_video_user_id is NULL
+         AND b.red_packet_video_type = '0') AS redVideoPacket
         -- 激活分红
         ,(select IFNULL(CAST(sum(wallet_info_money) AS DECIMAL(11,2)), '0') from zx_app_wallet_money_info where wallet_info_from = "开通广告分红手续费") AS activateMoney
         -- 申请分红

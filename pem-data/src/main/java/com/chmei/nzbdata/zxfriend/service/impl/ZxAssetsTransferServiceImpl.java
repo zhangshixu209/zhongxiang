@@ -168,7 +168,7 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 							"AssetsTransferMapper.queryNewAssetsTransferList", params);
 					if(zxAppDeals != null && zxAppDeals.size() > 0){
 						output.setCode("-1");
-						output.setMsg("请于下一周期再次发布!");
+						output.setMsg("请于下一分红周期再次发布!");
 						return;
 					}
 					// 扣除当前人广告费金额

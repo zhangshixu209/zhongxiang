@@ -164,14 +164,14 @@ public class MemberController extends BaseController {
             return outputDTO;
         }
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("memberAccount", phoneNumber);
-        outputDTO = getOutputDTO(map, "memberService", "queryMemberDetail");
-        if(null != outputDTO.getItem()){
-            outputDTO.setCode("-1");
-            outputDTO.setMsg("此手机号已被注册！");
-            return outputDTO;
-        }
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("memberAccount", phoneNumber);
+//        outputDTO = getOutputDTO(map, "memberService", "queryMemberDetail");
+//        if(null != outputDTO.getItem()){
+//            outputDTO.setCode("-1");
+//            outputDTO.setMsg("此手机号已被注册！");
+//            return outputDTO;
+//        }
 //        String codeIp = IpUtil.getIpAddr(request);
         HttpSession session = request.getSession();
         LOGGER.info("存储session对象 {}  " + session);
@@ -335,7 +335,7 @@ public class MemberController extends BaseController {
                 // 修改登录密码
                 outputDTO = getOutputDTO(params, "memberService", "updateLoginOrPayPwd");
             } else {
-                return new OutputDTO("-1", "旧密码错误");
+                return new OutputDTO("-1", "原密码错误");
             }
         } catch (Exception e) {
             LOGGER.error("保存失败", e);
@@ -795,6 +795,25 @@ public class MemberController extends BaseController {
     public OutputDTO queryAreaByParent(@ModelAttribute RedPacketForm redPacketForm) {
         Map<String, Object> params = BeanUtil.convertBean2Map(redPacketForm);
         OutputDTO outputDTO = getOutputDTO(params, "redPacketService", "queryAreaByParent");
+        return outputDTO;
+    }
+
+    /**
+     * 会员警告、冻结和解冻
+     *
+     * @param memberForm 封装实体类
+     * @return OutputDTO 出参
+     */
+    @RequestMapping("/memberHandle")
+    public OutputDTO memberHandle(@ModelAttribute MemberForm memberForm) {
+        OutputDTO outputDTO;
+        try {
+            Map<String, Object> map = BeanUtil.convertBean2Map(memberForm);
+            outputDTO = getOutputDTO(map, "memberService", "memberHandle");
+        } catch (Exception e) {
+            LOGGER.error("查询失败", e);
+            outputDTO = new OutputDTO("1", "系统错误");
+        }
         return outputDTO;
     }
 

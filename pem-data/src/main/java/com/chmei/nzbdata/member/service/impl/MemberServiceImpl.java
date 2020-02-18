@@ -7,6 +7,7 @@ import com.chmei.nzbdata.common.im.comm.TokenUtil;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
 import com.chmei.nzbdata.im.service.impl.EasemobIMUsers;
 import com.chmei.nzbdata.member.service.IMemberService;
+import com.chmei.nzbdata.util.Constants;
 import com.chmei.nzbdata.util.StringUtil;
 import com.chmei.nzbdata.zxfriend.service.IZxMyTeamService;
 import com.google.gson.Gson;
@@ -471,6 +472,58 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
             output.setTotal(listAll.size());
         } catch (Exception e) {
             LOGGER.error("查询失败: " + e);
+        }
+    }
+
+    /**
+     * 会员警告、冻结和解冻
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbDataException 自定义异常
+     */
+    @Override
+    public void memberHandle(InputDTO input, OutputDTO output) throws NzbDataException {
+        Map<String, Object> params = input.getParams();
+        try {
+            // 投诉状态
+            String status = (String) params.get("status");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
+                    "MemberMapper.queryMemberDetail", params);
+            Map<String, Object> maps = new HashMap<>();
+            maps.put("memberAccount", map.get("memberAccount"));
+            if("1004".equals(status)){ // 冻结账号
+                Object result = easemobIMUsers.deactivateIMUser((String) params.get("memberAccount"));
+                if (null != result) {
+                    maps.put("status", "3"); // 冻结
+                }
+                LOGGER.info("deactivateIMUser============:"+gson.toJson(result));
+            } else if ("1005".equals(status)) { // 解冻账号
+                Object result = easemobIMUsers.activateIMUser((String) params.get("memberAccount"));
+                maps.put("status", "1"); // 解冻
+                LOGGER.info("deactivateIMUser============:"+gson.toJson(result));
+            } else if ("1003".equals(status)) {
+                map.put("id", getSequence());
+                map.put("messageTitle", "警告结果");
+                map.put("messageContent", map.get("auditOpinion"));
+                map.put("messageStatus", "1");
+                map.put("messageType", Constants.MESSAGE_TYPE_1004);
+                map.put("memberAccount", map.get("memberAccount"));
+                maps.put("status", "2"); // 冻结
+                // 添加推送消息
+                getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
+            }
+            int count = getBaseDao().update("MemberMapper.updateMemberInfo", maps);
+            if (count > 0) {
+                output.setCode("0");
+                output.setMsg("处理成功");
+            } else {
+                output.setCode("-1");
+                output.setMsg("保存失败");
+            }
+        } catch (Exception ex) {
+            LOGGER.error("保存失败", ex);
         }
     }
 

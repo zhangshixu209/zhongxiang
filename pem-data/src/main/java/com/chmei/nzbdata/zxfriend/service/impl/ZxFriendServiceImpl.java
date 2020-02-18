@@ -56,6 +56,7 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 				output.setMsg("已经是好友关系,不能重复添加！");
 				return;
 			}
+			params.put("zxFriendGroupingType", "Y"); // 默认分组
 			Map<String, Object> groupCountA = (Map<String, Object>) getBaseDao().queryForObject(
 					"ZxFriendGroupingMapper.queryZxFriendGroupingInfo", params);
 			if (null != groupCountA) {
@@ -81,19 +82,20 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 			Map<String, Object> friendTo = (Map<String, Object>) getBaseDao().queryForObject(
 					"ZxFriendMapper.queryZxFriendDetail", maps);
 			maps.put("zxFriendId", getSequence());
+			maps.put("zxFriendGroupingType", "Y");
 			// 用好友账号查询好友的默认分组ID
 			Map<String, Object> groupCount = (Map<String, Object>) getBaseDao().queryForObject(
 					"ZxFriendGroupingMapper.queryZxFriendGroupingInfo", maps);
 			if (null == friendTo) {
 				if (null != groupCount) {
 					maps.put("zxFriendGroupingId", groupCount.get("zxFriendGroupingId"));
-					params.put("zxFriendNotesType", "N");   // 是否关注状态
+					maps.put("zxFriendNotesType", "N");   // 是否关注状态
 					maps.put("zxFriendFriendType", "Y");   // 是否好友状态
 					getBaseDao().insert("ZxFriendMapper.saveZxFriendInfo", maps);
 				}
 			} else {
 				maps.put("zxFriendGroupingId", groupCount.get("zxFriendGroupingId"));
-				params.put("zxFriendNotesType", "N");   // 是否关注状态
+				maps.put("zxFriendNotesType", "N");   // 是否关注状态
 				maps.put("zxFriendFriendType", "Y");   // 是否好友状态
 				getBaseDao().update("ZxFriendMapper.updateZxFriendInfo", maps);
 			}
