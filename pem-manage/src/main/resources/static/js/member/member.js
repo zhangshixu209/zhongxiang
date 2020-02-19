@@ -99,7 +99,7 @@ function dialog(title, ht) {
 	var width = Math.round($('body').width() * 0.5) + "px"; //弹窗后为单行单列展示
 	// Chief.layer.newEmptyDiv(title, ht, width, height + "px", top);
 	//弹窗中间内容的高度-自动
-	Chief.layer.newEmptyDiv(title, ht, width, "auto", top);
+	Chief.layer.newEmptyDiv(title, ht, width, "400px", top);
 	//弹窗中间内容的高度-自动
  	var popup_outline_height = ($(".layui-layer-content").height() - 50) + "px";
 	// var popup_outline_height = (height - 42 - 50) + "px";

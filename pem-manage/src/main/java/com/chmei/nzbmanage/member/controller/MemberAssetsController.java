@@ -106,7 +106,7 @@ public class MemberAssetsController extends BaseController {
         map.put("applyMoney", "申请分红手续费");
         map.put("txsxMoney", "提现手续费");
         map.put("groupMoney", "群升级费用");
-        map.put("reflectMoney", "提现手续费");
+        map.put("reflectMoney", "待审核提现");
         map.put("relReflectMoney", "实际提现总金额");
         map.put("balance", "=");
         map.put("totalMoney", "会员充值总金额");

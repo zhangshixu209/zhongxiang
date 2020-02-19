@@ -2,6 +2,7 @@ package com.chmei.nzbmanage.member.controller;
 
 import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbcommon.cmutil.BeanUtil;
+import com.chmei.nzbcommon.util.IpUtil;
 import com.chmei.nzbcommon.util.MD5Util;
 import com.chmei.nzbcommon.util.StringUtil;
 import com.chmei.nzbmanage.common.constant.Constants;
@@ -172,7 +173,20 @@ public class MemberController extends BaseController {
 //            outputDTO.setMsg("此手机号已被注册！");
 //            return outputDTO;
 //        }
-//        String codeIp = IpUtil.getIpAddr(request);
+        String codeIp = IpUtil.getIpAddr(request);
+        Map<String, Object> map = new HashMap<>();
+        map.put("codeIp", codeIp);
+        //锁定密码判断是否释放
+        OutputDTO dto = getOutputDTO(map, "userService", "getUserCodeIpTORedis");
+        boolean data = (boolean) dto.getData();
+        if(data){
+            return new OutputDTO("-1", "发送失败，请于24小时后再试！");
+        }
+        LOGGER.info("codeIp===============:" + codeIp);
+        map.put("codeIp", codeIp);
+        OutputDTO dto_ = getOutputDTO(map, "userService", "addUserCodeIpTORedis"); // 将账号添加到redis中并设置过期时间是5分钟
+        Integer num = (Integer) dto_.getData();
+        LOGGER.info("num===============:" + num);
         HttpSession session = request.getSession();
         LOGGER.info("存储session对象 {}  " + session);
         SESSION_MAP.put(Md5Utils.hash(session.getId()), session);
@@ -328,7 +342,7 @@ public class MemberController extends BaseController {
             String password = memberForm.getOldPassword();
             if (MD5Util.verify(password, pwd)) {
                 if(memberForm.getNewPassword().equals(memberForm.getOldPassword())){
-                    return new OutputDTO("-1", "新密码不能与旧密码相同");
+                    return new OutputDTO("-1", "新密码不能与原密码相同");
                 }
                 params.put("memberPwd", MD5Util.generate(memberForm.getNewPassword()));
                 params.put("newPassword", memberForm.getNewPassword()); // 不加密，环信使用
@@ -360,13 +374,13 @@ public class MemberController extends BaseController {
             String password = memberForm.getOldPassword();
             if (MD5Util.verify(password, paymentPwd)) {
                 if(memberForm.getNewPassword().equals(memberForm.getOldPassword())){
-                    return new OutputDTO("-1", "新密码不能与旧密码相同");
+                    return new OutputDTO("-1", "新密码不能与原密码相同");
                 }
                 params.put("memberPaymentPwd", MD5Util.generate(memberForm.getNewPassword()));
                 // 修改登录密码
                 outputDTO = getOutputDTO(params, "memberService", "updateLoginOrPayPwd");
             } else {
-                return new OutputDTO("-1", "旧密码错误");
+                return new OutputDTO("-1", "原密码错误");
             }
         } catch (Exception e) {
             LOGGER.error("保存失败", e);

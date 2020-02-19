@@ -379,7 +379,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 					// 是没有填写过得,需要记录:
 					// 必须填写，设计成推荐人为88888888的时候，默认是平台直推，正常情况下直推必须是已经激活的会员
 					if ("88888888".equals(memberAccount)) {
-						myTeam.put("teamParentId", "0");
+						myTeam.put("teamParentId", "88888888");
 					} else {
 						// 设置推荐人ID(被推荐人隶属那个团队)
 						myTeam.put("teamParentId", memberAccount);

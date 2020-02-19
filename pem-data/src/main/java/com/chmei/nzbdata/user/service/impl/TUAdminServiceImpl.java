@@ -60,7 +60,9 @@ public class TUAdminServiceImpl extends BaseServiceImpl implements TUAdminServic
                 Map<String, Object> result = new HashMap<>();
                 result.put("userId", userId);
                 Map<String, Object> map_ = (Map<String, Object>) getBaseDao().queryForObject("TUAdminMapper.queryRoleName", result);
-                map.put("roleName", map_.get("roleName"));
+                if (null != map_) {
+                    map.put("roleName", map_.get("roleName"));
+                }
             }
             output.setItems(list);
         }

@@ -177,6 +177,9 @@
             <if test="modfUserName != null">
                 modf_user_name = #{modfUserName,jdbcType=VARCHAR},
             </if>
+            <if test="realCashAmount != null and realCashAmount != ''">
+                real_cash_amount = #{realCashAmount},
+            </if>
                 modf_user_time = NOW(),
         </set>
         where id = #{id,jdbcType=BIGINT}

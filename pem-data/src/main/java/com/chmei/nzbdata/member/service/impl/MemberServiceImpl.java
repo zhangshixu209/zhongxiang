@@ -505,10 +505,10 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
                 LOGGER.info("deactivateIMUser============:"+gson.toJson(result));
             } else if ("1003".equals(status)) {
                 map.put("id", getSequence());
-                map.put("messageTitle", "警告结果");
-                map.put("messageContent", map.get("auditOpinion"));
+                map.put("messageTitle", "警告信息");
+                map.put("messageContent", params.get("auditOpinion"));
                 map.put("messageStatus", "1");
-                map.put("messageType", Constants.MESSAGE_TYPE_1004);
+                map.put("messageType", Constants.MESSAGE_TYPE_1007);
                 map.put("memberAccount", map.get("memberAccount"));
                 maps.put("status", "2"); // 冻结
                 // 添加推送消息

@@ -159,6 +159,7 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 	public void updateCashAuditInfo(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
+			params.put("realCashAmount", Double.valueOf(params.get("cashAmount") + "") * 0.9);
 			int count = getBaseDao().update("CashAuditMapper.updateCashAuditInfo", params);
 			if (count < 1) {
 				output.setCode("-1");

@@ -59,7 +59,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService   {
 	
 	/**
 	 * 将账号添加到redis中 过期时间是5分钟
-	 * @param mobile
+	 * @param
 	 */
 	public void addLimitedUserMobileTORedis(InputDTO input, OutputDTO output){
 		//将改用户放到redis中,让其在10分钟内不允许登录;  redis的key  limitedUserMobile:用户名(mobile号)
@@ -121,7 +121,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService   {
 
 	/**
 	 * 将账号添加到redis中 过期时间是5分钟
-	 * @param mobile
+	 * @param
 	 */
 	public void getLimitedUserMobileTORedis(InputDTO input, OutputDTO output){
 		String mobile = input.getParams().get("mobile").toString();
@@ -164,7 +164,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService   {
 	
 	/**
 	 * 更新登录时间
-	 * @param mobile
+	 * @param
 	 */
 	public void updateLoginTime(InputDTO input, OutputDTO output){
 		getNzbDataService().execute(input, output);
@@ -175,5 +175,49 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService   {
 	 */
 	public void queryInitAllFreezeAccount(InputDTO input, OutputDTO output){
 		getNzbDataService().execute(input, output);
+	}
+
+	/**
+	 * 判断redis中是否包含过期key
+	 *
+	 * @param input
+	 * @param output
+	 */
+	@Override
+	public void getUserCodeIpTORedis(InputDTO input, OutputDTO output) {
+		String codeIp = input.getParams().get("codeIp").toString();
+		String redis_codeIp = Constants.REDIS_SYS_FAILURE_CODEIP;
+		boolean exist = getCacheService().isExist(redis_codeIp+codeIp);
+		if(!exist){
+			output.setData(false);
+			return;
+		}
+		Integer num = Integer.parseInt(getCacheService().getString(redis_codeIp+codeIp));
+		if(num == 5){
+			output.setData(true);
+		}else{
+			output.setData(false);
+		}
+	}
+
+	/**
+	 * 将输入次数5次的 添加到redis中,24小时不让发短信
+	 *
+	 * @param input
+	 * @param output
+	 */
+	@Override
+	public void addUserCodeIpTORedis(InputDTO input, OutputDTO output) {
+//将改用户放到redis中,让其在10分钟内不允许登录;  redis的key  limitedUserMobile:用户名(mobile号)
+		String codeIp = input.getParams().get("codeIp").toString();
+		String redis_codeIp = Constants.REDIS_SYS_FAILURE_CODEIP;
+		if(!getCacheService().isExist(redis_codeIp+codeIp)){
+			getCacheService().setex(redis_codeIp+codeIp, "1", 60*1440);
+			output.setData(1);
+			return ;
+		}
+		Integer num = Integer.parseInt(getCacheService().getString(redis_codeIp+codeIp)) + 1;
+		getCacheService().setex(redis_codeIp+codeIp, ""+num, 60*1440);
+		output.setData(num);
 	}
 }

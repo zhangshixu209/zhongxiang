@@ -111,7 +111,7 @@
       <if test="memberPwd != null">
         member_pwd,
       </if>
-      <if test="bindPhone != null">
+      <if test="memberAccount != null">
         bind_phone,
       </if>
         `status`,
@@ -135,8 +135,8 @@
       <if test="memberPwd != null">
         #{memberPwd,jdbcType=VARCHAR},
       </if>
-      <if test="bindPhone != null">
-        #{bindPhone,jdbcType=VARCHAR},
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
       </if>
         '1',
       <if test="crtUserId != null">

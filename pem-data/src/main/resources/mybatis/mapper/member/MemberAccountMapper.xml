@@ -93,9 +93,9 @@
         -- 升级群扣除
         ,(select IFNULL(CAST(sum(wallet_info_money) AS DECIMAL(11,2)), '0') from zx_app_wallet_money_info where wallet_info_from = "支付群升级费用") AS groupMoney
         -- 实际提现钱数
-        ,(select IFNULL(CAST(sum(cash_amount) AS DECIMAL(11,2)), '0') from t_cash_audit where audit_type = 1) AS relReflectMoney
+        ,(select IFNULL(CAST(sum(real_cash_amount) AS DECIMAL(11,2)), '0') from t_cash_audit where audit_type = 1) AS relReflectMoney
         -- 提现钱数
-        ,(select IFNULL(CAST(sum(cash_amount) AS DECIMAL(11,2)), '0') from t_cash_audit) AS reflectMoney
+        ,(select IFNULL(CAST(sum(cash_amount) AS DECIMAL(11,2)), '0') from t_cash_audit  where audit_type = 3) AS reflectMoney
         -- 充值钱数
         ,(select IFNULL(CAST(sum(recharge_amount) AS DECIMAL(11,2)), '0') from t_recharge_record where valid_sts_cd = 1 AND `status` != '1001') AS totalMoney
     FROM  t_member

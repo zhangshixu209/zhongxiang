@@ -62,7 +62,7 @@ public class RealNameAuthController extends BaseController {
                 OutputDTO dto = getOutputDTO(map, "userService", "getUserMobileTORedis");
                 boolean data = (boolean) dto.getData();
                 if(data){
-                    return new OutputDTO("-1", "输入信息有误，请于24小时后再次提交！");
+                    return new OutputDTO("-1", "请于24小时后再次提交！");
                 }
                 OutputDTO output = SmUtils.authcIdCardReal(memberForm.getCardNum(), memberForm.getRealName());
                 if ("0".equals(output.getCode())) {
@@ -74,7 +74,7 @@ public class RealNameAuthController extends BaseController {
                     Integer num = (Integer) dto_.getData();
                     System.out.println(num);
                     if (num == 3) {
-                        return new OutputDTO("-1", "输入信息有误，请于24小时后再次提交！");
+                        return new OutputDTO("-1", "请于24小时后再次提交！");
                     } else if (num == 1) {
                         return new OutputDTO("-1", "输入信息有误，您还有两次机会！");
                     } else if(num == 2) {
@@ -110,7 +110,7 @@ public class RealNameAuthController extends BaseController {
                 OutputDTO dto = getOutputDTO(map, "userService", "getUserMobileTORedis");
                 boolean data = (boolean) dto.getData();
                 if(data){
-                    return new OutputDTO("-1", "输入信息有误，请于24小时后再次提交！");
+                    return new OutputDTO("-1", "请于24小时后再次提交！");
                 }
                 OutputDTO output = SmUtils.authcIdCardReal(memberForm.getCardNum(), memberForm.getRealName());
                 if ("0".equals(output.getCode())) {
@@ -122,7 +122,7 @@ public class RealNameAuthController extends BaseController {
                     Integer num = (Integer) dto_.getData();
                     System.out.println(num);
                     if (num == 3) {
-                        return new OutputDTO("-1", "输入信息有误，请于24小时后再次提交！");
+                        return new OutputDTO("-1", "请于24小时后再次提交！");
                     } else if (num == 1) {
                         return new OutputDTO("-1", "输入信息有误，您还有两次机会！");
                     } else if(num == 2) {

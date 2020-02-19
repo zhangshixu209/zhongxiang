@@ -84,4 +84,17 @@ public interface UserService {
 	 * 获取冻结帐号，存入缓存
 	 */
 	void queryInitAllFreezeAccount(InputDTO input, OutputDTO output);
+
+	/**
+	 * 判断redis中是否包含过期key
+	 * @param cdeIp
+	 */
+	public void getUserCodeIpTORedis(InputDTO input, OutputDTO output);
+
+
+	/**
+	 * 将输入次数5次的 添加到redis中,24小时不让发短信
+	 * @param cdeIp
+	 */
+	public void addUserCodeIpTORedis(InputDTO input, OutputDTO output);
 }
