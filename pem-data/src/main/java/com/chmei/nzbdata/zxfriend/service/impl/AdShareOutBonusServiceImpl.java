@@ -857,7 +857,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 									adRecord.put("advertisingInfoAddOrMinus", "+");
 									adRecord.put("advertisingInfoUserId", outBonusInfo.get("adShareOutBonusInfoUserId"));
 									adRecord.put("advertisingInfoMoney", (Double) outBonusInfo.get("adShareOutBonusInfoMoney") * 0.1);
-									adRecord.put("advertisingInfoFrom", "获得分红");
+									adRecord.put("advertisingInfoFrom", "广告分红");
 									getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
 									// 将可用分红额度恢复
 									Map<String, Object> bonusMoney = (Map<String, Object>) getBaseDao().queryForObject(

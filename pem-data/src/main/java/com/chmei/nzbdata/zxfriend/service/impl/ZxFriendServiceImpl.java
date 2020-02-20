@@ -51,27 +51,47 @@ public class ZxFriendServiceImpl extends BaseServiceImpl implements IZxFriendSer
 			// 判断是否添加过好友
 			Map<String, Object> friend = (Map<String, Object>) getBaseDao().queryForObject(
 					"ZxFriendMapper.queryZxFriendDetail", params);
-			if (null != friend && "Y".equals(friend.get("zxFriendFriendType"))) {
-				output.setCode("-1");
-				output.setMsg("已经是好友关系,不能重复添加！");
-				return;
-			}
-			params.put("zxFriendGroupingType", "Y"); // 默认分组
-			Map<String, Object> groupCountA = (Map<String, Object>) getBaseDao().queryForObject(
-					"ZxFriendGroupingMapper.queryZxFriendGroupingInfo", params);
-			if (null != groupCountA) {
-				params.put("zxFriendId", getSequence());   // 众享好友ID
-				params.put("zxFriendFriendType", "Y");     // 是否好友状态
-				params.put("zxFriendAddDate", "Y"); // 添加好友时间
-				params.put("zxFriendNotesType", "N");   // 是否关注状态
-				params.put("zxFriendGroupingId", groupCountA.get("zxFriendGroupingId"));
-//				getBaseDao().update("ZxFriendMapper.updateZxFriendInfo", params);
-				// 新增众享好友信息
-				int i = getBaseDao().insert("ZxFriendMapper.saveZxFriendInfo", params);
-				if (i < 0) {
+			if (null != friend) {
+				if ("Y".equals(friend.get("zxFriendFriendType"))) {
 					output.setCode("-1");
-					output.setMsg("后台添加好友失败");
+					output.setMsg("已经是好友关系,不能重复添加！");
 					return;
+				} else if("Y".equals(friend.get("zxFriendNotesType"))) {
+					params.put("zxFriendGroupingType", "Y"); // 默认分组
+					Map<String, Object> groupCountA = (Map<String, Object>) getBaseDao().queryForObject(
+							"ZxFriendGroupingMapper.queryZxFriendGroupingInfo", params);
+					if (null != groupCountA) {
+						params.put("zxFriendId", getSequence());   // 众享好友ID
+						params.put("zxFriendFriendType", "Y");     // 是否好友状态
+						params.put("zxFriendAddDate", "Y"); // 添加好友时间
+						params.put("zxFriendNotesType", "N");   // 是否关注状态
+						params.put("zxFriendGroupingId", groupCountA.get("zxFriendGroupingId"));
+						// 更新众享好友信息
+						int i = getBaseDao().update("ZxFriendMapper.updateZxFriendInfo", params);
+						if (i < 0) {
+							output.setCode("-1");
+							output.setMsg("后台添加好友失败");
+							return;
+						}
+					}
+				}
+			} else {
+				params.put("zxFriendGroupingType", "Y"); // 默认分组
+				Map<String, Object> groupCountA = (Map<String, Object>) getBaseDao().queryForObject(
+						"ZxFriendGroupingMapper.queryZxFriendGroupingInfo", params);
+				if (null != groupCountA) {
+					params.put("zxFriendId", getSequence());   // 众享好友ID
+					params.put("zxFriendFriendType", "Y");     // 是否好友状态
+					params.put("zxFriendAddDate", "Y"); // 添加好友时间
+					params.put("zxFriendNotesType", "N");   // 是否关注状态
+					params.put("zxFriendGroupingId", groupCountA.get("zxFriendGroupingId"));
+					// 新增众享好友信息
+					int i = getBaseDao().insert("ZxFriendMapper.saveZxFriendInfo", params);
+					if (i < 0) {
+						output.setCode("-1");
+						output.setMsg("后台添加好友失败");
+						return;
+					}
 				}
 			}
 			Map<String, Object> maps = new HashMap<>();

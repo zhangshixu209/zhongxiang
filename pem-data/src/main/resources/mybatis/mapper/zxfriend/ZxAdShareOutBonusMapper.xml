@@ -82,7 +82,7 @@
       <if test="adShareOutBonusResidueLimit != null and adShareOutBonusResidueLimit != '' or adShareOutBonusResidueLimit == 0">
         ad_share_out_bonus_residue_limit = #{adShareOutBonusResidueLimit,jdbcType=DECIMAL},
       </if>
-      <if test="adShareOutBonusMoney != null and adShareOutBonusMoney != ''">
+      <if test="adShareOutBonusMoney != null and adShareOutBonusMoney != ''  or adShareOutBonusMoney == 0">
         ad_share_out_bonus_money = #{adShareOutBonusMoney,jdbcType=DECIMAL},
       </if>
       <if test="adShareOutBonusType != null and adShareOutBonusType != ''">
