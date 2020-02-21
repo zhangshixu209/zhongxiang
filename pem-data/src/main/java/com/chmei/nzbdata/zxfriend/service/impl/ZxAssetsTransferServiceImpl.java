@@ -98,6 +98,7 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 						output.setMsg("广告费不足!");
 						return;
 					}
+					params.put("adShareOutBonusInfoDoneS", "S");
 					// 判断是否有分红任务 去最后一条
 					List<Map<String, Object>> shareOutBonusInfo = getBaseDao().queryForList("ShareOutBonusMapper.findTaskByUserIdAndMarkS", params);
 					//查看广告费 最近一次的情况

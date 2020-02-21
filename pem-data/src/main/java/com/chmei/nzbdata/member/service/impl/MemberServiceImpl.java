@@ -296,6 +296,8 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
                 output.setCode("-1");
                 output.setMsg("保存失败");
             }
+            output.setCode("0");
+            output.setMsg("保存成功！");
         } catch (Exception ex) {
             LOGGER.error("保存失败", ex);
         }

@@ -202,7 +202,7 @@
       zx_app_deal_record_user_id = #{memberAccount}
       AND a.zx_app_deal_type = '1'
     </where>
-    ORDER BY  a.zx_app_deal_record_date asc
+    ORDER BY  a.zx_app_deal_record_date desc
   </select>
 
 </mapper>
