@@ -56,6 +56,7 @@ public class SmUtils {
                 session.setAttribute("phone", phoneNumber);
                 Map<String,Object> codeMap = new HashMap<>();
                 codeMap.put("code",code);
+                log.info(code);
                 codeMap.put("sessionId", Md5Utils.hash(session.getId()));
                 outputDTO.setCode("0");
                 outputDTO.setMsg("发送短信成功!");

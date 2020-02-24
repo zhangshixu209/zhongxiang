@@ -294,10 +294,10 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
             int count = getBaseDao().update("MemberMapper.updateBindPhoneNum", params);
             if (count < 1) {
                 output.setCode("-1");
-                output.setMsg("保存失败");
+                output.setMsg("绑定失败");
             }
             output.setCode("0");
-            output.setMsg("保存成功！");
+            output.setMsg("绑定成功！");
         } catch (Exception ex) {
             LOGGER.error("保存失败", ex);
         }

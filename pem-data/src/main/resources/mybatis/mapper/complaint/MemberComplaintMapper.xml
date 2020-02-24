@@ -24,7 +24,8 @@
 	AND w.`status` != '1001') AS rechargeTotal,
 -- 	(SELECT IFNULL(CAST(SUM(w.cash_amount) AS CHAR), '0') FROM t_cash_audit w WHERE a.member_account = w.user_account) AS cashTotal,
     (SELECT IFNULL(CAST(SUM(w.cash_amount) AS CHAR), '0') FROM t_cash_audit w WHERE a.member_account = w.member_account AND w.audit_type = '1') AS cashTotal,
-	(SELECT IFNULL(CAST(SUM(w.bonus_amount) AS CHAR), '0') FROM t_member_bonus_record w WHERE a.member_account = w.member_account) AS bonusTotal
+	((select IFNULL(CAST(sum(advertising_info_money) AS DECIMAL(11,2)), '0') from zx_app_advertising_money_info where advertising_info_from = "广告分红" AND advertising_info_user_id = a.member_account) +
+    (select IFNULL(CAST(sum(red_packet_info_money) AS DECIMAL(11,2)), '0') from zx_app_red_packet_money_info where red_packet_info_from = "分红赠送" AND red_packet_info_user_id = a.member_account)) AS bonusTotal
   </sql>
   <!-- 查询会员投诉列表 -->
   <select id="queryMemberComplaintList" parameterType="java.util.Map" resultType="java.util.Map">

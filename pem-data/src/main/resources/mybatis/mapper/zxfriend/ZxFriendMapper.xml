@@ -218,7 +218,8 @@
       IFNULL( a.zx_friend_remark, '') AS zxFriendRemark,
       IFNULL( b.head_img_url, '') AS headImgUrl,
       IFNULL( b.nickname, b.member_account ) AS nickName,
-      a.zx_friend_notes_type AS zxFriendNotesType
+      a.zx_friend_notes_type AS zxFriendNotesType,
+    (SELECT g.zx_friend_grouping_name FROM zx_app_friend_grouping g WHERE g.zx_friend_grouping_id = a.zx_friend_grouping_id) AS zxFriendGroupingName
   FROM
       zx_app_friend AS a
       LEFT JOIN t_member AS b ON b.member_account = a.zx_friend_friend_id

@@ -59,6 +59,7 @@ public class SysSqlController extends BaseController{
      public OutputDTO backupsDBInfo(@ModelAttribute SysSqlForm sysSqlForm) throws Exception{
 		 String backName = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date())+".sql";
 		 String path = uploadFilePathConfig.getUploadFolder();
+		 String url = uploadFilePathConfig.getFileUrlPath();
 		 File fileSql = new File(path+"sql");
 		 // 如果目录不存在
 		 if (!fileSql.exists()) {
@@ -90,7 +91,7 @@ public class SysSqlController extends BaseController{
 				 Process process = runtime.exec("cmd /c" + sb.toString()); // window
 				 if(process.waitFor() == 0){
 					 Map<String,Object> map = new HashMap<>();
-					 map.put("sqlUrl", "/uploadFiles/sql/" + Constants.DB_NAME + "-"+backName);
+					 map.put("sqlUrl", url +"sql/"+ Constants.DB_NAME + "-"+backName);
 					 map.put("crtUserId", getCurrUserId());
 					 map.put("crtUserName", getCurrUserName());
 					 map.put("remark", sysSqlForm.getRemark());
@@ -104,7 +105,7 @@ public class SysSqlController extends BaseController{
 					 map.put("crtUserId", getCurrUserId());
 					 map.put("crtUserName", getCurrUserName());
 					 map.put("remark", sysSqlForm.getRemark());
-					 map.put("sqlUrl", "/home/lymanage/cm_uploadFiles/sql/" + Constants.DB_NAME + "-" + backName);
+					 map.put("sqlUrl", url + "sql/" + Constants.DB_NAME + "-" + backName);
 					 OutputDTO outputDTO = getOutputDTO(map,"sysSqlService","backupsDBInfo");
 					 i = outputDTO.getCode();
 				 }
@@ -137,8 +138,8 @@ public class SysSqlController extends BaseController{
 		sb.append(" -u" + Constants.USER_NAME);     // 数据库用户名
 		sb.append(" -p" + Constants.USER_PWD);      // 数据库密码
 		sb.append(" --default-character-set=utf8 " + Constants.DB_NAME + " < "); // 数据库名称
-//		sb.append("D:" + sysSqlForm.getSqlUrl());
-		sb.append(sysSqlForm.getSqlUrl());
+//		sb.append("D:" +sysSqlForm.getSqlUrl().replace("upload", "uploadFiles"));
+		sb.append(sysSqlForm.getSqlUrl().replace("/upload", "/home/lymanage/cm_uploadFiles"));
 		LOGGER.info("cmd命令为："+sb.toString());
 		Runtime runtime = Runtime.getRuntime();
 		LOGGER.info("===========开始还原数据============");
@@ -176,6 +177,11 @@ public class SysSqlController extends BaseController{
 			LOGGER.error("系统异常", e);
 		}
 		return new OutputDTO("0", "还原失败");
+	}
+
+	public static void main(String[] args) {
+		String sql = "/upload/sql/pem_manage_db-2020-02-24-18-51-24.sql";
+		System.out.println(sql.replace("/upload", "/home/lymanage/cm_uploadFiles"));
 	}
 
 }

@@ -114,6 +114,7 @@
 									<th>操作人姓名</th>
 									<th>操作类型</th>
 									<th>备注</th>
+									<th>操作</th>
 								</tr>
 							</thead>
 							<tbody id="J_tabletpl">
@@ -179,6 +180,7 @@
 						<td>{{crtUserName}}</td>
 						<td>{{statusCd optType}}</td>
 						<td>{{remark}}</td>
+						<td><a class="download" href="{{getUrl sqlUrl}}" download>下载</a></td>
 					</tr>
 				{{/each}} 
 			{{else}}

@@ -3,6 +3,10 @@
  */
 $(function(){
 	queryList(); //加载分页信息
+	//Handlebar注册自定义方法
+	Handlebars.registerHelper("getUrl", function(filePath){
+		return Chief.wrapUrl(filePath);
+	})
 });
 
 // 备份还原状态

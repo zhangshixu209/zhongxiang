@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -98,7 +99,7 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 						output.setMsg("广告费不足!");
 						return;
 					}
-					params.put("adShareOutBonusInfoDoneS", "S");
+//					params.put("adShareOutBonusInfoDoneS", "S");
 					// 判断是否有分红任务 去最后一条
 					List<Map<String, Object>> shareOutBonusInfo = getBaseDao().queryForList("ShareOutBonusMapper.findTaskByUserIdAndMarkS", params);
 					//查看广告费 最近一次的情况
@@ -106,29 +107,44 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 							"AssetsTransferMapper.queryDealRecordDate", params);
 					// 无广告费分红任务:
 					long count = iAdShareOutBonusService.findTaskCountByMemberAccount(input, output);
-					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					ParsePosition pos = new ParsePosition(0); // 日期转换
 					if(count == 0){
-						// 没有分红任务的也可以进行发布交易,要一个月发布一次广告费
-						if(zxAppDeals_ != null && zxAppDeals_.size() > 0){
-							Date startDate = (Date) zxAppDeals_.get(0).get("dealRecordDate");
-							long time = startDate.getTime();
-							if(-((time - System.currentTimeMillis()) / (24 * 3600 * 1000)) <= 30){
+						BigDecimal adShareOutBonusMoney = (BigDecimal) shareOutBonus.get("adShareOutBonusMoney");
+						if (adShareOutBonusMoney.doubleValue() > 0) {
+							if(zxAppDeals_ != null && zxAppDeals_.size() > 0){
 								output.setCode("-1");
-								output.setMsg("您的账号每月只能发布一次!");
+								output.setMsg("请于下一分红周期再次发布!");
 								return;
+							}
+						} else {
+							List<Map<String, Object>> list = getBaseDao().queryForList("AssetsTransferMapper.queryAssetsTransferDate", params);
+							// 没有分红任务的也可以进行发布交易,要一个月发布一次广告费
+							if(list != null && list.size() > 0){
+								Date startDate = (Date) list.get(0).get("dealDate");
+								long time = startDate.getTime();
+								if(-((time - System.currentTimeMillis()) / (24 * 3600 * 1000)) <= 30){
+									output.setCode("-1");
+									output.setMsg("您的账号每月只能发布一次!");
+									return;
+								}
+							} else if(zxAppDeals_ != null && zxAppDeals_.size() > 0){
+								Date startDate = (Date) zxAppDeals_.get(0).get("dealRecordDate");
+								long time = startDate.getTime();
+								if(-((time - System.currentTimeMillis()) / (24 * 3600 * 1000)) <= 30){
+									output.setCode("-1");
+									output.setMsg("您的账号每月只能发布一次!");
+									return;
+								}
 							}
 						}
 					} else {
 						// 有广告分红任务
 						// 2.根据用户ID,查询此用户下有多少有效人员
-						int size = iZxMyTeamService.checkedDay(input, output);
+//						int size = iZxMyTeamService.checkedDay(input, output);
 						//前10个周期 按照周期走
 						if (count < 10L) {
 							if(shareOutBonusInfo != null && shareOutBonusInfo.size() > 0){
 								Map<String, Object> share = shareOutBonusInfo.get(0); // 获取第一条
 								Date startDate = (Date) share.get("adShareOutBonusInfoStart"); // 申请分红开始时间
-//								Date starToDate = formatter.parse(startDate, pos);
 								int endDay = (int) share.get("adShareOutBonusInfoDayNum"); // 申请分红倒计时天数
 								if(System.currentTimeMillis() < startDate.getTime() + (endDay * 24 * 3600 * 1000)){
 									output.setCode("-1");
@@ -137,33 +153,21 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 								}
 							}
 						} else {
-							//没有有效直推 每个月发布一次
-							if (size == 0) {
-								if(zxAppDeals_ != null && zxAppDeals_.size() > 0){
-									Date delaDate = (Date) zxAppDeals_.get(0).get("dealRecordDate");
-									long time = delaDate.getTime();
-									if(-((time - System.currentTimeMillis()) / (24 * 3600 * 1000)) <= 30){
-										output.setCode("-1");
-										output.setMsg("您的账号每月只能发布一次!");
-										return;
-									}
-								}
-							} else {
-								//有有效直推 按照发布广告费周期走 查看是不是在上次周期时间之内
-								if (shareOutBonusInfo != null && shareOutBonusInfo.size() >0){
-										Map<String, Object> share = shareOutBonusInfo.get(0); // 获取第一条
-										Date startDate = (Date) share.get("adShareOutBonusInfoStart"); // 申请分红开始时间
-//										Date starToDate = formatter.parse(startDate, pos);
-										int endDay = (int) share.get("adShareOutBonusInfoDayNum"); // 申请分红倒计时天数
-									if(System.currentTimeMillis() < startDate.getTime() + (endDay * 24 * 3600 * 1000)){
-										output.setCode("-1");
-										output.setMsg("请于下一分红周期再次发布!");
-										return;
-									}
+							//有有效直推 按照发布广告费周期走 查看是不是在上次周期时间之内
+							if (shareOutBonusInfo != null && shareOutBonusInfo.size() >0){
+								Map<String, Object> share = shareOutBonusInfo.get(0); // 获取第一条
+								Date startDate = (Date) share.get("adShareOutBonusInfoStart"); // 申请分红开始时间
+								int endDay = (int) share.get("adShareOutBonusInfoDayNum"); // 申请分红倒计时天数
+								if(System.currentTimeMillis() < startDate.getTime() + (endDay * 24 * 3600 * 1000)){
+									output.setCode("-1");
+									output.setMsg("请于下一分红周期再次发布!");
+									return;
 								}
 							}
 						}
 					}
+					// 先查询被购买的人的发布记录的时间
+					params.put("dealMoneyMark", "2");
 					// 判断当前人是否取消或者有发布的,如果有而且还在分红任务内,则不允许在此进行发布交易
 					List<Map<String, Object>> zxAppDeals = getBaseDao().queryForList(
 							"AssetsTransferMapper.queryNewAssetsTransferList", params);

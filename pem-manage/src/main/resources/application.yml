@@ -161,8 +161,8 @@ fileUpload:
   #映射文件路径
   static-access-path: /api/upload/**
   #文件上传目录（注意Linux和Windows上的目录结构不同）
-  #uploadFolder: /home/cmtest/uploadFiles/
-  upload-folder: D:/uploadFiles/
+  uploadFolder: /home/cmtest/uploadFiles/
+  #upload-folder: D:/uploadFiles/
 
 ---
 spring:

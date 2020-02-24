@@ -42,6 +42,16 @@
     </where>
   </select>
 
+  <!-- 资产转让信息列表查询 -->
+  <select id="queryAssetsTransferDate" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from zx_app_deal
+    <where>
+      deal_money_mark = '2' AND deal_user_id = #{memberAccount,jdbcType=VARCHAR}
+    </where>
+  </select>
+
   <!-- 删除转让信息 -->
   <delete id="deleteDealInfo" parameterType="java.util.Map">
     delete from zx_app_deal
