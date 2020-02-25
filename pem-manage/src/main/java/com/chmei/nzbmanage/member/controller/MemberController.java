@@ -246,12 +246,12 @@ public class MemberController extends BaseController {
             outputDTO.setMsg("请先发送验证码!");
             return outputDTO;
         }
-        String phone = (String) session.getAttribute("phone");
-        if (StringUtils.isNotEmpty(phone) && !phone.equals(phoneNumber)) {
-            outputDTO.setCode("3");
-            outputDTO.setMsg("输入手机号不一致!");
-            return outputDTO;
-        }
+//        String phone = (String) session.getAttribute("phone");
+//        if (StringUtils.isNotEmpty(phone) && !phone.equals(phoneNumber)) {
+//            outputDTO.setCode("3");
+//            outputDTO.setMsg("输入手机号不一致!");
+//            return outputDTO;
+//        }
         String code_ = (String) session.getAttribute(phoneNumber);
         if (StringUtils.isNotEmpty(code_) && !code_.equals(code)) {
             outputDTO.setCode("3");
@@ -429,7 +429,8 @@ public class MemberController extends BaseController {
     @RequestMapping("/forgetPaymentPwd")
     public OutputDTO forgetPaymentPwd(@ModelAttribute MemberForm memberForm) {
         OutputDTO outputDTO = new OutputDTO();
-        String phoneNumber = memberForm.getMemberAccount();
+//        String phoneNumber = memberForm.getMemberAccount();
+        String bindPhone = memberForm.getBindPhone();
         String code = memberForm.getCode();
         String newPassword = memberForm.getNewPassword();
         String sessionId = memberForm.getSessionId();
@@ -437,7 +438,7 @@ public class MemberController extends BaseController {
         if(session == null){
             return new OutputDTO("-1", "验证码已过期");
         }
-        outputDTO = checkVerificationCode(phoneNumber, code, session);
+        outputDTO = checkVerificationCode(bindPhone, code, session);
         if (outputDTO.getCode() == "0") {
             // 清除验证码
             SESSION_MAP.remove(sessionId);
