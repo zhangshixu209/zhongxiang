@@ -78,6 +78,7 @@ public final class Constants {
 	/** 推送消息类型 */
 	public static final String MESSAGE_TYPE_1001 = "1001"; // 广告分红
 	public static final String MESSAGE_TYPE_1002 = "1002"; // 众享公告
+	public static final String MESSAGE_TYPE_1008 = "1008"; // 众享通知
 	public static final String MESSAGE_TYPE_1003 = "1003"; // 众享好友
 	public static final String MESSAGE_TYPE_1004 = "1004"; // 投诉处理
 	public static final String MESSAGE_TYPE_1005 = "1005"; // 提现审核

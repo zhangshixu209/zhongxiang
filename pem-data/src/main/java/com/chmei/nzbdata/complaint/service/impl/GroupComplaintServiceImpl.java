@@ -87,7 +87,7 @@ public class GroupComplaintServiceImpl extends BaseServiceImpl implements IGroup
 			@SuppressWarnings("unchecked")
 			Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
 					"GroupComplaintMapper.queryGroupComplaintDetail", params);
-			String content = map.get("complaintRemark") + "，若再次被投诉，您的账号您的账号将会被冻结！";
+			String content = "此群被投诉存在" + map.get("complaintRemark") + "，若再次被投诉，您的账号将会被冻结！";
 			map.put("id", getSequence());
 			map.put("messageTitle", map.get("groupChatName"));
 			map.put("messageContent", content);

@@ -113,7 +113,7 @@ public class MemberComplaintServiceImpl extends BaseServiceImpl implements IMemb
 				if (null != result) {
 					String content = "您投诉的用户：" + params.get("memberAccount") + "已被冻结";
 					map.put("id", getSequence());
-					map.put("messageTitle", "投诉结果查询");
+					map.put("messageTitle", "警告通知");
 					map.put("messageContent", content);
 					map.put("messageStatus", "1");
 					map.put("messageType", Constants.MESSAGE_TYPE_1004);
@@ -128,9 +128,9 @@ public class MemberComplaintServiceImpl extends BaseServiceImpl implements IMemb
 				maps.put("status", "1");
 				LOGGER.info("deactivateIMUser============:"+gson.toJson(result));
 			} else if ("1003".equals(status)) {
-				String tx = "你已被投诉存在" + map.get("complaintRemark") +"行为，再次被投诉，您的账号将会被冻结！";
+				String tx = "您已被投诉" + map.get("complaintRemark") +"，若再次被投诉，您的账号将被冻结";
 				map.put("id", getSequence());
-				map.put("messageTitle", "投诉结果查询");
+				map.put("messageTitle", "警告通知");
 				map.put("messageContent", tx);
 				map.put("messageStatus", "1");
 				map.put("messageType", Constants.MESSAGE_TYPE_1004);

@@ -114,13 +114,20 @@ public class NoticeServiceImpl extends BaseServiceImpl implements INoticeService
                 output.setCode("-1");
                 output.setMsg("新增失败");
             }
+            String noticeTypeName = (String) params.get("noticeTypeName");
+            String noticeTypeNameCd;
+            if ("通知".equals(noticeTypeName)) {
+                noticeTypeNameCd = com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1008; // 通知
+            } else {
+                noticeTypeNameCd = com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1002; // 公告
+            }
             // 添加推送
             Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject("noticeMapper.queryNoticeDetailInfo", params);
             map.put("id", getSequence());
             map.put("messageTitle", map.get("name"));
             map.put("messageContent", map.get("content"));
             map.put("messageStatus", "1");
-            map.put("messageType", com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1002);
+            map.put("messageType", noticeTypeNameCd);
             map.put("memberAccount", "9999");
             // 添加推送消息
             getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
@@ -232,11 +239,18 @@ public class NoticeServiceImpl extends BaseServiceImpl implements INoticeService
             params.put("id", id);
             // 添加推送
             Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject("noticeMapper.queryNoticeDetailInfo", params);
+            String noticeTypeName = (String) map.get("noticeTypeName");
+            String noticeTypeNameCd;
+            if ("通知".equals(noticeTypeName)) {
+                noticeTypeNameCd = com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1008; // 通知
+            } else {
+                noticeTypeNameCd = com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1002; // 公告
+            }
             map.put("id", getSequence());
             map.put("messageTitle", map.get("name"));
             map.put("messageContent", map.get("content"));
             map.put("messageStatus", "1");
-            map.put("messageType", com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1002);
+            map.put("messageType", noticeTypeNameCd);
             map.put("memberAccount", "9999");
             // 添加推送消息
             getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
@@ -331,11 +345,18 @@ public class NoticeServiceImpl extends BaseServiceImpl implements INoticeService
                 getBaseDao().update("noticePermissionMapper.updateNoticePermissionStatus", params);
                 // 添加推送
                 Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject("noticeMapper.queryNoticeDetailInfo", params);
+                String noticeTypeName = (String) map.get("noticeTypeName");
+                String noticeTypeNameCd;
+                if ("通知".equals(noticeTypeName)) {
+                    noticeTypeNameCd = com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1008; // 通知
+                } else {
+                    noticeTypeNameCd = com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1002; // 公告
+                }
                 map.put("id", getSequence());
                 map.put("messageTitle", map.get("name"));
                 map.put("messageContent", map.get("content"));
                 map.put("messageStatus", "1");
-                map.put("messageType", com.chmei.nzbdata.util.Constants.MESSAGE_TYPE_1002);
+                map.put("messageType", noticeTypeNameCd);
                 map.put("memberAccount", "9999");
                 // 添加推送消息
                 getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);

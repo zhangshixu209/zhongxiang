@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ZxAppVersionMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="app_version" jdbcType="VARCHAR" property="appVersion" />
+    <result column="app_url" jdbcType="VARCHAR" property="appUrl" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="extend1" jdbcType="VARCHAR" property="extend1" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_user_name" jdbcType="VARCHAR" property="crtUserName" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, app_version, app_url, remark, extend1, crt_user_id, crt_user_name, crt_time
+  </sql>
+  <select id="queryZxAppVersionList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from zx_app_version
+    <where>
+      <if test="crtUserName != null and crtUserName != ''">
+        AND crt_user_name LIKE concat('%',#{crtUserName},'%')
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+    ORDER BY crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <select id="queryZxAppVersionCount" parameterType="java.util.Map" resultType="int">
+    select
+        COUNT(1)
+    from zx_app_version
+    <where>
+      <if test="crtUserName != null and crtUserName != ''">
+        AND crt_user_name LIKE concat('%',#{crtUserName},'%')
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from zx_app_version
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <!-- 新增版本号 -->
+  <insert id="saveZxAppVersionInfo" parameterType="java.util.Map">
+    insert into zx_app_version
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="appVersion != null">
+        app_version,
+      </if>
+      <if test="appUrl != null">
+        app_url,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="extend1 != null">
+        extend1,
+      </if>
+      <if test="crtUserId != null">
+        crt_user_id,
+      </if>
+      <if test="crtUserName != null">
+        crt_user_name,
+      </if>
+        crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="appVersion != null">
+        #{appVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="appUrl != null">
+        #{appUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="extend1 != null">
+        #{extend1,jdbcType=VARCHAR},
+      </if>
+      <if test="crtUserId != null">
+        #{crtUserId,jdbcType=BIGINT},
+      </if>
+      <if test="crtUserName != null">
+        #{crtUserName,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
+    update zx_app_version
+    <set>
+      <if test="appVersion != null">
+        app_version = #{appVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="appUrl != null">
+        app_url = #{appUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="extend1 != null">
+        extend1 = #{extend1,jdbcType=VARCHAR},
+      </if>
+      <if test="crtUserId != null">
+        crt_user_id = #{crtUserId,jdbcType=BIGINT},
+      </if>
+      <if test="crtUserName != null">
+        crt_user_name = #{crtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="crtTime != null">
+        crt_time = #{crtTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="java.util.Map">
+    update zx_app_version
+    set app_version = #{appVersion,jdbcType=VARCHAR},
+      app_url = #{appUrl,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      extend1 = #{extend1,jdbcType=VARCHAR},
+      crt_user_id = #{crtUserId,jdbcType=BIGINT},
+      crt_user_name = #{crtUserName,jdbcType=VARCHAR},
+      crt_time = #{crtTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

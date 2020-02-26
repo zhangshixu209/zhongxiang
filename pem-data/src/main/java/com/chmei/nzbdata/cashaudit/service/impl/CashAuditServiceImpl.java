@@ -215,7 +215,7 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 			}
 			String content = "您的提现申请审核" + auditTypeCd;
 			map.put("id", getSequence());
-			map.put("messageTitle", "提现审核结果");
+			map.put("messageTitle", "提现审核通知");
 			map.put("messageContent", content);
 			map.put("messageStatus", "1");
 			map.put("messageType", Constants.MESSAGE_TYPE_1005);
