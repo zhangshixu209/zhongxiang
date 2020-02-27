@@ -40,7 +40,7 @@ public class SmUtils {
         String url = "http://v.juhe.cn/sms/send";//请求接口地址
         Map<String,String> params = new HashMap();//请求参数
         params.put("mobile", phoneNumber);//接受短信的用户手机号码
-        params.put("tpl_id", "11741");//您申请的短信模板ID，根据实际情况修改
+        params.put("tpl_id", "208392");//您申请的短信模板ID，根据实际情况修改11741
         params.put("tpl_value", "#code#=" + code);//您设置的模板变量，根据实际情况修改
         params.put("key", APP_KEY_MSG);//应用APPKEY(应用详细页查询)
         try {

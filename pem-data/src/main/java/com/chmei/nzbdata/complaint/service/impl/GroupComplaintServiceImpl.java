@@ -78,32 +78,39 @@ public class GroupComplaintServiceImpl extends BaseServiceImpl implements IGroup
 	public void updateGroupComplaintInfo(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
-			params.put("status", "1003");
+//			params.put("status", "1003");
+			String status = (String) params.get("status");
 			int count = getBaseDao().update("GroupComplaintMapper.updateGroupComplaintInfo", params);
 			if (count < 1) {
 				output.setCode("-1");
 				output.setMsg("保存失败");
+			} else {
+				if ("1002".equals(status)) {
+					output.setCode("0");
+					output.setMsg("保存成功");
+				} else if("1003".equals(status)) {
+					@SuppressWarnings("unchecked")
+					Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
+							"GroupComplaintMapper.queryGroupComplaintDetail", params);
+					String content = "此群被投诉存在" + map.get("complaintRemark") + "，若再次被投诉，您的账号将会被冻结！";
+					map.put("id", getSequence());
+					map.put("messageTitle", map.get("groupChatName"));
+					map.put("messageContent", content);
+					map.put("messageStatus", "1");
+					map.put("messageType", Constants.MESSAGE_TYPE_1004);
+					map.put("memberAccount", map.get("ownerAccount"));
+					// 添加推送消息
+					getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
+					map.put("id", getSequence());
+					map.put("messageTitle", map.get("groupChatName"));
+					map.put("messageContent", "你所投诉的群已被警告");
+					map.put("messageStatus", "1");
+					map.put("messageType", Constants.MESSAGE_TYPE_1004);
+					map.put("memberAccount", map.get("complainant"));
+					// 添加推送消息
+					getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
+				}
 			}
-			@SuppressWarnings("unchecked")
-			Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
-					"GroupComplaintMapper.queryGroupComplaintDetail", params);
-			String content = "此群被投诉存在" + map.get("complaintRemark") + "，若再次被投诉，您的账号将会被冻结！";
-			map.put("id", getSequence());
-			map.put("messageTitle", map.get("groupChatName"));
-			map.put("messageContent", content);
-			map.put("messageStatus", "1");
-			map.put("messageType", Constants.MESSAGE_TYPE_1004);
-			map.put("memberAccount", map.get("ownerAccount"));
-			// 添加推送消息
-			getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
-			map.put("id", getSequence());
-			map.put("messageTitle", map.get("groupChatName"));
-			map.put("messageContent", "你所投诉的群已被警告");
-			map.put("messageStatus", "1");
-			map.put("messageType", Constants.MESSAGE_TYPE_1004);
-			map.put("memberAccount", map.get("complainant"));
-			// 添加推送消息
-			getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
 		} catch (Exception ex) {
 			LOGGER.error("保存失败", ex);
 		}

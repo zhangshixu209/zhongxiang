@@ -211,7 +211,7 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 			}
 			String auditOpinion = (String) params.get("auditOpinion");
 			if(StringUtil.isNotEmpty(auditOpinion)){
-				auditTypeCd += "审核意见：" + auditOpinion;
+				auditTypeCd += "温馨提示：" + auditOpinion;
 			}
 			String content = "您的提现申请审核" + auditTypeCd;
 			map.put("id", getSequence());

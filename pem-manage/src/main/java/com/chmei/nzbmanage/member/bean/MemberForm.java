@@ -190,6 +190,11 @@ public class MemberForm extends BaseForm {
 
     private String auditOpinion;
 
+    /**
+     * 推广码
+     */
+    private String extensionCode;
+
     public String getUsername() {
         return username;
     }
@@ -526,5 +531,13 @@ public class MemberForm extends BaseForm {
 
     public void setAuditOpinion(String auditOpinion) {
         this.auditOpinion = auditOpinion;
+    }
+
+    public String getExtensionCode() {
+        return extensionCode;
+    }
+
+    public void setExtensionCode(String extensionCode) {
+        this.extensionCode = extensionCode;
     }
 }

@@ -119,13 +119,42 @@ $('.pull-right').on('click','#audit_btn', function (){
 	// 获取该条数据详情
 	var id = checked.eq(0).attr("data-id");
 	var paramId = {
-		id: id
+		id: id,
+		status: "1003"
 	};
 	Chief.layer.confirm('是否警告群主?', function(index){
 		//执行删除
 		Chief.ajax.postJson('/groupComplaint/updateGroupComplaintInfo',paramId, function(data) {
 			if('0' == data.code){
 				Chief.layer.tips("已警告该群主", 800);
+				queryList();
+			}else {
+				Chief.layer.tips("系统异常", 800);
+			}
+		});
+
+		Chief.layer.close(index);
+	});
+});
+
+// 后台充值广告费，钱包余额
+$('.pull-right').on('click','#hl_btn', function (){
+	var checked = $("#J_tabletpl input[type=checkbox]:checked");
+	if(checked.length != 1) {
+		Chief.layer.tips("请选择一条数据！");
+		return;
+	}
+	// 获取该条数据详情
+	var id = checked.eq(0).attr("data-id");
+	var paramId = {
+		id: id,
+		status: "1002"
+	};
+	Chief.layer.confirm('是否忽略?', function(index){
+		//执行删除
+		Chief.ajax.postJson('/groupComplaint/updateGroupComplaintInfo',paramId, function(data) {
+			if('0' == data.code){
+				Chief.layer.tips("已忽略投诉", 800);
 				queryList();
 			}else {
 				Chief.layer.tips("系统异常", 800);

@@ -194,6 +194,51 @@ public class MemberController extends BaseController {
     }
 
     /**
+     * 发送六位验证码接口 0:发送短信成功;1:发送验证码失败;2:手机号非法;500:服务器错误
+     *
+     * @param phoneNumber 手机号
+     * @return 发送验证码是否成功
+     */
+    @RequestMapping("/sendCodeForWeb/{phoneNumber}")
+    public OutputDTO sendCodeForWeb(@PathVariable("phoneNumber") String phoneNumber, HttpServletRequest request) {
+        OutputDTO outputDTO = new OutputDTO();
+        // 验证手机号码是否符合标准
+        String match = "^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$";
+        boolean matches = phoneNumber.matches(match);
+        if (!matches) {
+            outputDTO.setCode("2");
+            outputDTO.setMsg("非法手机号码!");
+            return outputDTO;
+        }
+        Map<String, Object> map_ = new HashMap<>();
+        map_.put("memberAccount", phoneNumber);
+        outputDTO = getOutputDTO(map_, "memberService", "queryMemberDetail");
+        if(null != outputDTO.getItem()){
+            outputDTO.setCode("-1");
+            outputDTO.setMsg("此手机号已被注册！");
+            return outputDTO;
+        }
+        String codeIp = IpUtil.getIpAddr(request);
+        Map<String, Object> map = new HashMap<>();
+        map.put("codeIp", codeIp);
+        //锁定密码判断是否释放
+        OutputDTO dto = getOutputDTO(map, "userService", "getUserCodeIpTORedis");
+        boolean data = (boolean) dto.getData();
+        if(data){
+            return new OutputDTO("-1", "发送失败，请于24小时后再试！");
+        }
+        LOGGER.info("codeIp===============:" + codeIp);
+        map.put("codeIp", codeIp);
+        OutputDTO dto_ = getOutputDTO(map, "userService", "addUserCodeIpTORedis"); // 将账号添加到redis中并设置过期时间是5分钟
+        Integer num = (Integer) dto_.getData();
+        LOGGER.info("num===============:" + num);
+        HttpSession session = request.getSession();
+        LOGGER.info("存储session对象 {}  " + session);
+        SESSION_MAP.put(Md5Utils.hash(session.getId()), session);
+        return SmUtils.mobileQuery(phoneNumber, session);
+    }
+
+    /**
      * 使用短信验证码和密码注册
      * @param memberForm
      * @return

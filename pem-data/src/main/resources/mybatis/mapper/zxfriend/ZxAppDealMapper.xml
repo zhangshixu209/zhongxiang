@@ -56,7 +56,12 @@
   <delete id="deleteDealInfo" parameterType="java.util.Map">
     delete from zx_app_deal
     <where>
-      deal_user_id = #{memberAccount,jdbcType=VARCHAR}
+      <if test="dealId != null and dealId != ''">
+        deal_id = #{dealId}
+      </if>
+      <if test="memberAccount != null and memberAccount != ''" >
+        AND deal_user_id = #{memberAccount,jdbcType=VARCHAR}
+      </if>
       <if test="dealMoneyMark != null and dealMoneyMark != ''">
         AND deal_money_mark = #{dealMoneyMark}
       </if>

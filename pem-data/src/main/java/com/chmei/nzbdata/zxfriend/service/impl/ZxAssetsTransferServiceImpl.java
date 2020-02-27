@@ -167,14 +167,34 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 						}
 					}
 					// 先查询被购买的人的发布记录的时间
-					params.put("dealMoneyMark", "2");
+//					params.put("dealMoneyMark", "2");
 					// 判断当前人是否取消或者有发布的,如果有而且还在分红任务内,则不允许在此进行发布交易
 					List<Map<String, Object>> zxAppDeals = getBaseDao().queryForList(
 							"AssetsTransferMapper.queryNewAssetsTransferList", params);
 					if(zxAppDeals != null && zxAppDeals.size() > 0){
-						output.setCode("-1");
-						output.setMsg("请于下一分红周期再次发布!");
-						return;
+						if (shareOutBonusInfo != null && shareOutBonusInfo.size() > 0) {
+							Map<String, Object> share = shareOutBonusInfo.get(0); // 获取第一条
+							Date startDate = (Date) share.get("adShareOutBonusInfoStart"); // 申请分红开始时间
+							Date dealDate = (Date) zxAppDeals.get(0).get("dealDate");
+							if (dealDate.getTime() >= startDate.getTime()) {
+								output.setCode("-1");
+								output.setMsg("请于下一分红周期再次发布!");
+								return;
+							}
+						} else {
+							output.setCode("-1");
+							output.setMsg("请于下一分红周期再次发布!");
+							return;
+						}
+					} else if(zxAppDeals_ != null && zxAppDeals_.size() > 0){
+						Map<String, Object> share = shareOutBonusInfo.get(0); // 获取第一条
+						Date startDate = (Date) share.get("adShareOutBonusInfoStart"); // 申请分红开始时间
+						Date dealRecordDate = (Date) zxAppDeals_.get(0).get("dealRecordDate");
+						if (dealRecordDate.getTime() >= startDate.getTime()) {
+							output.setCode("-1");
+							output.setMsg("请于下一分红周期再次发布!");
+							return;
+						}
 					}
 					// 扣除当前人广告费金额
 					Map<String, Object> user = new HashMap<>();
@@ -307,6 +327,7 @@ public class ZxAssetsTransferServiceImpl extends BaseServiceImpl implements IZxA
 				// 删除发布记录
 				Map<String, Object> dealExample = new HashMap<>();
 				dealExample.put("memberAccount", params.get("fromMemberAccount"));
+				dealExample.put("dealId", params.get("dealId"));
 				int m = getBaseDao().delete("AssetsTransferMapper.deleteDealInfo", dealExample);
 				if(m > 0){
 					// 记录被购买人信息
