@@ -140,6 +140,7 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 					List<Double> doubles = gradRedPacket(redPacketVideoCount, redPacketVideoMoneyCount.doubleValue());
 					int i = this.insertListRedPacketImgInfo(doubles, (Long) params.get("redPacketVideoId"));
 					if(i > 0 && stringObjectMap != null){
+						sendBackRedPacketMoney(stringObjectMap); // 红包退回定时任务
 						output.setCode("0");
 						output.setMsg("信息发布成功!");
                         output.setItem(stringObjectMap);
@@ -157,6 +158,109 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 			output.setCode("-1");
 			output.setMsg("发布红包失败");
 		}
+	}
+
+	/**
+	 * 红包退回定时任务
+	 * @param params 入参
+	 */
+	@SuppressWarnings("unchecked")
+	private void  sendBackRedPacketMoney(Map<String, Object> params){
+		long daySpan = 24 * 3600 * 1000 * 3; // 24小时毫秒数 * 3, 72小时
+		final Timer timer = new Timer();
+		timer.schedule(new TimerTask() { // 红包发布成功，执行定时任务
+			@Override
+			public void run() {
+				LOGGER.info("==============红包过期退回任务开始================");
+				Map<String, Object> map_ = (Map<String, Object>) getBaseDao().queryForObject(
+						"VideoRedPacketMapper.queryRedPacketMoneyStock", params);
+				if (null != map_) {
+					BigDecimal packetMoneyStock = (BigDecimal) map_.get("packetMoneyStock");
+					if (packetMoneyStock.doubleValue() > 0) {
+						Map<String, Object> item = (Map<String, Object>) getBaseDao().queryForObject(
+								"MemberMapper.queryMemberBalanceDetail", params);
+						if (null != item) {
+							boolean flag = false;
+							String walletBalance = (String) item.get("walletBalance"); // 钱包余额
+							String redEnveBalance = (String) item.get("redEnveBalance"); // 红包余额
+							String advertisingFee = (String) item.get("advertisingFee"); // 广告费余额
+							Map<String, Object> map = new HashMap<>();
+							String redPacketType = (String) params.get("redPacketType");
+							// 插入红包成功,扣除相应的款项,钱包,红包,广告钱包
+							switch (redPacketType) {
+								case WALLET_TYPE: // 钱包退回
+									double walletAmount = Double.valueOf(walletBalance) + packetMoneyStock.doubleValue();
+									map.put("walletBalance", walletAmount < 0 ? 0 : walletAmount);
+									map.put("memberAccount", params.get("memberAccount")); // 会员账户
+									int i = getBaseDao().update("MemberMapper.updateMemberBalance", map);
+									if (i <= 0) {
+										flag = true;
+									} else {
+										// 删除过期的红包信息
+										getBaseDao().delete("VideoRedPacketMapper.delRedPacketMoneyStock", params);
+										// 钱包退回金额记录:
+										Map<String, Object> walletMoneyInfo = new HashMap<>();
+										walletMoneyInfo.put("walletInfoId", getSequence());
+										walletMoneyInfo.put("walletInfoAddOrMinus", "+");
+										walletMoneyInfo.put("walletInfoUserId", params.get("memberAccount"));
+										walletMoneyInfo.put("walletInfoMoney", packetMoneyStock);
+										walletMoneyInfo.put("walletInfoFrom", "视频广告红包过期退回");
+										getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
+									}
+									break;
+								case RED_PACKET_TYPE: // 红包退回
+									double hbAmount = Double.valueOf(redEnveBalance) + packetMoneyStock.doubleValue();
+									map.put("redEnveBalance", hbAmount < 0 ? 0 : hbAmount);
+									map.put("memberAccount", params.get("memberAccount")); // 会员账户
+									int j = getBaseDao().update("MemberMapper.updateMemberBalance", map);
+									if (j <= 0) {
+										flag = true;
+									} else {
+										// 删除过期的红包信息
+										getBaseDao().delete("VideoRedPacketMapper.delRedPacketMoneyStock", params);
+										// 红包退回钱包记录
+										Map<String, Object> redRecord = new HashMap<>();
+										redRecord.put("redPacketInfoId", getSequence());
+										redRecord.put("redPacketInfoAddOrMinus", "+");
+										redRecord.put("redPacketInfoUserId", params.get("memberAccount"));
+										redRecord.put("redPacketInfoMoney", packetMoneyStock);
+										redRecord.put("redPacketInfoFrom", "视频广告红包过期退回");
+										getBaseDao().insert("RedRecordMoneyInfoMapper.saveRedRecordMoneyInfo", redRecord);
+									}
+									break;
+								case ADVERSING_TYPE: // 广告钱包退回
+									double advertisingAmount = Double.valueOf(advertisingFee) + packetMoneyStock.doubleValue();
+									map.put("advertisingFee", advertisingAmount < 0 ? 0 : advertisingAmount);
+									map.put("memberAccount", params.get("memberAccount")); // 会员账户
+									int k = getBaseDao().update("MemberMapper.updateMemberBalance", map);
+									if (k <= 0) {
+										flag = true;
+									} else {
+										// 删除过期的红包信息
+										getBaseDao().delete("VideoRedPacketMapper.delRedPacketMoneyStock", params);
+										// 广告钱包退回记录
+										Map<String, Object> adRecord = new HashMap<>();
+										adRecord.put("advertisingInfoId", getSequence());
+										adRecord.put("advertisingInfoAddOrMinus", "+");
+										adRecord.put("advertisingInfoUserId", params.get("memberAccount"));
+										adRecord.put("advertisingInfoMoney", packetMoneyStock);
+										adRecord.put("advertisingInfoFrom", "视频广告红包过期退回");
+										getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
+									}
+									break;
+								default:
+									break;
+							}
+							if (flag) {
+								LOGGER.error("红包退回失败!");
+							}
+							LOGGER.info("==============红包过期退回任务结束================");
+						}
+					}
+				}
+				timer.cancel();
+			}
+		},daySpan);
 	}
 
 	/**
@@ -467,7 +571,7 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 			String msg;
 			if(days > 3) {
 				if (params.get("memberAccount").equals(redPacket.get("redPacketVideoUserId"))) {
-					msg = "此红包已超过72小时！";
+					msg = "此红包已退回！";
 					output.setCode("-2"); // 4
 					output.setMsg(msg);
 					return;

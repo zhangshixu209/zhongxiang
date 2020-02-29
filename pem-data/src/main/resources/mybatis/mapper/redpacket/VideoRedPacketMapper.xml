@@ -242,6 +242,7 @@
       a.red_packet_video_age_start AS redPacketAgeStart,
       a.red_packet_video_age_end AS redPacketAgeEnd,
       a.red_packet_video_date AS redPacketDate,
+      a.red_packet_video_type AS redPacketType,
       b.head_img_url AS headImgUrl,
       #b.nickname AS nickname,
       IFNULL(b.nickname,b.member_account) AS nickname, -- 发布红包用户昵称
@@ -512,5 +513,15 @@
           red_packet_video_date = sysdate()
       where red_packet_video_info_id = #{redPacketInfoId}
   </update>
+
+  <!-- 查询过期的红包信息 -->
+  <select id="queryRedPacketMoneyStock" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT SUM(a.red_packet_video_money) AS packetMoneyStock FROM zx_app_video_red_packet_info a WHERE a.red_packet_video_id = #{redPacketId} AND a.red_packet_video_user_id IS NULL
+    </select>
+
+  <!-- 删除过期的红包信息 -->
+  <delete id="delRedPacketMoneyStock" parameterType="java.util.Map">
+	    DELETE FROM zx_app_video_red_packet_info WHERE red_packet_video_id = #{redPacketId}  AND red_packet_video_user_id IS NULL
+    </delete>
 
 </mapper>
