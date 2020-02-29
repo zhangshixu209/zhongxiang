@@ -54,7 +54,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 					"ShareOutBonusMapper.queryShareOutBonusDetail", params);
 			if (null != shareOutBonus && "Y".equals(shareOutBonus.get("adShareOutBonusType"))) {
 				Map<String, Object> teamExample = new HashMap<>();
-				teamExample.put("teamParentId", memberAccount); // 团队隶属上级ID, 推荐人账户
+				teamExample.put("teamParentId", memberAccount); // 团队隶属上级ID, lsh_form账户
 				// 根据当前用户ID 查询自己直推人数
 				List<Map<String, Object>> allPersonnel = getBaseDao().queryForList("ZxMyTeamMapper.queryMyTeamInfo", teamExample);
 				// 根据当前用户ID 查询团队人数
@@ -522,11 +522,20 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				} else {
 					BigDecimal adShareOutBonusMoney = (BigDecimal) shareOutBonus.get("adShareOutBonusMoney");
 					System.out.println(adShareOutBonusMoney);
-					if (adShareOutBonusMoney.doubleValue() == 0) {
+					if (adShareOutBonusMoney.doubleValue() > 0) {
 						output.setCode("-1");
 						output.setMsg("此用户不具备推荐资格！");
 						return;
 					}
+				}
+				params.put("adShareOutBonusInfoDoneS", "S");
+				// 判断是否有正在执行的分红任务
+				Map<String, Object> taskByUserIdAndMarkS = (Map<String, Object>) getBaseDao().queryForObject(
+						"ShareOutBonusMapper.findTaskByUserIdAndMarkS", params);
+				if (taskByUserIdAndMarkS != null) {
+					output.setCode("-1");
+					output.setMsg("此用户不具备推荐资格！");
+					return;
 				}
 			} else {
 				output.setCode("-1");

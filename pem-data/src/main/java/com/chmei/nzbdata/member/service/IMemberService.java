@@ -128,4 +128,12 @@ public interface IMemberService {
      */
     void memberHandle(InputDTO input, OutputDTO output) throws NzbDataException;
 
+    /**
+     * 新增用户推广信息
+     * @param input 入参
+     * @param output 出参
+     * @throws NzbDataException 自定义异常
+     */
+    void saveZxAppMyShare(InputDTO input, OutputDTO output) throws NzbDataException;
+
 }

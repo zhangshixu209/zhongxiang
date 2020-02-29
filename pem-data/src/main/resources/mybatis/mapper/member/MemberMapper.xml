@@ -229,7 +229,8 @@
       IFNULL(a.zx_my_team_id, 0) as zxMyTeamId,
       a.activate_status AS activateStatus,
       (SELECT COUNT(1) FROM zx_app_friend f WHERE f.zx_friend_user_id = a.member_account AND f.zx_friend_friend_type = "Y") AS friendTotal,
-      (SELECT COUNT(1) FROM zx_app_friend f WHERE f.zx_friend_friend_id = a.member_account AND f.zx_friend_notes_type = "Y") AS notesTotal
+      (SELECT COUNT(1) FROM zx_app_friend f WHERE f.zx_friend_friend_id = a.member_account AND f.zx_friend_notes_type = "Y") AS notesTotal,
+      (SELECT COUNT(1) FROM zx_app_my_share_extend f WHERE f.member_account = a.member_account) shareTotal
     FROM
         t_member a
     LEFT JOIN t_real_name_authentic b ON a.member_account = b.member_account
@@ -367,6 +368,92 @@
     <foreach item="mobileContacts" index="index" collection="mobileContacts"
              open="(" separator="," close=")"> ${mobileContacts}
     </foreach>-->
+  </select>
+
+  <!-- 根据推广码查询用户信息 -->
+  <select id="queryMemberForExtensionCode" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        member_account AS memberAccount
+    FROM zx_app_my_share
+    WHERE extension_code = #{extensionCode}
+  </select>
+
+  <!-- 新增推广关系 -->
+  <insert id="saveZxAppMyShareExtend" parameterType="java.util.Map">
+    insert into zx_app_my_share_extend
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      id,
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+      <if test="coverMemberAccount != null and coverMemberAccount != ''">
+        cover_member_account,
+      </if>
+      <if test="extend1 != null">
+        extend1,
+      </if>
+      crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{id,jdbcType=BIGINT},
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="coverMemberAccount != null and coverMemberAccount != ''">
+        #{coverMemberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="extend1 != null">
+        #{extend1,jdbcType=VARCHAR},
+      </if>
+      NOW()
+    </trim>
+  </insert>
+
+  <!-- 新增我的推广信息 -->
+  <insert id="saveZxAppMyShare" parameterType="java.util.Map">
+    insert into zx_app_my_share
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      id,
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+      <if test="extensionCode != null and extensionCode != ''">
+        extension_code,
+      </if>
+      <if test="extend1 != null">
+        extend1,
+      </if>
+      crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{id,jdbcType=BIGINT},
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="extensionCode != null and extensionCode != ''">
+        #{extensionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="extend1 != null">
+        #{extend1,jdbcType=VARCHAR},
+      </if>
+      NOW()
+    </trim>
+  </insert>
+
+  <!-- 根据推广码查询用户信息 -->
+  <select id="queryMemberMyShare" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.member_account AS memberAccount,
+      a.extension_code AS extensionCode,
+      IFNULL( b.nickname, b.member_account ) AS nickName
+    FROM
+	zx_app_my_share a
+	LEFT JOIN t_member b ON a.member_account = b.member_account
+    <where>
+      <if test="memberAccount != null and memberAccount != ''">
+        a.member_account = #{memberAccount}
+      </if>
+    </where>
   </select>
 
 </mapper>

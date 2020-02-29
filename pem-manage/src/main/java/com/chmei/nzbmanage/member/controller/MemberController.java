@@ -877,4 +877,23 @@ public class MemberController extends BaseController {
         return outputDTO;
     }
 
+    /**
+     * 新增用户推广信息
+     *
+     * @param memberForm 封装实体类
+     * @return OutputDTO 出参
+     */
+    @RequestMapping("/saveZxAppMyShare")
+    public OutputDTO saveZxAppMyShare(@ModelAttribute MemberForm memberForm) {
+        OutputDTO outputDTO;
+        try {
+            Map<String, Object> map = BeanUtil.convertBean2Map(memberForm);
+            outputDTO = getOutputDTO(map, "memberService", "saveZxAppMyShare");
+        } catch (Exception e) {
+            LOGGER.error("查询失败", e);
+            outputDTO = new OutputDTO("1", "系统错误");
+        }
+        return outputDTO;
+    }
+
 }

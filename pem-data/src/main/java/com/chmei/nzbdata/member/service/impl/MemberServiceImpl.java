@@ -2,6 +2,7 @@ package com.chmei.nzbdata.member.service.impl;
 
 import com.chmei.nzbcommon.cmbean.InputDTO;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
+import com.chmei.nzbdata.autoconfigure.idgene.InvitationCodeGnerateUtil;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.im.comm.TokenUtil;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
@@ -86,7 +87,20 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
                 friendGroup.put("zxFriendGroupingName", "默认分组");
                 friendGroup.put("zxFriendGroupingType", "Y"); // 默认分组标识
                 // 为用户添加默认分组
-                getBaseDao().insert("ZxFriendGroupingMapper.saveZxFriendGroupingInfo", friendGroup);
+                int i = getBaseDao().insert("ZxFriendGroupingMapper.saveZxFriendGroupingInfo", friendGroup);
+                if (i > 0) {
+                    String extensionCode = (String) params.get("extensionCode");
+                    if (StringUtil.isNotEmpty(extensionCode)) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> map_ = (Map<String, Object>) getBaseDao().queryForObject(
+                                "MemberMapper.queryMemberForExtensionCode", params);
+                        if (null != map_) {
+                            map_.put("id", getSequence());
+                            map_.put("coverMemberAccount", params.get("memberAccount"));
+                            getBaseDao().insert("MemberMapper.saveZxAppMyShareExtend", map_);
+                        }
+                    }
+                }
                 Map<String, Object> map = new HashMap<>();
                 map.put("memberAccount", memberAccount);
                 output.setCode("0");
@@ -523,6 +537,47 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
             } else {
                 output.setCode("-1");
                 output.setMsg("保存失败");
+            }
+        } catch (Exception ex) {
+            LOGGER.error("保存失败", ex);
+        }
+    }
+
+    /**
+     * 新增用户推广信息
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbDataException 自定义异常
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void saveZxAppMyShare(InputDTO input, OutputDTO output) throws NzbDataException {
+        Map<String, Object> params = input.getParams();
+        try {
+            Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
+                    "MemberMapper.queryMemberMyShare", params);
+            if (null != map) { // 如果存在直接返回，否则新增
+                output.setItem(map);
+                output.setCode("0");
+                output.setMsg("查询成功");
+                return;
+            }
+            params.put("id", getSequence());
+            String serialCode = InvitationCodeGnerateUtil.toSerialCode(getSequence());
+            params.put("extensionCode", serialCode); // 推广码
+            int count = getBaseDao().insert("MemberMapper.saveZxAppMyShare", params);
+            if (count < 1) {
+                output.setCode("-1");
+                output.setMsg("保存失败");
+            } else {
+                Map<String, Object> maps = (Map<String, Object>) getBaseDao().queryForObject(
+                        "MemberMapper.queryMemberMyShare", params);
+                if (null != maps) { // 如果存在直接返回，否则新增
+                    output.setItem(maps);
+                    output.setCode("0");
+                    output.setMsg("查询成功");
+                }
             }
         } catch (Exception ex) {
             LOGGER.error("保存失败", ex);
