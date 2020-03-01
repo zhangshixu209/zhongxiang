@@ -137,10 +137,9 @@
       zx_app_deal_record_user_id = #{memberAccount}
     </where>
     ORDER BY  a.zx_app_deal_record_date DESC
-    <!--<if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
       LIMIT #{start}, #{limit}
-    </if>-->
-    LIMIT 5
+    </if>
   </select>
 
   <!-- 新增交易记录信息 -->

@@ -522,20 +522,11 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				} else {
 					BigDecimal adShareOutBonusMoney = (BigDecimal) shareOutBonus.get("adShareOutBonusMoney");
 					System.out.println(adShareOutBonusMoney);
-					if (adShareOutBonusMoney.doubleValue() > 0) {
+					if (adShareOutBonusMoney.doubleValue() == 0) {
 						output.setCode("-1");
 						output.setMsg("此用户不具备推荐资格！");
 						return;
 					}
-				}
-				params.put("adShareOutBonusInfoDoneS", "S");
-				// 判断是否有正在执行的分红任务
-				Map<String, Object> taskByUserIdAndMarkS = (Map<String, Object>) getBaseDao().queryForObject(
-						"ShareOutBonusMapper.findTaskByUserIdAndMarkS", params);
-				if (taskByUserIdAndMarkS != null) {
-					output.setCode("-1");
-					output.setMsg("此用户不具备推荐资格！");
-					return;
 				}
 			} else {
 				output.setCode("-1");
