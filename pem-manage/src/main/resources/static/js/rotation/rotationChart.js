@@ -91,7 +91,8 @@ function saveRotationChart(){
 	Chief.ajax.postJson("/rotation/saveRotationChartInfo", data, function (data) {
 		if(data.code == '0'){
 			Chief.layer.tips("保存成功！");
-			setTimeout('outTips()', 2000 );
+			Chief.layer.close();
+			queryList();
 		}else{
 			Chief.layer.tips(data.msg);
 		}
@@ -182,7 +183,8 @@ function updateRotationChart(){
 	Chief.ajax.postJson("/rotation/updateRotationChartInfo", data, function (data) {
 		if("0" == data.code){
 			Chief.layer.tips("保存成功", 1500);
-			setTimeout('outTips()', 2000 );
+			Chief.layer.close();
+			queryList();
 		} else if("-1" == data.code){
 			Chief.layer.tips(data.msg, 2000);
 		} else {

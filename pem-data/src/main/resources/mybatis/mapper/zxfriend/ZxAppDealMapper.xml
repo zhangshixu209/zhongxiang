@@ -24,7 +24,7 @@
             AND deal_user_id = #{memberAccount,jdbcType=VARCHAR}
           </if>
     </where>
-      ORDER BY deal_date DESC
+      ORDER BY deal_date ASC
     <!--<if test="start != null and start != '' and limit != null and limit != '' or start ==0">
       LIMIT #{start}, #{limit}
     </if>-->
