@@ -95,12 +95,13 @@ public class ZxAppVersionController extends BaseController {
         // 下载本地文件
         // 取得文件名。
         String fileName = file.getName(); // 文件的默认保存名
-        String newName = "众享";
+        String newName = "zhongxiang";
         // 读到流中
         InputStream inStream = new FileInputStream(appUrl);// 文件的存放路径
         // 设置输出的格式
         response.reset();
-        response.setContentType("bin");
+//        response.setContentType("bin");
+        response.setHeader("Content-type", "application/vnd.android.package-archive");
         response.setHeader("Content-Disposition","inline; filename=\""+ URLEncoder.encode(newName, "UTF-8")+ ".apk\"");
         // 循环取出流中的数据
         byte[] b = new byte[100];
