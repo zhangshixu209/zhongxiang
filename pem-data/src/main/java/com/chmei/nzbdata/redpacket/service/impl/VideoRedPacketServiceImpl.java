@@ -569,7 +569,7 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 			String dateNowStr = sdf.format(d);
 			long days = getDaySub(sdf.format(redPacketDate), dateNowStr);
 			String msg;
-			if(days > 3) {
+			if(days >= 3) {
 				if (params.get("memberAccount").equals(redPacket.get("redPacketVideoUserId"))) {
 					msg = "此红包已退回！";
 					output.setCode("-2"); // 4
@@ -957,7 +957,7 @@ public class VideoRedPacketServiceImpl extends BaseServiceImpl implements IVideo
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String dateNowStr = sdf.format(d);
 			long days = getDaySub(sdf.format(redPacketDate), dateNowStr);
-			if(days > 3) {
+			if(days >= 3) {
 				return 1;
 			}
 		}

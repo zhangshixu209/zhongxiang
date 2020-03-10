@@ -423,13 +423,15 @@
         b.member_account AS memberAccount,-- 用户账号
         a.red_packet_img_money AS redPacketMoney,-- 非当前用户抢钱金额
         a.red_packet_img_luck_star AS redPacketLuckStar,-- 非当前用户是否是手气最佳
-        a.red_packet_img_date AS redPacketDate -- 抢红包时间
+        a.red_packet_img_date AS redPacketDate, -- 抢红包时间
+        (SELECT COUNT(1) FROM zx_app_img_red_packet_info p WHERE p.red_packet_img_id = a.red_packet_img_id AND p.red_packet_img_user_id IS NULL) packetTotal
     FROM
         zx_app_img_red_packet_info a
         LEFT JOIN t_member b ON b.member_account = a.red_packet_img_user_id
     WHERE
         a.red_packet_img_id = #{redPacketImgId}
         AND a.red_packet_img_user_id IS NOT NULL
+    ORDER BY a.red_packet_img_date DESC
   </select>
   <!-- 根据红包ID查询红包详细信息 -->
   <select id="checkUserIsRobRedPacket" resultType="int">
