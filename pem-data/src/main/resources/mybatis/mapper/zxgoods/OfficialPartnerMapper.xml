@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OfficialPartnerMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="partner_name" jdbcType="VARCHAR" property="partnerName" />
+    <result column="partner_logo" jdbcType="VARCHAR" property="partnerLogo" />
+    <result column="partner_url" jdbcType="VARCHAR" property="partnerUrl" />
+    <result column="partner_desc" jdbcType="VARCHAR" property="partnerDesc" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, partner_name, partner_logo, partner_url, partner_desc, crt_time
+  </sql>
+  <!-- 合作商列表查询 -->
+  <select id="queryOfficialPartnerList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM zx_app_official_partner
+    <where>
+      <if test="partnerName != null and partnerName != ''">
+        partner_name LIKE concat('%',#{partnerName},'%')
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+    ORDER BY crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 合作商列表查询 -->
+  <select id="queryOfficialPartnerCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+        COUNT(1)
+    FROM zx_app_official_partner
+    <where>
+      <if test="partnerName != null and partnerName != ''">
+        partner_name LIKE concat('%',#{partnerName},'%')
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+  </select>
+
+  <!-- 合作商详情 -->
+  <select id="queryOfficialPartnerDetail" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM zx_app_official_partner
+    WHERE id = #{id}
+  </select>
+
+  <!-- 删除合作商 -->
+  <delete id="delOfficialPartnerInfo" parameterType="java.util.Map">
+    delete from zx_app_official_partner
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <!-- 新增合作商 -->
+  <insert id="saveOfficialPartnerInfo" parameterType="java.util.Map">
+    insert into zx_app_official_partner
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="partnerName != null">
+        partner_name,
+      </if>
+      <if test="partnerLogo != null">
+        partner_logo,
+      </if>
+      <if test="partnerUrl != null">
+        partner_url,
+      </if>
+      <if test="partnerDesc != null">
+        partner_desc,
+      </if>
+        crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="partnerName != null">
+        #{partnerName,jdbcType=VARCHAR},
+      </if>
+      <if test="partnerLogo != null">
+        #{partnerLogo,jdbcType=VARCHAR},
+      </if>
+      <if test="partnerUrl != null">
+        #{partnerUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="partnerDesc != null">
+        #{partnerDesc,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <!-- 编辑合作商信息 -->
+  <update id="updateOfficialPartnerInfo" parameterType="java.util.Map">
+    update zx_app_official_partner
+    <set>
+      <if test="partnerName != null and partnerName != ''">
+        partner_name = #{partnerName,jdbcType=VARCHAR},
+      </if>
+      <if test="partnerLogo != null and partnerLogo != ''">
+        partner_logo = #{partnerLogo,jdbcType=VARCHAR},
+      </if>
+      <if test="partnerUrl != null and partnerUrl != ''">
+        partner_url = #{partnerUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="partnerDesc != null">
+        partner_desc = #{partnerDesc,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

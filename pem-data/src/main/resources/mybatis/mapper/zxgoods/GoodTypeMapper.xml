@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="GoodsTypeMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="goods_type_name" jdbcType="VARCHAR" property="goodsTypeName" />
+    <result column="goods_type_desc" jdbcType="VARCHAR" property="goodsTypeDesc" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_user_name" jdbcType="VARCHAR" property="crtUserName" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, goods_type_name, goods_type_desc, crt_user_id, crt_user_name, crt_time
+  </sql>
+  <!-- 查询商品类别列表 -->
+  <select id="queryGoodsTypeList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM zx_app_goods_type
+    <where>
+      <if test="goodsTypeName != null and goodsTypeName != ''">
+        goods_type_name LIKE concat('%',#{goodsTypeName},'%')
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+    ORDER BY crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 商品类别列表统计 -->
+  <select id="queryGoodsTypeCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+        COUNT(1)
+    FROM zx_app_goods_type
+    <where>
+      <if test="goodsTypeName != null and goodsTypeName != ''">
+        goods_type_name LIKE concat('%',#{goodsTypeName},'%')
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+  </select>
+
+  <!-- 查询商品类别详情 -->
+  <select id="queryGoodsTypeDetail" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM zx_app_goods_type
+    WHERE id = #{id}
+  </select>
+
+  <!-- 删除商品类别 -->
+  <delete id="delGoodsTypeInfo" parameterType="java.util.Map">
+    delete from zx_app_goods_type
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <!-- 新增商品类别 -->
+  <insert id="saveGoodsTypeInfo" parameterType="java.util.Map">
+    insert into zx_app_goods_type
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="goodsTypeName != null">
+        goods_type_name,
+      </if>
+      <if test="goodsTypeDesc != null">
+        goods_type_desc,
+      </if>
+      <if test="crtUserId != null">
+        crt_user_id,
+      </if>
+      <if test="crtUserName != null">
+        crt_user_name,
+      </if>
+        crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="goodsTypeName != null">
+        #{goodsTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsTypeDesc != null">
+        #{goodsTypeDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="crtUserId != null">
+        #{crtUserId,jdbcType=BIGINT},
+      </if>
+      <if test="crtUserName != null">
+        #{crtUserName,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <!-- 编辑商品类别 -->
+  <update id="updateGoodsTypeInfo" parameterType="java.util.Map">
+    update zx_app_goods_type
+    <set>
+      <if test="goodsTypeName != null">
+        goods_type_name = #{goodsTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsTypeDesc != null">
+        goods_type_desc = #{goodsTypeDesc,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OrderInfoMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="send_goods_account" jdbcType="VARCHAR" property="sendGoodsAccount" />
+    <result column="consig_goods_account" jdbcType="VARCHAR" property="consigGoodsAccount" />
+    <result column="consig_name" jdbcType="VARCHAR" property="consigName" />
+    <result column="consig_name_phone" jdbcType="VARCHAR" property="consigNamePhone" />
+    <result column="consig_address" jdbcType="VARCHAR" property="consigAddress" />
+    <result column="express_name" jdbcType="VARCHAR" property="expressName" />
+    <result column="express_number" jdbcType="VARCHAR" property="expressNumber" />
+    <result column="order_status" jdbcType="VARCHAR" property="orderStatus" />
+    <result column="order_type" jdbcType="VARCHAR" property="orderType" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, send_goods_account, consig_goods_account, consig_name, consig_name_phone, consig_address, 
+    express_name, express_number, order_status, order_type, crt_time
+  </sql>
+  <!-- 查询订单列表 -->
+  <select id="queryOrderInfoList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM zx_app_order_info
+    <where>
+      <if test="sendGoodsAccount != null and sendGoodsAccount != ''">
+        send_goods_account = #{sendGoodsAccount}
+      </if>
+      <if test="consigGoodsAccount != null and consigGoodsAccount != ''">
+        AND consig_goods_account = #{consigGoodsAccount}
+      </if>
+    </where>
+    ORDER BY crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 查询订单列表统计 -->
+  <select id="queryOrderInfoCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+        COUNT(1)
+    FROM zx_app_order_info
+    <where>
+      <if test="sendGoodsAccount != null and sendGoodsAccount != ''">
+        send_goods_account = #{sendGoodsAccount}
+      </if>
+      <if test="consigGoodsAccount != null and consigGoodsAccount != ''">
+        AND consig_goods_account = #{consigGoodsAccount}
+      </if>
+    </where>
+  </select>
+
+  <!-- 查询订单详情 -->
+  <select id="queryOrderInfoDetail" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zx_app_order_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <!-- 删除订单信息 -->
+  <delete id="delOrderInfoInfo" parameterType="java.util.Map">
+    delete from zx_app_order_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <!-- 新增订单信息 -->
+  <insert id="saveOrderInfoInfo" parameterType="java.util.Map">
+    insert into zx_app_order_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="sendGoodsAccount != null">
+        send_goods_account,
+      </if>
+      <if test="consigGoodsAccount != null">
+        consig_goods_account,
+      </if>
+      <if test="consigName != null">
+        consig_name,
+      </if>
+      <if test="consigNamePhone != null">
+        consig_name_phone,
+      </if>
+      <if test="consigAddress != null">
+        consig_address,
+      </if>
+      <if test="expressName != null">
+        express_name,
+      </if>
+      <if test="expressNumber != null">
+        express_number,
+      </if>
+      <if test="orderStatus != null">
+        order_status,
+      </if>
+      <if test="orderType != null">
+        order_type,
+      </if>
+        crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="sendGoodsAccount != null">
+        #{sendGoodsAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="consigGoodsAccount != null">
+        #{consigGoodsAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="consigName != null">
+        #{consigName,jdbcType=VARCHAR},
+      </if>
+      <if test="consigNamePhone != null">
+        #{consigNamePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="consigAddress != null">
+        #{consigAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="expressName != null">
+        #{expressName,jdbcType=VARCHAR},
+      </if>
+      <if test="expressNumber != null">
+        #{expressNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="orderStatus != null">
+        #{orderStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="orderType != null">
+        #{orderType,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <!-- 编辑订单信息 -->
+  <update id="updateOrderInfoInfo" parameterType="java.util.Map">
+    update zx_app_order_info
+    <set>
+      <if test="sendGoodsAccount != null">
+        send_goods_account = #{sendGoodsAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="consigGoodsAccount != null">
+        consig_goods_account = #{consigGoodsAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="consigName != null">
+        consig_name = #{consigName,jdbcType=VARCHAR},
+      </if>
+      <if test="consigNamePhone != null">
+        consig_name_phone = #{consigNamePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="consigAddress != null">
+        consig_address = #{consigAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="expressName != null">
+        express_name = #{expressName,jdbcType=VARCHAR},
+      </if>
+      <if test="expressNumber != null">
+        express_number = #{expressNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="orderStatus != null">
+        order_status = #{orderStatus,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

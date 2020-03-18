@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ReceivingAddressMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="member_account" jdbcType="VARCHAR" property="memberAccount" />
+    <result column="consig_name" jdbcType="VARCHAR" property="consigName" />
+    <result column="consig_name_phone" jdbcType="VARCHAR" property="consigNamePhone" />
+    <result column="consig_area" jdbcType="VARCHAR" property="consigArea" />
+    <result column="consig_address" jdbcType="VARCHAR" property="consigAddress" />
+    <result column="is_default" jdbcType="VARCHAR" property="isDefault" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, member_account, consig_name, consig_name_phone, consig_area, consig_address, 
+    is_default, crt_time
+  </sql>
+  <!-- 查询收货地址列表 -->
+  <select id="queryReceivingAddressList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from zx_app_receiving_address
+    <where>
+      <if test="memberAccount != null and memberAccount != ''">
+        member_account = #{memberAccount}
+      </if>
+    </where>
+    ORDER BY crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+
+  <!-- 查询收货地址列表 -->
+  <select id="queryReceivingAddressCount" parameterType="java.util.Map" resultType="int">
+    select
+    <include refid="Base_Column_List" />
+    from zx_app_receiving_address
+    <where>
+      <if test="memberAccount != null and memberAccount != ''">
+        member_account = #{memberAccount}
+      </if>
+    </where>
+  </select>
+
+  <!-- 查询收货地址详情 -->
+  <select id="queryReceivingAddressDetail" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zx_app_receiving_address
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <!-- 删除收货地址 -->
+  <delete id="delReceivingAddressInfo" parameterType="java.util.Map">
+    delete from zx_app_receiving_address
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <!-- 新增收货地址 -->
+  <insert id="saveReceivingAddressInfo" parameterType="java.util.Map">
+    insert into zx_app_receiving_address
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+      <if test="consigName != null">
+        consig_name,
+      </if>
+      <if test="consigNamePhone != null">
+        consig_name_phone,
+      </if>
+      <if test="consigArea != null">
+        consig_area,
+      </if>
+      <if test="consigAddress != null">
+        consig_address,
+      </if>
+      <if test="isDefault != null">
+        is_default,
+      </if>
+        crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="consigName != null">
+        #{consigName,jdbcType=VARCHAR},
+      </if>
+      <if test="consigNamePhone != null">
+        #{consigNamePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="consigArea != null">
+        #{consigArea,jdbcType=VARCHAR},
+      </if>
+      <if test="consigAddress != null">
+        #{consigAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="isDefault != null">
+        #{isDefault,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <!-- 编辑收货地址 -->
+  <update id="updateReceivingAddressInfo" parameterType="java.util.Map">
+    update zx_app_receiving_address
+    <set>
+      <if test="memberAccount != null">
+        member_account = #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="consigName != null">
+        consig_name = #{consigName,jdbcType=VARCHAR},
+      </if>
+      <if test="consigNamePhone != null">
+        consig_name_phone = #{consigNamePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="consigArea != null">
+        consig_area = #{consigArea,jdbcType=VARCHAR},
+      </if>
+      <if test="consigAddress != null">
+        consig_address = #{consigAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="isDefault != null">
+        is_default = #{isDefault,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

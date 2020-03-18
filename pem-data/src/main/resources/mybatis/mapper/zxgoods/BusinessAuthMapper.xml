@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BusinessAuthMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="member_account" jdbcType="VARCHAR" property="memberAccount" />
+    <result column="business_type" jdbcType="VARCHAR" property="businessType" />
+    <result column="business_name" jdbcType="VARCHAR" property="businessName" />
+    <result column="business_license" jdbcType="VARCHAR" property="businessLicense" />
+    <result column="card_num" jdbcType="VARCHAR" property="cardNum" />
+    <result column="leading_cadre" jdbcType="VARCHAR" property="leadingCadre" />
+    <result column="phone_number" jdbcType="VARCHAR" property="phoneNumber" />
+    <result column="card_num_url" jdbcType="VARCHAR" property="cardNumUrl" />
+    <result column="card_num_half_url" jdbcType="VARCHAR" property="cardNumHalfUrl" />
+    <result column="business_license_url" jdbcType="VARCHAR" property="businessLicenseUrl" />
+    <result column="legal_card_num_url" jdbcType="VARCHAR" property="legalCardNumUrl" />
+    <result column="auth_status" jdbcType="VARCHAR" property="authStatus" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+    <result column="audit_opinion" jdbcType="VARCHAR" property="auditOpinion" />
+    <result column="seckill_window" jdbcType="VARCHAR" property="seckillWindow" />
+    <result column="free_window" jdbcType="VARCHAR" property="freeWindow" />
+    <result column="lucky_window" jdbcType="VARCHAR" property="luckyWindow" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, member_account, business_type, business_name, business_license, card_num, leading_cadre, phone_number,
+    card_num_url, card_num_half_url, business_license_url, legal_card_num_url, auth_status, 
+    crt_time,audit_opinion,seckill_window,free_window,lucky_window
+  </sql>
+  <!-- 商家认证列表 -->
+  <select id="queryBusinessAuthList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT
+        <include refid="Base_Column_List" />
+    FROM zx_app_business_auth
+    <where>
+      <if test="businessName != null and businessName != ''">
+        business_name LIKE concat('%',#{businessName},'%')
+      </if>
+      <if test="memberAccount != null and memberAccount != ''">
+        AND member_account = #{memberAccount}
+      </if>
+      <if test="authStatus != null and authStatus !=''">
+        AND auth_status = #{authStatus}
+      </if>
+      <if test="businessType != null and businessType !=''">
+        AND business_type = #{businessType}
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+    ORDER BY crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 商家认证列表 -->
+  <select id="queryBusinessAuthCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+        COUNT(1)
+    FROM zx_app_business_auth
+    <where>
+      <if test="businessName != null and businessName != ''">
+        business_name LIKE concat('%',#{businessName},'%')
+      </if>
+      <if test="memberAccount != null and memberAccount != ''">
+        AND member_account = #{memberAccount}
+      </if>
+      <if test="authStatus != null and authStatus !=''">
+        AND auth_status = #{authStatus}
+      </if>
+      <if test="businessType != null and businessType !=''">
+        AND business_type = #{businessType}
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+  </select>
+  <!-- 商家认证列表 -->
+  <select id="queryBusinessAuthDetail" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM zx_app_business_auth
+    <where>
+      id = #{id}
+    </where>
+  </select>
+  <!-- 删除商家认证 -->
+  <delete id="delBusinessAuthInfo" parameterType="java.util.Map">
+    delete from zx_app_business_auth
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <!-- 商家认证新增 -->
+  <insert id="saveBusinessInfo" parameterType="java.util.Map">
+    insert into zx_app_business_auth
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+      <if test="businessType != null">
+        business_type,
+      </if>
+      <if test="businessName != null">
+        business_name,
+      </if>
+      <if test="businessLicense != null">
+        business_license,
+      </if>
+      <if test="cardNum != null">
+        card_num,
+      </if>
+      <if test="leadingCadre != null">
+        leading_cadre,
+      </if>
+      <if test="phoneNumber != null">
+        phone_number,
+      </if>
+      <if test="cardNumUrl != null">
+        card_num_url,
+      </if>
+      <if test="cardNumHalfUrl != null">
+        card_num_half_url,
+      </if>
+      <if test="businessLicenseUrl != null">
+        business_license_url,
+      </if>
+      <if test="legalCardNumUrl != null">
+        legal_card_num_url,
+      </if>
+      <if test="authStatus != null">
+        auth_status,
+      </if>
+        crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="businessType != null">
+        #{businessType,jdbcType=VARCHAR},
+      </if>
+      <if test="businessName != null">
+        #{businessName,jdbcType=VARCHAR},
+      </if>
+      <if test="businessLicense != null">
+        #{businessLicense,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNum != null">
+        #{cardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="leadingCadre != null">
+        #{leadingCadre,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNumber != null">
+        #{phoneNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNumUrl != null">
+        #{cardNumUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNumHalfUrl != null">
+        #{cardNumHalfUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="businessLicenseUrl != null">
+        #{businessLicenseUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="legalCardNumUrl != null">
+        #{legalCardNumUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="authStatus != null">
+        #{authStatus,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <!-- 商家认证编辑 -->
+  <update id="updateBusinessAuthInfo" parameterType="java.util.Map">
+    update zx_app_business_auth
+    <set>
+      <if test="businessType != null">
+        business_type = #{businessType,jdbcType=VARCHAR},
+      </if>
+      <if test="businessName != null">
+        business_name = #{businessName,jdbcType=VARCHAR},
+      </if>
+      <if test="businessLicense != null">
+        business_license = #{businessLicense,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNum != null">
+        card_num = #{cardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="leadingCadre != null">
+        leading_cadre = #{leadingCadre,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNumber != null">
+        phone_number = #{phoneNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNumUrl != null">
+        card_num_url = #{cardNumUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNumHalfUrl != null">
+        card_num_half_url = #{cardNumHalfUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="businessLicenseUrl != null">
+        business_license_url = #{businessLicenseUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="legalCardNumUrl != null">
+        legal_card_num_url = #{legalCardNumUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="authStatus != null">
+        auth_status = #{authStatus,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <!-- 商家认证审核 -->
+  <update id="authBusinessInfo" parameterType="java.util.Map">
+    update zx_app_business_auth
+    <set>
+      <if test="authStatus != null">
+        auth_status = #{authStatus,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
