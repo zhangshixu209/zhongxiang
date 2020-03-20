@@ -72,4 +72,15 @@ public interface IZxBusinessAuthService {
 	 * @return
 	 */
 	void queryBusinessAuthList(InputDTO input, OutputDTO output) throws NzbServiceException;
+
+	/**
+	 * 商家认证开通发布窗口
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 * @return
+	 */
+	void openReleaseWindow(InputDTO input, OutputDTO output) throws NzbServiceException;
+
 }

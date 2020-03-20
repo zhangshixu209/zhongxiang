@@ -91,4 +91,30 @@ public class ZxReceivingAddressController extends BaseController {
         outputDTO = getOutputDTO(params, "zxReceivingAddressService", "delReceivingAddressInfo");
         return outputDTO;
     }
+
+    /**
+     * 校验默认收货地址
+     * @param zxReceivingAddressForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/checkAddressIsDefault")
+    public OutputDTO checkAddressIsDefault(@ModelAttribute ZxReceivingAddressForm zxReceivingAddressForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxReceivingAddressForm);
+        outputDTO = getOutputDTO(params, "zxReceivingAddressService", "checkAddressIsDefault");
+        return outputDTO;
+    }
+
+    /**
+     * 校验默认收货地址
+     * @param zxReceivingAddressForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/setDefaultAddress")
+    public OutputDTO setDefaultAddress(@ModelAttribute ZxReceivingAddressForm zxReceivingAddressForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxReceivingAddressForm);
+        outputDTO = getOutputDTO(params, "zxReceivingAddressService", "setDefaultAddress");
+        return outputDTO;
+    }
 }

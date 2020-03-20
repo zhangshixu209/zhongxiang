@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="IntegralMoneyInfoMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="integral_info_id" jdbcType="BIGINT" property="integralInfoId" />
+    <result column="integral_info_user_id" jdbcType="VARCHAR" property="integralInfoUserId" />
+    <result column="integral_info_from" jdbcType="VARCHAR" property="integralInfoFrom" />
+    <result column="integral_info_add_or_minus" jdbcType="VARCHAR" property="integralInfoAddOrMinus" />
+    <result column="integral_info_money" jdbcType="DECIMAL" property="integralInfoMoney" />
+    <result column="integral_info_date" jdbcType="TIMESTAMP" property="integralInfoDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    integral_info_id, integral_info_user_id, integral_info_from, integral_info_add_or_minus, 
+    integral_info_money, integral_info_date
+  </sql>
+  <!-- 查询积分明细列表 -->
+  <select id="queryIntegralMoneyList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zx_app_integral_money_info
+    <where>
+      integral_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(advertising_info_date,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+    </where>
+    ORDER BY integral_info_date DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 查询积分明细列表 -->
+  <select id="queryIntegralMoneyCount" parameterType="java.util.Map" resultType="int">
+    select
+        COUNT(1)
+    from zx_app_integral_money_info
+    <where>
+      integral_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(advertising_info_date,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.util.Map">
+    delete from zx_app_integral_money_info
+    where integral_info_id = #{integralInfoId,jdbcType=BIGINT}
+  </delete>
+  <!-- 新增积分信息 -->
+  <insert id="saveIntegralMoneyInfo" parameterType="java.util.Map">
+    insert into zx_app_integral_money_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="integralInfoId != null">
+        integral_info_id,
+      </if>
+      <if test="integralInfoUserId != null">
+        integral_info_user_id,
+      </if>
+      <if test="integralInfoFrom != null">
+        integral_info_from,
+      </if>
+      <if test="integralInfoAddOrMinus != null">
+        integral_info_add_or_minus,
+      </if>
+      <if test="integralInfoMoney != null">
+        integral_info_money,
+      </if>
+        integral_info_date,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="integralInfoId != null">
+        #{integralInfoId,jdbcType=BIGINT},
+      </if>
+      <if test="integralInfoUserId != null">
+        #{integralInfoUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="integralInfoFrom != null">
+        #{integralInfoFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="integralInfoAddOrMinus != null">
+        #{integralInfoAddOrMinus,jdbcType=VARCHAR},
+      </if>
+      <if test="integralInfoMoney != null">
+        #{integralInfoMoney,jdbcType=DECIMAL},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
+    update zx_app_integral_money_info
+    <set>
+      <if test="integralInfoUserId != null">
+        integral_info_user_id = #{integralInfoUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="integralInfoFrom != null">
+        integral_info_from = #{integralInfoFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="integralInfoAddOrMinus != null">
+        integral_info_add_or_minus = #{integralInfoAddOrMinus,jdbcType=VARCHAR},
+      </if>
+      <if test="integralInfoMoney != null">
+        integral_info_money = #{integralInfoMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="integralInfoDate != null">
+        integral_info_date = #{integralInfoDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where integral_info_id = #{integralInfoId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="java.util.Map">
+    update zx_app_integral_money_info
+    set integral_info_user_id = #{integralInfoUserId,jdbcType=VARCHAR},
+      integral_info_from = #{integralInfoFrom,jdbcType=VARCHAR},
+      integral_info_add_or_minus = #{integralInfoAddOrMinus,jdbcType=VARCHAR},
+      integral_info_money = #{integralInfoMoney,jdbcType=DECIMAL},
+      integral_info_date = #{integralInfoDate,jdbcType=TIMESTAMP}
+    where integral_info_id = #{integralInfoId,jdbcType=BIGINT}
+  </update>
+</mapper>

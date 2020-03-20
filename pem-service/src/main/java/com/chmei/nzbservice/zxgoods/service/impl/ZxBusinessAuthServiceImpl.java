@@ -108,4 +108,19 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 		input.setMethod("queryBusinessAuthList");
 		getNzbDataService().execute(input, output);
 	}
+
+	/**
+	 * 商家认证开通发布窗口
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void openReleaseWindow(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxBusinessAuthService");
+		input.setMethod("openReleaseWindow");
+		getNzbDataService().execute(input, output);
+	}
 }

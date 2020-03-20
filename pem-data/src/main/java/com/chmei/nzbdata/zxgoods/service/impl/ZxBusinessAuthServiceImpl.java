@@ -175,4 +175,29 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 			LOGGER.error("系统错误", e);
 		}
 	}
+
+	/**
+	 * 开通发布窗口
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void openReleaseWindow(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			int i = getBaseDao().update("BusinessAuthMapper.openReleaseWindow", params);
+			if (i > 0) {
+				output.setCode("0");
+				output.setMsg("开通成功");
+				return;
+			}
+			output.setCode("-1");
+			output.setMsg("开通失败");
+		} catch (Exception e) {
+			LOGGER.error("系统错误", e);
+		}
+	}
 }

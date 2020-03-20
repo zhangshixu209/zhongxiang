@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ZeroSeckillInfoMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="goods_id" jdbcType="BIGINT" property="goodsId" />
+    <result column="buy_member_account" jdbcType="VARCHAR" property="buyMemberAccount" />
+    <result column="lucky_number" jdbcType="VARCHAR" property="luckyNumber" />
+    <result column="lucky_order_number" jdbcType="INTEGER" property="luckyOrderNumber" />
+    <result column="goods_luck_star" jdbcType="VARCHAR" property="goodsLuckStar" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, goods_id, buy_member_account, lucky_number, lucky_order_number, goods_luck_star, 
+    crt_time
+  </sql>
+
+  <!-- 零元秒杀幸运榜列表 -->
+  <select id="queryZeroSeckillInfoList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT
+        <include refid="Base_Column_List"/>
+    FROM
+        zx_app_zero_seckill_info
+    WHERE goods_id = #{goodsId}
+  </select>
+  
+  
+  <!-- 查询是否参与该活动 -->
+  <select id="queryZeroSeckillIsBuy" parameterType="java.util.Map" resultType="int">
+    SELECT
+        COUNT(1)
+    FROM
+        zx_app_zero_seckill_info
+    WHERE goods_id = #{goodsId} AND buy_member_account = #{buyMemberAccount}
+  </select>
+
+  <select id="queryZeroSeckillMaxNum" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT
+        IFNULL(MAX( lucky_order_number ) , 0)AS maxLuckyOrderNumber
+    FROM
+        zx_app_zero_seckill_info
+    WHERE goods_id = #{goodsId}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.util.Map">
+    delete from zx_app_zero_seckill_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="java.util.Map">
+    insert into zx_app_zero_seckill_info (id, goods_id, buy_member_account, 
+      lucky_number, lucky_order_number, goods_luck_star, 
+      crt_time)
+    values (#{id,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT}, #{buyMemberAccount,jdbcType=VARCHAR}, 
+      #{luckyNumber,jdbcType=VARCHAR}, #{luckyOrderNumber,jdbcType=INTEGER}, #{goodsLuckStar,jdbcType=VARCHAR},
+      #{crtTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <insert id="buyGoodsExamineInfo" parameterType="java.util.Map">
+    insert into zx_app_zero_seckill_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="goodsId != null">
+        goods_id,
+      </if>
+      <if test="buyMemberAccount != null">
+        buy_member_account,
+      </if>
+      <if test="luckyNumber != null">
+        lucky_number,
+      </if>
+      <if test="luckyOrderNumber != null">
+        lucky_order_number,
+      </if>
+      <if test="goodsLuckStar != null">
+        goods_luck_star,
+      </if>
+        crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="goodsId != null">
+        #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="buyMemberAccount != null">
+        #{buyMemberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="luckyNumber != null">
+        #{luckyNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="luckyOrderNumber != null">
+        #{luckyOrderNumber,jdbcType=INTEGER},
+      </if>
+      <if test="goodsLuckStar != null">
+        #{goodsLuckStar,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
+    update zx_app_zero_seckill_info
+    <set>
+      <if test="goodsId != null">
+        goods_id = #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="buyMemberAccount != null">
+        buy_member_account = #{buyMemberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="luckyNumber != null">
+        lucky_number = #{luckyNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="luckyOrderNumber != null">
+        lucky_order_number = #{luckyOrderNumber,jdbcType=INTEGER},
+      </if>
+      <if test="goodsLuckStar != null">
+        goods_luck_star = #{goodsLuckStar,jdbcType=VARCHAR},
+      </if>
+      <if test="crtTime != null">
+        crt_time = #{crtTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

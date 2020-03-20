@@ -5,7 +5,7 @@ import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 
 /**
- * 众享商品审核dao接口
+ * 众享商品审核dao接口（零元秒杀）
  * 
  * @author zhangshixu
  * @since 2020年3月17日 10点42分
@@ -62,4 +62,25 @@ public interface IZxGoodsExamineService {
 	 * @return
 	 */
 	void queryGoodsExamineList(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 零元秒杀新增
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 * @return
+	 */
+	void saveGoodsExamineInfo(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 零元秒杀购买
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 * @return
+	 */
+	void buyGoodsExamineInfo(InputDTO input, OutputDTO output) throws NzbDataException;
+
 }

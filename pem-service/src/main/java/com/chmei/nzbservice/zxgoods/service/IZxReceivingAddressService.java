@@ -62,4 +62,25 @@ public interface IZxReceivingAddressService {
 	 * @return
 	 */
 	void queryReceivingAddressList(InputDTO input, OutputDTO output) throws NzbServiceException;
+
+	/**
+	 * 查询收货地址列表
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 * @return
+	 */
+	void checkAddressIsDefault(InputDTO input, OutputDTO output) throws NzbServiceException;
+
+	/**
+	 * 设置默认收货地址
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 * @return
+	 */
+	void setDefaultAddress(InputDTO input, OutputDTO output) throws NzbServiceException;
+
 }

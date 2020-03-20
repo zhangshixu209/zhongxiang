@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8"/>
-    <title>商家认证个人管理</title>
+    <title>零元秒杀管理</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="Content-Type" content="textml; charset=utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
@@ -35,7 +35,7 @@
     <style type="text/css">
         .shhinput{width:45%!important;}
         .shhgrou > label{width: 45%!important;}
-        /*.annexName{padding-left: 27%;}*/
+        .annexName{padding-left: 27%;}
         .file-item{padding-left: 12px;}
         .file-item.file-item-box{padding-left: 0;}
         .file-item-box span{
@@ -73,10 +73,9 @@
             <label class="text-right w100s" >提现用户姓名</label>
             <input type="text" class="howlong" id="cashUserName" name="cashUserName">
         </div>-->
-        <input type="hidden" name="businessType" value="1"/>
         <div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
-            <label class="text-right w100s" >用户账号</label>
-            <input type="text" class="howlong" id="memberAccount" name="memberAccount">
+            <label class="text-right w100s" >发布人账号</label>
+            <input type="text" class="howlong" id="userAccount" name="userAccount">
         </div>
         <div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
             <label class="text-right w100s" >审核类型</label>
@@ -87,14 +86,24 @@
                 <option value="1003">审核不通过</option>
             </select>
         </div>
+        <!--<div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
+            <label class="text-right w100s" >账户类型</label>
+            <select class="howlong" id="accountType" name="accountType">
+                <option value="">请选择</option>
+                <option value="1001">支付宝</option>
+                <option value="1002">微信</option>
+                <option value="1003">银行卡</option>
+            </select>
+        </div>-->
 		<div class="form-group col-xs-6 col-sm-4 col-md-6 newshh">
-				<label class="text-right w80s"  >申请时间</label>
+				<label class="text-right w80s"  >创建时间</label>
 				<input type="text" autocomplete="off"
 							onFocus="WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endTime\')||\'%y-%M-%d\'}'})" id="startTime" name="startTime">
 				<b>-</b>			
 				<input type="text" autocomplete="off"
 							onFocus="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startTime\')}', maxDate:'%y-%M-%d'})"  id="endTime" name="endTime">
 		</div>
+
     </div>
     <div class="row">
         <p class="col-xs-12 pull-right chaxunss">
@@ -109,6 +118,8 @@
         <div class="col-sm-12">
             <p class="pull-right buttonList"  id="buttonList">
                 <button id="audit_btn" class="btn-color btn btn-danger hideBtn btn-xs" mo="">审核</button>
+                <button id="online_btn" class="btn-color btn btn-danger hideBtn btn-xs" mo="">上架</button>
+                <button id="offline_btn" class="btn-color btn btn-danger hideBtn btn-xs" mo="">下架</button>
                 <!--<button id="export_btn" class="btn-color btn btn-danger btn-xs" mo="">导出数据</button>-->
             </p>
         </div>
@@ -123,18 +134,19 @@
 	                        <th class="center">
 	                        	选择
                         	</th>
-	                        <th>账号</th>
-	                        <th>商家类型</th>
-	                        <th>负责人</th>
-	                        <th>身份信息</th>
-	                        <th>联系方式</th>
-	                        <th>零元秒杀窗口</th>
-	                        <th>免费兑换窗口</th>
-	                        <th>幸运购物窗口</th>
-	                        <th>审核状态</th>
-	                        <th>身份证正反照片</th>
-	                        <th>身份证手持照片</th>
-                            <th>申请时间</th>
+	                        <th>发布人</th>
+	                        <th>分享人</th>
+	                        <th>认证信息</th>
+	                        <th>钱包余额</th>
+	                        <th>广告费</th>
+	                        <th>商品详情</th>
+	                        <th>相关链接</th>
+	                        <th>发布数量</th>
+	                        <th>剩余数量</th>
+	                        <th>商品价值</th>
+	                        <th>秒杀总需广告费</th>
+	                        <th>发布日期</th>
+	                        <th>状态</th>
 	                    </tr>
                     </thead>
                     <tbody id="J_tabletpl">
@@ -178,7 +190,7 @@
 <script src="../assets/lib/common.js?v=#scriptversion#"></script>
 <script src="../assets/js/webuploader.js" type="text/javascript" charset="utf-8"></script>
 <script src="../js/common/right_button.js?v=#scriptversion#" type="text/javascript" charset="utf-8"></script>
-<script src="../js/zxgoods/businessAuth.js?v=#scriptversion#"></script>
+<script src="../js/zxgoods/zeroSeckill.js?v=#scriptversion#"></script>
 
 <!--提现审核弹框-->
 <script id="T_auditCashAudit" type="text/x-handlebars-template">
@@ -187,7 +199,7 @@
             <input type="hidden" value="{{id}}" name="id">
             <input type="hidden" value="{{cashAmount}}" name="cashAmount">
             <div class="col-sm-12">
-                <label class="col-sm-3 text-right" for="">用户账号：</label>
+                <label class="col-sm-3 text-right" for="">发布人：</label>
                 <div class="col-sm-8">
                     <div class="clearfix">
                         <label class="col-sm-8 too-long" for="">{{memberAccount}}</label>
@@ -196,37 +208,28 @@
                 <div class="col-sm-8 promport"></div>
             </div>
             <div class="col-sm-12">
-                <label class="col-sm-3 text-right" for="">商家类型：</label>
+                <label class="col-sm-3 text-right" for="">商品详情：</label>
                 <div class="col-sm-8">
                     <div class="clearfix">
-                        <label class="col-sm-8 too-long" for="">{{businessTypeCd businessType}}</label>
+                        <label class="col-sm-8 too-long" for="">{{goodsDesc}}</label>
                     </div>
                 </div>
                 <div class="col-sm-8 promport"></div>
             </div>
             <div class="col-sm-12">
-                <label class="col-sm-3 text-right" for="">负责人：</label>
+                <label class="col-sm-3 text-right" for="">发布数量：</label>
                 <div class="col-sm-8">
                     <div class="clearfix">
-                        <label class="col-sm-8 too-long" for="">{{leadingCadre}}</label>
+                        <label class="col-sm-8 too-long" for="">{{goodsReleaseNum}}</label>
                     </div>
                 </div>
                 <div class="col-sm-8 promport"></div>
             </div>
             <div class="col-sm-12">
-                <label class="col-sm-3 text-right" for="">联系方式：</label>
+                <label class="col-sm-3 text-right" for="">剩余数量：</label>
                 <div class="col-sm-8">
                     <div class="clearfix">
-                        <label class="col-sm-8 too-long" for="">{{phoneNumber}}</label>
-                    </div>
-                </div>
-                <div class="col-sm-8 promport"></div>
-            </div>
-            <div class="col-sm-12">
-                <label class="col-sm-3 text-right" for="">身份信息：</label>
-                <div class="col-sm-8">
-                    <div class="clearfix">
-                        <label class="col-sm-8 too-long" for="">{{cardNum}}</label>
+                        <label class="col-sm-8 too-long" for="">{{goodsSurplusNum}}</label>
                     </div>
                 </div>
                 <div class="col-sm-8 promport"></div>
@@ -247,59 +250,34 @@
         <button class="btn btn-danger ml10 nofloat"  onclick="updateCashAudit('1002');">通过</button>
     </div>
 </script>
-<script id="T_chartDetail" type="text/x-handlebars-template">
-    <div class="popup_outline">
-        <div id="detailWorkOrder" style="padding-top:18px;">
-            <div style="margin-top: 10px;" class="col-sm-12 hr-2">
-                <div class="ndiv annexName file-list">
-                    {{#if fileList}}
-                    {{#each fileList}}
-                    <p class="file-item">
-                        <span class=""><img class="min_img" style="width:380px;height:60%;margin-left: 67px;" src="{{getUrl filePath}}" /></span>
-                    </p>
-                    {{/each}} {{else}}
-                    <div class="col-sm-8">
-                        <div class="clearfix">
-                            <label class="col-sm-8" for="">暂无数据</label>
-                        </div>
-                    </div>
-                    {{/if}}
-                    <div id="outerdiv" style="position:fixed;top:0;left:0;background:rgba(0,0,0,0.7);z-index:2;width:100%;height:100%;display:none;">
-                        　　<div id="innerdiv" style="position:absolute;">
-                        　　　　<img id="bigimg" style="border:5px solid #fff;" src="" />
-                        　　</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</script>
+
 <!-- 查询列表 -->
 <script id="T_tabletpl" type="text/x-handlebars-template">
     {{#if items}} {{#each items}}
     <tr>
         <td class="center">
             <label>
-                <input type="checkbox" class="ace"  data-id="{{id}}" data-auditType="{{authStatus}}"/>
+                <input type="checkbox" class="ace"  data-id="{{id}}" data-auditType="{{goodsStatus}}"/>
                 <span class="lbl"></span>
             </label>
         </td>
         <td>{{memberAccount}}</td>
+        <td>{{shareMemberAccount}}</td>
         <td>{{businessTypeCd businessType}}</td>
-        <td>{{leadingCadre}}</td>
-        <td>{{cardNum}}</td>
-        <td>{{phoneNumber}}</td>
-        <td>{{seckillWindow}}</td>
-        <td>{{freeWindow}}</td>
-        <td>{{luckyWindow}}</td>
-        <td>{{auditTypeCd authStatus}}</td>
-        <td><a href="javascript:;" class="a_blue_click" onclick="queryChatRecord('{{cardNumUrl}}')">查看</a></td>
-        <td><a href="javascript:;" class="a_blue_click" onclick="queryChatRecord('{{cardNumHalfUrl}}')">查看</a></td>
+        <td>{{walletBalance}}</td>
+        <td>{{advertisingFee}}</td>
+        <td>{{goodsDesc}}</td>
+        <td>{{goodsUrl}}</td>
+        <td>{{goodsReleaseNum}}</td>
+        <td>{{goodsSurplusNum}}</td>
+        <td>{{goodsParcelPrice}}</td>
+        <td>{{neededAdFeeTotal}}</td>
         <td>{{crtTime}}</td>
+        <td>{{goodsStatusCd goodsStatus}}</td>
     </tr>
     {{/each}} {{else}}
     <tr>
-        <td colspan="13">无数据</td>
+        <td colspan="14">无数据</td>
     </tr>
     {{/if}}
 </script>

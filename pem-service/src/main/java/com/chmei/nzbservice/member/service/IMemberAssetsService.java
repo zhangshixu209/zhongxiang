@@ -37,6 +37,14 @@ public interface IMemberAssetsService {
     void queryAdvertisingMoneyInfo(InputDTO input, OutputDTO output) throws NzbServiceException;
 
     /**
+     * 查询积分收支明细
+     * @param input 入参
+     * @param output 出参
+     * @throws NzbServiceException 异常信息
+     */
+    void queryIntegralMoneyInfo(InputDTO input, OutputDTO output) throws NzbServiceException;
+
+    /**
      * 查询会员资产通用接口
      * @param input 入参
      * @param output 出参

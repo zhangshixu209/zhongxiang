@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -146,6 +147,67 @@ public class ZxReceivingAddressServiceImpl extends BaseServiceImpl implements IZ
 				output.setItems(list);
 			}
 			output.setTotal(i);
+		} catch (Exception e) {
+			LOGGER.error("系统错误", e);
+		}
+	}
+
+	/**
+	 * 查询是否有默认收货地址
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void checkAddressIsDefault(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			int i = getBaseDao().getTotalCount("ReceivingAddressMapper.checkAddressIsDefault", params);
+			if (i > 0) {
+				output.setCode("0");
+				output.setMsg("查询成功");
+				return;
+			}
+			output.setCode("-1");
+			output.setMsg("请设置默认收货地址！");
+		} catch (Exception e) {
+			LOGGER.error("系统错误", e);
+		}
+	}
+
+	/**
+	 * 收货地址
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public void setDefaultAddress(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			// 查询默认地址
+			Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
+					"ReceivingAddressMapper.queryAddressIsDefault", params);
+			if (null != map) {
+				Map<String, Object> result = new HashMap<>();
+				result.put("id", map.get("id"));
+				result.put("isDefault", 0);
+				getBaseDao().update("ReceivingAddressMapper.updateReceivingAddressInfo", result);
+			}
+			// 设置新的默认地址
+			int i = getBaseDao().update("ReceivingAddressMapper.updateReceivingAddressInfo", params);
+			if (i > 0) {
+				output.setCode("0");
+				output.setMsg("修改成功");
+				return;
+			}
+			output.setCode("-1");
+			output.setMsg("修改失败");
 		} catch (Exception e) {
 			LOGGER.error("系统错误", e);
 		}

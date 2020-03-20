@@ -157,4 +157,17 @@ public class ZxBusinessAuthController extends BaseController {
         outputDTO = getOutputDTO(params, "zxBusinessAuthService", "authBusinessInfo");
         return outputDTO;
     }
+
+    /**
+     * 商家认证开通发布窗口
+     * @param zxBusinessAuthForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/openReleaseWindow")
+    public OutputDTO openReleaseWindow(@ModelAttribute ZxBusinessAuthForm zxBusinessAuthForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxBusinessAuthForm);
+        outputDTO = getOutputDTO(params, "zxBusinessAuthService", "openReleaseWindow");
+        return outputDTO;
+    }
 }

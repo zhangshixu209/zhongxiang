@@ -79,9 +79,31 @@ public class MemberAssetsServiceImpl extends BaseServiceImpl implements IMemberA
     public void queryAdvertisingMoneyInfo(InputDTO input, OutputDTO output) throws NzbDataException {
         Map<String, Object> params = input.getParams();
         try {
-            int total = getBaseDao().getTotalCount("AdvertisingMoneyInfoMapper.queryAdvertisingMoneyInfoCount", params);
+                int total = getBaseDao().getTotalCount("AdvertisingMoneyInfoMapper.queryAdvertisingMoneyInfoCount", params);
             if (total > 0) {
                 List<Map<String, Object>> list = getBaseDao().queryForList("AdvertisingMoneyInfoMapper.queryAdvertisingMoneyInfoList", params);
+                output.setItems(list);
+            }
+            output.setTotal(total);
+        } catch (Exception e) {
+            LOGGER.error("查询失败" + e);
+        }
+    }
+
+    /**
+     * 查询积分收支明细
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbDataException 异常信息
+     */
+    @Override
+    public void queryIntegralMoneyInfo(InputDTO input, OutputDTO output) throws NzbDataException {
+        Map<String, Object> params = input.getParams();
+        try {
+            int total = getBaseDao().getTotalCount("IntegralMoneyInfoMapper.queryIntegralMoneyCount", params);
+            if (total > 0) {
+                List<Map<String, Object>> list = getBaseDao().queryForList("IntegralMoneyInfoMapper.queryIntegralMoneyList", params);
                 output.setItems(list);
             }
             output.setTotal(total);

@@ -65,6 +65,20 @@ public class MemberAssetsServiceImpl extends BaseServiceImpl implements IMemberA
     }
 
     /**
+     * 查询积分收支明细
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbServiceException 异常信息
+     */
+    @Override
+    public void queryIntegralMoneyInfo(InputDTO input, OutputDTO output) throws NzbServiceException {
+        input.setService("memberAssetsService");
+        input.setMethod("queryIntegralMoneyInfo");
+        getNzbDataService().execute(input, output);
+    }
+
+    /**
      * 查询会员资产通用接口
      *
      * @param input  入参
@@ -79,7 +93,7 @@ public class MemberAssetsServiceImpl extends BaseServiceImpl implements IMemberA
             if ("1001".equals(assetsType)) {
                 queryWalletMoneyInfo(input, output);      // 钱包明细
             } else if ("1002".equals(assetsType)) {
-                queryRedPacketMoneyInfo(input, output);   // 红包明细
+                queryIntegralMoneyInfo(input, output);   // 积分明细
             } else {
                 queryAdvertisingMoneyInfo(input, output); // 广告费明细
             }
