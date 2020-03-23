@@ -33,7 +33,7 @@
 		<zookeeper.version>3.4.13</zookeeper.version>
 		<poi.version>3.15</poi.version>
 		<jxl.version>2.6.12</jxl.version>
-		<tika.version>1.7</tika.version>
+		<tika.version>1.22</tika.version>
 		<commons-beanutils.version>1.9.3</commons-beanutils.version>
 		<commons-codec.version>1.11</commons-codec.version>
 		<commons-collections4.version>4.1</commons-collections4.version>
