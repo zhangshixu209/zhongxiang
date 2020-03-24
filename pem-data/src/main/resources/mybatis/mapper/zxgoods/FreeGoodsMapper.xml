@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="GoodsExamineMapper">
+<mapper namespace="FreeGoodsMapper">
   <resultMap id="BaseResultMap" type="java.util.Map">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="member_account" jdbcType="VARCHAR" property="memberAccount" />
@@ -10,29 +10,29 @@
     <result column="goods_url" jdbcType="VARCHAR" property="goodsUrl" />
     <result column="goods_explain_img" jdbcType="VARCHAR" property="goodsExplainImg" />
     <result column="goods_parcel_price" jdbcType="INTEGER" property="goodsParcelPrice" />
-    <result column="partake_number" jdbcType="INTEGER" property="partakeNumber" />
     <result column="needed_ad_fee" jdbcType="INTEGER" property="neededAdFee" />
-    <result column="needed_ad_fee_total" jdbcType="INTEGER" property="neededAdFeeTotal" />
     <result column="goods_release_num" jdbcType="INTEGER" property="goodsReleaseNum" />
     <result column="goods_surplus_num" jdbcType="INTEGER" property="goodsSurplusNum" />
     <result column="goods_type_id" jdbcType="BIGINT" property="goodsTypeId" />
     <result column="goods_status" jdbcType="VARCHAR" property="goodsStatus" />
+    <result column="audit_opinion" jdbcType="VARCHAR" property="auditOpinion" />
     <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
   </resultMap>
   <sql id="Base_Column_List">
     a.id, a.member_account, a.product_cover_url, a.goods_desc, a.is_have_shop, a.goods_url, a.goods_explain_img,
-    a.goods_parcel_price, a.partake_number, a.needed_ad_fee, a.needed_ad_fee_total, a.goods_release_num,
-    a.goods_surplus_num, a.goods_type_id, a.goods_status, a.crt_time
+    a.goods_parcel_price, a.needed_ad_fee, a.goods_release_num, a.goods_surplus_num, a.goods_type_id,
+    a.goods_status, a.audit_opinion, a.crt_time
   </sql>
-  <!-- 查询零元秒杀商品列表 -->
-  <select id="queryGoodsExamineList" parameterType="java.util.Map" resultMap="BaseResultMap">
+
+  <!-- 免费兑换商品列表 -->
+  <select id="queryFreeGoodsList" parameterType="java.lang.Long" resultMap="BaseResultMap">
     SELECT
-        <include refid="Base_Column_List" />,
-        b.wallet_balance AS walletBalance,
-        b.advertising_fee AS advertisingFee,
-        c.member_account AS shareMemberAccount,
-        d.business_type AS businessType
-    FROM zx_app_zero_seckill a
+      <include refid="Base_Column_List" />,
+      b.wallet_balance AS walletBalance,
+      b.advertising_fee AS advertisingFee,
+      c.member_account AS shareMemberAccount,
+      d.business_type AS businessType
+    FROM zx_app_free_goods a
     LEFT JOIN t_member b ON a.member_account = b.member_account
     LEFT JOIN zx_app_my_share_extend c ON a.member_account = c.cover_member_account
     LEFT JOIN zx_app_business_auth d ON a.member_account = d.member_account
@@ -58,41 +58,38 @@
       LIMIT #{start}, #{limit}
     </if>
   </select>
-  <!-- 查询零元秒杀商品统计 -->
-  <select id="queryGoodsExamineCount" parameterType="java.util.Map" resultType="int">
-    select
-        COUNT(1)
-    from zx_app_zero_seckill
+  <!-- 免费兑换列表统计 -->
+  <select id="queryFreeGoodsCount" parameterType="java.lang.Long" resultType="int">
+    SELECT
+      COUNT(1)
+    FROM zx_app_free_goods a
+    LEFT JOIN t_member b ON a.member_account = b.member_account
+    LEFT JOIN zx_app_my_share_extend c ON a.member_account = c.cover_member_account
+    LEFT JOIN zx_app_business_auth d ON a.member_account = d.member_account
     <where>
       <if test="memberAccount != null and memberAccount != ''">
-        member_account = #{memberAccount}
+        a.member_account = #{memberAccount}
       </if>
       <if test="goodsStatus != null and goodsStatus !=''">
-        AND goods_status = #{goodsStatus}
+        AND a.goods_status = #{goodsStatus}
       </if>
       <if test="startTime != null and startTime != ''">
-        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
       </if>
       <if test="endTime != null and endTime != ''">
-        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &lt;= #{endTime}
+        AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &lt;= #{endTime}
       </if>
     </where>
   </select>
-  <!-- 查询零元秒杀商品详情 -->
-  <select id="queryGoodsExamineDetail" parameterType="java.util.Map" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from zx_app_zero_seckill a
-    where a.id = #{id,jdbcType=BIGINT}
-  </select>
 
-  <delete id="deleteByPrimaryKey" parameterType="java.util.Map">
-    delete from zx_app_zero_seckill
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from zx_app_free_goods
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <!-- 新增零元秒杀商品 -->
-  <insert id="saveZeroSeckillInfo" parameterType="java.util.Map">
-    insert into zx_app_zero_seckill
+
+  <!-- 免费兑换商品新增 -->
+  <insert id="saveFreeGoodsInfo" parameterType="java.util.Map">
+    insert into zx_app_free_goods
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
@@ -118,14 +115,8 @@
       <if test="goodsParcelPrice != null">
         goods_parcel_price,
       </if>
-      <if test="partakeNumber != null">
-        partake_number,
-      </if>
       <if test="neededAdFee != null">
         needed_ad_fee,
-      </if>
-      <if test="neededAdFeeTotal != null">
-        needed_ad_fee_total,
       </if>
       <if test="goodsReleaseNum != null">
         goods_release_num,
@@ -138,6 +129,9 @@
       </if>
       <if test="goodsStatus != null">
         goods_status,
+      </if>
+      <if test="auditOpinion != null">
+        audit_opinion,
       </if>
         crt_time,
     </trim>
@@ -166,14 +160,8 @@
       <if test="goodsParcelPrice != null">
         #{goodsParcelPrice,jdbcType=INTEGER},
       </if>
-      <if test="partakeNumber != null">
-        #{partakeNumber,jdbcType=INTEGER},
-      </if>
       <if test="neededAdFee != null">
         #{neededAdFee,jdbcType=INTEGER},
-      </if>
-      <if test="neededAdFeeTotal != null">
-        #{neededAdFeeTotal,jdbcType=INTEGER},
       </if>
       <if test="goodsReleaseNum != null">
         #{goodsReleaseNum,jdbcType=INTEGER},
@@ -187,12 +175,14 @@
       <if test="goodsStatus != null">
         #{goodsStatus,jdbcType=VARCHAR},
       </if>
+      <if test="auditOpinion != null">
+        #{auditOpinion,jdbcType=VARCHAR},
+      </if>
         NOW(),
     </trim>
   </insert>
-  <!-- 修改零元秒杀商品 -->
   <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
-    update zx_app_zero_seckill
+    update zx_app_free_goods
     <set>
       <if test="memberAccount != null">
         member_account = #{memberAccount,jdbcType=VARCHAR},
@@ -215,14 +205,8 @@
       <if test="goodsParcelPrice != null">
         goods_parcel_price = #{goodsParcelPrice,jdbcType=INTEGER},
       </if>
-      <if test="partakeNumber != null">
-        partake_number = #{partakeNumber,jdbcType=INTEGER},
-      </if>
       <if test="neededAdFee != null">
         needed_ad_fee = #{neededAdFee,jdbcType=INTEGER},
-      </if>
-      <if test="neededAdFeeTotal != null">
-        needed_ad_fee_total = #{neededAdFeeTotal,jdbcType=INTEGER},
       </if>
       <if test="goodsReleaseNum != null">
         goods_release_num = #{goodsReleaseNum,jdbcType=INTEGER},
@@ -242,9 +226,28 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <!-- 零元秒杀审核 -->
-  <update id="authGoodsExamineInfo" parameterType="java.util.Map">
-    update zx_app_zero_seckill
+  <!-- 查询零元秒杀商品详情 -->
+  <select id="queryFreeGoodsDetail" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from zx_app_free_goods a
+    where a.id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <!-- 免费兑换更改商品数量 -->
+  <update id="updateFreeGoodsNum" parameterType="java.util.Map">
+    update zx_app_free_goods
+    <set>
+      <if test="goodsSurplusNum != null">
+        goods_surplus_num = #{goodsSurplusNum},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <!-- 修改免费兑换商品审核状态 -->
+  <update id="authFreeGoodsInfo" parameterType="java.util.Map">
+    update zx_app_free_goods
     <set>
       <if test="goodsStatus != null">
         goods_status = #{goodsStatus,jdbcType=VARCHAR},
@@ -256,24 +259,13 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-  <!-- 零元秒杀审核 -->
-  <update id="updateGoodsExamineNum" parameterType="java.util.Map">
-    update zx_app_zero_seckill
-    <set>
-      <if test="goodsSurplusNum != null">
-        goods_surplus_num = #{goodsSurplusNum},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-
-  <!-- 查询我发布的秒杀商品信息 -->
-  <select id="queryMyReleaseGoodsList" parameterType="java.util.Map" resultMap="BaseResultMap">
+  <!-- 免费兑换我的发布 -->
+  <select id="queryMyReleaseGoodsList" parameterType="java.lang.Long" resultMap="BaseResultMap">
     SELECT
         <include refid="Base_Column_List" />,
-        '1001' AS goodsType,
+        '1002' AS goodsType,
         (SELECT COUNT(1) FROM zx_app_order_info b WHERE b.goods_id = a.id AND b.order_status = '1001') AS dReleaseGoods
-    FROM zx_app_zero_seckill a
+    FROM zx_app_free_goods a
     <where>
       <if test="memberAccount != null and memberAccount != ''">
         a.member_account = #{memberAccount}

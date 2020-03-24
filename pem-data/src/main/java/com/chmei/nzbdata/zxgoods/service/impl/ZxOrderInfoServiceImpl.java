@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -146,6 +148,73 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 				output.setItems(list);
 			}
 			output.setTotal(i);
+		} catch (Exception e) {
+			LOGGER.error("系统错误", e);
+		}
+	}
+
+	/**
+	 * 查询我的发布商品列表
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void queryMyReleaseGoodsList(InputDTO input, OutputDTO output) throws NzbDataException {
+		LOGGER.info("ZxMessageServiceImpl.queryMyReleaseGoodsList, input::" + input.getParams().toString());
+		Map<String, Object> params = input.getParams();
+		List<Map<String, Object>> listAll = new ArrayList<>(); // 重新封装红包list
+		try {
+			//   1.1 秒杀商品
+			List<Map<String, Object>> seckillList = getBaseDao().queryForList(
+					"GoodsExamineMapper.queryMyReleaseGoodsList", params);
+			//   1.2 免费兑换
+			List<Map<String, Object>> freeGoodsList = getBaseDao().queryForList(
+					"FreeGoodsMapper.queryMyReleaseGoodsList", params);
+			//   1.3 幸运购物
+			List<Map<String, Object>> luckyGoodsList = getBaseDao().queryForList(
+					"LuckyGoodsMapper.queryMyReleaseGoodsList", params);
+			listAll.addAll(seckillList);
+			listAll.addAll(freeGoodsList);
+			listAll.addAll(luckyGoodsList);
+			// 排序
+			listAll.sort((Map<String, Object> o1, Map<String, Object> o2) -> {
+				long beginMillisecond = ((Date) o1.get("crtTime")).getTime();
+				long endMillisecond = ((Date) o2.get("crtTime")).getTime();
+				if(beginMillisecond > endMillisecond){
+					return -1;
+				}
+				return 1;
+			});
+			output.setItems(listAll);
+			output.setTotal(listAll.size());
+		} catch (Exception e) {
+			LOGGER.error("查询失败: " + e);
+		}
+	}
+
+	/**
+	 * 查询我的发布商品列表
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void queryMyReleaseOrderDetail(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
+					"OrderInfoMapper.queryMyReleaseOrderDetail", params);
+			if (null == map) {
+				output.setCode("-1");
+				output.setMsg("查询失败");
+			}
+			output.setItem(map);
 		} catch (Exception e) {
 			LOGGER.error("系统错误", e);
 		}

@@ -4,6 +4,7 @@ import com.chmei.nzbcommon.cmbean.InputDTO;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
+import com.chmei.nzbdata.util.Constants;
 import com.chmei.nzbdata.util.StringUtil;
 import com.chmei.nzbdata.zxgoods.service.IZxGoodsExamineService;
 import com.chmei.nzbdata.zxgoods.service.IZxGoodsExamineService;
@@ -11,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.sql.DatabaseMetaData;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -213,22 +216,52 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 		try {
 			Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
 					"GoodsExamineMapper.queryGoodsExamineDetail", params);
+			Map<String, Object> user_ = new HashMap<>();
+			user_.put("memberAccount", params.get("memberAccount"));
+			Map<String, Object> item = (Map<String, Object>) getBaseDao().
+					queryForObject("MemberMapper.queryMemberDetail", user_);
+			// 判断广告费余额是否充足:
+			String advertisingMoney = (String) item.get("advertisingFee");
+			if(Double.valueOf(advertisingMoney) < Double.valueOf(map.get("neededAdFee")+"")){
+				output.setCode("-1");
+				output.setMsg("广告费不足!");
+				return;
+			}
 			int goodsSurplusNum = (int) map.get("goodsSurplusNum"); // 商品剩余数量
 			if (goodsSurplusNum > 0) {
-				Map<String, Object> zeroDetail = (Map<String, Object>) getBaseDao().queryForObject(
+				int maxLuckyOrderNumber = getBaseDao().getTotalCount(
 						"ZeroSeckillInfoMapper.queryZeroSeckillMaxNum", params);
-				int maxLuckyOrderNumber = (int) zeroDetail.get("maxLuckyOrderNumber");
-				params.put("id", getSequence());
-				params.put("luckyOrderNumber", (maxLuckyOrderNumber + 1));
-				int i = getBaseDao().insert("GoodsExamineMapper.buyGoodsExamineInfo", params);
+				Map<String, Object> goods = new HashMap<>();
+				goods.put("id", getSequence());
+				goods.put("luckyOrderNumber", (maxLuckyOrderNumber + 1));
+				goods.put("goodsId", map.get("id"));
+				goods.put("buyMemberAccount", params.get("memberAccount"));
+				goods.put("luckyNumber", params.get("luckyNumber"));
+				int i = getBaseDao().insert("ZeroSeckillInfoMapper.buyGoodsExamineInfo", goods);
 				if (i > 0) {
 					Map<String, Object> map_ = new HashMap<>();
-					map_.put("id", params.get("goodsId")); // 商品ID
+					map_.put("id", params.get("id")); // 商品ID
 					map_.put("goodsSurplusNum", goodsSurplusNum - 1); // 商品剩余数量-1
-					getBaseDao().update("GoodsExamineMapper.updateGoodsExamineNum", params);
-
-					// TODO========
-
+					int j = getBaseDao().update("GoodsExamineMapper.updateGoodsExamineNum", map_);
+					if (j > 0) {
+						// 扣除当前人广告费金额
+						Map<String, Object> user = new HashMap<>();
+						user.put("memberAccount", params.get("memberAccount"));
+						user.put("advertisingFee", Double.valueOf(advertisingMoney) - Double.valueOf(map.get("neededAdFee")+""));
+						int k = getBaseDao().update("MemberMapper.updateMemberBalance", user);
+						if(k > 0) {
+							// 记录广告费扣款记录:
+							Map<String, Object> adRecord = new HashMap<>();
+							adRecord.put("advertisingInfoId", getSequence());
+							adRecord.put("advertisingInfoAddOrMinus", "-");
+							adRecord.put("advertisingInfoUserId", params.get("memberAccount"));
+							adRecord.put("advertisingInfoMoney", Double.valueOf(map.get("neededAdFee")+""));
+							adRecord.put("advertisingInfoFrom", "秒杀商品");
+							getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
+						}
+					}
+					// 创建订单信息
+					creatOrderInfo(map_);
 					output.setCode("0");
 					output.setMsg("秒杀成功！");
 					return;
@@ -254,7 +287,55 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 	private int creatOrderInfo(Map<String, Object> map){
 		Map<String, Object> result = (Map<String, Object>) getBaseDao().queryForObject(
 				"GoodsExamineMapper.queryGoodsExamineDetail", map);
-		int goodsSurplusNum = (int) map.get("goodsSurplusNum"); // 商品剩余数量
+		int goodsSurplusNum = (int) result.get("goodsSurplusNum"); // 商品剩余数量
+		Map<String, Object> map_ = new HashMap<>();
+		map_.put("goodsId", map.get("id"));
+		if(goodsSurplusNum == 0) {
+			Map<String, Object> maps = new HashMap<>();
+			maps.put("id", map.get("id"));
+			maps.put("goodsStatus", "1006"); // 商品结束
+			getBaseDao().update("GoodsExamineMapper.authGoodsExamineInfo", maps); // 更新商品状态为已结束
+			LOGGER.info("=============订单开始创建==============");
+			// 计算幸运序号
+			Map<String, Object> list = (Map<String, Object>) getBaseDao().queryForObject(
+					"ZeroSeckillInfoMapper.querySumGoodsLuckStar", map_);
+			BigDecimal orderNum = (BigDecimal) list.get("orderNum");
+			Long peopleTotal = (Long) list.get("peopleTotal");
+			Map<String, Object> luckys = new HashMap<>();
+			int luckyMan = orderNum.intValue() / peopleTotal.intValue();
+			if (luckyMan <= 0) {
+				Map<String, Object> list_ = (Map<String, Object>) getBaseDao().queryForList("ZeroSeckillInfoMapper.queryZeroSeckillInfoList", map_);
+				luckyMan = (int) list_.get("luckyOrderNumber");
+			}
+			luckys.put("luckyMan", luckyMan); // 幸运者
+			luckys.put("goodsId", result.get("id")); // 商品ID
+			Map<String, Object> lucky = (Map<String, Object>) getBaseDao().queryForObject(
+					"ZeroSeckillInfoMapper.queryZeroSeckillInfoDetail", luckys);
+			lucky.put("goodsLuckStar", 1); // 幸运标识
+			// 更新幸运者
+			int i = getBaseDao().update("ZeroSeckillInfoMapper.updateGoodsLuckStar", lucky);
+			if (i > 0) {
+				luckys.put("memberAccount", lucky.get("buyMemberAccount"));
+				// 查询默认收货地址
+				Map<String, Object> address = (Map<String, Object>) getBaseDao().queryForObject(
+						"ReceivingAddressMapper.queryAddressIsDefault", luckys);
+				// 创建订单信息
+				Map<String, Object> orderInfo = new HashMap<>();
+				orderInfo.put("id", getSequence());
+				orderInfo.put("sendGoodsAccount", result.get("memberAccount"));
+				orderInfo.put("consigGoodsAccount", address.get("memberAccount"));
+				orderInfo.put("consigName", address.get("consigName"));
+				orderInfo.put("consigNamePhone", address.get("consigNamePhone"));
+				orderInfo.put("consigArea", address.get("consigArea"));
+				orderInfo.put("consigAddress", address.get("consigAddress"));
+				orderInfo.put("orderStatus", "1001");      // 待发货
+				orderInfo.put("orderType", "1001");        // 零元秒杀
+				orderInfo.put("goodsId", map.get("id"));   // 商品ID
+				getBaseDao().insert("OrderInfoMapper.saveOrderInfoInfo", orderInfo);
+				LOGGER.info("=============订单创建成功==============");
+				return 1;
+			}
+		}
 		return 0;
 	}
 }

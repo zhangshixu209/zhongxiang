@@ -91,4 +91,31 @@ public class ZxOrderInfoController extends BaseController {
         outputDTO = getOutputDTO(params, "zxOrderInfoService", "delOrderInfoInfo");
         return outputDTO;
     }
+
+    /**
+     * 查询我发布的商品列表
+     * @param zxOrderInfoForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/queryMyReleaseGoodsList")
+    public OutputDTO queryMyReleaseGoodsList(@ModelAttribute ZxOrderInfoForm zxOrderInfoForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxOrderInfoForm);
+        outputDTO = getOutputDTO(params, "zxOrderInfoService", "queryMyReleaseGoodsList");
+        return outputDTO;
+    }
+
+    /**
+     * 查询我发布的订单详情
+     * @param zxOrderInfoForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/queryMyReleaseOrderDetail")
+    public OutputDTO queryMyReleaseOrderDetail(@ModelAttribute ZxOrderInfoForm zxOrderInfoForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxOrderInfoForm);
+        outputDTO = getOutputDTO(params, "zxOrderInfoService", "queryMyReleaseOrderDetail");
+        return outputDTO;
+    }
+
 }

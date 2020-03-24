@@ -371,7 +371,7 @@ function uploaderInit(picker) {
 		// 只允许选择图片、word、txt、excel类型文件。
 		accept: {
 			title: 'Images',
-			extensions: 'png,jpg,jpeg',
+			extensions: 'png,jpg,jpeg,gif',
 			mimeTypes: '' // 'image/*'
 		},
 		// 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！

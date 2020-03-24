@@ -130,7 +130,7 @@
     SELECT COUNT(1) FROM zx_app_receiving_address WHERE member_account = #{memberAccount} AND is_default = 1
   </select>
   <!-- 查询默认地址 -->
-  <select id="queryAddressIsDefault" parameterType="java.util.Map" resultType="java.util.Map">
+  <select id="queryAddressIsDefault" parameterType="java.util.Map" resultMap="BaseResultMap">
     SELECT <include refid="Base_Column_List" /> FROM zx_app_receiving_address WHERE member_account = #{memberAccount} AND is_default = 1
   </select>
 

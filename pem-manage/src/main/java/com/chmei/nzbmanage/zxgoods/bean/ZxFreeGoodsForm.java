@@ -5,12 +5,12 @@ import com.chmei.nzbmanage.common.controller.BaseForm;
 import java.util.Date;
 
 /**
- * 零元秒杀管理Form
+ * 免费兑换管理Form
  *
  * @author zhangshixu
  * @since 2019年10月21日 16点52分
  */
-public class ZxGoodsExamineForm extends BaseForm {
+public class ZxFreeGoodsForm extends BaseForm {
 	/**
 	 * 主键ID
 	 */
@@ -52,19 +52,9 @@ public class ZxGoodsExamineForm extends BaseForm {
 	private Integer goodsParcelPrice;
 
 	/**
-	 * 所需参与总人数
-	 */
-	private Integer partakeNumber;
-
-	/**
 	 * 个人所需广告费
 	 */
 	private Integer neededAdFee;
-
-	/**
-	 * 总共所需广告费
-	 */
-	private Integer neededAdFeeTotal;
 
 	/**
 	 * 商品发布数量
@@ -90,11 +80,6 @@ public class ZxGoodsExamineForm extends BaseForm {
 	 * 创建时间
 	 */
 	private Date crtTime;
-
-	/**
-	 * 幸运数字
-	 */
-	private Integer luckyNumber;
 
 	private static final long serialVersionUID = 1L;
 
@@ -162,28 +147,12 @@ public class ZxGoodsExamineForm extends BaseForm {
 		this.goodsParcelPrice = goodsParcelPrice;
 	}
 
-	public Integer getPartakeNumber() {
-		return partakeNumber;
-	}
-
-	public void setPartakeNumber(Integer partakeNumber) {
-		this.partakeNumber = partakeNumber;
-	}
-
 	public Integer getNeededAdFee() {
 		return neededAdFee;
 	}
 
 	public void setNeededAdFee(Integer neededAdFee) {
 		this.neededAdFee = neededAdFee;
-	}
-
-	public Integer getNeededAdFeeTotal() {
-		return neededAdFeeTotal;
-	}
-
-	public void setNeededAdFeeTotal(Integer neededAdFeeTotal) {
-		this.neededAdFeeTotal = neededAdFeeTotal;
 	}
 
 	public Integer getGoodsReleaseNum() {
@@ -224,13 +193,5 @@ public class ZxGoodsExamineForm extends BaseForm {
 
 	public void setCrtTime(Date crtTime) {
 		this.crtTime = crtTime;
-	}
-
-	public Integer getLuckyNumber() {
-		return luckyNumber;
-	}
-
-	public void setLuckyNumber(Integer luckyNumber) {
-		this.luckyNumber = luckyNumber;
 	}
 }

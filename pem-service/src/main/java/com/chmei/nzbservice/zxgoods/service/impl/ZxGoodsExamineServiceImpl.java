@@ -92,4 +92,34 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 		input.setMethod("queryGoodsExamineList");
 		getNzbDataService().execute(input, output);
 	}
+
+	/**
+	 * 零元秒杀商品新增
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void saveGoodsExamineInfo(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxGoodsExamineService");
+		input.setMethod("saveGoodsExamineInfo");
+		getNzbDataService().execute(input, output);
+	}
+
+	/**
+	 * 零元秒杀商品购买
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void buyGoodsExamineInfo(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxGoodsExamineService");
+		input.setMethod("buyGoodsExamineInfo");
+		getNzbDataService().execute(input, output);
+	}
 }

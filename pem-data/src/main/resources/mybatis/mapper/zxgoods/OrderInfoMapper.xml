@@ -12,11 +12,12 @@
     <result column="express_number" jdbcType="VARCHAR" property="expressNumber" />
     <result column="order_status" jdbcType="VARCHAR" property="orderStatus" />
     <result column="order_type" jdbcType="VARCHAR" property="orderType" />
+    <result column="goods_id" jdbcType="BIGINT" property="goodsId" />
     <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
   </resultMap>
   <sql id="Base_Column_List">
     id, send_goods_account, consig_goods_account, consig_name, consig_name_phone, consig_address, 
-    express_name, express_number, order_status, order_type, crt_time
+    express_name, express_number, order_status, order_type, goods_id, crt_time
   </sql>
   <!-- 查询订单列表 -->
   <select id="queryOrderInfoList" parameterType="java.util.Map" resultMap="BaseResultMap">
@@ -24,8 +25,14 @@
     <include refid="Base_Column_List" />
     FROM zx_app_order_info
     <where>
+      <if test="id != null and id != ''">
+        id = #{id}
+      </if>
+      <if test="goodsId != null and goodsId != ''">
+        AND goods_id = #{goodsId}
+      </if>
       <if test="sendGoodsAccount != null and sendGoodsAccount != ''">
-        send_goods_account = #{sendGoodsAccount}
+        AND send_goods_account = #{sendGoodsAccount}
       </if>
       <if test="consigGoodsAccount != null and consigGoodsAccount != ''">
         AND consig_goods_account = #{consigGoodsAccount}
@@ -98,6 +105,9 @@
       <if test="orderType != null">
         order_type,
       </if>
+      <if test="goodsId != null">
+        goods_id,
+      </if>
         crt_time,
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -130,6 +140,9 @@
       </if>
       <if test="orderType != null">
         #{orderType,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsId != null">
+        #{goodsId,jdbcType=BIGINT},
       </if>
         NOW(),
     </trim>
@@ -165,5 +178,31 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <!-- 查询我的发布订单详情 -->
+  <select id="queryMyReleaseOrderDetail" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        a.id AS id,
+        a.send_goods_account AS sendGoodsAccount,
+        a.consig_goods_account AS consigGoodsAccount,
+        a.consig_name AS consigName,
+        a.consig_name_phone AS consigNamePhone,
+        a.consig_address AS consigAddress,
+        a.express_name AS expressName,
+        a.express_number AS expressNumber,
+        a.order_status AS orderStatus,
+        a.order_type AS orderType,
+        a.goods_id AS goodsId,
+        a.crt_time AS crtTime,
+        IFNULL( b.nickname, b.member_account ) AS nickname,
+        b.member_account AS memberAccount,
+        IFNULL( b.head_img_url, '' ) AS headImgUrl
+    FROM
+        zx_app_order_info AS a
+	LEFT JOIN t_member AS b ON a.consig_goods_account = b.member_account
+	<where>
+      a.id = #{id}
+    </where>
+  </select>
 
 </mapper>

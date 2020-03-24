@@ -118,5 +118,16 @@ public class ZxZeroSeckillController extends BaseController {
         return outputDTO;
     }
 
-
+    /**
+     * 零元秒杀购买
+     * @param zxGoodsExamineForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/buyGoodsExamineInfo")
+    public OutputDTO buyGoodsExamineInfo(@ModelAttribute ZxGoodsExamineForm zxGoodsExamineForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxGoodsExamineForm);
+        outputDTO = getOutputDTO(params, "zxGoodsExamineService", "buyGoodsExamineInfo");
+        return outputDTO;
+    }
 }

@@ -240,13 +240,13 @@
   <update id="openReleaseWindow" parameterType="java.util.Map">
     update zx_app_business_auth
     <set>
-      <if test="seckillWindow != null and seckillWindow != ''">
+      <if test="seckillWindow != null and seckillWindow != '' or seckillWindow == 0">
         seckill_window = #{seckillWindow,jdbcType=VARCHAR},
       </if>
-      <if test="freeWindow != null and freeWindow != ''">
+      <if test="freeWindow != null and freeWindow != '' or freeWindow == 0">
         free_window = #{freeWindow,jdbcType=VARCHAR},
       </if>
-      <if test="luckyWindow != null and luckyWindow != ''">
+      <if test="luckyWindow != null and luckyWindow != '' or luckyWindow == 0">
         lucky_window = #{luckyWindow,jdbcType=VARCHAR},
       </if>
     </set>

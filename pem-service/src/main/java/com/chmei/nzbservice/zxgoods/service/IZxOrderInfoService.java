@@ -62,4 +62,24 @@ public interface IZxOrderInfoService {
 	 * @return
 	 */
 	void queryOrderInfoList(InputDTO input, OutputDTO output) throws NzbServiceException;
+
+	/**
+	 * 查询我的发布商品列表
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 * @return
+	 */
+	void queryMyReleaseGoodsList(InputDTO input, OutputDTO output) throws NzbServiceException;
+
+	/**
+	 * 查询我的发布商品列表
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbServiceException 自定义异常
+	 * @return
+	 */
+	void queryMyReleaseOrderDetail(InputDTO input, OutputDTO output) throws NzbServiceException;
 }
