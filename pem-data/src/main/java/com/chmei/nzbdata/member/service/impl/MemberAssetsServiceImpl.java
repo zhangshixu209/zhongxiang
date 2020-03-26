@@ -137,10 +137,11 @@ public class MemberAssetsServiceImpl extends BaseServiceImpl implements IMemberA
                 // map.put("walletAmount", Double.valueOf(walletAmount) + allPackets); // 未抢完红包
                 map.put("allPackets", allPackets);
 
-                Double balance = Double.valueOf(map.get("walletAmount")+"") + Double.valueOf(map.get("activateMoney")+"") +
+                double balance = Double.valueOf(map.get("walletAmount")+"") + Double.valueOf(map.get("activateMoney")+"") +
                         Double.valueOf(map.get("applyMoney")+"") +Double.valueOf(map.get("groupMoney")+"") +
                         Double.valueOf(map.get("relReflectMoney")+"") + Double.valueOf(map.get("txsxMoney")+"") +
-                        Double.valueOf(map.get("reflectMoney")+"") + allPackets;
+                        Double.valueOf(map.get("reflectMoney")+"") + allPackets + Double.valueOf(map.get("systemMoney")+"") +
+                        Double.valueOf(map.get("seckillMoney")+"");
                 balance = balance - Double.valueOf(map.get("totalMoney")+"");
                 if (balance == 0) {
                     map.put("type", "平衡");

@@ -4,12 +4,14 @@ import com.chmei.nzbcommon.cmbean.InputDTO;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
+import com.chmei.nzbdata.util.StringUtil;
 import com.chmei.nzbdata.zxgoods.service.IZxLuckyGoodsService;
 import com.chmei.nzbdata.zxgoods.service.IZxLuckyGoodsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,7 @@ public class ZxLuckyGoodsServiceImpl extends BaseServiceImpl implements IZxLucky
 		Map<String, Object> params = input.getParams();
 		try {
 			params.put("id", getSequence()); // 主键ID
+			params.put("goodsStatus", "1001");
 			int i = getBaseDao().insert("LuckyGoodsMapper.saveLuckyGoodsInfo", params);
 			if (i > 0) {
 				output.setCode("0");
@@ -66,7 +69,7 @@ public class ZxLuckyGoodsServiceImpl extends BaseServiceImpl implements IZxLucky
 	public void updateLuckyGoodsInfo(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
-			int i = getBaseDao().update("LuckyGoodsMapper.updateLuckyGoodsInfo", params);
+			int i = getBaseDao().update("LuckyGoodsMapper.authLuckyGoodsInfo", params);
 			if (i > 0) {
 				output.setCode("0");
 				output.setMsg("修改成功");
@@ -173,7 +176,6 @@ public class ZxLuckyGoodsServiceImpl extends BaseServiceImpl implements IZxLucky
 					queryForObject("MemberMapper.queryMemberDetail", user_);
 			// 判断钱包余额是否充足:
 			String walletBalance = (String) item.get("walletBalance");
-			String integralMoney = (String) item.get("integralMoney"); // 积分
 			if(Double.valueOf(walletBalance) < Double.valueOf(map.get("goodsParcelPrice")+"")){
 				output.setCode("-1");
 				output.setMsg("钱包余额不足!");
@@ -186,6 +188,7 @@ public class ZxLuckyGoodsServiceImpl extends BaseServiceImpl implements IZxLucky
 				map_.put("goodsSurplusNum", goodsSurplusNum - 1); // 商品剩余数量-1
 				map_.put("memberAccount", params.get("memberAccount")); // 购买用户账号
 				map_.put("sendMemberAccount", map.get("memberAccount")); // 商品发布用户账号
+				map_.put("goodsParcelPrice", map.get("goodsParcelPrice")); // 支付金额
 				// 创建订单信息
 				int i = creatOrderInfo(map_);
 				if (i > 0) {
@@ -205,10 +208,8 @@ public class ZxLuckyGoodsServiceImpl extends BaseServiceImpl implements IZxLucky
 							walletMoneyInfo.put("walletInfoMoney", Double.valueOf(map.get("goodsParcelPrice")+""));
 							walletMoneyInfo.put("walletInfoFrom", "幸运购物");
 							getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
-
 						}
 					}
-					// TODO====商家金额如何增加确认收货后增加
 					output.setCode("0");
 					output.setMsg("购买成功！");
 					return;
@@ -224,6 +225,165 @@ public class ZxLuckyGoodsServiceImpl extends BaseServiceImpl implements IZxLucky
 			}
 			output.setCode("-1");
 			output.setMsg("购买失败！");
+		} catch (Exception e) {
+			LOGGER.error("系统错误", e);
+		}
+	}
+
+	/**
+	 * 免单活动
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public void partakeFreeSheetAct(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			// 第一步-判断积分是否充足
+			BigDecimal shoppingAmount = (BigDecimal) params.get("shoppingAmount");
+			Map<String, Object> user_ = new HashMap<>();
+			user_.put("memberAccount", params.get("memberAccount"));
+			Map<String, Object> item = (Map<String, Object>) getBaseDao().
+					queryForObject("MemberMapper.queryMemberDetail", user_);
+			// 判断积分余额是否充足:
+			String integralMoney = (String) item.get("integralMoney");
+			if (Double.valueOf(integralMoney) < shoppingAmount.doubleValue()) {
+				output.setCode("-1");
+				output.setMsg("积分余额不足!");
+				return;
+			}
+			// 第二步-判断是否第一次新增座位
+			String seatNum = (String) params.get("seatNum");
+			if (StringUtil.isNotEmpty(seatNum)){
+				params.put("id", getSequence());
+				params.put("seatNum", seatNum); // 座位号
+				int i = getBaseDao().insert("LuckyGoodsMapper.partakeFreeSheetAct", params);
+				if (i > 0) {
+					// 增加当前人积分金额
+					Map<String, Object> user1 = new HashMap<>();
+					user1.put("memberAccount", params.get("memberAccount"));
+					user1.put("integralMoney", Double.valueOf(integralMoney) - shoppingAmount.doubleValue());
+					getBaseDao().update("MemberMapper.updateMemberBalance", user1);
+					// 增加积分金额记录:
+					Map<String, Object> integralMoneyInfo = new HashMap<>();
+					integralMoneyInfo.put("integralInfoId", getSequence());
+					integralMoneyInfo.put("integralInfoAddOrMinus", "-");
+					integralMoneyInfo.put("integralInfoUserId", params.get("memberAccount"));
+					integralMoneyInfo.put("integralInfoMoney", Double.valueOf(integralMoney));
+					integralMoneyInfo.put("integralInfoFrom", "幸运抽奖");
+					getBaseDao().insert("IntegralMoneyInfoMapper.saveIntegralMoneyInfo", integralMoneyInfo);
+					int m = countLuckyMan(params); // 活动参与成功调用
+					if (m > 0) {
+						output.setCode("0");
+						output.setMsg("参与成功！");
+						return;
+					}
+				}
+				output.setCode("-1");
+				output.setMsg("参与失败！");
+			} else {
+				params.put("id", getSequence());
+				params.put("seatNum", getSequence());
+				params.put("activityType", "1");
+				int i = getBaseDao().insert("LuckyGoodsMapper.partakeFreeSheetAct", params);
+				if (i > 0) {
+					// 增加当前人积分金额
+					Map<String, Object> user1 = new HashMap<>();
+					user1.put("memberAccount", params.get("memberAccount"));
+					user1.put("integralMoney", Double.valueOf(integralMoney) - shoppingAmount.doubleValue());
+					getBaseDao().update("MemberMapper.updateMemberBalance", user1);
+					// 增加积分金额记录:
+					Map<String, Object> integralMoneyInfo = new HashMap<>();
+					integralMoneyInfo.put("integralInfoId", getSequence());
+					integralMoneyInfo.put("integralInfoAddOrMinus", "-");
+					integralMoneyInfo.put("integralInfoUserId", params.get("memberAccount"));
+					integralMoneyInfo.put("integralInfoMoney", Double.valueOf(integralMoney));
+					integralMoneyInfo.put("integralInfoFrom", "幸运抽奖");
+					getBaseDao().insert("IntegralMoneyInfoMapper.saveIntegralMoneyInfo", integralMoneyInfo);
+					output.setCode("0");
+					output.setMsg("参与成功");
+					return;
+				}
+				output.setCode("-1");
+				output.setMsg("参与失败！");
+			}
+		} catch (Exception e) {
+			LOGGER.error("系统错误", e);
+		}
+	}
+
+	/**
+	 * 免单活动列表（幸运榜可用）
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void queryPartakeFreeSheetList(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			int i = getBaseDao().getTotalCount("LuckyGoodsMapper.queryPartakeFreeSheetCount", params);
+			if (i > 0) {
+				List<Map<String, Object>> list = getBaseDao().queryForList("LuckyGoodsMapper.queryPartakeFreeSheetList", params);
+				output.setItems(list);
+			}
+			output.setTotal(i);
+		} catch (Exception e) {
+			LOGGER.error("系统错误", e);
+		}
+	}
+
+	/**
+	 * 幸运购物幸运榜列表
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void queryLuckyList(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			int i = getBaseDao().getTotalCount("LuckyGoodsMapper.queryLuckyCount", params);
+			if (i > 0) {
+				List<Map<String, Object>> list = getBaseDao().queryForList("LuckyGoodsMapper.queryLuckyList", params);
+				output.setItems(list);
+			}
+			output.setTotal(i);
+		} catch (Exception e) {
+			LOGGER.error("系统错误", e);
+		}
+	}
+
+	/**
+	 * 幸运购物幸运榜详情列表
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void queryLuckyDetail(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
+					"LuckyGoodsMapper.queryPartakeHeadInfo", params);
+			int i = getBaseDao().getTotalCount("LuckyGoodsMapper.queryPartakeFreeSheetCount", params);
+			if (i > 0) {
+				List<Map<String, Object>> list = getBaseDao().queryForList("LuckyGoodsMapper.queryPartakeFreeSheetList", params);
+				output.setItems(list);
+			}
+			output.setTotal(i);
+			output.setItem(map);
 		} catch (Exception e) {
 			LOGGER.error("系统错误", e);
 		}
@@ -257,6 +417,66 @@ public class ZxLuckyGoodsServiceImpl extends BaseServiceImpl implements IZxLucky
 		orderInfo.put("goodsId", map.get("id"));   // 商品ID
 		int i = getBaseDao().insert("OrderInfoMapper.saveOrderInfoInfo", orderInfo);
 		if (i > 0) {
+			// 系统钱包金额增加记录:
+			Map<String, Object> systemMoneyInfo = new HashMap<>();
+			systemMoneyInfo.put("systemInfoId", getSequence());
+			systemMoneyInfo.put("systemInfoAddOrMinus", "+");
+			systemMoneyInfo.put("systemInfoUserId", address.get("memberAccount"));
+			systemMoneyInfo.put("orderId", orderInfo.get("id")); // 订单ID
+			systemMoneyInfo.put("systemInfoMoney", Double.valueOf(map.get("goodsParcelPrice")+""));
+			systemMoneyInfo.put("systemInfoFrom", "幸运购物");
+			getBaseDao().insert("SystemMoneyInfoMapper.saveSystemMoneyInfo", systemMoneyInfo);
+			LOGGER.info("=============订单创建成功==============");
+			return 1;
+		}
+		return 0;
+	}
+
+	/**
+	 * 创建订单信息
+	 * @param map
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private int countLuckyMan(Map<String, Object> map){
+		LOGGER.info("=============开始计算中奖用户==============");
+		// 计算幸运序号
+		Map<String, Object> lucky = (Map<String, Object>) getBaseDao().queryForObject(
+				"LuckyGoodsMapper.queryPartakeFreeSheetAct", map);
+		BigDecimal orderNum = (BigDecimal) lucky.get("orderNum"); // 幸运数字
+		Long peopleTotal = (Long) lucky.get("peopleTotal");       // 参与人数
+		Map<String, Object> luckys = new HashMap<>();
+		int luckyMan = orderNum.intValue() % peopleTotal.intValue(); // 幸运数字总数 % 总人数取余
+		if (luckyMan == 0) { // 如果余数为0，按照时间降序查询第一人
+			Map<String, Object> list_ = (Map<String, Object>) getBaseDao().queryForObject(
+					"LuckyGoodsMapper.queryPartakeFreeSheetOne", map);
+			luckyMan = (int) list_.get("luckyOrderNumber");
+		}
+		luckys.put("luckyMan", luckyMan); // 幸运者
+		luckys.put("seatNum", map.get("seatNum")); // 商品ID
+		Map<String, Object> luckyMap = (Map<String, Object>) getBaseDao().queryForObject(
+				"LuckyGoodsMapper.queryPartakeFreeSheetDetail", luckys);
+		luckyMap.put("goodsLuckStar", 1);   // 幸运标识
+
+		// 更新幸运者
+		int i = getBaseDao().update("LuckyGoodsMapper.updateGoodsLuckStar", luckyMap);
+		if (i > 0) {
+			Map<String, Object> lu = new HashMap<>();
+			lu.put("seatNum", luckyMap.get("seatNum"));
+			lu.put("activityType", "2");
+			getBaseDao().update("LuckyGoodsMapper.updateGoodsLuckStar", lu);
+			// 系统钱包金额减少
+			Map<String, Object> system = new HashMap<>();
+			system.put("systemInfoMoney", map.get("shoppingAmount"));
+			getBaseDao().update("SystemMoneyInfoMapper.updateSystemMoneyInfo", system);
+			// 系统钱包金额增加记录:
+			Map<String, Object> systemMoneyInfo = new HashMap<>();
+			systemMoneyInfo.put("systemInfoId", getSequence());
+			systemMoneyInfo.put("systemInfoAddOrMinus", "-");
+			systemMoneyInfo.put("systemInfoUserId", luckyMap.get("memberAccount"));
+			systemMoneyInfo.put("systemInfoMoney", Double.valueOf(map.get("shoppingAmount")+""));
+			systemMoneyInfo.put("systemInfoFrom", "免单活动支出");
+			getBaseDao().insert("SystemMoneyInfoMapper.saveSystemMoneyInfo", systemMoneyInfo);
 			LOGGER.info("=============订单创建成功==============");
 			return 1;
 		}

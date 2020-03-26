@@ -30,8 +30,11 @@
       <include refid="Base_Column_List" />,
       b.wallet_balance AS walletBalance,
       b.advertising_fee AS advertisingFee,
+      IFNULL(b.head_img_url, '') AS headImgUrl,
+      IFNULL(b.nickname, b.member_account) AS nickname,
       c.member_account AS shareMemberAccount,
-      d.business_type AS businessType
+      d.business_type AS businessType,
+      (SELECT COUNT(1) FROM zx_app_goods_view_count s WHERE s.zx_goods_id = a.id) AS followNum
     FROM zx_app_free_goods a
     LEFT JOIN t_member b ON a.member_account = b.member_account
     LEFT JOIN zx_app_my_share_extend c ON a.member_account = c.cover_member_account
@@ -45,6 +48,9 @@
       </if>
       <if test="goodsTypeId != null and goodsTypeId !=''">
         AND a.goods_type_id = #{goodsTypeId}
+      </if>
+      <if test="goodsDesc != null and goodsDesc !=''">
+        AND a.goods_desc LIKE CONCAT('%',${goodsDesc},'%')
       </if>
       <if test="startTime != null and startTime != ''">
         AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
@@ -72,6 +78,9 @@
       </if>
       <if test="goodsStatus != null and goodsStatus !=''">
         AND a.goods_status = #{goodsStatus}
+      </if>
+      <if test="goodsDesc != null and goodsDesc !=''">
+        AND a.goods_desc LIKE CONCAT('%',${goodsDesc},'%')
       </if>
       <if test="startTime != null and startTime != ''">
         AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
@@ -260,7 +269,7 @@
   </update>
 
   <!-- 免费兑换我的发布 -->
-  <select id="queryMyReleaseGoodsList" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  <select id="queryMyReleaseGoodsList" parameterType="java.util.Map" resultMap="BaseResultMap">
     SELECT
         <include refid="Base_Column_List" />,
         '1002' AS goodsType,
@@ -271,7 +280,7 @@
         a.member_account = #{memberAccount}
       </if>
       <if test="goodsStatus != null and goodsStatus !=''">
-        AND a.goods_status = #{goodsStatus}
+        AND a.goods_status IN ${goodsStatus}
       </if>
       <if test="goodsTypeId != null and goodsTypeId !=''">
         AND a.goods_type_id = #{goodsTypeId}

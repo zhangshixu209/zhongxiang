@@ -96,6 +96,13 @@ public class ZxGoodsExamineForm extends BaseForm {
 	 */
 	private Integer luckyNumber;
 
+	private Long goodsId;
+
+	/**
+	 * 商品分类
+	 */
+	private String goodsType;
+
 	private static final long serialVersionUID = 1L;
 
 	public Long getId() {
@@ -232,5 +239,21 @@ public class ZxGoodsExamineForm extends BaseForm {
 
 	public void setLuckyNumber(Integer luckyNumber) {
 		this.luckyNumber = luckyNumber;
+	}
+
+	public Long getGoodsId() {
+		return goodsId;
+	}
+
+	public void setGoodsId(Long goodsId) {
+		this.goodsId = goodsId;
+	}
+
+	public String getGoodsType() {
+		return goodsType;
+	}
+
+	public void setGoodsType(String goodsType) {
+		this.goodsType = goodsType;
 	}
 }

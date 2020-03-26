@@ -10,10 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * 众享订单信息
@@ -56,7 +54,7 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 	}
 
 	/**
-	 * 编辑订单信息
+	 * 编辑订单信息(商家发货使用)
 	 *
 	 * @param input  入參
 	 * @param output 返回对象
@@ -70,11 +68,11 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 			int i = getBaseDao().update("OrderInfoMapper.updateOrderInfoInfo", params);
 			if (i > 0) {
 				output.setCode("0");
-				output.setMsg("修改成功");
+				output.setMsg("发货成功");
 				return;
 			}
 			output.setCode("-1");
-			output.setMsg("修改失败");
+			output.setMsg("发货失败");
 		} catch (Exception e) {
 			LOGGER.error("系统错误", e);
 		}
@@ -218,5 +216,176 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 		} catch (Exception e) {
 			LOGGER.error("系统错误", e);
 		}
+	}
+
+	/**
+	 * 用户确认收货
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public void userConfirmReceipt(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			params.put("orderStatus", "1003"); // 确认收货
+			int i = getBaseDao().update("OrderInfoMapper.updateOrderInfoInfo", params);
+			if (i > 0) {
+				// 查询订单详情
+				Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
+						"OrderInfoMapper.queryOrderInfoDetail", params);
+				Map<String, Object> user_ = new HashMap<>();
+				user_.put("memberAccount", map.get("sendGoodsAccount"));
+				// 查询用户信息
+				Map<String, Object> item = (Map<String, Object>) getBaseDao().
+						queryForObject("MemberMapper.queryMemberDetail", user_);
+				String advertisingMoney = (String) item.get("advertisingFee"); // 广告费
+				String orderType = (String) map.get("orderType");
+				if ("1001".equals(orderType)) {
+					// 增加商家广告费金额
+					Map<String, Object> user1 = new HashMap<>();
+					user1.put("memberAccount", map.get("sendGoodsAccount"));
+					user1.put("advertisingFee", Double.valueOf(advertisingMoney) + Double.valueOf(map.get("neededAdFee")+""));
+					int m = getBaseDao().update("MemberMapper.updateMemberBalance", user1);
+					if(m > 0) {
+						// 记录广告费增加记录:
+						Map<String, Object> adRecord1 = new HashMap<>();
+						adRecord1.put("advertisingInfoId", getSequence());
+						adRecord1.put("advertisingInfoAddOrMinus", "+");
+						adRecord1.put("advertisingInfoUserId", map.get("sendGoodsAccount"));
+						adRecord1.put("advertisingInfoMoney", Double.valueOf(map.get("neededAdFee")+""));
+						adRecord1.put("advertisingInfoFrom", "发布秒杀商品");
+						getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord1);
+					}
+				} else if ("1002".equals(orderType)){
+					// 增加商家广告费金额
+					Map<String, Object> user1 = new HashMap<>();
+					user1.put("memberAccount", map.get("sendGoodsAccount"));
+					user1.put("advertisingFee", Double.valueOf(advertisingMoney) + Double.valueOf(map.get("neededAdFee")+""));
+					int m = getBaseDao().update("MemberMapper.updateMemberBalance", user1);
+					if (m > 0) {
+						// 记录广告费增加记录:
+						Map<String, Object> adRecord_ = new HashMap<>();
+						adRecord_.put("advertisingInfoId", getSequence());
+						adRecord_.put("advertisingInfoAddOrMinus", "+");
+						adRecord_.put("advertisingInfoUserId", map.get("sendGoodsAccount"));
+						adRecord_.put("advertisingInfoMoney", Double.valueOf(map.get("neededAdFee")+""));
+						adRecord_.put("advertisingInfoFrom", "发布兑换商品");
+						getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord_);
+					}
+				} else if ("1003".equals(orderType)) {
+					Map<String, Object> maps = new HashMap<>();
+					maps.put("orderId", map.get("id")); // 订单ID
+					maps.put("goodsParcelPrice", map.get("goodsParcelPrice"));     // 支付金额
+					maps.put("consigGoodsAccount", map.get("consigGoodsAccount")); // 收货人账号
+					maps.put("sendGoodsAccount", map.get("sendGoodsAccount"));     // 发布人账号
+					luckyGoodsInfo(maps); // 幸运购物逻辑处理
+				}
+				output.setCode("0");
+				output.setMsg("修改成功");
+				return;
+			}
+			output.setCode("-1");
+			output.setMsg("修改失败");
+		} catch (Exception e) {
+			LOGGER.error("系统错误", e);
+		}
+	}
+
+	/**
+	 * 查询在途商品
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void queryGoodsInTransitList(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			int i = getBaseDao().getTotalCount("OrderInfoMapper.queryGoodsInTransitCount", params);
+			if (i > 0) {
+				List<Map<String, Object>> list = getBaseDao().queryForList("OrderInfoMapper.queryGoodsInTransitList", params);
+				output.setItems(list);
+			}
+			output.setTotal(i);
+		} catch (Exception e) {
+			LOGGER.error("系统错误", e);
+		}
+	}
+
+	/**
+	 * 幸运购物逻辑处理
+	 * @param map
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private int luckyGoodsInfo(Map<String, Object> map){
+		Map<String, Object> user = new HashMap<>();
+		user.put("memberAccount", map.get("consigGoodsAccount"));
+		// 查询用户信息
+		Map<String, Object> item_ = (Map<String, Object>) getBaseDao().
+				queryForObject("MemberMapper.queryMemberDetail", user);
+		String integralMoney = (String) item_.get("integralMoney"); // 积分
+		// 增加当前人积分金额
+		Map<String, Object> user1 = new HashMap<>();
+		user1.put("memberAccount", map.get("consigGoodsAccount"));
+		user1.put("integralMoney", Double.valueOf(integralMoney) + Double.valueOf(map.get("goodsParcelPrice")+""));
+		int m = getBaseDao().update("MemberMapper.updateMemberBalance", user1);
+		if(m > 0) {
+			// 增加积分金额记录:
+			Map<String, Object> integralMoneyInfo = new HashMap<>();
+			integralMoneyInfo.put("integralInfoId", getSequence());
+			integralMoneyInfo.put("integralInfoAddOrMinus", "+");
+			integralMoneyInfo.put("integralInfoUserId", map.get("consigGoodsAccount"));
+			integralMoneyInfo.put("integralInfoMoney", Double.valueOf(map.get("goodsParcelPrice")+""));
+			integralMoneyInfo.put("integralInfoFrom", "幸运积分");
+			getBaseDao().insert("IntegralMoneyInfoMapper.saveIntegralMoneyInfo", integralMoneyInfo);
+		}
+		////////////////////////////////////////商家相关////////////////////////////////////////////////////
+		Map<String, Object> user_ = new HashMap<>();
+		user_.put("memberAccount", map.get("sendGoodsAccount"));
+		// 查询用户信息
+		Map<String, Object> item = (Map<String, Object>) getBaseDao().
+				queryForObject("MemberMapper.queryMemberDetail", user_);
+		String walletBalance = (String) item.get("walletBalance"); // 钱包余额
+		// 查询系统钱包
+		Map<String, Object> system = (Map<String, Object>) getBaseDao().
+				queryForObject("SystemMoneyInfoMapper.querySystemMoneyDetail", map);
+		BigDecimal goodsParcelPrice = (BigDecimal) system.get("systemInfoMoney");
+		double goodsPrice = goodsParcelPrice.doubleValue() / 2; // 系统扣除一半的钱给商家
+		// 扣除当前人钱包金额
+		Map<String, Object> userA = new HashMap<>();
+		userA.put("memberAccount", item.get("memberAccount"));
+		userA.put("walletBalance", Double.valueOf(walletBalance) + goodsPrice);
+		int k = getBaseDao().update("MemberMapper.updateMemberBalance", userA);
+		if(k > 0) {
+			// 商家钱包增加金额记录:
+			Map<String, Object> walletMoneyInfo = new HashMap<>();
+			walletMoneyInfo.put("walletInfoId", getSequence());
+			walletMoneyInfo.put("walletInfoAddOrMinus", "+");
+			walletMoneyInfo.put("walletInfoUserId", item.get("memberAccount"));
+			walletMoneyInfo.put("walletInfoMoney", goodsPrice);
+			walletMoneyInfo.put("walletInfoFrom", "发布幸运购物");
+			getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
+			// 系统钱包金额减少
+			system.put("systemInfoMoney", goodsPrice);
+			getBaseDao().update("SystemMoneyInfoMapper.updateSystemMoneyInfo", system);
+			// 系统钱包金额减少记录:
+			Map<String, Object> systemMoneyInfo = new HashMap<>();
+			systemMoneyInfo.put("systemInfoId", getSequence());
+			systemMoneyInfo.put("systemInfoAddOrMinus", "-");
+			systemMoneyInfo.put("systemInfoUserId", item.get("memberAccount"));
+			systemMoneyInfo.put("orderId", map.get("orderId")); // 订单ID
+			systemMoneyInfo.put("systemInfoMoney", goodsPrice);
+			systemMoneyInfo.put("systemInfoFrom", "幸运购物支付给商家");
+			getBaseDao().insert("SystemMoneyInfoMapper.saveSystemMoneyInfo", systemMoneyInfo);
+			return 1;
+		}
+		return 0;
 	}
 }

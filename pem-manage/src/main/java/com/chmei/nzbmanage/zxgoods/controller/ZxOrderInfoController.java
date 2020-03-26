@@ -118,4 +118,30 @@ public class ZxOrderInfoController extends BaseController {
         return outputDTO;
     }
 
+    /**
+     * 用户确认收货
+     * @param zxOrderInfoForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/userConfirmReceipt")
+    public OutputDTO userConfirmReceipt(@ModelAttribute ZxOrderInfoForm zxOrderInfoForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxOrderInfoForm);
+        outputDTO = getOutputDTO(params, "zxOrderInfoService", "userConfirmReceipt");
+        return outputDTO;
+    }
+
+    /**
+     * 查询在途商品
+     * @param zxOrderInfoForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/queryGoodsInTransitList")
+    public OutputDTO queryGoodsInTransitList(@ModelAttribute ZxOrderInfoForm zxOrderInfoForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxOrderInfoForm);
+        outputDTO = getOutputDTO(params, "zxOrderInfoService", "queryGoodsInTransitList");
+        return outputDTO;
+    }
+
 }

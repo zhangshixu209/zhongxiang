@@ -98,6 +98,9 @@
         ,(select IFNULL(CAST(sum(cash_amount) AS DECIMAL(11,2)), '0') from t_cash_audit  where audit_type = 3) AS reflectMoney
         -- 充值钱数
         ,(select IFNULL(CAST(sum(recharge_amount) AS DECIMAL(11,2)), '0') from t_recharge_record where valid_sts_cd = 1 AND `status` != '1001') AS totalMoney
+        -- 系统钱包
+        ,(select IFNULL(CAST(sum(system_info_money) AS DECIMAL(11,2)), '0') from zx_app_system_money_info where system_info_from = '幸运购物' AND system_info_add_or_minus = '+') AS systemMoney
+        ,(select IFNULL(CAST(sum(system_info_money) AS DECIMAL(11,2)), '0') from zx_app_system_money_info where system_info_from = '开通秒杀活动保证金') AS seckillMoney
     FROM  t_member
     <where>
         <if test="startTime != null and startTime != ''">

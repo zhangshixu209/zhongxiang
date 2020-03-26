@@ -130,4 +130,56 @@ public class ZxZeroSeckillController extends BaseController {
         outputDTO = getOutputDTO(params, "zxGoodsExamineService", "buyGoodsExamineInfo");
         return outputDTO;
     }
+
+    /**
+     * 零元秒杀幸运榜
+     * @param zxGoodsExamineForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/queryZeroSeckillLuckyList")
+    public OutputDTO queryZeroSeckillLuckyList(@ModelAttribute ZxGoodsExamineForm zxGoodsExamineForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxGoodsExamineForm);
+        outputDTO = getOutputDTO(params, "zxGoodsExamineService", "queryZeroSeckillLuckyList");
+        return outputDTO;
+    }
+
+    /**
+     * 零元秒杀幸运榜参与详情
+     * @param zxGoodsExamineForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/queryZeroSeckillPartakeList")
+    public OutputDTO queryZeroSeckillPartakeList(@ModelAttribute ZxGoodsExamineForm zxGoodsExamineForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxGoodsExamineForm);
+        outputDTO = getOutputDTO(params, "zxGoodsExamineService", "queryZeroSeckillPartakeList");
+        return outputDTO;
+    }
+
+    /**
+     * 关注人数新增
+     * @param zxGoodsExamineForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/saveGoodsViewCount")
+    public OutputDTO saveGoodsViewCount(@ModelAttribute ZxGoodsExamineForm zxGoodsExamineForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxGoodsExamineForm);
+        outputDTO = getOutputDTO(params, "zxGoodsExamineService", "saveGoodsViewCount");
+        return outputDTO;
+    }
+
+    /**
+     * 校验开通发布窗口数量
+     * @param zxGoodsExamineForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/checkReleaseWindow")
+    public OutputDTO checkReleaseWindow(@ModelAttribute ZxGoodsExamineForm zxGoodsExamineForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxGoodsExamineForm);
+        outputDTO = getOutputDTO(params, "zxGoodsExamineService", "checkReleaseWindow");
+        return outputDTO;
+    }
 }

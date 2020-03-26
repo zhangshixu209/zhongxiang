@@ -16,20 +16,42 @@
   </sql>
 
   <!-- 零元秒杀幸运榜列表 -->
-  <select id="queryZeroSeckillInfoList" parameterType="java.util.Map" resultMap="BaseResultMap">
+  <select id="queryZeroSeckillInfoList" parameterType="java.util.Map" resultType="java.util.Map">
     SELECT
-        <include refid="Base_Column_List"/>
+      a.id AS id,
+      a.goods_id AS goodsId,
+      a.buy_member_account AS buyMemberAccount,
+      a.lucky_number AS luckyNumber,
+      a.lucky_order_number AS luckyOrderNumber,
+      a.goods_luck_star AS goodsLuckStar,
+      DATE_FORMAT(a.crt_time,'%m月%d日 %H:%i') AS crtTime,
+      IFNULL(b.head_img_url, '') AS headImgUrl,
+      IFNULL(b.nickname, b.member_account) AS nickname
     FROM
-        zx_app_zero_seckill_info
+        zx_app_zero_seckill_info AS a
+    LEFT JOIN t_member AS b ON a.buy_member_account = b.member_account
+    <where>
+      a.goods_id = #{goodsId}
+      <if test="buyMemberAccount != null and buyMemberAccount !=''">
+        AND a.buy_member_account = #{buyMemberAccount}
+      </if>
+    </where>
+    ORDER BY a.lucky_order_number ASC
+  </select>
+  <!-- 零元秒杀幸运榜统计 -->
+  <select id="queryZeroSeckillInfoCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+      COUNT(1)
+    FROM
+    zx_app_zero_seckill_info
     <where>
       goods_id = #{goodsId}
       <if test="buyMemberAccount != null and buyMemberAccount !=''">
         AND buy_member_account = #{buyMemberAccount}
       </if>
     </where>
-    ORDER BY crt_time DESC
+    ORDER BY lucky_order_number ASC
   </select>
-  
   
   <!-- 查询是否参与该活动 -->
   <select id="queryZeroSeckillIsBuy" parameterType="java.util.Map" resultType="int">
@@ -45,7 +67,7 @@
         IFNULL(MAX( lucky_order_number ) , 0)AS maxLuckyOrderNumber
     FROM
         zx_app_zero_seckill_info
-    WHERE goods_id = #{goodsId}
+    WHERE goods_id = #{goodsId} AND rotation_num = #{rotationNum}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.util.Map">
     delete from zx_app_zero_seckill_info
@@ -81,6 +103,9 @@
       <if test="goodsLuckStar != null">
         goods_luck_star,
       </if>
+      <if test="rotationNum != null">
+        rotation_num,
+      </if>
         crt_time,
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -98,6 +123,9 @@
       </if>
       <if test="luckyOrderNumber != null">
         #{luckyOrderNumber,jdbcType=INTEGER},
+      </if>
+      <if test="rotationNum != null">
+        #{rotationNum,jdbcType=INTEGER},
       </if>
         NOW(),
     </trim>
@@ -138,7 +166,7 @@
   <!-- 查询幸运序号最大值 -->
   <select id="querySumGoodsLuckStar" resultType="java.util.Map" parameterType="java.util.Map">
     SELECT
-	    SUM( lucky_order_number ) AS orderNum, COUNT( 1 ) AS peopleTotal
+	    SUM( lucky_number ) AS orderNum, COUNT( 1 ) AS peopleTotal
     FROM
         `zx_app_zero_seckill_info`
     WHERE goods_id = #{goodsId}
@@ -174,6 +202,15 @@
     </where>
     ORDER BY crt_time DESC
     LIMIT 1
+  </select>
+
+  <!-- 查询是否存在秒杀 -->
+  <select id="queryIsZeroSeckillInfo" parameterType="java.util.Map" resultType="int">
+    SELECT
+        COUNT(1)
+    FROM
+        zx_app_zero_seckill_info
+    WHERE goods_id = #{goodsId} AND rotation_num = #{rotationNum}
   </select>
 
 </mapper>

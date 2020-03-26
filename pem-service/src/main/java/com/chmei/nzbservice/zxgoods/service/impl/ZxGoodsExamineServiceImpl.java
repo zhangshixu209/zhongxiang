@@ -122,4 +122,64 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 		input.setMethod("buyGoodsExamineInfo");
 		getNzbDataService().execute(input, output);
 	}
+
+	/**
+	 * 零元秒杀幸运榜
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void queryZeroSeckillLuckyList(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxGoodsExamineService");
+		input.setMethod("queryZeroSeckillLuckyList");
+		getNzbDataService().execute(input, output);
+	}
+
+	/**
+	 * 零元秒杀幸运榜参与详情
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void queryZeroSeckillPartakeList(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxGoodsExamineService");
+		input.setMethod("queryZeroSeckillPartakeList");
+		getNzbDataService().execute(input, output);
+	}
+
+	/**
+	 * 新增商品关注次数
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void saveGoodsViewCount(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxGoodsExamineService");
+		input.setMethod("saveGoodsViewCount");
+		getNzbDataService().execute(input, output);
+	}
+
+	/**
+	 * 校验是否开通发布窗口
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void checkReleaseWindow(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxGoodsExamineService");
+		input.setMethod("checkReleaseWindow");
+		getNzbDataService().execute(input, output);
+	}
 }

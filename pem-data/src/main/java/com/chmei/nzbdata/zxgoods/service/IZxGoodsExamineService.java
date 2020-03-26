@@ -83,4 +83,44 @@ public interface IZxGoodsExamineService {
 	 */
 	void buyGoodsExamineInfo(InputDTO input, OutputDTO output) throws NzbDataException;
 
+	/**
+	 * 零元秒杀幸运榜
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 * @return
+	 */
+	void queryZeroSeckillLuckyList(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 零元秒杀幸运榜参与详情
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 * @return
+	 */
+	void queryZeroSeckillPartakeList(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 新增商品关注次数
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 * @return
+	 */
+	void saveGoodsViewCount(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 校验是否开通发布窗口
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 * @return
+	 */
+	void checkReleaseWindow(InputDTO input, OutputDTO output) throws NzbDataException;
+
 }

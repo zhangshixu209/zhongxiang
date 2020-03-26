@@ -14,9 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.sql.DatabaseMetaData;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 众享商品
@@ -69,14 +67,34 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 	public void goodsShelfInfo(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> result = (Map<String, Object>) getBaseDao().queryForObject(
+					"GoodsExamineMapper.queryGoodsExamineDetail", params);
+			int goodsSurplusNum = (int) result.get("goodsSurplusNum");   // 商品剩余数量
+			if (goodsSurplusNum > 0) {
+				Map<String, Object> map_ = new HashMap<>();
+				map_.put("goodsId", params.get("id"));
+				map_.put("rotationNum", goodsSurplusNum);
+				int goodsReleaseNum = (int) result.get("goodsReleaseNum");   // 商品发布数量
+				int isSeckill = getBaseDao().getTotalCount("ZeroSeckillInfoMapper.queryIsZeroSeckillInfo", map_);
+				int num = goodsReleaseNum - isSeckill;
+				if (num == 0) {
+					params.put("goodsSurplusNum", 0);
+					getBaseDao().update("GoodsExamineMapper.updateGoodsExamineNum", params);
+				} else {
+					int surplus = goodsSurplusNum - 1;
+					params.put("goodsSurplusNum", surplus);
+					getBaseDao().update("GoodsExamineMapper.updateGoodsExamineNum", params);
+				}
+			}
 			int i = getBaseDao().update("GoodsExamineMapper.authGoodsExamineInfo", params);
 			if (i > 0) {
 				output.setCode("0");
-				output.setMsg("修改成功");
+				output.setMsg("下架成功");
 				return;
 			}
 			output.setCode("-1");
-			output.setMsg("修改失败");
+			output.setMsg("下架失败");
 		} catch (Exception e) {
 			LOGGER.error("系统错误", e);
 		}
@@ -151,6 +169,13 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 				if (StringUtil.isNotEmpty(buyMemberAccount)) {
 					for (Map<String, Object> map : list) {
 						Map<String, Object> result = new HashMap<>();
+						int joinNum = (int) map.get("joinNum");     // 参与人数
+						int partakeNumber = (int) map.get("partakeNumber"); // 总人数
+						int supNum = partakeNumber - joinNum; // 如果参与人数够了
+						if(supNum == 0){
+							map.put("supNum", 0);  // 剩余人数
+							map.put("joinNum", 0); // 参与人数
+						}
 						result.put("goodsId", map.get("id"));
 						result.put("buyMemberAccount", params.get("buyMemberAccount"));
 						int isBuy = getBaseDao().getTotalCount("ZeroSeckillInfoMapper.queryZeroSeckillIsBuy", result);
@@ -188,6 +213,8 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 				output.setMsg("总需广告费不能大于商品价值的10倍！");
 				return;
 			}
+			params.put("id", getSequence());
+			params.put("goodsStatus", "1001");
 			int i = getBaseDao().insert("GoodsExamineMapper.saveZeroSeckillInfo", params);
 			if (i > 0) {
 				output.setCode("0");
@@ -227,23 +254,25 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 				output.setMsg("广告费不足!");
 				return;
 			}
+			// TODO 总人数=购买人数时，开始抽奖
+			int joinNum = (int) map.get("joinNum");     // 参与人数
+			int partakeNumber = (int) map.get("partakeNumber"); // 总人数
+			int supNum = partakeNumber - joinNum; // 如果参与人数够了
 			int goodsSurplusNum = (int) map.get("goodsSurplusNum"); // 商品剩余数量
-			if (goodsSurplusNum > 0) {
-				int maxLuckyOrderNumber = getBaseDao().getTotalCount(
-						"ZeroSeckillInfoMapper.queryZeroSeckillMaxNum", params);
-				Map<String, Object> goods = new HashMap<>();
-				goods.put("id", getSequence());
-				goods.put("luckyOrderNumber", (maxLuckyOrderNumber + 1));
-				goods.put("goodsId", map.get("id"));
-				goods.put("buyMemberAccount", params.get("memberAccount"));
-				goods.put("luckyNumber", params.get("luckyNumber"));
-				int i = getBaseDao().insert("ZeroSeckillInfoMapper.buyGoodsExamineInfo", goods);
-				if (i > 0) {
-					Map<String, Object> map_ = new HashMap<>();
-					map_.put("id", params.get("id")); // 商品ID
-					map_.put("goodsSurplusNum", goodsSurplusNum - 1); // 商品剩余数量-1
-					int j = getBaseDao().update("GoodsExamineMapper.updateGoodsExamineNum", map_);
-					if (j > 0) {
+			if (goodsSurplusNum > 0) { // 剩余数量
+				if (supNum > 0) {
+					params.put("rotationNum", goodsSurplusNum);
+					int maxLuckyOrderNumber = getBaseDao().getTotalCount(
+							"ZeroSeckillInfoMapper.queryZeroSeckillMaxNum", params);
+					Map<String, Object> goods = new HashMap<>();
+					goods.put("id", getSequence());
+					goods.put("luckyOrderNumber", (maxLuckyOrderNumber + 1));
+					goods.put("goodsId", map.get("id"));
+					goods.put("buyMemberAccount", params.get("memberAccount"));
+					goods.put("luckyNumber", params.get("luckyNumber"));
+					goods.put("rotationNum", goodsSurplusNum);
+					int i = getBaseDao().insert("ZeroSeckillInfoMapper.buyGoodsExamineInfo", goods);
+					if (i > 0) {
 						// 扣除当前人广告费金额
 						Map<String, Object> user = new HashMap<>();
 						user.put("memberAccount", params.get("memberAccount"));
@@ -259,22 +288,176 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 							adRecord.put("advertisingInfoFrom", "秒杀商品");
 							getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
 						}
+						// 创建订单信息
+						creatOrderInfo(params);
+						output.setCode("0");
+						output.setMsg("参与成功！");
+						return;
 					}
-					// 创建订单信息
-					creatOrderInfo(map_);
-					output.setCode("0");
-					output.setMsg("秒杀成功！");
-					return;
 				}
 			} else {
 				output.setCode("-1");
-				output.setMsg("商品已结束！");
+				output.setMsg("活动已结束！");
 				return;
 			}
 			output.setCode("-1");
-			output.setMsg("秒杀失败！");
+			output.setMsg("参与失败！");
 		} catch (Exception e) {
 			LOGGER.error("系统错误", e);
+		}
+	}
+
+	/**
+	 * 零元秒杀幸运榜
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void queryZeroSeckillLuckyList(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			int i = getBaseDao().getTotalCount("GoodsExamineMapper.queryZeroSeckillLuckyCount", params);
+			if (i > 0) {
+				List<Map<String, Object>> list = getBaseDao().queryForList("GoodsExamineMapper.queryZeroSeckillLuckyList", params);
+				if (null != list && list.size() > 0) {
+					output.setItems(list);
+				}
+			}
+			output.setTotal(i);
+		} catch (Exception e) {
+			LOGGER.error("系统错误", e);
+		}
+	}
+
+	/**
+	 * 零元秒杀幸运榜参与详情
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void queryZeroSeckillPartakeList(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
+					"GoodsExamineMapper.queryPartakeHeadInfo", params);
+			int total = getBaseDao().getTotalCount("ZeroSeckillInfoMapper.queryZeroSeckillInfoCount", params);
+			if (total > 0) {
+				List<Map<String, Object>> list = getBaseDao().queryForList(
+						"ZeroSeckillInfoMapper.queryZeroSeckillInfoList", params);
+				if (null != list && list.size() > 0) {
+					output.setItems(list);
+				}
+			}
+			output.setTotal(total);
+			output.setItem(map);
+		} catch (Exception e) {
+			LOGGER.error("系统错误", e);
+		}
+	}
+
+	/**
+	 * 新增商品关注次数
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void saveGoodsViewCount(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			int i = getBaseDao().getTotalCount("GoodsExamineMapper.queryGoodsViewCount", params);
+			if (i > 0) {
+				output.setCode("-1");
+				output.setMsg("已关注！");
+				return;
+			}
+			// 新增众享信息浏览次数
+			int count = getBaseDao().insert("GoodsExamineMapper.saveGoodsViewCount", params);
+			if (count < 1) {
+				output.setCode("-1");
+				output.setMsg("关注失败");
+				return;
+			}
+			output.setCode("0");
+			output.setMsg("关注成功");
+		} catch (Exception ex) {
+			LOGGER.error("系统错误: " + ex);
+		}
+	}
+
+	/**
+	 * 校验是否开通发布窗口
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void checkReleaseWindow(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			String goodsType = (String) params.get("goodsType");
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
+					"BusinessAuthMapper.queryBusinessAuthDetail", params);
+			if (null == map) {
+				output.setCode("-1");
+				output.setMsg("请开通发布窗口！");
+				return;
+			}
+			String[] goodsArr = {"1001","1002"}; // 待审核、审核通过
+			params.put("goodsStatus", goodsArr);  // 商品当前状态
+			if("1001".equals(goodsType)){
+				//   1.1 秒杀商品
+				List<Map<String, Object>> seckillList = getBaseDao().queryForList(
+						"GoodsExamineMapper.queryMyReleaseGoodsList", params);
+				if(null != seckillList && seckillList.size() > 0){
+					String seckillWindow = (String) map.get("seckillWindow");
+					if (seckillList.size() >= Integer.valueOf(seckillWindow)) {
+						output.setCode("-1");
+						output.setMsg("发布商品数量上限！");
+						return;
+					}
+				}
+			} else if("1002".equals(goodsType)){
+				//   1.2 免费兑换
+				List<Map<String, Object>> freeGoodsList = getBaseDao().queryForList(
+						"FreeGoodsMapper.queryMyReleaseGoodsList", params);
+				if(null != freeGoodsList && freeGoodsList.size() > 0){
+					String freeWindow = (String) map.get("freeWindow");
+					if (freeGoodsList.size() >= Integer.valueOf(freeWindow)) {
+						output.setCode("-1");
+						output.setMsg("发布商品数量上限！");
+						return;
+					}
+				}
+			} else if("1003".equals(goodsType)){
+				//   1.3 幸运购物
+				List<Map<String, Object>> luckyGoodsList = getBaseDao().queryForList(
+						"LuckyGoodsMapper.queryMyReleaseGoodsList", params);
+				if(null != luckyGoodsList && luckyGoodsList.size() > 0){
+					String luckyWindow = (String) map.get("luckyWindow");
+					if (luckyGoodsList.size() >= Integer.valueOf(luckyWindow)) {
+						output.setCode("-1");
+						output.setMsg("发布商品数量上限！");
+						return;
+					}
+				}
+			}
+			output.setCode("0");
+			output.setMsg("校验通过！");
+		} catch (Exception ex) {
+			LOGGER.error("系统错误: " + ex);
 		}
 	}
 
@@ -290,11 +473,20 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 		int goodsSurplusNum = (int) result.get("goodsSurplusNum"); // 商品剩余数量
 		Map<String, Object> map_ = new HashMap<>();
 		map_.put("goodsId", map.get("id"));
-		if(goodsSurplusNum == 0) {
-			Map<String, Object> maps = new HashMap<>();
-			maps.put("id", map.get("id"));
-			maps.put("goodsStatus", "1006"); // 商品结束
-			getBaseDao().update("GoodsExamineMapper.authGoodsExamineInfo", maps); // 更新商品状态为已结束
+		int joinNum = (int) result.get("joinNum");     // 参与人数
+		int partakeNumber = (int) result.get("partakeNumber"); // 总人数
+		int supNum = partakeNumber - joinNum; // 如果参与人数够了
+		if(supNum == 0) {
+			Map<String, Object> map1 = new HashMap<>();
+			map1.put("id", map.get("id")); // 商品ID
+			map1.put("goodsSurplusNum", goodsSurplusNum - 1); // 商品剩余数量-1
+			getBaseDao().update("GoodsExamineMapper.updateGoodsExamineNum", map1);
+			if (goodsSurplusNum == 0) { // 商品数量为0 更新商品状态为已结束
+				Map<String, Object> maps = new HashMap<>();
+				maps.put("id", map.get("id"));
+				maps.put("goodsStatus", "1006"); // 商品结束
+				getBaseDao().update("GoodsExamineMapper.authGoodsExamineInfo", maps); // 更新商品状态为已结束
+			}
 			LOGGER.info("=============订单开始创建==============");
 			// 计算幸运序号
 			Map<String, Object> list = (Map<String, Object>) getBaseDao().queryForObject(
@@ -302,9 +494,10 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 			BigDecimal orderNum = (BigDecimal) list.get("orderNum");
 			Long peopleTotal = (Long) list.get("peopleTotal");
 			Map<String, Object> luckys = new HashMap<>();
-			int luckyMan = orderNum.intValue() / peopleTotal.intValue();
-			if (luckyMan <= 0) {
-				Map<String, Object> list_ = (Map<String, Object>) getBaseDao().queryForList("ZeroSeckillInfoMapper.queryZeroSeckillInfoList", map_);
+			int luckyMan = orderNum.intValue() % peopleTotal.intValue();
+			if (luckyMan == 0) {
+				Map<String, Object> list_ = (Map<String, Object>) getBaseDao().queryForObject(
+						"ZeroSeckillInfoMapper.queryZeroSeckillInfoOne", map_);
 				luckyMan = (int) list_.get("luckyOrderNumber");
 			}
 			luckys.put("luckyMan", luckyMan); // 幸运者

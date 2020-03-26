@@ -222,6 +222,7 @@
       IFNULL( a.wallet_balance, '0' ) AS walletBalance,
       IFNULL( a.red_enve_balance, '0' ) AS redEnveBalance,
       IFNULL( a.advertising_fee, '0' ) AS advertisingFee,
+      IFNULL( a.integral_money, '0' ) AS integralMoney,
       IFNULL( a.STATUS, '' ) AS status,
       IFNULL( a.bind_phone, '' ) AS bindPhone,
       a.crt_time AS crtTime,

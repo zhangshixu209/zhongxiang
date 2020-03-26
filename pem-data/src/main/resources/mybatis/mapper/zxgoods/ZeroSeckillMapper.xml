@@ -30,8 +30,12 @@
         <include refid="Base_Column_List" />,
         b.wallet_balance AS walletBalance,
         b.advertising_fee AS advertisingFee,
+        IFNULL(b.head_img_url, '') AS headImgUrl,
+        IFNULL(b.nickname, b.member_account) AS nickname,
         c.member_account AS shareMemberAccount,
-        d.business_type AS businessType
+        d.business_type AS businessType,
+        (SELECT COUNT(1) FROM zx_app_zero_seckill_info s WHERE s.goods_id = a.id) AS joinNum,
+        (SELECT COUNT(1) FROM zx_app_goods_view_count s WHERE s.zx_goods_id = a.id) AS followNum
     FROM zx_app_zero_seckill a
     LEFT JOIN t_member b ON a.member_account = b.member_account
     LEFT JOIN zx_app_my_share_extend c ON a.member_account = c.cover_member_account
@@ -45,6 +49,9 @@
       </if>
       <if test="goodsTypeId != null and goodsTypeId !=''">
         AND a.goods_type_id = #{goodsTypeId}
+      </if>
+      <if test="goodsDesc != null and goodsDesc !=''">
+        AND a.goods_desc LIKE CONCAT('%',${goodsDesc},'%')
       </if>
       <if test="startTime != null and startTime != ''">
         AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
@@ -70,6 +77,9 @@
       <if test="goodsStatus != null and goodsStatus !=''">
         AND goods_status = #{goodsStatus}
       </if>
+      <if test="goodsDesc != null and goodsDesc !=''">
+        AND a.goods_desc LIKE CONCAT('%',${goodsDesc},'%')
+      </if>
       <if test="startTime != null and startTime != ''">
         AND DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
       </if>
@@ -81,7 +91,8 @@
   <!-- 查询零元秒杀商品详情 -->
   <select id="queryGoodsExamineDetail" parameterType="java.util.Map" resultMap="BaseResultMap">
     select
-    <include refid="Base_Column_List" />
+    <include refid="Base_Column_List" />,
+    (SELECT COUNT(1) FROM zx_app_zero_seckill_info s WHERE s.goods_id = a.id) AS joinNum
     from zx_app_zero_seckill a
     where a.id = #{id,jdbcType=BIGINT}
   </select>
@@ -260,7 +271,7 @@
   <update id="updateGoodsExamineNum" parameterType="java.util.Map">
     update zx_app_zero_seckill
     <set>
-      <if test="goodsSurplusNum != null">
+      <if test="goodsSurplusNum != null or goodsSurplusNum == 0">
         goods_surplus_num = #{goodsSurplusNum},
       </if>
     </set>
@@ -279,7 +290,7 @@
         a.member_account = #{memberAccount}
       </if>
       <if test="goodsStatus != null and goodsStatus !=''">
-        AND a.goods_status = #{goodsStatus}
+        AND a.goods_status IN ${goodsStatus}
       </if>
       <if test="goodsTypeId != null and goodsTypeId !=''">
         AND a.goods_type_id = #{goodsTypeId}
@@ -296,4 +307,80 @@
       LIMIT #{start}, #{limit}
     </if>
   </select>
+
+  <!-- 查询零元秒杀幸运榜列表 -->
+  <select id="queryZeroSeckillLuckyList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        a.id as goodsId,
+        a.goods_desc AS goodsDesc,
+        a.needed_ad_fee AS neededAdFee,
+        a.partake_number AS partakeNumber,
+        a.product_cover_url AS productCoverUrl,
+        DATE_FORMAT(b.crt_time,'%Y年%m月%d日') AS crtTime,
+        IFNULL(c.head_img_url, '') AS headImgUrl,
+        IFNULL(c.nickname, c.member_account) AS nickname
+    FROM
+        zx_app_zero_seckill a
+    LEFT JOIN zx_app_zero_seckill_info b ON a.id = b.goods_id AND b.goods_luck_star = 1
+    LEFT JOIN t_member c ON b.buy_member_account = c.member_account
+    ORDER BY a.crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 查询零元秒杀幸运榜统计 -->
+  <select id="queryZeroSeckillLuckyCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+      COUNT(1)
+    FROM
+    zx_app_zero_seckill a
+    LEFT JOIN zx_app_zero_seckill_info b ON a.id = b.goods_id AND b.goods_luck_star = 1
+    LEFT JOIN t_member c ON b.buy_member_account = c.member_account
+  </select>
+  <!-- 参与详情头部展示 -->
+  <select id="queryPartakeHeadInfo" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        a.lucky_order_number AS luckyOrderNumber,
+        (SELECT COUNT(1) FROM zx_app_zero_seckill_info b WHERE b.goods_id = #{goodsId}) AS partakeNumber,
+        (SELECT SUM(b.lucky_number) FROM zx_app_zero_seckill_info b WHERE b.goods_id = #{goodsId}) AS luckyNumber
+    FROM
+        zx_app_zero_seckill_info a
+    WHERE a.goods_id = #{goodsId} AND a.goods_luck_star = 1
+  </select>
+
+  <!-- 查询关注次数 -->
+  <select id="queryGoodsViewCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+    COUNT(1)
+    FROM zx_app_goods_view_count a
+    <where>
+      <if test="memberAccount != null and memberAccount != ''">
+        a.member_account = #{memberAccount}
+      </if>
+      <if test="goodsId != null and goodsId != ''">
+        AND a.zx_goods_id = #{goodsId}
+      </if>
+    </where>
+  </select>
+
+  <!-- 新增商品关注 -->
+  <insert id="saveGoodsViewCount" parameterType="java.util.Map">
+    insert into zx_app_goods_view_count
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="goodsId != null">
+        zx_goods_id,
+      </if>
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="goodsId != null">
+        #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
 </mapper>

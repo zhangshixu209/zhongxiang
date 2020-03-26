@@ -85,6 +85,33 @@ public class ZxBusinessAuthForm extends BaseForm {
 
 	private String endTime;
 
+	/**
+	 * 审核状态
+	 */
+	private String auditOpinion;
+	/**
+	 * 商品秒杀窗口
+	 */
+	private String seckillWindow;
+	/**
+	 * 免费兑换窗口
+	 */
+	private String freeWindow;
+	/**
+	 * 幸运购物窗口
+	 */
+	private String luckyWindow;
+
+	/**
+	 * 开通窗口总费用
+	 */
+	private Integer openMoneyTotal;
+
+	/**
+	 * 商品分类
+	 */
+	private String goodsType;
+
 	private static final long serialVersionUID = 1L;
 
 	public String getMemberAccount() {
@@ -213,5 +240,53 @@ public class ZxBusinessAuthForm extends BaseForm {
 
 	public void setEndTime(String endTime) {
 		this.endTime = endTime;
+	}
+
+	public String getAuditOpinion() {
+		return auditOpinion;
+	}
+
+	public void setAuditOpinion(String auditOpinion) {
+		this.auditOpinion = auditOpinion;
+	}
+
+	public String getSeckillWindow() {
+		return seckillWindow;
+	}
+
+	public void setSeckillWindow(String seckillWindow) {
+		this.seckillWindow = seckillWindow;
+	}
+
+	public String getFreeWindow() {
+		return freeWindow;
+	}
+
+	public void setFreeWindow(String freeWindow) {
+		this.freeWindow = freeWindow;
+	}
+
+	public String getLuckyWindow() {
+		return luckyWindow;
+	}
+
+	public void setLuckyWindow(String luckyWindow) {
+		this.luckyWindow = luckyWindow;
+	}
+
+	public Integer getOpenMoneyTotal() {
+		return openMoneyTotal;
+	}
+
+	public void setOpenMoneyTotal(Integer openMoneyTotal) {
+		this.openMoneyTotal = openMoneyTotal;
+	}
+
+	public String getGoodsType() {
+		return goodsType;
+	}
+
+	public void setGoodsType(String goodsType) {
+		this.goodsType = goodsType;
 	}
 }

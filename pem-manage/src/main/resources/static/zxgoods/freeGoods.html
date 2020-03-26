@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8"/>
-    <title>零元秒杀管理</title>
+    <title>免费兑换管理</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="Content-Type" content="textml; charset=utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
@@ -144,7 +144,7 @@
 	                        <th>发布数量</th>
 	                        <th>剩余数量</th>
 	                        <th>商品价值</th>
-	                        <th>秒杀总需广告费</th>
+	                        <th>兑换所需广告费</th>
 	                        <th>发布日期</th>
 	                        <th>状态</th>
 	                    </tr>
@@ -190,7 +190,7 @@
 <script src="../assets/lib/common.js?v=#scriptversion#"></script>
 <script src="../assets/js/webuploader.js" type="text/javascript" charset="utf-8"></script>
 <script src="../js/common/right_button.js?v=#scriptversion#" type="text/javascript" charset="utf-8"></script>
-<script src="../js/zxgoods/zeroSeckill.js?v=#scriptversion#"></script>
+<script src="../js/zxgoods/freeGoods.js?v=#scriptversion#"></script>
 
 <!--提现审核弹框-->
 <script id="T_auditCashAudit" type="text/x-handlebars-template">
@@ -271,7 +271,7 @@
         <td>{{goodsReleaseNum}}</td>
         <td>{{goodsSurplusNum}}</td>
         <td>{{goodsParcelPrice}}</td>
-        <td>{{neededAdFeeTotal}}</td>
+        <td>{{neededAdFee}}</td>
         <td>{{crtTime}}</td>
         <td>{{goodsStatusCd goodsStatus}}</td>
     </tr>

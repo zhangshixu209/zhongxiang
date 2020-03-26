@@ -2,6 +2,7 @@ package com.chmei.nzbmanage.zxgoods.bean;
 
 import com.chmei.nzbmanage.common.controller.BaseForm;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -80,6 +81,41 @@ public class ZxLuckyGoodsForm extends BaseForm {
 	 * 创建时间
 	 */
 	private Date crtTime;
+
+	/**
+	 * 座位号
+	 */
+	private Long seatNum;
+
+	/**
+	 * 购买人账号
+	 */
+	private String buyMemberAccount;
+
+	/**
+	 * 幸运数字
+	 */
+	private String luckyNumber;
+
+	/**
+	 * 幸运序号
+	 */
+	private String luckyOrderNumber;
+
+	/**
+	 * 幸运用户标识（1幸运用户，2非幸运用户）
+	 */
+	private String goodsLuckStar;
+
+	/**
+	 * 购物金额
+	 */
+	private BigDecimal shoppingAmount;
+
+	/**
+	 * 活动标识1等待中、2已结束
+	 */
+	private String activityType;
 
 	private static final long serialVersionUID = 1L;
 
@@ -193,5 +229,61 @@ public class ZxLuckyGoodsForm extends BaseForm {
 
 	public void setCrtTime(Date crtTime) {
 		this.crtTime = crtTime;
+	}
+
+	public Long getSeatNum() {
+		return seatNum;
+	}
+
+	public void setSeatNum(Long seatNum) {
+		this.seatNum = seatNum;
+	}
+
+	public String getBuyMemberAccount() {
+		return buyMemberAccount;
+	}
+
+	public void setBuyMemberAccount(String buyMemberAccount) {
+		this.buyMemberAccount = buyMemberAccount;
+	}
+
+	public String getLuckyNumber() {
+		return luckyNumber;
+	}
+
+	public void setLuckyNumber(String luckyNumber) {
+		this.luckyNumber = luckyNumber;
+	}
+
+	public String getLuckyOrderNumber() {
+		return luckyOrderNumber;
+	}
+
+	public void setLuckyOrderNumber(String luckyOrderNumber) {
+		this.luckyOrderNumber = luckyOrderNumber;
+	}
+
+	public String getGoodsLuckStar() {
+		return goodsLuckStar;
+	}
+
+	public void setGoodsLuckStar(String goodsLuckStar) {
+		this.goodsLuckStar = goodsLuckStar;
+	}
+
+	public BigDecimal getShoppingAmount() {
+		return shoppingAmount;
+	}
+
+	public void setShoppingAmount(BigDecimal shoppingAmount) {
+		this.shoppingAmount = shoppingAmount;
+	}
+
+	public String getActivityType() {
+		return activityType;
+	}
+
+	public void setActivityType(String activityType) {
+		this.activityType = activityType;
 	}
 }

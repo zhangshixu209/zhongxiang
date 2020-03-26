@@ -107,4 +107,64 @@ public class ZxLuckyGoodsServiceImpl extends BaseServiceImpl implements IZxLucky
 		input.setMethod("buyLuckyGoodsInfo");
 		getNzbDataService().execute(input, output);
 	}
+
+	/**
+	 * 免单活动
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void partakeFreeSheetAct(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxLuckyGoodsService");
+		input.setMethod("partakeFreeSheetAct");
+		getNzbDataService().execute(input, output);
+	}
+
+	/**
+	 * 免单活动列表（幸运榜可用）
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void queryPartakeFreeSheetList(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxLuckyGoodsService");
+		input.setMethod("queryPartakeFreeSheetList");
+		getNzbDataService().execute(input, output);
+	}
+
+	/**
+	 * 幸运购物幸运榜列表
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void queryLuckyList(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxLuckyGoodsService");
+		input.setMethod("queryLuckyList");
+		getNzbDataService().execute(input, output);
+	}
+
+	/**
+	 * 幸运购物幸运榜详情列表
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void queryLuckyDetail(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxLuckyGoodsService");
+		input.setMethod("queryLuckyDetail");
+		getNzbDataService().execute(input, output);
+	}
 }

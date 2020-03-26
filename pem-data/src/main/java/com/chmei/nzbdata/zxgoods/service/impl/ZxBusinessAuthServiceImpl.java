@@ -4,12 +4,15 @@ import com.chmei.nzbcommon.cmbean.InputDTO;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
+import com.chmei.nzbdata.util.StringUtil;
 import com.chmei.nzbdata.zxgoods.service.IZxBusinessAuthService;
 import com.chmei.nzbdata.zxgoods.service.IZxBusinessAuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -184,12 +187,57 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 	 * @return
 	 * @throws NzbDataException 自定义异常
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void openReleaseWindow(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
+			String openMoneyTotal = (String) params.get("openMoneyTotal");
+			Map<String, Object> user_ = new HashMap<>();
+			user_.put("memberAccount", params.get("memberAccount"));
+			Map<String, Object> item = (Map<String, Object>) getBaseDao().
+					queryForObject("MemberMapper.queryMemberDetail", user_);
+			// 判断钱包余额是否充足:
+			String walletBalance = (String) item.get("walletBalance");
+			if(Double.valueOf(walletBalance) < Double.valueOf(openMoneyTotal)){
+				output.setCode("-1");
+				output.setMsg("钱包余额不足!");
+				return;
+			}
 			int i = getBaseDao().update("BusinessAuthMapper.openReleaseWindow", params);
 			if (i > 0) {
+				Map<String, Object> system = (Map<String, Object>) getBaseDao().queryForObject(
+						"SystemMoneyInfoMapper.querySystemMoneyForAuth", params);
+				if (null != system) {
+					BigDecimal systemInfoMoney = (BigDecimal) system.get("systemInfoMoney");
+					// 系统钱包金额增加
+					system.put("systemInfoMoney", systemInfoMoney.doubleValue() + Double.valueOf(openMoneyTotal));
+					getBaseDao().update("SystemMoneyInfoMapper.updateSystemMoneyInfo", system);
+				} else {
+					// 系统钱包金额增加记录:
+					Map<String, Object> systemMoneyInfo = new HashMap<>();
+					systemMoneyInfo.put("systemInfoId", getSequence());
+					systemMoneyInfo.put("systemInfoAddOrMinus", "+");
+					systemMoneyInfo.put("systemInfoUserId", params.get("memberAccount"));
+					systemMoneyInfo.put("systemInfoMoney", Double.valueOf(openMoneyTotal));
+					systemMoneyInfo.put("systemInfoFrom", "开通秒杀活动保证金");
+					getBaseDao().insert("SystemMoneyInfoMapper.saveSystemMoneyInfo", systemMoneyInfo);
+				}
+				// 扣除当前人钱包金额
+				Map<String, Object> user = new HashMap<>();
+				user.put("memberAccount", params.get("memberAccount"));
+				user.put("walletBalance", Double.valueOf(walletBalance) - Double.valueOf(openMoneyTotal));
+				int k = getBaseDao().update("MemberMapper.updateMemberBalance", user);
+				if(k > 0) {
+					// 钱包扣除金额记录:
+					Map<String, Object> walletMoneyInfo = new HashMap<>();
+					walletMoneyInfo.put("walletInfoId", getSequence());
+					walletMoneyInfo.put("walletInfoAddOrMinus", "-");
+					walletMoneyInfo.put("walletInfoUserId", params.get("memberAccount"));
+					walletMoneyInfo.put("walletInfoMoney", Double.valueOf(openMoneyTotal));
+					walletMoneyInfo.put("walletInfoFrom", "开通秒杀活动保证金");
+					getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
+				}
 				output.setCode("0");
 				output.setMsg("开通成功");
 				return;
@@ -199,5 +247,162 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 		} catch (Exception e) {
 			LOGGER.error("系统错误", e);
 		}
+	}
+
+	/**
+	 * 取消发布窗口
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public void cancelReleaseWindow(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			int k = checkReleaseWindow(params); // 校验是否符合退回发布窗口
+			if(k == 1){
+				output.setCode("-1");
+				output.setMsg("存在未完成订单！");
+				return;
+			} else if (k == 2) {
+				output.setCode("-1");
+				output.setMsg("存在未结束商品！");
+				return;
+			}
+			// 第三步-更新窗口状态
+			int i = getBaseDao().update("BusinessAuthMapper.updateBusinessAuthInfo", params);
+			if (i > 0) {
+				// 第四步-查询开通窗口保证金信息，根据窗口数量计算需要退回商户多少钱, 并更新系统钱包
+				int m = updateWalletBalance(params); // 更新商户钱包、系统钱包
+				if (m > 0) {
+					output.setCode("-1");
+					output.setMsg("取消成功！");
+					return;
+				}
+			}
+			output.setCode("-1");
+			output.setMsg("取消失败");
+		} catch (Exception e) {
+			LOGGER.error("系统错误", e);
+		}
+	}
+
+	/**
+	 * 校验是否符合退回发布窗口
+	 * @param params
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private int checkReleaseWindow(Map<String, Object> params){
+		String goodsType = (String) params.get("goodsType");
+		Map<String, Object> orderMap = new HashMap<>();
+		orderMap.put("sendMemberAccount", params.get("memberAccount"));
+		orderMap.put("orderStatus", "1003");
+		orderMap.put("orderType", goodsType); // 开通类型
+		// 第一步-查询是否有未完成订单
+		Map<String, Object> orderInfo = (Map<String, Object>) getBaseDao().queryForObject(
+				"OrderInfoMapper.queryOrderInfoDetail", orderMap);
+		if (null != orderInfo) {
+			return 1;
+		}
+		String[] goodsArr = {"1001","1002"}; // 待审核、审核通过
+		params.put("goodsStatus", goodsArr);  // 商品当前状态
+		// 第二步-查询是否有正在上架的商品、待审核、审核通过的
+		if("1001".equals(goodsType)){
+			//   1.1 秒杀商品
+			List<Map<String, Object>> seckillList = getBaseDao().queryForList(
+					"GoodsExamineMapper.queryMyReleaseGoodsList", params);
+			if(null != seckillList && seckillList.size() > 0){
+				return 2;
+			}
+		} else if("1002".equals(goodsType)){
+			//   1.2 免费兑换
+			List<Map<String, Object>> freeGoodsList = getBaseDao().queryForList(
+					"FreeGoodsMapper.queryMyReleaseGoodsList", params);
+			if(null != freeGoodsList && freeGoodsList.size() > 0){
+				return 2;
+			}
+		} else if("1003".equals(goodsType)){
+			//   1.3 幸运购物
+			List<Map<String, Object>> luckyGoodsList = getBaseDao().queryForList(
+					"LuckyGoodsMapper.queryMyReleaseGoodsList", params);
+			if(null != luckyGoodsList && luckyGoodsList.size() > 0){
+				return 2;
+			}
+		}
+		return 0;
+	}
+
+	/**
+	 * 计算要返回多少钱
+	 * @param window
+	 * @return
+	 */
+	private static String moneyTotal(String window){
+		String money = "";
+		if (StringUtil.isNotEmpty(window)) {
+			switch (window){
+				case "1" :
+					money = "200";
+					break;
+				case "2" :
+					money = "400";
+					break;
+				default:
+					money = "600";
+					break;
+			}
+		}
+		return money;
+	}
+
+	/**
+	 * 更新商户钱包、系统钱包
+	 * @param params
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private int updateWalletBalance(Map<String, Object> params){
+		Map<String, Object> system = (Map<String, Object>) getBaseDao().queryForObject(
+				"SystemMoneyInfoMapper.querySystemMoneyForAuth", params);
+		String windows = ""; // 窗口信息
+		// 第四步-查询开通窗口保证金信息，根据窗口数量计算需要退回商户多少钱, 并更新系统钱包
+		String goodsType = (String) params.get("goodsType");
+		if("1001".equals(goodsType)){
+			windows = (String) params.get("seckillWindow");
+		} else if("1002".equals(goodsType)){
+			windows = (String) params.get("freeWindow");
+		} else if("1003".equals(goodsType)){
+			windows = (String) params.get("luckyWindow");
+		}
+		String money = moneyTotal(windows); // 校验回退金额
+		BigDecimal systemInfoMoney = (BigDecimal) system.get("systemInfoMoney");
+		// 系统钱包金额减少
+		system.put("systemInfoMoney", systemInfoMoney.doubleValue() - Double.valueOf(money));
+		getBaseDao().update("SystemMoneyInfoMapper.updateSystemMoneyInfo", system);
+		// 查询用户信息
+		Map<String, Object> item = (Map<String, Object>) getBaseDao().
+				queryForObject("MemberMapper.queryMemberDetail", params);
+		String walletBalance = (String) item.get("walletBalance");
+		// 增加当前人钱包金额
+		Map<String, Object> user = new HashMap<>();
+		user.put("memberAccount", params.get("memberAccount"));
+		user.put("walletBalance", Double.valueOf(walletBalance) + Double.valueOf(money));
+		int k = getBaseDao().update("MemberMapper.updateMemberBalance", user);
+		if(k > 0) {
+			// 钱包增加金额记录:
+			Map<String, Object> walletMoneyInfo = new HashMap<>();
+			walletMoneyInfo.put("walletInfoId", getSequence());
+			walletMoneyInfo.put("walletInfoAddOrMinus", "+");
+			walletMoneyInfo.put("walletInfoUserId", params.get("memberAccount"));
+			walletMoneyInfo.put("walletInfoMoney", Double.valueOf(money));
+			walletMoneyInfo.put("walletInfoFrom", "退回秒杀活动保证金");
+			getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
+			return 1;
+		}
+		return 0;
 	}
 }

@@ -130,4 +130,57 @@ public class ZxLuckyGoodsController extends BaseController {
         outputDTO = getOutputDTO(params, "zxLuckyGoodsService", "buyLuckyGoodsInfo");
         return outputDTO;
     }
+
+    /**
+     * 免单活动
+     * @param zxLuckyGoodsForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/partakeFreeSheetAct")
+    public OutputDTO partakeFreeSheetAct(@ModelAttribute ZxLuckyGoodsForm zxLuckyGoodsForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxLuckyGoodsForm);
+        outputDTO = getOutputDTO(params, "zxLuckyGoodsService", "partakeFreeSheetAct");
+        return outputDTO;
+    }
+
+    /**
+     * 免单活动列表（幸运榜可用）
+     * @param zxLuckyGoodsForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/queryPartakeFreeSheetList")
+    public OutputDTO queryPartakeFreeSheetList(@ModelAttribute ZxLuckyGoodsForm zxLuckyGoodsForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxLuckyGoodsForm);
+        outputDTO = getOutputDTO(params, "zxLuckyGoodsService", "queryPartakeFreeSheetList");
+        return outputDTO;
+    }
+
+    /**
+     * 幸运购物列表（幸运榜可用）
+     * @param zxLuckyGoodsForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/queryLuckyList")
+    public OutputDTO queryLuckyList(@ModelAttribute ZxLuckyGoodsForm zxLuckyGoodsForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxLuckyGoodsForm);
+        outputDTO = getOutputDTO(params, "zxLuckyGoodsService", "queryLuckyList");
+        return outputDTO;
+    }
+
+    /**
+     * 幸运购物详情（幸运榜可用）
+     * @param zxLuckyGoodsForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/queryLuckyDetail")
+    public OutputDTO queryLuckyDetail(@ModelAttribute ZxLuckyGoodsForm zxLuckyGoodsForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxLuckyGoodsForm);
+        outputDTO = getOutputDTO(params, "zxLuckyGoodsService", "queryLuckyDetail");
+        return outputDTO;
+    }
+
 }

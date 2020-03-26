@@ -74,7 +74,7 @@ public interface IZxOrderInfoService {
 	void queryMyReleaseGoodsList(InputDTO input, OutputDTO output) throws NzbDataException;
 
 	/**
-	 * 查询我的发布商品列表
+	 * 查询我的发布商品详情
 	 *
 	 * @param input 入參
 	 * @param output 返回对象
@@ -82,5 +82,25 @@ public interface IZxOrderInfoService {
 	 * @return
 	 */
 	void queryMyReleaseOrderDetail(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 用户确认收货
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 * @return
+	 */
+	void userConfirmReceipt(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 查询在途商品
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 * @return
+	 */
+	void queryGoodsInTransitList(InputDTO input, OutputDTO output) throws NzbDataException;
 
 }

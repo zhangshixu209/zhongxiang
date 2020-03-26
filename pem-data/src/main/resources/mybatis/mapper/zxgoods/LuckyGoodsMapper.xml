@@ -30,8 +30,11 @@
       <include refid="Base_Column_List" />,
       b.wallet_balance AS walletBalance,
       b.advertising_fee AS advertisingFee,
+      IFNULL(b.head_img_url, '') AS headImgUrl,
+      IFNULL(b.nickname, b.member_account) AS nickname,
       c.member_account AS shareMemberAccount,
-      d.business_type AS businessType
+      d.business_type AS businessType,
+      (SELECT COUNT(1) FROM zx_app_goods_view_count s WHERE s.zx_goods_id = a.id) AS followNum
     FROM zx_app_lucky_goods a
     LEFT JOIN t_member b ON a.member_account = b.member_account
     LEFT JOIN zx_app_my_share_extend c ON a.member_account = c.cover_member_account
@@ -45,6 +48,9 @@
       </if>
       <if test="goodsTypeId != null and goodsTypeId !=''">
         AND a.goods_type_id = #{goodsTypeId}
+      </if>
+      <if test="goodsDesc != null and goodsDesc !=''">
+        AND a.goods_desc LIKE CONCAT('%',${goodsDesc},'%')
       </if>
       <if test="startTime != null and startTime != ''">
         AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
@@ -74,6 +80,9 @@
       <if test="goodsStatus != null and goodsStatus !=''">
         AND a.goods_status = #{goodsStatus}
       </if>
+      <if test="goodsDesc != null and goodsDesc !=''">
+        AND a.goods_desc LIKE CONCAT('%',${goodsDesc},'%')
+      </if>
       <if test="startTime != null and startTime != ''">
         AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
       </if>
@@ -87,8 +96,8 @@
   <select id="queryLuckyGoodsDetail" parameterType="java.util.Map" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from zx_app_lucky_goods
-    where id = #{id,jdbcType=BIGINT}
+    from zx_app_lucky_goods a
+    where a.id = #{id,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.util.Map">
     delete from zx_app_lucky_goods
@@ -251,7 +260,7 @@
         a.member_account = #{memberAccount}
       </if>
       <if test="goodsStatus != null and goodsStatus !=''">
-        AND a.goods_status = #{goodsStatus}
+        AND a.goods_status IN ${goodsStatus}
       </if>
       <if test="goodsTypeId != null and goodsTypeId !=''">
         AND a.goods_type_id = #{goodsTypeId}
@@ -282,5 +291,220 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <!-- 查询幸运序号最大值 -->
+  <select id="queryPartakeFreeSheetAct" resultType="java.util.Map" parameterType="java.util.Map">
+    SELECT
+	    SUM( lucky_number ) AS orderNum, COUNT( 1 ) AS peopleTotal
+    FROM
+        `zx_app_free_sheet_info`
+    WHERE seat_num = #{seatNum}
+  </select>
+
+  <!-- 免单活动查询一人 -->
+  <select id="queryPartakeFreeSheetOne" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        seat_num as seatNum,
+        buy_member_account as memberAccount,
+        lucky_number as luckyNumber,
+        lucky_order_number as luckyOrderNumber,
+        goods_luck_star as goodsLuckStar,
+        shopping_amount as shoppingAmount,
+        activity_type as activityType,
+        crt_time as crtTime
+    FROM
+    zx_app_free_sheet_info
+    <where>
+      seat_num = #{seatNum}
+    </where>
+    ORDER BY crt_time DESC
+    LIMIT 1
+  </select>
+
+  <!-- 免单活动查询详情 -->
+  <select id="queryPartakeFreeSheetDetail" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.id as id,
+      a.seat_num as seatNum,
+      a.buy_member_account as memberAccount,
+      a.lucky_number as luckyNumber,
+      a.lucky_order_number as luckyOrderNumber,
+      a.goods_luck_star as goodsLuckStar,
+      a.shopping_amount as shoppingAmount,
+      a.activity_type as activityType,
+      a.crt_time as crtTime,
+      b.head_img_url AS headImgUrl,
+      IFNULL(b.nickname,b.member_account) AS nickname
+    FROM
+    zx_app_free_sheet_info a
+    LEFT JOIN t_member b ON a.buy_member_account = b.member_account
+    <where>
+      <if test="seatNum != null and seatNum != ''">
+        a.seat_num = #{seatNum}
+      </if>
+    </where>
+  </select>
+
+  <update id="updateGoodsLuckStar" parameterType="java.util.Map">
+    update zx_app_free_sheet_info
+    <set>
+      <if test="goodsLuckStar != null and goodsLuckStar != ''">
+        goods_luck_star = #{goodsLuckStar,jdbcType=INTEGER},
+      </if>
+      <if test="activityType != null and activityType != ''">
+        activity_type = #{activityType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <where>
+      <if test="id != null and id != ''">
+        id = #{id}
+      </if>
+      <if test="seatNum != null and seatNum != ''">
+        AND seat_num = #{seatNum}
+      </if>
+    </where>
+    where
+  </update>
+
+  <!-- 免单活动查询列表 -->
+  <select id="queryPartakeFreeSheetList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.id as id,
+      a.seat_num as seatNum,
+      a.buy_member_account as memberAccount,
+      a.lucky_number as luckyNumber,
+      a.lucky_order_number as luckyOrderNumber,
+      a.goods_luck_star as goodsLuckStar,
+      a.shopping_amount as shoppingAmount,
+      a.activity_type as activityType,
+      a.crt_time as crtTime,
+      IFNULL(b.head_img_url, '') AS headImgUrl,
+      IFNULL(b.nickname,b.member_account) AS nickname
+    FROM
+    zx_app_free_sheet_info a
+    LEFT JOIN t_member b ON a.buy_member_account = b.member_account
+    <where>
+      <if test="seatNum != null and seatNum != ''">
+        a.seat_num = #{seatNum}
+      </if>
+    </where>
+    ORDER BY a.crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <select id="queryPartakeFreeSheetCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+        COUNT(1)
+    FROM
+    zx_app_free_sheet_info a
+    LEFT JOIN t_member b ON a.buy_member_account = b.member_account
+    <where>
+      <if test="seatNum != null and seatNum != ''">
+        a.seat_num = #{seatNum}
+      </if>
+    </where>
+  </select>
+
+  <!-- 免单活动新增 -->
+  <insert id="partakeFreeSheetAct" parameterType="java.util.Map">
+    insert into zx_app_free_sheet_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="seatNum != null">
+        seat_num,
+      </if>
+      <if test="memberAccount != null">
+        buy_member_account,
+      </if>
+      <if test="luckyNumber != null">
+        lucky_number,
+      </if>
+      <if test="luckyOrderNumber != null">
+        lucky_order_number,
+      </if>
+      <if test="shoppingAmount != null">
+        shopping_amount,
+      </if>
+      <if test="activityType != null">
+        activity_type,
+      </if>
+        crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="seatNum != null">
+        #{seatNum,jdbcType=BIGINT},
+      </if>
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="luckyNumber != null">
+        #{luckyNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="luckyOrderNumber != null">
+        #{luckyOrderNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="shoppingAmount != null">
+        #{shoppingAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="activityType != null">
+        #{activityType,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+
+  <!-- 幸运榜幸运购物列表 -->
+  <select id="queryLuckyList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.id as id,
+      a.seat_num as seatNum,
+      a.buy_member_account as memberAccount,
+      a.lucky_number as luckyNumber,
+      a.lucky_order_number as luckyOrderNumber,
+      a.goods_luck_star as goodsLuckStar,
+      a.shopping_amount as shoppingAmount,
+      a.activity_type as activityType,
+      a.crt_time as crtTime,
+      IFNULL(b.head_img_url, '') AS headImgUrl,
+      IFNULL(b.nickname,b.member_account) AS nickname
+    FROM
+    zx_app_free_sheet_info a
+    LEFT JOIN t_member b ON a.buy_member_account = b.member_account
+    <where>
+      a.goods_luck_star = 1
+    </where>
+    ORDER BY a.crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 幸运榜幸运购物列表 -->
+  <select id="queryLuckyCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+      COUNT(1)
+    FROM
+    zx_app_free_sheet_info a
+    LEFT JOIN t_member b ON a.buy_member_account = b.member_account
+    <where>
+      a.goods_luck_star = 1
+    </where>
+  </select>
+
+  <!-- 参与详情头部展示 -->
+  <select id="queryPartakeHeadInfo" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        a.lucky_order_number AS luckyOrderNumber,
+        (SELECT COUNT(1) FROM zx_app_free_sheet_info b WHERE b.seat_num = #{seatNum}) AS partakeNumber,
+        (SELECT SUM(b.lucky_number) FROM zx_app_free_sheet_info b WHERE b.seat_num = #{seatNum}) AS luckyNumber
+    FROM
+        zx_app_free_sheet_info a
+    WHERE a.seat_num = #{seatNum} AND a.goods_luck_star = 1
+  </select>
 
 </mapper>

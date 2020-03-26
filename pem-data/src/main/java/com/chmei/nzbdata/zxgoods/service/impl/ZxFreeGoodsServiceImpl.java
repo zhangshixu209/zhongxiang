@@ -48,6 +48,7 @@ public class ZxFreeGoodsServiceImpl extends BaseServiceImpl implements IZxFreeGo
 				return;
 			}
 			params.put("id", getSequence()); // 主键ID
+			params.put("goodsStatus", "1001");
 			int i = getBaseDao().insert("FreeGoodsMapper.saveFreeGoodsInfo", params);
 			if (i > 0) {
 				output.setCode("0");
@@ -73,7 +74,7 @@ public class ZxFreeGoodsServiceImpl extends BaseServiceImpl implements IZxFreeGo
 	public void updateFreeGoodsInfo(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
-			int i = getBaseDao().update("FreeGoodsMapper.updateFreeGoodsInfo", params);
+			int i = getBaseDao().update("FreeGoodsMapper.authFreeGoodsInfo", params);
 			if (i > 0) {
 				output.setCode("0");
 				output.setMsg("修改成功");

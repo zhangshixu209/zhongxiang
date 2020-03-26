@@ -61,6 +61,8 @@ public class ZxOrderInfoForm extends BaseForm {
 	 */
 	private Date crtTime;
 
+	private String memberAccount;
+
 	private static final long serialVersionUID = 1L;
 
 	public Long getId() {
@@ -141,5 +143,13 @@ public class ZxOrderInfoForm extends BaseForm {
 
 	public void setCrtTime(Date crtTime) {
 		this.crtTime = crtTime;
+	}
+
+	public String getMemberAccount() {
+		return memberAccount;
+	}
+
+	public void setMemberAccount(String memberAccount) {
+		this.memberAccount = memberAccount;
 	}
 }

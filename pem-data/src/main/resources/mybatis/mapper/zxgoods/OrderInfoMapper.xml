@@ -63,7 +63,17 @@
     select 
     <include refid="Base_Column_List" />
     from zx_app_order_info
-    where id = #{id,jdbcType=BIGINT}
+    <where>
+      <if test="id != null and id != ''">
+        id = #{id,jdbcType=BIGINT}
+      </if>
+      <if test="sendGoodsAccount != null and sendGoodsAccount !=''">
+        AND send_goods_account = #{sendGoodsAccount}
+      </if>
+      <if test="orderStatus != null and orderStatus !=''">
+        AND order_status != #{orderStatus}
+      </if>
+    </where>
   </select>
   <!-- 删除订单信息 -->
   <delete id="delOrderInfoInfo" parameterType="java.util.Map">
@@ -147,61 +157,106 @@
         NOW(),
     </trim>
   </insert>
-  <!-- 编辑订单信息 -->
+  <!-- 查看订单详情信息 -->
+  <select id="queryMyReleaseOrderDetail" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.id AS id,
+      a.send_goods_account AS sendGoodsAccount,
+      a.consig_goods_account AS consigGoodsAccount,
+      a.consig_name AS consigName,
+      a.consig_name_phone AS consigNamePhone,
+      a.consig_address AS consigAddress,
+      a.express_name AS expressName,
+      a.express_number AS expressNumber,
+      a.order_status AS orderStatus,
+      a.order_type AS orderType,
+      a.goods_id AS goodsId,
+      a.crt_time AS crtTime,
+      IFNULL( b.nickname, b.member_account ) AS nickname,
+      b.member_account AS memberAccount,
+      IFNULL( b.head_img_url, '' ) AS headImgUrl
+    FROM
+    zx_app_order_info AS a
+    <if test="sendGoodsAccount != null and sendGoodsAccount != ''">
+      LEFT JOIN t_member AS b ON a.consig_goods_account = b.member_account
+    </if>
+    <if test="consigGoodsAccount != null and consigGoodsAccount != ''">
+      LEFT JOIN t_member AS b ON a.send_goods_account = b.member_account
+    </if>
+    <where>
+      a.id = #{id}
+    </where>
+  </select>
+
+  <!-- 编辑订单详情 -->
   <update id="updateOrderInfoInfo" parameterType="java.util.Map">
     update zx_app_order_info
     <set>
-      <if test="sendGoodsAccount != null">
+      <if test="sendGoodsAccount != null and sendGoodsAccount != ''">
         send_goods_account = #{sendGoodsAccount,jdbcType=VARCHAR},
       </if>
-      <if test="consigGoodsAccount != null">
+      <if test="consigGoodsAccount != null and consigGoodsAccount != ''">
         consig_goods_account = #{consigGoodsAccount,jdbcType=VARCHAR},
       </if>
-      <if test="consigName != null">
+      <if test="consigName != null and consigName != ''">
         consig_name = #{consigName,jdbcType=VARCHAR},
       </if>
-      <if test="consigNamePhone != null">
+      <if test="consigNamePhone != null and consigNamePhone != ''">
         consig_name_phone = #{consigNamePhone,jdbcType=VARCHAR},
       </if>
-      <if test="consigAddress != null">
+      <if test="consigAddress != null and consigAddress != ''">
         consig_address = #{consigAddress,jdbcType=VARCHAR},
       </if>
-      <if test="expressName != null">
+      <if test="expressName != null and expressName != ''">
         express_name = #{expressName,jdbcType=VARCHAR},
       </if>
-      <if test="expressNumber != null">
+      <if test="expressNumber != null and expressNumber != ''">
         express_number = #{expressNumber,jdbcType=VARCHAR},
       </if>
-      <if test="orderStatus != null">
+      <if test="orderStatus != null and orderStatus != ''">
         order_status = #{orderStatus,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-  <!-- 查询我的发布订单详情 -->
-  <select id="queryMyReleaseOrderDetail" parameterType="java.util.Map" resultType="java.util.Map">
+  <!-- 查询在途商品 -->
+  <select id="queryGoodsInTransitList" resultType="java.util.Map" parameterType="java.util.Map">
     SELECT
         a.id AS id,
-        a.send_goods_account AS sendGoodsAccount,
-        a.consig_goods_account AS consigGoodsAccount,
-        a.consig_name AS consigName,
-        a.consig_name_phone AS consigNamePhone,
-        a.consig_address AS consigAddress,
-        a.express_name AS expressName,
-        a.express_number AS expressNumber,
         a.order_status AS orderStatus,
         a.order_type AS orderType,
-        a.goods_id AS goodsId,
-        a.crt_time AS crtTime,
-        IFNULL( b.nickname, b.member_account ) AS nickname,
-        b.member_account AS memberAccount,
-        IFNULL( b.head_img_url, '' ) AS headImgUrl
+        b.product_cover_url AS productCoverUrlMS,
+        b.needed_ad_fee AS neededAdFeeMs,
+        c.product_cover_url AS productCoverUrlFree,
+        c.needed_ad_fee AS neededAdFeeFree,
+        d.product_cover_url AS productCoverUrlLucky,
+        d.goods_parcel_price AS goodsParcelPrice,
+        DATE_FORMAT(a.crt_time,'%Y年%m月%d日') AS crtTime
     FROM
-        zx_app_order_info AS a
-	LEFT JOIN t_member AS b ON a.consig_goods_account = b.member_account
-	<where>
-      a.id = #{id}
+        zx_app_order_info a
+    LEFT JOIN zx_app_zero_seckill b ON a.goods_id = b.id
+    LEFT JOIN zx_app_free_goods c ON a.goods_id = c.id
+    LEFT JOIN zx_app_lucky_goods d ON a.goods_id = d.id
+    <where>
+      a.consig_goods_account = #{memberAccount}
+    </where>
+    ORDER BY a.crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 查询在途商品统计 -->
+  <select id="queryGoodsInTransitCount" resultType="int" parameterType="java.util.Map">
+    SELECT
+        COUNT(1)
+    FROM
+    zx_app_order_info a
+    LEFT JOIN zx_app_zero_seckill b ON a.goods_id = b.id
+    LEFT JOIN zx_app_free_goods c ON a.goods_id = c.id
+    LEFT JOIN zx_app_lucky_goods d ON a.goods_id = d.id
+    <where>
+      a.consig_goods_account = #{memberAccount}
     </where>
   </select>
 

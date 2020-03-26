@@ -88,7 +88,12 @@
     <include refid="Base_Column_List" />
     FROM zx_app_business_auth
     <where>
-      id = #{id}
+      <if test="id != null and id != ''">
+        id = #{id}
+      </if>
+      <if test="memberAccount != null and memberAccount != ''">
+        AND member_account = #{memberAccount}
+      </if>
     </where>
   </select>
   <!-- 删除商家认证 -->

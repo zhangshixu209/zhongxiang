@@ -72,4 +72,44 @@ public interface IZxLuckyGoodsService {
 	 * @return
 	 */
 	void buyLuckyGoodsInfo(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 免单活动
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 * @return
+	 */
+	void partakeFreeSheetAct(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 免单活动列表（幸运榜可用）
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 * @return
+	 */
+	void queryPartakeFreeSheetList(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 幸运购物幸运榜列表
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 * @return
+	 */
+	void queryLuckyList(InputDTO input, OutputDTO output) throws NzbDataException;
+
+	/**
+	 * 幸运购物幸运榜详情列表
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 * @return
+	 */
+	void queryLuckyDetail(InputDTO input, OutputDTO output) throws NzbDataException;
 }

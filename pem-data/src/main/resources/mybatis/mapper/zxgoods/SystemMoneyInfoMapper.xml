@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SystemMoneyInfoMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="system_info_id" jdbcType="BIGINT" property="systemInfoId" />
+    <result column="system_info_user_id" jdbcType="VARCHAR" property="systemInfoUserId" />
+    <result column="system_info_from" jdbcType="VARCHAR" property="systemInfoFrom" />
+    <result column="system_info_add_or_minus" jdbcType="VARCHAR" property="systemInfoAddOrMinus" />
+    <result column="system_info_money" jdbcType="DECIMAL" property="systemInfoMoney" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="system_info_date" jdbcType="TIMESTAMP" property="systemInfoDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    system_info_id, system_info_user_id, system_info_from, system_info_add_or_minus, 
+    system_info_money, system_info_date
+  </sql>
+  <!-- 查询系统钱包明细列表 -->
+  <select id="querySystemMoneyList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zx_app_system_money_info
+    <where>
+      system_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(advertising_info_date,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+    </where>
+    ORDER BY system_info_date DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 查询系统钱包明细列表 -->
+  <select id="querySystemMoneyCount" parameterType="java.util.Map" resultType="int">
+    select
+        COUNT(1)
+    from zx_app_system_money_info
+    <where>
+      system_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(advertising_info_date,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.util.Map">
+    delete from zx_app_system_money_info
+    where system_info_id = #{systemInfoId,jdbcType=BIGINT}
+  </delete>
+  <!-- 新增系统钱包信息 -->
+  <insert id="saveSystemMoneyInfo" parameterType="java.util.Map">
+    insert into zx_app_system_money_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="systemInfoId != null">
+        system_info_id,
+      </if>
+      <if test="systemInfoUserId != null">
+        system_info_user_id,
+      </if>
+      <if test="systemInfoFrom != null">
+        system_info_from,
+      </if>
+      <if test="systemInfoAddOrMinus != null">
+        system_info_add_or_minus,
+      </if>
+      <if test="systemInfoMoney != null">
+        system_info_money,
+      </if>
+      <if test="orderId != null">
+        order_id,
+      </if>
+        system_info_date,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="systemInfoId != null">
+        #{systemInfoId,jdbcType=BIGINT},
+      </if>
+      <if test="systemInfoUserId != null">
+        #{systemInfoUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="systemInfoFrom != null">
+        #{systemInfoFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="systemInfoAddOrMinus != null">
+        #{systemInfoAddOrMinus,jdbcType=VARCHAR},
+      </if>
+      <if test="systemInfoMoney != null">
+        #{systemInfoMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <!-- 修改钱包余额 -->
+  <update id="updateSystemMoneyInfo" parameterType="java.util.Map">
+    update zx_app_system_money_info
+    <set>
+      <if test="systemInfoMoney != null or systemInfoMoney == 0">
+        system_info_money = #{systemInfoMoney,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where system_info_id = #{systemInfoId,jdbcType=BIGINT}
+  </update>
+  <!-- 通过订单ID查询系统钱包明细 -->
+  <select id="querySystemMoneyDetail" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from zx_app_system_money_info
+    <where>
+      order_id = #{orderId,jdbcType=BIGINT}
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(advertising_info_date,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+    </where>
+    ORDER BY system_info_date DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+
+  <!-- 通过订单ID查询系统钱包明细 -->
+  <select id="querySystemMoneyForAuth" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from zx_app_system_money_info
+    <where>
+      system_info_from = '开通秒杀活动保证金'
+      AND system_info_user_id = #{memberAccount}
+    </where>
+  </select>
+</mapper>
