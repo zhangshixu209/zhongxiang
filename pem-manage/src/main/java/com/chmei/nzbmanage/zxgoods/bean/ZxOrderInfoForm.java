@@ -63,6 +63,22 @@ public class ZxOrderInfoForm extends BaseForm {
 
 	private String memberAccount;
 
+	/**
+	 * 快递名称
+	 */
+	private String expCode;
+
+	/**
+	 * 快递单号
+ 	 */
+	private String expNo;
+
+	private String buyMemberAccount;
+
+	private Long goodsId;
+
+	private String goodsStatus;
+
 	private static final long serialVersionUID = 1L;
 
 	public Long getId() {
@@ -151,5 +167,45 @@ public class ZxOrderInfoForm extends BaseForm {
 
 	public void setMemberAccount(String memberAccount) {
 		this.memberAccount = memberAccount;
+	}
+
+	public String getExpCode() {
+		return expCode;
+	}
+
+	public void setExpCode(String expCode) {
+		this.expCode = expCode;
+	}
+
+	public String getExpNo() {
+		return expNo;
+	}
+
+	public void setExpNo(String expNo) {
+		this.expNo = expNo;
+	}
+
+	public String getBuyMemberAccount() {
+		return buyMemberAccount;
+	}
+
+	public void setBuyMemberAccount(String buyMemberAccount) {
+		this.buyMemberAccount = buyMemberAccount;
+	}
+
+	public Long getGoodsId() {
+		return goodsId;
+	}
+
+	public void setGoodsId(Long goodsId) {
+		this.goodsId = goodsId;
+	}
+
+	public String getGoodsStatus() {
+		return goodsStatus;
+	}
+
+	public void setGoodsStatus(String goodsStatus) {
+		this.goodsStatus = goodsStatus;
 	}
 }

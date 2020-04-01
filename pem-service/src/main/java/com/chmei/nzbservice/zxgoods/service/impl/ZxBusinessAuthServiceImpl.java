@@ -4,9 +4,13 @@ import com.chmei.nzbcommon.cmbean.InputDTO;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbservice.common.exception.NzbServiceException;
 import com.chmei.nzbservice.common.service.impl.BaseServiceImpl;
+import com.chmei.nzbservice.util.StringUtil;
 import com.chmei.nzbservice.zxgoods.service.IZxBusinessAuthService;
 import com.chmei.nzbservice.zxgoods.service.IZxGoodsTypeService;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 广告分红service接口实现
@@ -92,6 +96,15 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 		input.setService("zxBusinessAuthService");
 		input.setMethod("queryBusinessAuthDetail");
 		getNzbDataService().execute(input, output);
+		String credNum = (String) output.getItem().get("credNum");
+		String phoneNumber = (String) output.getItem().get("phoneNumber");
+		// 脱敏
+		if (!StringUtil.isEmpty(credNum)) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("credNum", StringUtil.desensitizationCredNum(credNum));
+			map.put("phoneNumber", StringUtil.desensitivePhone(phoneNumber));
+			output.setItem(map);
+		}
 	}
 
 	/**

@@ -71,7 +71,7 @@ public class ZxPushMessageServiceImpl extends BaseServiceImpl implements IZxPush
 				output.setItems(list);
 			} else {
 				output.setCode("-1");
-				output.setMsg("查询失败");
+				output.setMsg("暂无未读消息");
 			}
 		} catch (Exception e) {
 			LOGGER.error("系统异常", e);

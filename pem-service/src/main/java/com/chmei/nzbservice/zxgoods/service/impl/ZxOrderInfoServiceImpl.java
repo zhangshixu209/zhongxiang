@@ -151,4 +151,19 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 		input.setMethod("queryGoodsInTransitList");
 		getNzbDataService().execute(input, output);
 	}
+
+	/**
+	 * 查询订单物流信息
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbServiceException 自定义异常
+	 */
+	@Override
+	public void queryOrderLogisticsInfo(InputDTO input, OutputDTO output) throws NzbServiceException {
+		input.setService("zxOrderInfoService");
+		input.setMethod("queryOrderLogisticsInfo");
+		getNzbDataService().execute(input, output);
+	}
 }

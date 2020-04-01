@@ -144,4 +144,16 @@ public class ZxOrderInfoController extends BaseController {
         return outputDTO;
     }
 
+    /**
+     * 查询订单物流信息
+     * @param zxOrderInfoForm 参数
+     * @return outputDTO 返回结果
+     */
+    @RequestMapping("/queryOrderLogisticsInfo")
+    public OutputDTO queryOrderLogisticsInfo(@ModelAttribute ZxOrderInfoForm zxOrderInfoForm) {
+        OutputDTO outputDTO = new OutputDTO();
+        Map<String, Object> params = BeanUtil.convertBean2Map(zxOrderInfoForm);
+        outputDTO = getOutputDTO(params, "zxOrderInfoService", "queryOrderLogisticsInfo");
+        return outputDTO;
+    }
 }

@@ -144,7 +144,7 @@
     </set>
     <where>
       <if test="teamParentId != null and teamParentId != ''">
-        team_parent_id = #{teamParentId,jdbcType=VARCHAR},
+        team_parent_id = #{teamParentId,jdbcType=VARCHAR}
       </if>
       <if test="teamRecommendedUserId != null and teamRecommendedUserId != ''">
         AND team_recommended_user_id = #{teamRecommendedUserId}

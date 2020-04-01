@@ -81,6 +81,11 @@ public class ZxFreeGoodsForm extends BaseForm {
 	 */
 	private Date crtTime;
 
+	/**
+	 * 审核原因
+	 */
+	private String  auditOpinion;
+
 	private static final long serialVersionUID = 1L;
 
 	public Long getId() {
@@ -193,5 +198,13 @@ public class ZxFreeGoodsForm extends BaseForm {
 
 	public void setCrtTime(Date crtTime) {
 		this.crtTime = crtTime;
+	}
+
+	public String getAuditOpinion() {
+		return auditOpinion;
+	}
+
+	public void setAuditOpinion(String auditOpinion) {
+		this.auditOpinion = auditOpinion;
 	}
 }

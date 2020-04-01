@@ -117,6 +117,11 @@ public class ZxLuckyGoodsForm extends BaseForm {
 	 */
 	private String activityType;
 
+	/**
+	 * 审核原因
+	 */
+	private String  auditOpinion;
+
 	private static final long serialVersionUID = 1L;
 
 	public Long getId() {
@@ -285,5 +290,13 @@ public class ZxLuckyGoodsForm extends BaseForm {
 
 	public void setActivityType(String activityType) {
 		this.activityType = activityType;
+	}
+
+	public String getAuditOpinion() {
+		return auditOpinion;
+	}
+
+	public void setAuditOpinion(String auditOpinion) {
+		this.auditOpinion = auditOpinion;
 	}
 }

@@ -28,13 +28,15 @@
   <select id="queryGoodsExamineList" parameterType="java.util.Map" resultMap="BaseResultMap">
     SELECT
         <include refid="Base_Column_List" />,
+        a.crt_time AS releaseTime,
         b.wallet_balance AS walletBalance,
         b.advertising_fee AS advertisingFee,
         IFNULL(b.head_img_url, '') AS headImgUrl,
         IFNULL(b.nickname, b.member_account) AS nickname,
         c.member_account AS shareMemberAccount,
         d.business_type AS businessType,
-        (SELECT COUNT(1) FROM zx_app_zero_seckill_info s WHERE s.goods_id = a.id) AS joinNum,
+        '1001' AS goodsType,
+        (SELECT COUNT(1) FROM zx_app_zero_seckill_info s WHERE s.goods_id = a.id AND a.goods_surplus_num = s.rotation_num) AS joinNum,
         (SELECT COUNT(1) FROM zx_app_goods_view_count s WHERE s.zx_goods_id = a.id) AS followNum
     FROM zx_app_zero_seckill a
     LEFT JOIN t_member b ON a.member_account = b.member_account
@@ -51,7 +53,7 @@
         AND a.goods_type_id = #{goodsTypeId}
       </if>
       <if test="goodsDesc != null and goodsDesc !=''">
-        AND a.goods_desc LIKE CONCAT('%',${goodsDesc},'%')
+        AND a.goods_desc LIKE CONCAT('%',#{goodsDesc},'%')
       </if>
       <if test="startTime != null and startTime != ''">
         AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &gt;= #{startTime}
@@ -78,7 +80,7 @@
         AND goods_status = #{goodsStatus}
       </if>
       <if test="goodsDesc != null and goodsDesc !=''">
-        AND a.goods_desc LIKE CONCAT('%',${goodsDesc},'%')
+        AND goods_desc LIKE CONCAT('%',#{goodsDesc},'%')
       </if>
       <if test="startTime != null and startTime != ''">
         AND DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
@@ -279,18 +281,41 @@
   </update>
 
   <!-- 查询我发布的秒杀商品信息 -->
-  <select id="queryMyReleaseGoodsList" parameterType="java.util.Map" resultMap="BaseResultMap">
+  <select id="queryMyReleaseGoodsList" parameterType="java.util.Map" resultType="java.util.Map">
     SELECT
-        <include refid="Base_Column_List" />,
+        a.id AS id,
+        a.member_account AS memberAccount,
+        a.product_cover_url AS productCoverUrl,
+        a.goods_desc AS goodsDesc,
+        a.is_have_shop AS isHaveShop,
+        a.goods_url AS goodsUrl,
+        a.goods_explain_img AS goodsExplainImg,
+        a.goods_parcel_price AS goodsParcelPrice,
+        a.partake_number AS partakeNumber,
+        a.needed_ad_fee AS neededAdFee,
+        a.needed_ad_fee_total AS neededAdFeeTotal,
+        a.goods_release_num AS goodsReleaseNum,
+        a.goods_surplus_num AS goodsSurplusNum,
+        a.goods_type_id AS goodsTypeId,
+        a.goods_status AS goodsStatus,
+        a.audit_opinion AS auditOpinion,
+        DATE_FORMAT(a.crt_time, '%Y年%m月%d日') AS crtTime,
+        a.crt_time AS releaseTime,
         '1001' AS goodsType,
-        (SELECT COUNT(1) FROM zx_app_order_info b WHERE b.goods_id = a.id AND b.order_status = '1001') AS dReleaseGoods
+        IFNULL(b.head_img_url, '') AS headImgUrl,
+        IFNULL(b.nickname, b.member_account) AS nickname,
+        (SELECT COUNT(1) FROM zx_app_goods_view_count s WHERE s.zx_goods_id = a.id) AS followNum,
+        (SELECT COUNT(1) FROM zx_app_order_info b WHERE b.goods_id = a.id AND b.order_status = '1001') AS deliverGoods,
+        (SELECT COUNT(1) FROM zx_app_order_info b WHERE b.goods_id = a.id AND b.order_status = '1002') AS shippedStatus,
+        (SELECT COUNT(1) FROM zx_app_order_info b WHERE b.goods_id = a.id AND b.order_status = '1003') AS receivedGoods
     FROM zx_app_zero_seckill a
+    LEFT JOIN t_member b ON a.member_account = b.member_account
     <where>
       <if test="memberAccount != null and memberAccount != ''">
         a.member_account = #{memberAccount}
       </if>
       <if test="goodsStatus != null and goodsStatus !=''">
-        AND a.goods_status IN ${goodsStatus}
+        AND a.goods_status IN (${goodsStatus})
       </if>
       <if test="goodsTypeId != null and goodsTypeId !=''">
         AND a.goods_type_id = #{goodsTypeId}
@@ -316,13 +341,17 @@
         a.needed_ad_fee AS neededAdFee,
         a.partake_number AS partakeNumber,
         a.product_cover_url AS productCoverUrl,
+        b.goods_luck_star AS goodsLuckStar,
         DATE_FORMAT(b.crt_time,'%Y年%m月%d日') AS crtTime,
         IFNULL(c.head_img_url, '') AS headImgUrl,
         IFNULL(c.nickname, c.member_account) AS nickname
     FROM
-        zx_app_zero_seckill a
-    LEFT JOIN zx_app_zero_seckill_info b ON a.id = b.goods_id AND b.goods_luck_star = 1
+      zx_app_zero_seckill_info b
+    LEFT JOIN zx_app_zero_seckill a ON a.id = b.goods_id
     LEFT JOIN t_member c ON b.buy_member_account = c.member_account
+    <where>
+      b.goods_luck_star = 1
+    </where>
     ORDER BY a.crt_time DESC
     <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
       LIMIT #{start}, #{limit}
@@ -333,9 +362,12 @@
     SELECT
       COUNT(1)
     FROM
-    zx_app_zero_seckill a
-    LEFT JOIN zx_app_zero_seckill_info b ON a.id = b.goods_id AND b.goods_luck_star = 1
+    zx_app_zero_seckill_info b
+    LEFT JOIN zx_app_zero_seckill a ON a.id = b.goods_id
     LEFT JOIN t_member c ON b.buy_member_account = c.member_account
+    <where>
+      b.goods_luck_star = 1
+    </where>
   </select>
   <!-- 参与详情头部展示 -->
   <select id="queryPartakeHeadInfo" parameterType="java.util.Map" resultType="java.util.Map">

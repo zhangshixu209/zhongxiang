@@ -206,23 +206,49 @@ $("body").on('click','#offline_btn',function() {
 		Chief.layer.tips('只能下架审核通过的商品！');
 		return false;
 	}
+	var paramId = {
+		id: id
+	};
+	Chief.ajax.postJson('/lucky/queryLuckyGoodsDetail',paramId, function(data) {
+		if('0' == data.code){
+			var htmls = Handlebars.compile($("#T_rejectOrderCode").html());
+			var ht = htmls(data.item);
+			//弹窗
+			Chief.layer.newEmptyDiv("下架原因", ht,'600px',"270px");
+		}else {
+			Chief.layer.tips("系统异常", 1500);
+		}
+	});
+});
+
+//下架确定功能
+function doSubmit(orderStatus){
+	var id = $("#id").val();
 	var param = {
 		id: id,
-		goodsStatus: "1005"
+		goodsStatus: orderStatus,
+		auditOpinion: $("#auditOpinion_D").val(),
+		goodsDesc: $("#goodsDesc_D").val(),
+		memberAccount: $("#memberAccount_D").val()
+	}
+	var auditOpinion_D = $("#auditOpinion_D").val();
+	if (isDataNull(auditOpinion_D)) {
+		Chief.layer.tips("请填写下架原因!");
+		return false;
 	}
 	updateOnlineStatus(param);
-});
+}
 
 // 上架/下架状态修改
 function updateOnlineStatus(param){
 	Chief.ajax.postJson("/lucky/updateLuckyGoodsInfo", param, function (data) {
 		if("0" == data.code){
-			Chief.layer.tips("保存成功", 1500);
+			Chief.layer.tips("处理成功", 1500);
 			setTimeout('outTips()', 2000 );
 		} else if("-1" == data.code){
 			Chief.layer.tips(data.msg, 2000);
 		} else {
-			Chief.layer.tips("保存失败", 1500);
+			Chief.layer.tips("处理失败", 1500);
 		}
 	});
 }
@@ -234,4 +260,7 @@ function isDataNull(str) {
 	}
 	return false;
 }
-
+//取消按钮关闭弹窗
+function doCancel(){
+	Chief.layer.close();
+}

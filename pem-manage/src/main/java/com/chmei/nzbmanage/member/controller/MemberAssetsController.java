@@ -102,12 +102,14 @@ public class MemberAssetsController extends BaseController {
         LinkedHashMap<String, String> map = new LinkedHashMap<>();
         map.put("walletAmount", "钱包总余额");
         map.put("allPackets", "未抢完的红包");
-        map.put("activateMoney", "开通广告分红手续费");
+//        map.put("activateMoney", "开通广告分红手续费");
         map.put("applyMoney", "申请分红手续费");
         map.put("txsxMoney", "提现手续费");
         map.put("groupMoney", "群升级费用");
         map.put("reflectMoney", "待审核提现");
         map.put("relReflectMoney", "实际提现总金额");
+        map.put("systemMoney", "幸运购物");
+        map.put("seckillMoney", "商家保证金");
         map.put("balance", "=");
         map.put("totalMoney", "会员充值总金额");
         map.put("type", "状态");

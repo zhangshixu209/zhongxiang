@@ -94,6 +94,9 @@
       <if test="memberAccount != null and memberAccount != ''">
         AND member_account = #{memberAccount}
       </if>
+      <!--<if test="authStatus != null and authStatus !=''">
+        AND auth_status = #{authStatus}
+      </if>-->
     </where>
   </select>
   <!-- 删除商家认证 -->
@@ -253,6 +256,23 @@
       </if>
       <if test="luckyWindow != null and luckyWindow != '' or luckyWindow == 0">
         lucky_window = #{luckyWindow,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <!-- 商家认证开通发布窗口 -->
+  <update id="cancelReleaseWindow" parameterType="java.util.Map">
+    update zx_app_business_auth
+    <set>
+      <if test="seckillWindow != null and seckillWindow != ''">
+        seckill_window = '0',
+      </if>
+      <if test="freeWindow != null and freeWindow != ''">
+        free_window = '0',
+      </if>
+      <if test="luckyWindow != null and luckyWindow != ''">
+        lucky_window = '0',
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

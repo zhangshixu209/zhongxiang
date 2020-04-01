@@ -44,6 +44,31 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 		try {
 			int i = getBaseDao().update("GoodsExamineMapper.authGoodsExamineInfo", params);
 			if (i > 0) {
+				// 审核状态
+				String goodsStatus = (String) params.get("goodsStatus");
+				if("1002".equals(goodsStatus)){
+					String message = "您发布的“" + params.get("goodsDesc") + "”商品已成功上架！";
+					Map<String, Object> map = new HashMap<>();
+					map.put("id", getSequence());
+					map.put("messageTitle", "通知消息");
+					map.put("messageContent", message);
+					map.put("messageStatus", "1");
+					map.put("messageType", Constants.MESSAGE_TYPE_1009);
+					map.put("memberAccount", params.get("memberAccount"));
+					// 添加推送消息
+					getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
+				} else if("1003".equals(goodsStatus)) {
+					String message = "您所发布的“" + params.get("goodsDesc") + "”商品未通过审核！如有疑问请联系我们！拒绝原因："+params.get("auditOpinion");
+					Map<String, Object> map = new HashMap<>();
+					map.put("id", getSequence());
+					map.put("messageTitle", "通知消息");
+					map.put("messageContent", message);
+					map.put("messageStatus", "1");
+					map.put("messageType", Constants.MESSAGE_TYPE_1009);
+					map.put("memberAccount", params.get("memberAccount"));
+					// 添加推送消息
+					getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
+				}
 				output.setCode("0");
 				output.setMsg("保存成功");
 				return;
@@ -89,6 +114,20 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 			}
 			int i = getBaseDao().update("GoodsExamineMapper.authGoodsExamineInfo", params);
 			if (i > 0) {
+				// 审核状态
+				String goodsStatus = (String) params.get("goodsStatus");
+				if("1005".equals(goodsStatus)) {
+					String message = "您所发布的“" + params.get("goodsDesc") + "”商品已被下架！如有疑问请联系我们！下架原因原因："+params.get("auditOpinion");
+					Map<String, Object> map = new HashMap<>();
+					map.put("id", getSequence());
+					map.put("messageTitle", "通知消息");
+					map.put("messageContent", message);
+					map.put("messageStatus", "1");
+					map.put("messageType", Constants.MESSAGE_TYPE_1009);
+					map.put("memberAccount", params.get("memberAccount"));
+					// 添加推送消息
+					getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
+				}
 				output.setCode("0");
 				output.setMsg("下架成功");
 				return;
@@ -166,18 +205,15 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 			if (i > 0) {
 				List<Map<String, Object>> list = getBaseDao().queryForList("GoodsExamineMapper.queryGoodsExamineList", params);
 				String buyMemberAccount = (String) params.get("buyMemberAccount"); // APP当前登录人账号
-				if (StringUtil.isNotEmpty(buyMemberAccount)) {
-					for (Map<String, Object> map : list) {
-						Map<String, Object> result = new HashMap<>();
-						int joinNum = (int) map.get("joinNum");     // 参与人数
-						int partakeNumber = (int) map.get("partakeNumber"); // 总人数
-						int supNum = partakeNumber - joinNum; // 如果参与人数够了
-						if(supNum == 0){
-							map.put("supNum", 0);  // 剩余人数
-							map.put("joinNum", 0); // 参与人数
-						}
-						result.put("goodsId", map.get("id"));
-						result.put("buyMemberAccount", params.get("buyMemberAccount"));
+				for (Map<String, Object> map : list) {
+					Map<String, Object> result = new HashMap<>();
+					long joinNum = (long) map.get("joinNum");     // 参与人数
+					int partakeNumber = (int) map.get("partakeNumber"); // 总人数
+					long supNum = partakeNumber - joinNum; // 如果参与人数够了
+					map.put("supNum", supNum);
+					result.put("goodsId", map.get("id"));
+					result.put("buyMemberAccount", params.get("buyMemberAccount"));
+					if (StringUtil.isNotEmpty(buyMemberAccount)) {
 						int isBuy = getBaseDao().getTotalCount("ZeroSeckillInfoMapper.queryZeroSeckillIsBuy", result);
 						if (isBuy > 0) {
 							map.put("isBuy", "1"); // 已参与该活动
@@ -255,9 +291,9 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 				return;
 			}
 			// TODO 总人数=购买人数时，开始抽奖
-			int joinNum = (int) map.get("joinNum");     // 参与人数
+			long joinNum = (long) map.get("joinNum");     // 参与人数
 			int partakeNumber = (int) map.get("partakeNumber"); // 总人数
-			int supNum = partakeNumber - joinNum; // 如果参与人数够了
+			long supNum = partakeNumber - joinNum; // 如果参与人数够了
 			int goodsSurplusNum = (int) map.get("goodsSurplusNum"); // 商品剩余数量
 			if (goodsSurplusNum > 0) { // 剩余数量
 				if (supNum > 0) {
@@ -377,7 +413,7 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 			int i = getBaseDao().getTotalCount("GoodsExamineMapper.queryGoodsViewCount", params);
 			if (i > 0) {
 				output.setCode("-1");
-				output.setMsg("已关注！");
+				output.setMsg("已关注");
 				return;
 			}
 			// 新增众享信息浏览次数
@@ -415,43 +451,61 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 				output.setMsg("请开通发布窗口！");
 				return;
 			}
-			String[] goodsArr = {"1001","1002"}; // 待审核、审核通过
+			String goodsArr = "1001,1002"; // 待审核、审核通过
 			params.put("goodsStatus", goodsArr);  // 商品当前状态
 			if("1001".equals(goodsType)){
 				//   1.1 秒杀商品
 				List<Map<String, Object>> seckillList = getBaseDao().queryForList(
 						"GoodsExamineMapper.queryMyReleaseGoodsList", params);
-				if(null != seckillList && seckillList.size() > 0){
-					String seckillWindow = (String) map.get("seckillWindow");
-					if (seckillList.size() >= Integer.valueOf(seckillWindow)) {
-						output.setCode("-1");
-						output.setMsg("发布商品数量上限！");
-						return;
+				String seckillWindow = (String) map.get("seckillWindow");
+				if (null != seckillWindow && Integer.valueOf(seckillWindow) > 0) {
+					if(null != seckillList && seckillList.size() > 0){
+						if (seckillList.size() >= Integer.valueOf(seckillWindow)) {
+							output.setCode("-1");
+							output.setMsg("发布商品数量上限！");
+							return;
+						}
 					}
+				} else {
+					output.setCode("-1");
+					output.setMsg("请开通发布窗口！");
+					return;
 				}
 			} else if("1002".equals(goodsType)){
 				//   1.2 免费兑换
 				List<Map<String, Object>> freeGoodsList = getBaseDao().queryForList(
 						"FreeGoodsMapper.queryMyReleaseGoodsList", params);
-				if(null != freeGoodsList && freeGoodsList.size() > 0){
-					String freeWindow = (String) map.get("freeWindow");
-					if (freeGoodsList.size() >= Integer.valueOf(freeWindow)) {
-						output.setCode("-1");
-						output.setMsg("发布商品数量上限！");
-						return;
+				String freeWindow = (String) map.get("freeWindow");
+				if (null != freeWindow && Integer.valueOf(freeWindow) > 0) {
+					if(null != freeGoodsList && freeGoodsList.size() > 0){
+						if (freeGoodsList.size() >= Integer.valueOf(freeWindow)) {
+							output.setCode("-1");
+							output.setMsg("发布商品数量上限！");
+							return;
+						}
 					}
+				} else {
+					output.setCode("-1");
+					output.setMsg("请开通发布窗口！");
+					return;
 				}
 			} else if("1003".equals(goodsType)){
 				//   1.3 幸运购物
 				List<Map<String, Object>> luckyGoodsList = getBaseDao().queryForList(
 						"LuckyGoodsMapper.queryMyReleaseGoodsList", params);
-				if(null != luckyGoodsList && luckyGoodsList.size() > 0){
-					String luckyWindow = (String) map.get("luckyWindow");
-					if (luckyGoodsList.size() >= Integer.valueOf(luckyWindow)) {
-						output.setCode("-1");
-						output.setMsg("发布商品数量上限！");
-						return;
+				String luckyWindow = (String) map.get("luckyWindow");
+				if (null != luckyWindow && Integer.valueOf(luckyWindow) > 0) {
+					if(null != luckyGoodsList && luckyGoodsList.size() > 0){
+						if (luckyGoodsList.size() >= Integer.valueOf(luckyWindow)) {
+							output.setCode("-1");
+							output.setMsg("发布商品数量上限！");
+							return;
+						}
 					}
+				} else {
+					output.setCode("-1");
+					output.setMsg("请开通发布窗口！");
+					return;
 				}
 			}
 			output.setCode("0");
@@ -473,15 +527,16 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 		int goodsSurplusNum = (int) result.get("goodsSurplusNum"); // 商品剩余数量
 		Map<String, Object> map_ = new HashMap<>();
 		map_.put("goodsId", map.get("id"));
-		int joinNum = (int) result.get("joinNum");     // 参与人数
+		long joinNum = (long) result.get("joinNum");     // 参与人数
 		int partakeNumber = (int) result.get("partakeNumber"); // 总人数
-		int supNum = partakeNumber - joinNum; // 如果参与人数够了
+		long supNum = partakeNumber - joinNum; // 如果参与人数够了
 		if(supNum == 0) {
 			Map<String, Object> map1 = new HashMap<>();
 			map1.put("id", map.get("id")); // 商品ID
 			map1.put("goodsSurplusNum", goodsSurplusNum - 1); // 商品剩余数量-1
 			getBaseDao().update("GoodsExamineMapper.updateGoodsExamineNum", map1);
-			if (goodsSurplusNum == 0) { // 商品数量为0 更新商品状态为已结束
+			int goodsSurplusNumSur = goodsSurplusNum - 1;
+			if (goodsSurplusNumSur == 0) { // 商品数量为0 更新商品状态为已结束
 				Map<String, Object> maps = new HashMap<>();
 				maps.put("id", map.get("id"));
 				maps.put("goodsStatus", "1006"); // 商品结束
@@ -491,7 +546,7 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 			// 计算幸运序号
 			Map<String, Object> list = (Map<String, Object>) getBaseDao().queryForObject(
 					"ZeroSeckillInfoMapper.querySumGoodsLuckStar", map_);
-			BigDecimal orderNum = (BigDecimal) list.get("orderNum");
+			Double orderNum = (Double) list.get("orderNum");
 			Long peopleTotal = (Long) list.get("peopleTotal");
 			Map<String, Object> luckys = new HashMap<>();
 			int luckyMan = orderNum.intValue() % peopleTotal.intValue();
@@ -514,13 +569,15 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 						"ReceivingAddressMapper.queryAddressIsDefault", luckys);
 				// 创建订单信息
 				Map<String, Object> orderInfo = new HashMap<>();
+				String orderArea = (String) address.get("consigArea");
+				orderArea = orderArea.replace("$", "");
 				orderInfo.put("id", getSequence());
 				orderInfo.put("sendGoodsAccount", result.get("memberAccount"));
 				orderInfo.put("consigGoodsAccount", address.get("memberAccount"));
 				orderInfo.put("consigName", address.get("consigName"));
 				orderInfo.put("consigNamePhone", address.get("consigNamePhone"));
-				orderInfo.put("consigArea", address.get("consigArea"));
-				orderInfo.put("consigAddress", address.get("consigAddress"));
+//				orderInfo.put("consigArea", address.get("consigArea"));
+				orderInfo.put("consigAddress", orderArea+address.get("consigAddress"));
 				orderInfo.put("orderStatus", "1001");      // 待发货
 				orderInfo.put("orderType", "1001");        // 零元秒杀
 				orderInfo.put("goodsId", map.get("id"));   // 商品ID
@@ -531,4 +588,5 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 		}
 		return 0;
 	}
+
 }

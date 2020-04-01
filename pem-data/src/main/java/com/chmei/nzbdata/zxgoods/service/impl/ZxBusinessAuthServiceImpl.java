@@ -67,7 +67,8 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 	public void saveBusinessInfo(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
-			params.put("id", getSequence()); // 主键ID
+			params.put("id", getSequence());  // 主键ID
+			params.put("authStatus", "1001"); // 待审核状态
 			int i = getBaseDao().insert("BusinessAuthMapper.saveBusinessInfo", params);
 			if (i > 0) {
 				output.setCode("0");
@@ -192,7 +193,7 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 	public void openReleaseWindow(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
-			String openMoneyTotal = (String) params.get("openMoneyTotal");
+			Integer openMoneyTotal = (Integer) params.get("openMoneyTotal");
 			Map<String, Object> user_ = new HashMap<>();
 			user_.put("memberAccount", params.get("memberAccount"));
 			Map<String, Object> item = (Map<String, Object>) getBaseDao().
@@ -272,13 +273,25 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 				output.setMsg("存在未结束商品！");
 				return;
 			}
+			Map<String, Object> winMap = new HashMap<>();
+			winMap.put("id", params.get("id"));
+			winMap.put("goodsType", params.get("goodsType"));
+			winMap.put("memberAccount", params.get("memberAccount"));
+			String goodsType = (String) params.get("goodsType");
+			if("1001".equals(goodsType)){
+				winMap.put("seckillWindow", params.get("cancelReleaseWindow"));
+			} else if("1002".equals(goodsType)){
+				winMap.put("freeWindow", params.get("cancelReleaseWindow"));
+			} else if("1003".equals(goodsType)){
+				winMap.put("luckyWindow", params.get("cancelReleaseWindow"));
+			}
 			// 第三步-更新窗口状态
-			int i = getBaseDao().update("BusinessAuthMapper.updateBusinessAuthInfo", params);
+			int i = getBaseDao().update("BusinessAuthMapper.cancelReleaseWindow", winMap);
 			if (i > 0) {
 				// 第四步-查询开通窗口保证金信息，根据窗口数量计算需要退回商户多少钱, 并更新系统钱包
-				int m = updateWalletBalance(params); // 更新商户钱包、系统钱包
+				int m = updateWalletBalance(winMap); // 更新商户钱包、系统钱包
 				if (m > 0) {
-					output.setCode("-1");
+					output.setCode("0");
 					output.setMsg("取消成功！");
 					return;
 				}
@@ -299,16 +312,16 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 	private int checkReleaseWindow(Map<String, Object> params){
 		String goodsType = (String) params.get("goodsType");
 		Map<String, Object> orderMap = new HashMap<>();
-		orderMap.put("sendMemberAccount", params.get("memberAccount"));
+		orderMap.put("sendGoodsAccount", params.get("memberAccount"));
 		orderMap.put("orderStatus", "1003");
 		orderMap.put("orderType", goodsType); // 开通类型
 		// 第一步-查询是否有未完成订单
-		Map<String, Object> orderInfo = (Map<String, Object>) getBaseDao().queryForObject(
+		List<Map<String, Object>> orderInfo = getBaseDao().queryForList(
 				"OrderInfoMapper.queryOrderInfoDetail", orderMap);
-		if (null != orderInfo) {
+		if (null != orderInfo && orderInfo.size() > 0) {
 			return 1;
 		}
-		String[] goodsArr = {"1001","1002"}; // 待审核、审核通过
+		String goodsArr = "1001,1002"; // 待审核、审核通过
 		params.put("goodsStatus", goodsArr);  // 商品当前状态
 		// 第二步-查询是否有正在上架的商品、待审核、审核通过的
 		if("1001".equals(goodsType)){
@@ -368,7 +381,7 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 	private int updateWalletBalance(Map<String, Object> params){
 		Map<String, Object> system = (Map<String, Object>) getBaseDao().queryForObject(
 				"SystemMoneyInfoMapper.querySystemMoneyForAuth", params);
-		String windows = ""; // 窗口信息
+		String windows = ""; // 窗口信息 cancelReleaseWindow
 		// 第四步-查询开通窗口保证金信息，根据窗口数量计算需要退回商户多少钱, 并更新系统钱包
 		String goodsType = (String) params.get("goodsType");
 		if("1001".equals(goodsType)){
@@ -383,9 +396,11 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 		// 系统钱包金额减少
 		system.put("systemInfoMoney", systemInfoMoney.doubleValue() - Double.valueOf(money));
 		getBaseDao().update("SystemMoneyInfoMapper.updateSystemMoneyInfo", system);
+		Map<String, Object> users = new HashMap<>();
+		users.put("memberAccount", params.get("memberAccount"));
 		// 查询用户信息
 		Map<String, Object> item = (Map<String, Object>) getBaseDao().
-				queryForObject("MemberMapper.queryMemberDetail", params);
+				queryForObject("MemberMapper.queryMemberDetail", users);
 		String walletBalance = (String) item.get("walletBalance");
 		// 增加当前人钱包金额
 		Map<String, Object> user = new HashMap<>();

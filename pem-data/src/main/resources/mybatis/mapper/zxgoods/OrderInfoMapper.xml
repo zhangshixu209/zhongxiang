@@ -20,25 +20,40 @@
     express_name, express_number, order_status, order_type, goods_id, crt_time
   </sql>
   <!-- 查询订单列表 -->
-  <select id="queryOrderInfoList" parameterType="java.util.Map" resultMap="BaseResultMap">
+  <select id="queryOrderInfoList" parameterType="java.util.Map" resultType="java.util.Map">
     SELECT
-    <include refid="Base_Column_List" />
-    FROM zx_app_order_info
+      a.id AS id,
+      a.send_goods_account AS sendGoodsAccount,
+      a.consig_goods_account AS consigGoodsAccount,
+      a.consig_name AS consigName,
+      a.consig_name_phone AS consigNamePhone,
+      a.consig_address AS consigAddress,
+      a.express_name AS expressName,
+      a.express_number AS expressNumber,
+      a.order_status AS orderStatus,
+      a.order_type AS orderType,
+      a.goods_id AS goodsId,
+      a.crt_time AS crtTime,
+      IFNULL( b.nickname, b.member_account ) AS nickname,
+      b.member_account AS memberAccount,
+      IFNULL( b.head_img_url, '' ) AS headImgUrl
+    FROM zx_app_order_info a
+    LEFT JOIN t_member b ON a.consig_goods_account = b.member_account
     <where>
       <if test="id != null and id != ''">
-        id = #{id}
+        a.id = #{id}
       </if>
       <if test="goodsId != null and goodsId != ''">
-        AND goods_id = #{goodsId}
+        AND a.goods_id = #{goodsId}
       </if>
       <if test="sendGoodsAccount != null and sendGoodsAccount != ''">
-        AND send_goods_account = #{sendGoodsAccount}
+        AND a.send_goods_account = #{sendGoodsAccount}
       </if>
       <if test="consigGoodsAccount != null and consigGoodsAccount != ''">
-        AND consig_goods_account = #{consigGoodsAccount}
+        AND a.consig_goods_account = #{consigGoodsAccount}
       </if>
     </where>
-    ORDER BY crt_time DESC
+    ORDER BY a.crt_time DESC
     <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
       LIMIT #{start}, #{limit}
     </if>
@@ -49,6 +64,12 @@
         COUNT(1)
     FROM zx_app_order_info
     <where>
+      <if test="id != null and id != ''">
+        id = #{id}
+      </if>
+      <if test="goodsId != null and goodsId != ''">
+        AND goods_id = #{goodsId}
+      </if>
       <if test="sendGoodsAccount != null and sendGoodsAccount != ''">
         send_goods_account = #{sendGoodsAccount}
       </if>
@@ -72,6 +93,9 @@
       </if>
       <if test="orderStatus != null and orderStatus !=''">
         AND order_status != #{orderStatus}
+      </if>
+      <if test="orderType != null and orderType !=''">
+        AND order_type = #{orderType}
       </if>
     </where>
   </select>

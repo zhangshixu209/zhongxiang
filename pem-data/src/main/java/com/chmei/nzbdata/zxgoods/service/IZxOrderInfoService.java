@@ -103,4 +103,14 @@ public interface IZxOrderInfoService {
 	 */
 	void queryGoodsInTransitList(InputDTO input, OutputDTO output) throws NzbDataException;
 
+	/**
+	 * 查询订单物流信息
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 * @return
+	 */
+	void queryOrderLogisticsInfo(InputDTO input, OutputDTO output) throws NzbDataException;
+
 }

@@ -112,6 +112,11 @@ public class ZxBusinessAuthForm extends BaseForm {
 	 */
 	private String goodsType;
 
+	/**
+	 * 取消窗口数量
+	 */
+	private String cancelReleaseWindow;
+
 	private static final long serialVersionUID = 1L;
 
 	public String getMemberAccount() {
@@ -288,5 +293,13 @@ public class ZxBusinessAuthForm extends BaseForm {
 
 	public void setGoodsType(String goodsType) {
 		this.goodsType = goodsType;
+	}
+
+	public String getCancelReleaseWindow() {
+		return cancelReleaseWindow;
+	}
+
+	public void setCancelReleaseWindow(String cancelReleaseWindow) {
+		this.cancelReleaseWindow = cancelReleaseWindow;
 	}
 }

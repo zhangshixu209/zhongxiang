@@ -69,6 +69,12 @@ function saveRotationChart(){
 	if(!flag) {
 		return false;
 	}
+	var partnerUrl = $("#partnerUrl").val();
+	var RegExp = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+	if (RegExp.test(partnerUrl) == false) {
+		Chief.layer.tips("您输入的链接格式不正确，请重新输入！");
+		return false;
+	}
 	var filePaths = $("#filePaths").val();
 	if(isDataNull(filePaths)){
 		Chief.layer.tips("请上传LOGO！");
@@ -155,6 +161,12 @@ $('.pull-right').on('click','#edit_btn', function (){
 function updateRotationChart(){
 	var flag = $("#editRotationChartForm").validate().form(); //若全部通过验证则form方法返回true
 	if(!flag) {
+		return false;
+	}
+	var partnerUrl = $("#partnerUrl_D").val();
+	var RegExp = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+	if (RegExp.test(partnerUrl) == false) {
+		Chief.layer.tips("您输入的链接格式不正确，请重新输入！");
 		return false;
 	}
 	var filePaths = $("#filePaths").val();

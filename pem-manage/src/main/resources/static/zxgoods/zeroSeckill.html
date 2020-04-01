@@ -75,11 +75,11 @@
         </div>-->
         <div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
             <label class="text-right w100s" >发布人账号</label>
-            <input type="text" class="howlong" id="userAccount" name="userAccount">
+            <input type="text" class="howlong" id="memberAccount" name="memberAccount">
         </div>
         <div class="form-group col-xs-6 col-sm-4 col-md-3 newshh">
             <label class="text-right w100s" >审核类型</label>
-            <select class="howlong" id="auditType" name="auditType">
+            <select class="howlong" id="auditType" name="goodsStatus">
                 <option value="">请选择</option>
                 <option value="1001">待审核</option>
                 <option value="1002">审核通过</option>
@@ -197,7 +197,8 @@
     <div class="popup_outline">
         <form class="clearfix" id="auditCashAuditForm" name="auditCashAuditForm" style="padding-top:18px;">
             <input type="hidden" value="{{id}}" name="id">
-            <input type="hidden" value="{{cashAmount}}" name="cashAmount">
+            <input type="hidden" value="{{goodsDesc}}" name="goodsDesc">
+            <input type="hidden" value="{{memberAccount}}" name="memberAccount">
             <div class="col-sm-12">
                 <label class="col-sm-3 text-right" for="">发布人：</label>
                 <div class="col-sm-8">
@@ -248,6 +249,26 @@
     <div class="btnrongqi btnWrap">
         <button class="btn"  onclick="updateCashAudit('1003')">审核不通过</button>
         <button class="btn btn-danger ml10 nofloat"  onclick="updateCashAudit('1002');">通过</button>
+    </div>
+</script>
+
+<script id="T_rejectOrderCode" type="text/x-handlebars-template">
+    <form class="clearfix" id="addWorkOrderForm" name="addWorkOrderForm" style="padding-top:18px;">
+        <div class="col-sm-12">
+            <input type="hidden" id="id" name="id" value="{{id}}">
+            <input type="hidden" id="goodsDesc_D" value="{{goodsDesc}}" name="goodsDesc">
+            <input type="hidden" id="memberAccount_D" value="{{memberAccount}}" name="memberAccount">
+            <label class="col-sm-3 text-right" for="">下架原因：</label>
+            <div class="col-sm-8">
+                <div class="clearfix">
+                    <textarea class="" cols="45" rows="5" name="auditOpinion" id="auditOpinion_D" maxlength="200" placeholder="最多支持200个字"></textarea>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="btnrongqi btnWrap">
+        <button class="btn" id="" onclick="doCancel()">取消</button>
+        <button class="btn btn-danger ml10 nofloat" onclick="doSubmit(1005);">确定</button>
     </div>
 </script>
 

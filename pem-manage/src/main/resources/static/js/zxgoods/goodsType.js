@@ -50,6 +50,11 @@ function dialog(title, ht) {
 	$(".popup_outline").css("cssText", "height:" + popup_outline_height + "!important;");
 }
 
+//取消按钮关闭弹窗
+function doCancel(){
+	Chief.layer.close();
+}
+
 //新增按钮
 $('.pull-right').on('click','#add_btn', function (){
 	var htmls = Handlebars.compile($("#T_addRotationChart").html());

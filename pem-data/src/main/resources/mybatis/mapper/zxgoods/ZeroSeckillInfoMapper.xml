@@ -67,7 +67,7 @@
         IFNULL(MAX( lucky_order_number ) , 0)AS maxLuckyOrderNumber
     FROM
         zx_app_zero_seckill_info
-    WHERE goods_id = #{goodsId} AND rotation_num = #{rotationNum}
+    WHERE goods_id = #{id} AND rotation_num = #{rotationNum}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.util.Map">
     delete from zx_app_zero_seckill_info

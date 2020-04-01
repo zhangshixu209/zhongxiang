@@ -197,10 +197,10 @@ public class ZxReceivingAddressServiceImpl extends BaseServiceImpl implements IZ
 				Map<String, Object> result = new HashMap<>();
 				result.put("id", map.get("id"));
 				result.put("isDefault", 0);
-				getBaseDao().update("ReceivingAddressMapper.updateReceivingAddressInfo", result);
+				getBaseDao().update("ReceivingAddressMapper.setDefaultAddress", result);
 			}
 			// 设置新的默认地址
-			int i = getBaseDao().update("ReceivingAddressMapper.updateReceivingAddressInfo", params);
+			int i = getBaseDao().update("ReceivingAddressMapper.setDefaultAddress", params);
 			if (i > 0) {
 				output.setCode("0");
 				output.setMsg("修改成功");

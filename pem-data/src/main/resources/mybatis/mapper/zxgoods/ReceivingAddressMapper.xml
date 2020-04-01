@@ -118,9 +118,6 @@
       <if test="consigAddress != null and consigAddress != ''">
         consig_address = #{consigAddress,jdbcType=VARCHAR},
       </if>
-      <if test="isDefault != null and isDefault != '' or isDefault == 0">
-        is_default = #{isDefault,jdbcType=INTEGER},
-      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -133,5 +130,16 @@
   <select id="queryAddressIsDefault" parameterType="java.util.Map" resultMap="BaseResultMap">
     SELECT <include refid="Base_Column_List" /> FROM zx_app_receiving_address WHERE member_account = #{memberAccount} AND is_default = 1
   </select>
+
+  <!-- 设置默认收货地址 -->
+  <update id="setDefaultAddress" parameterType="java.util.Map">
+    update zx_app_receiving_address
+    <set>
+      <if test="isDefault != null and isDefault != '' or isDefault == 0">
+        is_default = #{isDefault,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
 
 </mapper>

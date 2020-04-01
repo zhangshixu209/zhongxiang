@@ -1,9 +1,13 @@
 package com.chmei.nzbdata.zxgoods.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.chmei.nzbcommon.cmbean.InputDTO;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
+import com.chmei.nzbdata.util.KdniaoTrackQueryAPI;
+import com.chmei.nzbdata.util.StringUtil;
 import com.chmei.nzbdata.zxgoods.service.IZxOrderInfoService;
 import com.chmei.nzbdata.zxgoods.service.IZxOrderInfoService;
 import org.slf4j.Logger;
@@ -11,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -65,6 +70,7 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 	public void updateOrderInfoInfo(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
+			params.put("orderStatus", "1002"); // 发货状态
 			int i = getBaseDao().update("OrderInfoMapper.updateOrderInfoInfo", params);
 			if (i > 0) {
 				output.setCode("0");
@@ -166,21 +172,50 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 		List<Map<String, Object>> listAll = new ArrayList<>(); // 重新封装红包list
 		try {
 			//   1.1 秒杀商品
-			List<Map<String, Object>> seckillList = getBaseDao().queryForList(
-					"GoodsExamineMapper.queryMyReleaseGoodsList", params);
+			List<Map<String, Object>> seckillList;
+			if (StringUtil.isNotEmpty((String) params.get("buyMemberAccount"))) {
+				seckillList = getBaseDao().queryForList(
+						"GoodsExamineMapper.queryGoodsExamineList", params);
+				for (Map<String, Object> map : seckillList) {
+					Map<String, Object> result = new HashMap<>();
+					long joinNum = (long) map.get("joinNum");     // 参与人数
+					int partakeNumber = (int) map.get("partakeNumber"); // 总人数
+					long supNum = partakeNumber - joinNum; // 如果参与人数够了
+					map.put("supNum", supNum);
+					result.put("goodsId", map.get("id"));
+					result.put("buyMemberAccount", params.get("buyMemberAccount"));
+					if (StringUtil.isNotEmpty((String) params.get("buyMemberAccount"))) {
+						int isBuy = getBaseDao().getTotalCount("ZeroSeckillInfoMapper.queryZeroSeckillIsBuy", result);
+						if (isBuy > 0) {
+							map.put("isBuy", "1"); // 已参与该活动
+						} else {
+							map.put("isBuy", "0"); // 未参与该活动
+						}
+					}
+				}
+			} else {
+				seckillList = getBaseDao().queryForList(
+						"GoodsExamineMapper.queryMyReleaseGoodsList", params);
+			}
 			//   1.2 免费兑换
 			List<Map<String, Object>> freeGoodsList = getBaseDao().queryForList(
 					"FreeGoodsMapper.queryMyReleaseGoodsList", params);
 			//   1.3 幸运购物
 			List<Map<String, Object>> luckyGoodsList = getBaseDao().queryForList(
 					"LuckyGoodsMapper.queryMyReleaseGoodsList", params);
-			listAll.addAll(seckillList);
-			listAll.addAll(freeGoodsList);
-			listAll.addAll(luckyGoodsList);
+			if(null != seckillList && seckillList.size() > 0){
+				listAll.addAll(seckillList);
+			}
+			if(null != freeGoodsList && freeGoodsList.size() > 0){
+				listAll.addAll(freeGoodsList);
+			}
+			if(null != luckyGoodsList && luckyGoodsList.size() > 0){
+				listAll.addAll(luckyGoodsList);
+			}
 			// 排序
 			listAll.sort((Map<String, Object> o1, Map<String, Object> o2) -> {
-				long beginMillisecond = ((Date) o1.get("crtTime")).getTime();
-				long endMillisecond = ((Date) o2.get("crtTime")).getTime();
+				long beginMillisecond = ((Date) o1.get("releaseTime")).getTime();
+				long endMillisecond = ((Date) o2.get("releaseTime")).getTime();
 				if(beginMillisecond > endMillisecond){
 					return -1;
 				}
@@ -234,9 +269,11 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 			params.put("orderStatus", "1003"); // 确认收货
 			int i = getBaseDao().update("OrderInfoMapper.updateOrderInfoInfo", params);
 			if (i > 0) {
+				Map<String, Object> map_ = new HashMap<>();
+				map_.put("id", params.get("id"));
 				// 查询订单详情
 				Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
-						"OrderInfoMapper.queryOrderInfoDetail", params);
+						"OrderInfoMapper.queryOrderInfoDetail", map_);
 				Map<String, Object> user_ = new HashMap<>();
 				user_.put("memberAccount", map.get("sendGoodsAccount"));
 				// 查询用户信息
@@ -245,10 +282,14 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 				String advertisingMoney = (String) item.get("advertisingFee"); // 广告费
 				String orderType = (String) map.get("orderType");
 				if ("1001".equals(orderType)) {
+					Map<String, Object> seckill = new HashMap<>();
+					seckill.put("id", map.get("goodsId"));
+					Map<String, Object> result1 = (Map<String, Object>) getBaseDao().queryForObject(
+							"GoodsExamineMapper.queryGoodsExamineDetail", seckill);
 					// 增加商家广告费金额
 					Map<String, Object> user1 = new HashMap<>();
 					user1.put("memberAccount", map.get("sendGoodsAccount"));
-					user1.put("advertisingFee", Double.valueOf(advertisingMoney) + Double.valueOf(map.get("neededAdFee")+""));
+					user1.put("advertisingFee", Double.valueOf(advertisingMoney) + Double.valueOf(result1.get("neededAdFee")+""));
 					int m = getBaseDao().update("MemberMapper.updateMemberBalance", user1);
 					if(m > 0) {
 						// 记录广告费增加记录:
@@ -256,15 +297,19 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 						adRecord1.put("advertisingInfoId", getSequence());
 						adRecord1.put("advertisingInfoAddOrMinus", "+");
 						adRecord1.put("advertisingInfoUserId", map.get("sendGoodsAccount"));
-						adRecord1.put("advertisingInfoMoney", Double.valueOf(map.get("neededAdFee")+""));
+						adRecord1.put("advertisingInfoMoney", Double.valueOf(result1.get("neededAdFee")+""));
 						adRecord1.put("advertisingInfoFrom", "发布秒杀商品");
 						getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord1);
 					}
 				} else if ("1002".equals(orderType)){
+					Map<String, Object> free = new HashMap<>();
+					free.put("id", map.get("goodsId"));
+					Map<String, Object> result2 = (Map<String, Object>) getBaseDao().queryForObject(
+							"FreeGoodsMapper.queryFreeGoodsDetail", free);
 					// 增加商家广告费金额
 					Map<String, Object> user1 = new HashMap<>();
 					user1.put("memberAccount", map.get("sendGoodsAccount"));
-					user1.put("advertisingFee", Double.valueOf(advertisingMoney) + Double.valueOf(map.get("neededAdFee")+""));
+					user1.put("advertisingFee", Double.valueOf(advertisingMoney) + Double.valueOf(result2.get("neededAdFee")+""));
 					int m = getBaseDao().update("MemberMapper.updateMemberBalance", user1);
 					if (m > 0) {
 						// 记录广告费增加记录:
@@ -272,14 +317,18 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 						adRecord_.put("advertisingInfoId", getSequence());
 						adRecord_.put("advertisingInfoAddOrMinus", "+");
 						adRecord_.put("advertisingInfoUserId", map.get("sendGoodsAccount"));
-						adRecord_.put("advertisingInfoMoney", Double.valueOf(map.get("neededAdFee")+""));
+						adRecord_.put("advertisingInfoMoney", Double.valueOf(result2.get("neededAdFee")+""));
 						adRecord_.put("advertisingInfoFrom", "发布兑换商品");
 						getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord_);
 					}
 				} else if ("1003".equals(orderType)) {
+					Map<String, Object> lucky = new HashMap<>();
+					lucky.put("id", map.get("goodsId"));
+					Map<String, Object> result3 = (Map<String, Object>) getBaseDao().queryForObject(
+							"LuckyGoodsMapper.queryLuckyGoodsDetail", lucky);
 					Map<String, Object> maps = new HashMap<>();
 					maps.put("orderId", map.get("id")); // 订单ID
-					maps.put("goodsParcelPrice", map.get("goodsParcelPrice"));     // 支付金额
+					maps.put("goodsParcelPrice", result3.get("goodsParcelPrice"));     // 支付金额
 					maps.put("consigGoodsAccount", map.get("consigGoodsAccount")); // 收货人账号
 					maps.put("sendGoodsAccount", map.get("sendGoodsAccount"));     // 发布人账号
 					luckyGoodsInfo(maps); // 幸运购物逻辑处理
@@ -313,6 +362,53 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 				output.setItems(list);
 			}
 			output.setTotal(i);
+		} catch (Exception e) {
+			LOGGER.error("系统错误", e);
+		}
+	}
+
+	/**
+	 * 查询订单物流信息
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void queryOrderLogisticsInfo(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		KdniaoTrackQueryAPI api = new KdniaoTrackQueryAPI();
+		try {
+			String expCode = (String) params.get("expressName"); //第一个参数是快递公司简称（YD -- 韵达速递）
+			String expNo = (String) params.get("expressNumber");     //第二个参数是需要查询的快递单号
+			String result = api.getOrderTracesByJson(expCode, expNo);
+			JSONObject jsonObject = JSONObject.parseObject(result);
+			List<Map<String, Object>> list = new ArrayList<>();
+			if(jsonObject.containsKey("ShipperCode")){
+				JSONArray Traces = jsonObject.getJSONArray("Traces");
+				for(int i = 0; i < Traces.size(); i++) {
+					Map<String, Object> map = new HashMap<>();
+					JSONObject object = (JSONObject) Traces.get(i);
+					String AcceptTime = object.getString("AcceptTime");
+					String AcceptStation = object.getString("AcceptStation");
+					SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					Date d2 = sdf2.parse(AcceptTime);
+					map.put("logisticsTime", d2); // 快递时间
+					map.put("logistics", AcceptStation);  // 快递信息
+					list.add(map);
+				}
+			}
+			// 排序
+			list.sort((Map<String, Object> o1, Map<String, Object> o2) -> {
+				long beginMillisecond = ((Date) o1.get("logisticsTime")).getTime();
+				long endMillisecond = ((Date) o2.get("logisticsTime")).getTime();
+				if(beginMillisecond > endMillisecond){
+					return -1;
+				}
+				return 1;
+			});
+			output.setItems(list);
 		} catch (Exception e) {
 			LOGGER.error("系统错误", e);
 		}

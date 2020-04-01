@@ -103,6 +103,13 @@ public class ZxGoodsExamineForm extends BaseForm {
 	 */
 	private String goodsType;
 
+	/**
+	 * 审核原因
+	 */
+	private String  auditOpinion;
+
+	private String buyMemberAccount;
+
 	private static final long serialVersionUID = 1L;
 
 	public Long getId() {
@@ -255,5 +262,21 @@ public class ZxGoodsExamineForm extends BaseForm {
 
 	public void setGoodsType(String goodsType) {
 		this.goodsType = goodsType;
+	}
+
+	public String getAuditOpinion() {
+		return auditOpinion;
+	}
+
+	public void setAuditOpinion(String auditOpinion) {
+		this.auditOpinion = auditOpinion;
+	}
+
+	public String getBuyMemberAccount() {
+		return buyMemberAccount;
+	}
+
+	public void setBuyMemberAccount(String buyMemberAccount) {
+		this.buyMemberAccount = buyMemberAccount;
 	}
 }

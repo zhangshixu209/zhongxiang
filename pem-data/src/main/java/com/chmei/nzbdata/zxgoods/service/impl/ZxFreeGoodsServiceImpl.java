@@ -4,6 +4,7 @@ import com.chmei.nzbcommon.cmbean.InputDTO;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
+import com.chmei.nzbdata.util.Constants;
 import com.chmei.nzbdata.zxgoods.service.IZxFreeGoodsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +77,42 @@ public class ZxFreeGoodsServiceImpl extends BaseServiceImpl implements IZxFreeGo
 		try {
 			int i = getBaseDao().update("FreeGoodsMapper.authFreeGoodsInfo", params);
 			if (i > 0) {
+				// 审核状态
+				String goodsStatus = (String) params.get("goodsStatus");
+				if("1002".equals(goodsStatus)){
+					String message = "您发布的“" + params.get("goodsDesc") + "”商品已成功上架！";
+					Map<String, Object> map = new HashMap<>();
+					map.put("id", getSequence());
+					map.put("messageTitle", "通知消息");
+					map.put("messageContent", message);
+					map.put("messageStatus", "1");
+					map.put("messageType", Constants.MESSAGE_TYPE_1009);
+					map.put("memberAccount", params.get("memberAccount"));
+					// 添加推送消息
+					getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
+				} else if("1003".equals(goodsStatus)) {
+					String message = "您所发布的“" + params.get("goodsDesc") + "”商品未通过审核！如有疑问请联系我们！拒绝原因："+params.get("auditOpinion");
+					Map<String, Object> map = new HashMap<>();
+					map.put("id", getSequence());
+					map.put("messageTitle", "通知消息");
+					map.put("messageContent", message);
+					map.put("messageStatus", "1");
+					map.put("messageType", Constants.MESSAGE_TYPE_1009);
+					map.put("memberAccount", params.get("memberAccount"));
+					// 添加推送消息
+					getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
+				} else if("1005".equals(goodsStatus)) {
+					String message = "您所发布的“" + params.get("goodsDesc") + "”商品已被下架！如有疑问请联系我们！下架原因原因："+params.get("auditOpinion");
+					Map<String, Object> map = new HashMap<>();
+					map.put("id", getSequence());
+					map.put("messageTitle", "通知消息");
+					map.put("messageContent", message);
+					map.put("messageStatus", "1");
+					map.put("messageType", Constants.MESSAGE_TYPE_1009);
+					map.put("memberAccount", params.get("memberAccount"));
+					// 添加推送消息
+					getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
+				}
 				output.setCode("0");
 				output.setMsg("修改成功");
 				return;
@@ -251,13 +288,15 @@ public class ZxFreeGoodsServiceImpl extends BaseServiceImpl implements IZxFreeGo
 				"ReceivingAddressMapper.queryAddressIsDefault", map_);
 		// 创建订单信息
 		Map<String, Object> orderInfo = new HashMap<>();
+		String orderArea = (String) address.get("consigArea");
+		orderArea = orderArea.replace("$", "");
 		orderInfo.put("id", getSequence());
 		orderInfo.put("sendGoodsAccount", map.get("sendMemberAccount"));
 		orderInfo.put("consigGoodsAccount", address.get("memberAccount"));
 		orderInfo.put("consigName", address.get("consigName"));
 		orderInfo.put("consigNamePhone", address.get("consigNamePhone"));
-		orderInfo.put("consigArea", address.get("consigArea"));
-		orderInfo.put("consigAddress", address.get("consigAddress"));
+//		orderInfo.put("consigArea", address.get("consigArea"));
+		orderInfo.put("consigAddress", orderArea+address.get("consigAddress"));
 		orderInfo.put("orderStatus", "1001");      // 待发货
 		orderInfo.put("orderType", "1002");        // 免费兑换
 		orderInfo.put("goodsId", map.get("id"));   // 商品ID
