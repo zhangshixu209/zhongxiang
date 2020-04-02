@@ -4,6 +4,7 @@ import com.chmei.nzbcommon.cmbean.InputDTO;
 import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbdata.common.exception.NzbDataException;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
+import com.chmei.nzbdata.util.Constants;
 import com.chmei.nzbdata.util.StringUtil;
 import com.chmei.nzbdata.zxgoods.service.IZxBusinessAuthService;
 import com.chmei.nzbdata.zxgoods.service.IZxBusinessAuthService;
@@ -44,6 +45,40 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 		try {
 			int i = getBaseDao().update("BusinessAuthMapper.authBusinessInfo", params);
 			if (i > 0) {
+				@SuppressWarnings("unchecked")
+				Map<String, Object> map_ = (Map<String, Object>) getBaseDao().queryForObject(
+						"BusinessAuthMapper.queryBusinessAuthDetail", params);
+				// 审核状态
+				String authStatus = (String) params.get("authStatus");
+				String businessType = (String) map_.get("businessType");
+				if("1".equals(businessType)){
+					businessType = "个人";
+				} else {
+					businessType = "企业";
+				}
+				if("1002".equals(authStatus)){
+					String message = "您所提交的" + businessType + "商家认证资料已通过审核！";
+					Map<String, Object> map = new HashMap<>();
+					map.put("id", getSequence());
+					map.put("messageTitle", "商家审核通知");
+					map.put("messageContent", message);
+					map.put("messageStatus", "1");
+					map.put("messageType", Constants.MESSAGE_TYPE_1010);
+					map.put("memberAccount", map_.get("memberAccount"));
+					// 添加推送消息
+					getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
+				} else if("1003".equals(authStatus)) {
+					String message = "您所提交的" + businessType + "商家认证资料未通过审核！温馨提示："+params.get("auditOpinion");
+					Map<String, Object> map = new HashMap<>();
+					map.put("id", getSequence());
+					map.put("messageTitle", "商家审核通知");
+					map.put("messageContent", message);
+					map.put("messageStatus", "1");
+					map.put("messageType", Constants.MESSAGE_TYPE_1010);
+					map.put("memberAccount", map_.get("memberAccount"));
+					// 添加推送消息
+					getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
+				}
 				output.setCode("0");
 				output.setMsg("保存成功");
 				return;
@@ -72,11 +107,11 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 			int i = getBaseDao().insert("BusinessAuthMapper.saveBusinessInfo", params);
 			if (i > 0) {
 				output.setCode("0");
-				output.setMsg("保存成功");
+				output.setMsg("提交成功，请留意审核通知！");
 				return;
 			}
 			output.setCode("-1");
-			output.setMsg("保存失败");
+			output.setMsg("提交失败");
 		} catch (Exception e) {
 			LOGGER.error("系统错误", e);
 		}

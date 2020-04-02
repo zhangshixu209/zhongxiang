@@ -251,6 +251,14 @@ public class MemberController extends BaseController {
         String loginPassword = memberForm.getMemberPwd();
         String sessionId = memberForm.getSessionId();
         HttpSession session = (HttpSession) SESSION_MAP.get(sessionId);
+        Map<String, Object> map_ = new HashMap<>();
+        map_.put("memberAccount", phoneNumber);
+        outputDTO = getOutputDTO(map_, "memberService", "queryMemberDetail");
+        if(null != outputDTO.getItem()){
+            outputDTO.setCode("-1");
+            outputDTO.setMsg("此手机号已被注册！");
+            return outputDTO;
+        }
         LOGGER.info("获取session对象 {} " + session);
         outputDTO = checkVerificationCode(phoneNumber, code, session);
         if (outputDTO.getCode() == "0") {

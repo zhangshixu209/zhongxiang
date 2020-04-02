@@ -96,12 +96,12 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 		input.setService("zxBusinessAuthService");
 		input.setMethod("queryBusinessAuthDetail");
 		getNzbDataService().execute(input, output);
-		String credNum = (String) output.getItem().get("credNum");
-		String phoneNumber = (String) output.getItem().get("phoneNumber");
+		Map<String, Object> map = output.getItem();
+		String cardNum = (String) map.get("cardNum");
+		String phoneNumber = (String) map.get("phoneNumber");
 		// 脱敏
-		if (!StringUtil.isEmpty(credNum)) {
-			Map<String, Object> map = new HashMap<>();
-			map.put("credNum", StringUtil.desensitizationCredNum(credNum));
+		if (!StringUtil.isEmpty(cardNum)) {
+			map.put("cardNum", StringUtil.desensitizationCredNum(cardNum));
 			map.put("phoneNumber", StringUtil.desensitivePhone(phoneNumber));
 			output.setItem(map);
 		}

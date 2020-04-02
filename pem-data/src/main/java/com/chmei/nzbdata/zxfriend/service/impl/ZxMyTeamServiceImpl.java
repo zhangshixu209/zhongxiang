@@ -159,6 +159,8 @@ public class ZxMyTeamServiceImpl extends BaseServiceImpl implements IZxMyTeamSer
 		// 1.查询前登录人信息
 		Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
 				"ZxMyTeamMapper.queryTheLower", params);
+		int count = countMyTeam(input, output);
+		map.put("count", count); // 计算每个人的推荐人数
 		if(map == null){
 			map = new HashMap<>();
 		}
@@ -168,7 +170,6 @@ public class ZxMyTeamServiceImpl extends BaseServiceImpl implements IZxMyTeamSer
 		// 查询我的团队信息
 		List<Map<String, Object>> allPersonnelByParentId = getBaseDao().queryForList(
 				"ZxMyTeamMapper.queryMyTeamInfo", params);
-
 		if (Optional.ofNullable(allPersonnelByParentId).isPresent()) {
 			List<Map<String,Object>> listMaps = new ArrayList<>();
 			for (Map<String, Object> myTeam : allPersonnelByParentId) {
@@ -188,8 +189,8 @@ public class ZxMyTeamServiceImpl extends BaseServiceImpl implements IZxMyTeamSer
 					listMaps.add(stringObjectMap);
 				}
 			}
-				map.put("lists",listMaps);
-			}
+			map.put("lists",listMaps);
+		}
 		return map;
 	}
 }

@@ -85,7 +85,6 @@ function appRegister() {// 注册
 		if(data.code === '0'){
 			Chief.layer.tips(data.msg);
 		}else{
-			checkcodemethod();
 			Chief.layer.tips(data.msg);
 		}
 	});

@@ -28,7 +28,7 @@
         AND DATE_FORMAT(crt_time,'%Y-%m-%d') &lt;= #{endTime}
       </if>
     </where>
-    ORDER BY crt_time DESC
+    ORDER BY crt_time ASC
     <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
       LIMIT #{start}, #{limit}
     </if>

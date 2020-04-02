@@ -53,11 +53,11 @@ public class ZxFreeGoodsServiceImpl extends BaseServiceImpl implements IZxFreeGo
 			int i = getBaseDao().insert("FreeGoodsMapper.saveFreeGoodsInfo", params);
 			if (i > 0) {
 				output.setCode("0");
-				output.setMsg("保存成功");
+				output.setMsg("发布成功，请留意审核通知！");
 				return;
 			}
 			output.setCode("-1");
-			output.setMsg("保存失败");
+			output.setMsg("发布失败");
 		} catch (Exception e) {
 			LOGGER.error("系统错误", e);
 		}

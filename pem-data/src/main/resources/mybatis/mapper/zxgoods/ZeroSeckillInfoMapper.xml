@@ -37,6 +37,9 @@
       </if>
     </where>
     ORDER BY a.lucky_order_number ASC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
   </select>
   <!-- 零元秒杀幸运榜统计 -->
   <select id="queryZeroSeckillInfoCount" parameterType="java.util.Map" resultType="int">

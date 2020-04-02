@@ -85,5 +85,6 @@ public final class Constants {
 	public static final String MESSAGE_TYPE_1006 = "1006"; // 反馈回复
 	public static final String MESSAGE_TYPE_1007 = "1007"; // 会员管理/处理信息
 	public static final String MESSAGE_TYPE_1009 = "1009"; // 商品审核
+	public static final String MESSAGE_TYPE_1010 = "1010"; // 商家认证审核
 
 }

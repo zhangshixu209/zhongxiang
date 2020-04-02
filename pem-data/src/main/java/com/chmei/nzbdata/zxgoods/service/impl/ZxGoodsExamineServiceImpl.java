@@ -254,11 +254,11 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 			int i = getBaseDao().insert("GoodsExamineMapper.saveZeroSeckillInfo", params);
 			if (i > 0) {
 				output.setCode("0");
-				output.setMsg("保存成功");
+				output.setMsg("发布成功，请留意审核通知！");
 				return;
 			}
 			output.setCode("-1");
-			output.setMsg("保存失败");
+			output.setMsg("发布失败");
 		} catch (Exception e) {
 			LOGGER.error("系统错误", e);
 		}
@@ -509,7 +509,7 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 				}
 			}
 			output.setCode("0");
-			output.setMsg("校验通过！");
+//			output.setMsg("校验通过！");
 		} catch (Exception ex) {
 			LOGGER.error("系统错误: " + ex);
 		}
