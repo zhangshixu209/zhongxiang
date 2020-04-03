@@ -102,6 +102,15 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 	public void saveBusinessInfo(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map_ = (Map<String, Object>) getBaseDao().queryForObject(
+					"BusinessAuthMapper.queryBusinessAuthDetail", params);
+			if(null != map_){
+				String authStatus = (String) map_.get("authStatus");
+				if("1003".equals(authStatus)){
+					getBaseDao().delete("BusinessAuthMapper.delBusinessAuthInfo", map_);
+				}
+			}
 			params.put("id", getSequence());  // 主键ID
 			params.put("authStatus", "1001"); // 待审核状态
 			int i = getBaseDao().insert("BusinessAuthMapper.saveBusinessInfo", params);
@@ -256,7 +265,7 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 					systemMoneyInfo.put("systemInfoAddOrMinus", "+");
 					systemMoneyInfo.put("systemInfoUserId", params.get("memberAccount"));
 					systemMoneyInfo.put("systemInfoMoney", Double.valueOf(openMoneyTotal));
-					systemMoneyInfo.put("systemInfoFrom", "开通秒杀活动保证金");
+					systemMoneyInfo.put("systemInfoFrom", "商品发布保证金");
 					getBaseDao().insert("SystemMoneyInfoMapper.saveSystemMoneyInfo", systemMoneyInfo);
 				}
 				// 扣除当前人钱包金额
@@ -271,7 +280,7 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 					walletMoneyInfo.put("walletInfoAddOrMinus", "-");
 					walletMoneyInfo.put("walletInfoUserId", params.get("memberAccount"));
 					walletMoneyInfo.put("walletInfoMoney", Double.valueOf(openMoneyTotal));
-					walletMoneyInfo.put("walletInfoFrom", "开通秒杀活动保证金");
+					walletMoneyInfo.put("walletInfoFrom", "商品发布保证金");
 					getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
 				}
 				output.setCode("0");
@@ -449,7 +458,7 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 			walletMoneyInfo.put("walletInfoAddOrMinus", "+");
 			walletMoneyInfo.put("walletInfoUserId", params.get("memberAccount"));
 			walletMoneyInfo.put("walletInfoMoney", Double.valueOf(money));
-			walletMoneyInfo.put("walletInfoFrom", "退回秒杀活动保证金");
+			walletMoneyInfo.put("walletInfoFrom", "退还保证金");
 			getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
 			return 1;
 		}

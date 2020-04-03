@@ -78,6 +78,9 @@
       <if test="consigAddress != null">
         consig_address,
       </if>
+      <if test="isDefault != null and isDefault != ''">
+        is_default,
+      </if>
         crt_time,
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -98,6 +101,9 @@
       </if>
       <if test="consigAddress != null">
         #{consigAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="isDefault != null and isDefault != ''">
+        #{isDefault,jdbcType=INTEGER},
       </if>
         NOW(),
     </trim>

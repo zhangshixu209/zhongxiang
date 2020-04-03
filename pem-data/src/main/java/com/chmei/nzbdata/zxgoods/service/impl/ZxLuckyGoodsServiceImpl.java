@@ -234,6 +234,13 @@ public class ZxLuckyGoodsServiceImpl extends BaseServiceImpl implements IZxLucky
 				if (i > 0) {
 					int j = getBaseDao().update("LuckyGoodsMapper.updateLuckyGoodsNum", map_);
 					if (j > 0) {
+						int goodsSurplusNumSur = goodsSurplusNum - 1;
+						if (goodsSurplusNumSur == 0) { // 商品数量为0 更新商品状态为已结束
+							Map<String, Object> maps = new HashMap<>();
+							maps.put("id", map.get("id"));
+							maps.put("goodsStatus", "1006"); // 商品结束
+							getBaseDao().update("LuckyGoodsMapper.authLuckyGoodsInfo", maps); // 更新商品状态为已结束
+						}
 						// 扣除当前人钱包金额
 						Map<String, Object> user = new HashMap<>();
 						user.put("memberAccount", params.get("memberAccount"));
@@ -255,10 +262,6 @@ public class ZxLuckyGoodsServiceImpl extends BaseServiceImpl implements IZxLucky
 					return;
 				}
 			} else {
-				Map<String, Object> maps = new HashMap<>();
-				maps.put("id", map.get("id"));
-				maps.put("goodsStatus", "1006"); // 商品结束
-				getBaseDao().update("LuckyGoodsMapper.authLuckyGoodsInfo", maps); // 更新商品状态为已结束
 				output.setCode("-1");
 				output.setMsg("商品已结束！");
 				return;
@@ -477,15 +480,26 @@ public class ZxLuckyGoodsServiceImpl extends BaseServiceImpl implements IZxLucky
 		orderInfo.put("goodsId", map.get("id"));   // 商品ID
 		int i = getBaseDao().insert("OrderInfoMapper.saveOrderInfoInfo", orderInfo);
 		if (i > 0) {
-			// 系统钱包金额增加记录:
-			Map<String, Object> systemMoneyInfo = new HashMap<>();
-			systemMoneyInfo.put("systemInfoId", getSequence());
-			systemMoneyInfo.put("systemInfoAddOrMinus", "+");
-			systemMoneyInfo.put("systemInfoUserId", address.get("memberAccount"));
-			systemMoneyInfo.put("orderId", orderInfo.get("id")); // 订单ID
-			systemMoneyInfo.put("systemInfoMoney", Double.valueOf(map.get("goodsParcelPrice")+""));
-			systemMoneyInfo.put("systemInfoFrom", "幸运购物");
-			getBaseDao().insert("SystemMoneyInfoMapper.saveSystemMoneyInfo", systemMoneyInfo);
+			Map<String, Object> systemInfo = new HashMap<>();
+			systemInfo.put("systemInfoUserId", "999999999");
+			Map<String, Object> system = (Map<String, Object>) getBaseDao().queryForObject(
+					"SystemMoneyInfoMapper.querySystemMoneyDetail", systemInfo);
+			if (null != system) {
+				BigDecimal goodsParcelPrice = (BigDecimal) system.get("systemInfoMoney");
+				// 系统钱包金额减少
+				system.put("systemInfoMoney", goodsParcelPrice.doubleValue() + Double.valueOf(map.get("goodsParcelPrice")+""));
+				getBaseDao().update("SystemMoneyInfoMapper.updateSystemMoneyInfo", system);
+			} else {
+				// 系统钱包金额增加记录:
+				Map<String, Object> systemMoneyInfo = new HashMap<>();
+				systemMoneyInfo.put("systemInfoId", getSequence());
+				systemMoneyInfo.put("systemInfoAddOrMinus", "+");
+				systemMoneyInfo.put("systemInfoUserId", "999999999");
+				systemMoneyInfo.put("orderId", orderInfo.get("id")); // 订单ID
+				systemMoneyInfo.put("systemInfoMoney", Double.valueOf(map.get("goodsParcelPrice")+""));
+				systemMoneyInfo.put("systemInfoFrom", "幸运购物");
+				getBaseDao().insert("SystemMoneyInfoMapper.saveSystemMoneyInfo", systemMoneyInfo);
+			}
 			LOGGER.info("=============订单创建成功==============");
 			return 1;
 		}
@@ -526,9 +540,15 @@ public class ZxLuckyGoodsServiceImpl extends BaseServiceImpl implements IZxLucky
 			lu.put("activityType", "2");
 			getBaseDao().update("LuckyGoodsMapper.updateGoodsLuckStar", lu);
 			// 系统钱包金额减少
-			Map<String, Object> system = new HashMap<>();
-			system.put("systemInfoMoney", map.get("shoppingAmount"));
-			getBaseDao().update("SystemMoneyInfoMapper.updateSystemMoneyInfo", system);
+			Map<String, Object> systemMap = new HashMap<>();
+			systemMap.put("systemInfoUserId", "999999999");
+			// 查询系统钱包
+			Map<String, Object> system = (Map<String, Object>) getBaseDao().
+					queryForObject("SystemMoneyInfoMapper.querySystemMoneyDetail", systemMap);
+			BigDecimal goodsParcelPrice = (BigDecimal) system.get("systemInfoMoney");
+			systemMap.put("systemInfoId", system.get("systemInfoId"));
+			systemMap.put("systemInfoMoney", goodsParcelPrice.doubleValue() - Double.valueOf(map.get("shoppingAmount")+""));
+			getBaseDao().update("SystemMoneyInfoMapper.updateSystemMoneyInfo", systemMap);
 			// 系统钱包金额增加记录:
 			Map<String, Object> systemMoneyInfo = new HashMap<>();
 			systemMoneyInfo.put("systemInfoId", getSequence());

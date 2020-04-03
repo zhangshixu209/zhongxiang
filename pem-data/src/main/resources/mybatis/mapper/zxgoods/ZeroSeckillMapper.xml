@@ -326,6 +326,7 @@
       <if test="endTime != null and endTime != ''">
         AND DATE_FORMAT(a.crt_time,'%Y-%m-%d') &lt;= #{endTime}
       </if>
+      AND goods_status != '1003'
     </where>
     ORDER BY a.crt_time DESC
     <if test="start != null and start != '' and limit != null and limit != '' or start ==0">

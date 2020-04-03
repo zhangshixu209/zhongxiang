@@ -40,6 +40,11 @@ public class ZxReceivingAddressServiceImpl extends BaseServiceImpl implements IZ
 	public void saveReceivingAddressInfo(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
+			// 如果是第一次新增添加为默认地址
+			int total = getBaseDao().getTotalCount("ReceivingAddressMapper.queryReceivingAddressCount", params);
+			if (total == 0) {
+				params.put("isDefault", 1);
+			}
 			params.put("id", getSequence()); // 主键ID
 			int i = getBaseDao().insert("ReceivingAddressMapper.saveReceivingAddressInfo", params);
 			if (i > 0) {

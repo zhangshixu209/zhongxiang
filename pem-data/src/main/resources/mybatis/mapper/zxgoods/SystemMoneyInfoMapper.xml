@@ -108,7 +108,12 @@
     <include refid="Base_Column_List" />
     from zx_app_system_money_info
     <where>
-      order_id = #{orderId,jdbcType=BIGINT}
+      <if test="orderId != null and orderId !=''">
+        order_id = #{orderId,jdbcType=BIGINT}
+      </if>
+      <if test="systemInfoUserId != null and systemInfoUserId !=''">
+        AND system_info_user_id = #{systemInfoUserId,jdbcType=VARCHAR}
+      </if>
       <if test="startTime != null and startTime != ''">
         AND DATE_FORMAT(advertising_info_date,'%Y-%m-%d') &gt;= #{startTime}
       </if>
@@ -125,7 +130,7 @@
     <include refid="Base_Column_List" />
     from zx_app_system_money_info
     <where>
-      system_info_from = '开通秒杀活动保证金'
+      system_info_from = '商品发布保证金'
       AND system_info_user_id = #{memberAccount}
     </where>
   </select>

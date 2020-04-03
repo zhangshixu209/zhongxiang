@@ -235,6 +235,13 @@ public class ZxFreeGoodsServiceImpl extends BaseServiceImpl implements IZxFreeGo
 				if (i > 0) {
 					int j = getBaseDao().update("FreeGoodsMapper.updateFreeGoodsNum", map_);
 					if (j > 0) {
+						int goodsSurplusNumSur = goodsSurplusNum - 1;
+						if (goodsSurplusNumSur == 0) { // 商品数量为0 更新商品状态为已结束
+							Map<String, Object> maps = new HashMap<>();
+							maps.put("id", map.get("id"));
+							maps.put("goodsStatus", "1006"); // 商品结束
+							getBaseDao().update("FreeGoodsMapper.authFreeGoodsInfo", maps); // 更新商品状态为已结束
+						}
 						// 扣除当前人广告费金额
 						Map<String, Object> user = new HashMap<>();
 						user.put("memberAccount", params.get("memberAccount"));
@@ -257,10 +264,6 @@ public class ZxFreeGoodsServiceImpl extends BaseServiceImpl implements IZxFreeGo
 					return;
 				}
 			} else {
-				Map<String, Object> maps = new HashMap<>();
-				maps.put("id", map.get("id"));
-				maps.put("goodsStatus", "1006"); // 商品结束
-				getBaseDao().update("FreeGoodsMapper.authFreeGoodsInfo", maps); // 更新商品状态为已结束
 				output.setCode("-1");
 				output.setMsg("商品已结束！");
 				return;

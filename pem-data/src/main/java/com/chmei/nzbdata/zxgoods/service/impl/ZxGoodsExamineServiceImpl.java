@@ -413,7 +413,7 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 			int i = getBaseDao().getTotalCount("GoodsExamineMapper.queryGoodsViewCount", params);
 			if (i > 0) {
 				output.setCode("-1");
-				output.setMsg("已关注");
+//				output.setMsg("已关注");
 				return;
 			}
 			// 新增众享信息浏览次数
@@ -424,7 +424,7 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 				return;
 			}
 			output.setCode("0");
-			output.setMsg("关注成功");
+//			output.setMsg("关注成功");
 		} catch (Exception ex) {
 			LOGGER.error("系统错误: " + ex);
 		}
@@ -448,7 +448,7 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 					"BusinessAuthMapper.queryBusinessAuthDetail", params);
 			if (null == map) {
 				output.setCode("-1");
-				output.setMsg("请开通发布窗口！");
+				output.setMsg("请开通商品发布窗口！");
 				return;
 			}
 			String goodsArr = "1001,1002"; // 待审核、审核通过
@@ -462,13 +462,13 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 					if(null != seckillList && seckillList.size() > 0){
 						if (seckillList.size() >= Integer.valueOf(seckillWindow)) {
 							output.setCode("-1");
-							output.setMsg("发布商品数量上限！");
+							output.setMsg("商品发布窗口不足！");
 							return;
 						}
 					}
 				} else {
 					output.setCode("-1");
-					output.setMsg("请开通发布窗口！");
+					output.setMsg("请开通商品发布窗口！");
 					return;
 				}
 			} else if("1002".equals(goodsType)){
@@ -480,13 +480,13 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 					if(null != freeGoodsList && freeGoodsList.size() > 0){
 						if (freeGoodsList.size() >= Integer.valueOf(freeWindow)) {
 							output.setCode("-1");
-							output.setMsg("发布商品数量上限！");
+							output.setMsg("商品发布窗口不足！");
 							return;
 						}
 					}
 				} else {
 					output.setCode("-1");
-					output.setMsg("请开通发布窗口！");
+					output.setMsg("请开通商品发布窗口！");
 					return;
 				}
 			} else if("1003".equals(goodsType)){
@@ -498,13 +498,13 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 					if(null != luckyGoodsList && luckyGoodsList.size() > 0){
 						if (luckyGoodsList.size() >= Integer.valueOf(luckyWindow)) {
 							output.setCode("-1");
-							output.setMsg("发布商品数量上限！");
+							output.setMsg("商品发布窗口不足！");
 							return;
 						}
 					}
 				} else {
 					output.setCode("-1");
-					output.setMsg("请开通发布窗口！");
+					output.setMsg("请开通商品发布窗口！");
 					return;
 				}
 			}

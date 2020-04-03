@@ -204,12 +204,41 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 			List<Map<String, Object>> luckyGoodsList = getBaseDao().queryForList(
 					"LuckyGoodsMapper.queryMyReleaseGoodsList", params);
 			if(null != seckillList && seckillList.size() > 0){
+				for (Map<String, Object> map : seckillList) {
+					Integer goodsReleaseNum = (Integer) map.get("goodsReleaseNum"); // 发布数量
+					Long receivedGoods = (Long) map.get("receivedGoods");		// 订单已收货数量
+					if(null != receivedGoods){
+						if (goodsReleaseNum.equals(receivedGoods.intValue())) { // 如果发布数量等于订单数量，已结束
+							map.put("goodsStatus", "1006");
+						} else {
+							map.put("goodsStatus", "1002");
+						}
+					}
+				}
 				listAll.addAll(seckillList);
 			}
 			if(null != freeGoodsList && freeGoodsList.size() > 0){
+				for (Map<String, Object> map : freeGoodsList) {
+					Integer goodsReleaseNum = (Integer) map.get("goodsReleaseNum"); // 发布数量
+					Long receivedGoods = (Long) map.get("receivedGoods");		// 订单已收货数量
+					if (goodsReleaseNum.equals(receivedGoods.intValue())) { // 如果发布数量等于订单数量，已结束
+						map.put("goodsStatus", "1006");
+					} else {
+						map.put("goodsStatus", "1002");
+					}
+				}
 				listAll.addAll(freeGoodsList);
 			}
 			if(null != luckyGoodsList && luckyGoodsList.size() > 0){
+				for (Map<String, Object> map : luckyGoodsList) {
+					Integer goodsReleaseNum = (Integer) map.get("goodsReleaseNum"); // 发布数量
+					Long receivedGoods = (Long) map.get("receivedGoods");		// 订单已收货数量
+					if (goodsReleaseNum.equals(receivedGoods.intValue())) { // 如果发布数量等于订单数量，已结束
+						map.put("goodsStatus", "1006");
+					} else {
+						map.put("goodsStatus", "1002");
+					}
+				}
 				listAll.addAll(luckyGoodsList);
 			}
 			// 排序
@@ -289,7 +318,7 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 					// 增加商家广告费金额
 					Map<String, Object> user1 = new HashMap<>();
 					user1.put("memberAccount", map.get("sendGoodsAccount"));
-					user1.put("advertisingFee", Double.valueOf(advertisingMoney) + Double.valueOf(result1.get("neededAdFee")+""));
+					user1.put("advertisingFee", Double.valueOf(advertisingMoney) + Double.valueOf(result1.get("neededAdFeeTotal")+""));
 					int m = getBaseDao().update("MemberMapper.updateMemberBalance", user1);
 					if(m > 0) {
 						// 记录广告费增加记录:
@@ -297,7 +326,7 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 						adRecord1.put("advertisingInfoId", getSequence());
 						adRecord1.put("advertisingInfoAddOrMinus", "+");
 						adRecord1.put("advertisingInfoUserId", map.get("sendGoodsAccount"));
-						adRecord1.put("advertisingInfoMoney", Double.valueOf(result1.get("neededAdFee")+""));
+						adRecord1.put("advertisingInfoMoney", Double.valueOf(result1.get("neededAdFeeTotal")+""));
 						adRecord1.put("advertisingInfoFrom", "发布秒杀商品");
 						getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord1);
 					}
@@ -334,11 +363,11 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 					luckyGoodsInfo(maps); // 幸运购物逻辑处理
 				}
 				output.setCode("0");
-				output.setMsg("修改成功");
+				output.setMsg("确认成功");
 				return;
 			}
 			output.setCode("-1");
-			output.setMsg("修改失败");
+			output.setMsg("确认失败");
 		} catch (Exception e) {
 			LOGGER.error("系统错误", e);
 		}
@@ -449,11 +478,13 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 		Map<String, Object> item = (Map<String, Object>) getBaseDao().
 				queryForObject("MemberMapper.queryMemberDetail", user_);
 		String walletBalance = (String) item.get("walletBalance"); // 钱包余额
+		Map<String, Object> systemMap = new HashMap<>();
+		systemMap.put("systemInfoUserId", "999999999");
 		// 查询系统钱包
 		Map<String, Object> system = (Map<String, Object>) getBaseDao().
-				queryForObject("SystemMoneyInfoMapper.querySystemMoneyDetail", map);
+				queryForObject("SystemMoneyInfoMapper.querySystemMoneyDetail", systemMap);
 		BigDecimal goodsParcelPrice = (BigDecimal) system.get("systemInfoMoney");
-		double goodsPrice = goodsParcelPrice.doubleValue() / 2; // 系统扣除一半的钱给商家
+		double goodsPrice = Double.valueOf(map.get("goodsParcelPrice")+"") / 2; // 系统扣除一半的钱给商家
 		// 扣除当前人钱包金额
 		Map<String, Object> userA = new HashMap<>();
 		userA.put("memberAccount", item.get("memberAccount"));
@@ -469,7 +500,7 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 			walletMoneyInfo.put("walletInfoFrom", "发布幸运购物");
 			getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
 			// 系统钱包金额减少
-			system.put("systemInfoMoney", goodsPrice);
+			system.put("systemInfoMoney", goodsParcelPrice.doubleValue() - goodsPrice);
 			getBaseDao().update("SystemMoneyInfoMapper.updateSystemMoneyInfo", system);
 			// 系统钱包金额减少记录:
 			Map<String, Object> systemMoneyInfo = new HashMap<>();
