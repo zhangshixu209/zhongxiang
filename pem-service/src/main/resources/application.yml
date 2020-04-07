@@ -29,7 +29,7 @@ server:
   context-path: /pem-service
   connection-timeout: 20000
   session:
-    timeout: 180000
+    timeout: 2592000
   tomcat:
     accesslog:
       enabled: true
@@ -97,7 +97,7 @@ spring:
     password:
     database: 2
     port: 6379
-    timeout: 180000
+    timeout: 2592000
     pool:
       max-active: 10000
       max-idle: 100

@@ -102,15 +102,15 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 	public void saveBusinessInfo(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
-			@SuppressWarnings("unchecked")
-			Map<String, Object> map_ = (Map<String, Object>) getBaseDao().queryForObject(
-					"BusinessAuthMapper.queryBusinessAuthDetail", params);
-			if(null != map_){
-				String authStatus = (String) map_.get("authStatus");
-				if("1003".equals(authStatus)){
-					getBaseDao().delete("BusinessAuthMapper.delBusinessAuthInfo", map_);
-				}
-			}
+//			@SuppressWarnings("unchecked")
+//			Map<String, Object> map_ = (Map<String, Object>) getBaseDao().queryForObject(
+//					"BusinessAuthMapper.queryBusinessAuthDetail", params);
+//			if(null != map_){
+//				String authStatus = (String) map_.get("authStatus");
+//				if("1003".equals(authStatus)){
+//					getBaseDao().delete("BusinessAuthMapper.delBusinessAuthInfo", map_);
+//				}
+//			}
 			params.put("id", getSequence());  // 主键ID
 			params.put("authStatus", "1001"); // 待审核状态
 			int i = getBaseDao().insert("BusinessAuthMapper.saveBusinessInfo", params);
@@ -188,6 +188,7 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 	public void queryBusinessAuthDetail(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
+			params.put("authStatus", "1003");
 			@SuppressWarnings("unchecked")
 			Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
 					"BusinessAuthMapper.queryBusinessAuthDetail", params);

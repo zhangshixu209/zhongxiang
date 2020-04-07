@@ -147,6 +147,7 @@
 	                        <th>兑换所需广告费</th>
 	                        <th>发布日期</th>
 	                        <th>状态</th>
+	                        <th>审核意见</th>
 	                    </tr>
                     </thead>
                     <tbody id="J_tabletpl">
@@ -295,10 +296,11 @@
         <td>{{neededAdFee}}</td>
         <td>{{crtTime}}</td>
         <td>{{goodsStatusCd goodsStatus}}</td>
+        <td title="{{auditOpinion}}">{{auditOpinion}}</td>
     </tr>
     {{/each}} {{else}}
     <tr>
-        <td colspan="14">无数据</td>
+        <td colspan="15">无数据</td>
     </tr>
     {{/if}}
 </script>

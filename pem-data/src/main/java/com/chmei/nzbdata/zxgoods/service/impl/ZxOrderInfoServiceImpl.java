@@ -210,6 +210,8 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 					if(null != receivedGoods){
 						if (goodsReleaseNum.equals(receivedGoods.intValue())) { // 如果发布数量等于订单数量，已结束
 							map.put("goodsStatus", "1006");
+						} else if ("1001".equals(map.get("goodsStatus"))){
+							map.put("goodsStatus", "1001");
 						} else {
 							map.put("goodsStatus", "1002");
 						}
@@ -223,6 +225,8 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 					Long receivedGoods = (Long) map.get("receivedGoods");		// 订单已收货数量
 					if (goodsReleaseNum.equals(receivedGoods.intValue())) { // 如果发布数量等于订单数量，已结束
 						map.put("goodsStatus", "1006");
+					} else if ("1001".equals(map.get("goodsStatus"))){
+						map.put("goodsStatus", "1001");
 					} else {
 						map.put("goodsStatus", "1002");
 					}
@@ -235,6 +239,8 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 					Long receivedGoods = (Long) map.get("receivedGoods");		// 订单已收货数量
 					if (goodsReleaseNum.equals(receivedGoods.intValue())) { // 如果发布数量等于订单数量，已结束
 						map.put("goodsStatus", "1006");
+					} else if ("1001".equals(map.get("goodsStatus"))){
+						map.put("goodsStatus", "1001");
 					} else {
 						map.put("goodsStatus", "1002");
 					}

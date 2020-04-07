@@ -100,15 +100,16 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 				Map<String, Object> map_ = new HashMap<>();
 				map_.put("goodsId", params.get("id"));
 				map_.put("rotationNum", goodsSurplusNum);
-				int goodsReleaseNum = (int) result.get("goodsReleaseNum");   // 商品发布数量
+//				int goodsReleaseNum = (int) result.get("goodsReleaseNum");   // 商品发布数量
+				int partakeNumber = (int) result.get("partakeNumber");   // 商品总需参与人数 partakeNumber
+				// 根据轮次和商品ID查询参与总人数
 				int isSeckill = getBaseDao().getTotalCount("ZeroSeckillInfoMapper.queryIsZeroSeckillInfo", map_);
-				int num = goodsReleaseNum - isSeckill;
+				int num = partakeNumber - isSeckill;
 				if (num == 0) {
 					params.put("goodsSurplusNum", 0);
 					getBaseDao().update("GoodsExamineMapper.updateGoodsExamineNum", params);
 				} else {
-					int surplus = goodsSurplusNum - 1;
-					params.put("goodsSurplusNum", surplus);
+					params.put("goodsSurplusNum", 1);
 					getBaseDao().update("GoodsExamineMapper.updateGoodsExamineNum", params);
 				}
 			}
@@ -117,7 +118,7 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 				// 审核状态
 				String goodsStatus = (String) params.get("goodsStatus");
 				if("1005".equals(goodsStatus)) {
-					String message = "您所发布的“" + params.get("goodsDesc") + "”商品已被下架！如有疑问请联系我们！下架原因原因："+params.get("auditOpinion");
+					String message = "您所发布的“" + params.get("goodsDesc") + "”商品已被下架！如有疑问请联系我们！下架原因："+params.get("auditOpinion");
 					Map<String, Object> map = new HashMap<>();
 					map.put("id", getSequence());
 					map.put("messageTitle", "通知消息");
@@ -251,6 +252,7 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 			}
 			params.put("id", getSequence());
 			params.put("goodsStatus", "1001");
+			params.put("rotationNum",getSequence()); // 轮次
 			int i = getBaseDao().insert("GoodsExamineMapper.saveZeroSeckillInfo", params);
 			if (i > 0) {
 				output.setCode("0");
@@ -297,7 +299,7 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 			int goodsSurplusNum = (int) map.get("goodsSurplusNum"); // 商品剩余数量
 			if (goodsSurplusNum > 0) { // 剩余数量
 				if (supNum > 0) {
-					params.put("rotationNum", goodsSurplusNum);
+					params.put("rotationNum", map.get("rotationNum"));
 					int maxLuckyOrderNumber = getBaseDao().getTotalCount(
 							"ZeroSeckillInfoMapper.queryZeroSeckillMaxNum", params);
 					Map<String, Object> goods = new HashMap<>();
@@ -306,7 +308,7 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 					goods.put("goodsId", map.get("id"));
 					goods.put("buyMemberAccount", params.get("memberAccount"));
 					goods.put("luckyNumber", params.get("luckyNumber"));
-					goods.put("rotationNum", goodsSurplusNum);
+					goods.put("rotationNum", map.get("rotationNum"));
 					int i = getBaseDao().insert("ZeroSeckillInfoMapper.buyGoodsExamineInfo", goods);
 					if (i > 0) {
 						// 扣除当前人广告费金额
@@ -527,6 +529,7 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 		int goodsSurplusNum = (int) result.get("goodsSurplusNum"); // 商品剩余数量
 		Map<String, Object> map_ = new HashMap<>();
 		map_.put("goodsId", map.get("id"));
+		map_.put("rotationNum", map.get("rotationNum")); // 商品轮次
 		long joinNum = (long) result.get("joinNum");     // 参与人数
 		int partakeNumber = (int) result.get("partakeNumber"); // 总人数
 		long supNum = partakeNumber - joinNum; // 如果参与人数够了
@@ -534,6 +537,7 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 			Map<String, Object> map1 = new HashMap<>();
 			map1.put("id", map.get("id")); // 商品ID
 			map1.put("goodsSurplusNum", goodsSurplusNum - 1); // 商品剩余数量-1
+			map1.put("rotationNum", getSequence());           // 更新商品轮次
 			getBaseDao().update("GoodsExamineMapper.updateGoodsExamineNum", map1);
 			int goodsSurplusNumSur = goodsSurplusNum - 1;
 			if (goodsSurplusNumSur == 0) { // 商品数量为0 更新商品状态为已结束
@@ -557,6 +561,7 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 			}
 			luckys.put("luckyMan", luckyMan); // 幸运者
 			luckys.put("goodsId", result.get("id")); // 商品ID
+			luckys.put("rotationNum", result.get("rotationNum")); // 商品轮次
 			Map<String, Object> lucky = (Map<String, Object>) getBaseDao().queryForObject(
 					"ZeroSeckillInfoMapper.queryZeroSeckillInfoDetail", luckys);
 			lucky.put("goodsLuckStar", 1); // 幸运标识

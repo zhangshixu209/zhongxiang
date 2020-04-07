@@ -100,7 +100,7 @@ public class ZxLuckyGoodsServiceImpl extends BaseServiceImpl implements IZxLucky
 					// 添加推送消息
 					getBaseDao().insert("ZxPushMessageMapper.savePushMessageInfo", map);
 				} else if("1005".equals(goodsStatus)) {
-					String message = "您所发布的“" + params.get("goodsDesc") + "”商品已被下架！如有疑问请联系我们！下架原因原因："+params.get("auditOpinion");
+					String message = "您所发布的“" + params.get("goodsDesc") + "”商品已被下架！如有疑问请联系我们！下架原因："+params.get("auditOpinion");
 					Map<String, Object> map = new HashMap<>();
 					map.put("id", getSequence());
 					map.put("messageTitle", "通知消息");

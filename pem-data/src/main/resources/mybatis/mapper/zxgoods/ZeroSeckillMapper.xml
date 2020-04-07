@@ -17,12 +17,14 @@
     <result column="goods_surplus_num" jdbcType="INTEGER" property="goodsSurplusNum" />
     <result column="goods_type_id" jdbcType="BIGINT" property="goodsTypeId" />
     <result column="goods_status" jdbcType="VARCHAR" property="goodsStatus" />
+    <result column="rotation_num" jdbcType="BIGINT" property="rotationNum" />
+    <result column="audit_opinion" jdbcType="VARCHAR" property="auditOpinion" />
     <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
   </resultMap>
   <sql id="Base_Column_List">
     a.id, a.member_account, a.product_cover_url, a.goods_desc, a.is_have_shop, a.goods_url, a.goods_explain_img,
     a.goods_parcel_price, a.partake_number, a.needed_ad_fee, a.needed_ad_fee_total, a.goods_release_num,
-    a.goods_surplus_num, a.goods_type_id, a.goods_status, a.crt_time
+    a.goods_surplus_num, a.goods_type_id, a.goods_status, a.rotation_num, a.audit_opinion, a.crt_time
   </sql>
   <!-- 查询零元秒杀商品列表 -->
   <select id="queryGoodsExamineList" parameterType="java.util.Map" resultMap="BaseResultMap">
@@ -36,18 +38,18 @@
         c.member_account AS shareMemberAccount,
         d.business_type AS businessType,
         '1001' AS goodsType,
-        (SELECT COUNT(1) FROM zx_app_zero_seckill_info s WHERE s.goods_id = a.id AND a.goods_surplus_num = s.rotation_num) AS joinNum,
+        (SELECT COUNT(1) FROM zx_app_zero_seckill_info s WHERE s.goods_id = a.id AND a.rotation_num = s.rotation_num) AS joinNum,
         (SELECT COUNT(1) FROM zx_app_goods_view_count s WHERE s.zx_goods_id = a.id) AS followNum
     FROM zx_app_zero_seckill a
     LEFT JOIN t_member b ON a.member_account = b.member_account
     LEFT JOIN zx_app_my_share_extend c ON a.member_account = c.cover_member_account
-    LEFT JOIN zx_app_business_auth d ON a.member_account = d.member_account
+    LEFT JOIN zx_app_business_auth d ON a.member_account = d.member_account AND d.auth_status != '1003'
     <where>
       <if test="memberAccount != null and memberAccount != ''">
         a.member_account = #{memberAccount}
       </if>
       <if test="goodsStatus != null and goodsStatus !=''">
-        AND a.goods_status = #{goodsStatus}
+        AND a.goods_status = #{goodsStatus} OR (goods_status = '1005' AND goods_surplus_num &gt; 0)
       </if>
       <if test="goodsTypeId != null and goodsTypeId !=''">
         AND a.goods_type_id = #{goodsTypeId}
@@ -77,7 +79,7 @@
         member_account = #{memberAccount}
       </if>
       <if test="goodsStatus != null and goodsStatus !=''">
-        AND goods_status = #{goodsStatus}
+        AND goods_status = #{goodsStatus} OR (goods_status = '1005' AND goods_surplus_num &gt; 0)
       </if>
       <if test="goodsDesc != null and goodsDesc !=''">
         AND goods_desc LIKE CONCAT('%',#{goodsDesc},'%')
@@ -94,7 +96,7 @@
   <select id="queryGoodsExamineDetail" parameterType="java.util.Map" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />,
-    (SELECT COUNT(1) FROM zx_app_zero_seckill_info s WHERE s.goods_id = a.id) AS joinNum
+    (SELECT COUNT(1) FROM zx_app_zero_seckill_info s WHERE s.goods_id = a.id AND s.rotation_num = a.rotation_num) AS joinNum
     from zx_app_zero_seckill a
     where a.id = #{id,jdbcType=BIGINT}
   </select>
@@ -152,6 +154,9 @@
       <if test="goodsStatus != null">
         goods_status,
       </if>
+      <if test="rotationNum != null">
+        rotation_num,
+      </if>
         crt_time,
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -199,6 +204,9 @@
       </if>
       <if test="goodsStatus != null">
         #{goodsStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="rotationNum != null">
+        #{rotationNum,jdbcType=BIGINT},
       </if>
         NOW(),
     </trim>
@@ -276,6 +284,10 @@
       <if test="goodsSurplusNum != null or goodsSurplusNum == 0">
         goods_surplus_num = #{goodsSurplusNum},
       </if>
+      <if test="rotationNum != null and rotationNum != ''">
+        rotation_num = #{rotationNum},
+      </if>
+
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>

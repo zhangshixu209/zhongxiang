@@ -94,9 +94,9 @@
       <if test="memberAccount != null and memberAccount != ''">
         AND member_account = #{memberAccount}
       </if>
-      <!--<if test="authStatus != null and authStatus !=''">
-        AND auth_status = #{authStatus}
-      </if>-->
+      <if test="authStatus != null and authStatus !=''">
+        AND auth_status != #{authStatus}
+      </if>
     </where>
   </select>
   <!-- 删除商家认证 -->

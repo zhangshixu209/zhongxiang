@@ -38,7 +38,7 @@
     FROM zx_app_free_goods a
     LEFT JOIN t_member b ON a.member_account = b.member_account
     LEFT JOIN zx_app_my_share_extend c ON a.member_account = c.cover_member_account
-    LEFT JOIN zx_app_business_auth d ON a.member_account = d.member_account
+    LEFT JOIN zx_app_business_auth d ON a.member_account = d.member_account AND d.auth_status != '1003'
     <where>
       <if test="memberAccount != null and memberAccount != ''">
         a.member_account = #{memberAccount}
@@ -71,7 +71,7 @@
     FROM zx_app_free_goods a
     LEFT JOIN t_member b ON a.member_account = b.member_account
     LEFT JOIN zx_app_my_share_extend c ON a.member_account = c.cover_member_account
-    LEFT JOIN zx_app_business_auth d ON a.member_account = d.member_account
+    LEFT JOIN zx_app_business_auth d ON a.member_account = d.member_account AND d.auth_status != '1003'
     <where>
       <if test="memberAccount != null and memberAccount != ''">
         a.member_account = #{memberAccount}

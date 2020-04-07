@@ -128,7 +128,7 @@
         #{luckyOrderNumber,jdbcType=INTEGER},
       </if>
       <if test="rotationNum != null">
-        #{rotationNum,jdbcType=INTEGER},
+        #{rotationNum,jdbcType=BIGINT},
       </if>
         NOW(),
     </trim>
@@ -172,7 +172,7 @@
 	    SUM( lucky_number ) AS orderNum, COUNT( 1 ) AS peopleTotal
     FROM
         `zx_app_zero_seckill_info`
-    WHERE goods_id = #{goodsId}
+    WHERE goods_id = #{goodsId} AND rotation_num = #{rotationNum}
   </select>
 
   <!-- 零元秒杀幸运榜列表 -->
@@ -191,6 +191,9 @@
       <if test="luckyMan != null and luckyMan !=''">
         AND lucky_order_number = #{luckyMan}
       </if>
+      <if test="rotationNum != null and rotationNum !=''">
+        AND rotation_num = #{rotationNum}
+      </if>
     </where>
   </select>
 
@@ -201,7 +204,7 @@
     FROM
     zx_app_zero_seckill_info
     <where>
-      goods_id = #{goodsId}
+      goods_id = #{goodsId} AND rotation_num = #{rotationNum}
     </where>
     ORDER BY crt_time DESC
     LIMIT 1

@@ -18,7 +18,7 @@ aliPay:
     alipayNotifyUrl: http://118.190.38.191:8080/pem-manage/api/recharge/aliPayCallback
     #alipayNotifyUrl: http://39.99.166.24:8080/pem-manage/api/recharge/aliPayCallback
 reportmanage:
-  session-timeout: 180000 #180000 2天
+  session-timeout: 2592000 #180000 2天 2592000 30天
   login-need-msg: 0  #1表示需要发送短信验证码0则反之
   sms-expire-seconds: 300
 
@@ -57,7 +57,7 @@ server:
   connection-timeout: 200000
   servlet:
     session:
-      timeout: 180000
+      timeout: 2592000
   tomcat:
     accesslog:
       enabled: true
@@ -137,7 +137,7 @@ spring:
     password:
     database: 2
     port: 6379
-    timeout: 180000
+    timeout: 2592000
     pool:
       max-active: 10000
       max-idle: 100

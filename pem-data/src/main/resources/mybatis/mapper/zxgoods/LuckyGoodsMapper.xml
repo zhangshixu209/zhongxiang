@@ -15,12 +15,13 @@
     <result column="goods_surplus_num" jdbcType="INTEGER" property="goodsSurplusNum" />
     <result column="goods_type_id" jdbcType="BIGINT" property="goodsTypeId" />
     <result column="goods_status" jdbcType="VARCHAR" property="goodsStatus" />
+    <result column="audit_opinion" jdbcType="VARCHAR" property="auditOpinion" />
     <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
   </resultMap>
   <sql id="Base_Column_List">
     a.id, a.member_account, a.product_cover_url, a.goods_desc, a.is_have_shop, a.goods_url, a.goods_explain_img,
     a.goods_parcel_price, a.goods_market_price, a.goods_release_num, a.goods_surplus_num, a.goods_type_id,
-    a.goods_status, a.crt_time
+    a.goods_status, a.audit_opinion, a.crt_time
   </sql>
 
   <!-- 查询幸运购物列表 -->
@@ -37,7 +38,7 @@
     FROM zx_app_lucky_goods a
     LEFT JOIN t_member b ON a.member_account = b.member_account
     LEFT JOIN zx_app_my_share_extend c ON a.member_account = c.cover_member_account
-    LEFT JOIN zx_app_business_auth d ON a.member_account = d.member_account
+    LEFT JOIN zx_app_business_auth d ON a.member_account = d.member_account AND d.auth_status != '1003'
     <where>
       <if test="memberAccount != null and memberAccount != ''">
         a.member_account = #{memberAccount}
@@ -71,7 +72,7 @@
     FROM zx_app_lucky_goods a
     LEFT JOIN t_member b ON a.member_account = b.member_account
     LEFT JOIN zx_app_my_share_extend c ON a.member_account = c.cover_member_account
-    LEFT JOIN zx_app_business_auth d ON a.member_account = d.member_account
+    LEFT JOIN zx_app_business_auth d ON a.member_account = d.member_account AND d.auth_status != '1003'
     <where>
       <if test="memberAccount != null and memberAccount != ''">
         a.member_account = #{memberAccount}
