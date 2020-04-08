@@ -45,9 +45,11 @@ public class ZxBusinessAuthServiceImpl extends BaseServiceImpl implements IZxBus
 		try {
 			int i = getBaseDao().update("BusinessAuthMapper.authBusinessInfo", params);
 			if (i > 0) {
+				Map<String, Object> result = new HashMap<>();
+				result.put("id", params.get("id"));
 				@SuppressWarnings("unchecked")
 				Map<String, Object> map_ = (Map<String, Object>) getBaseDao().queryForObject(
-						"BusinessAuthMapper.queryBusinessAuthDetail", params);
+						"BusinessAuthMapper.queryBusinessAuthDetail", result);
 				// 审核状态
 				String authStatus = (String) params.get("authStatus");
 				String businessType = (String) map_.get("businessType");

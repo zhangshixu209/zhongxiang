@@ -240,6 +240,9 @@
       <if test="authStatus != null">
         auth_status = #{authStatus,jdbcType=VARCHAR},
       </if>
+      <if test="auditOpinion != null">
+        audit_opinion = #{auditOpinion,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>

@@ -228,10 +228,52 @@
                 <div class="col-sm-8 promport"></div>
             </div>
             <div class="col-sm-12">
-                <label class="col-sm-3 text-right" for="">剩余数量：</label>
+                <label class="col-sm-3 text-right" for="">是否有网店：</label>
                 <div class="col-sm-8">
                     <div class="clearfix">
-                        <label class="col-sm-8 too-long" for="">{{goodsSurplusNum}}</label>
+                        我有自己的网店 <input required="true" disabled="disabled" type="radio" value="1001" name="isHaveShop">
+                        我没有自己的网店 <input required="true" disabled="disabled" type="radio" value="1002" name="isHaveShop">
+                    </div>
+                </div>
+                <div class="col-sm-8 promport"></div>
+            </div>
+            <div class="col-sm-12 goodsUrlClass hide">
+                <label class="col-sm-3 text-right" for="">商品链接地址：</label>
+                <div class="col-sm-8">
+                    <div class="clearfix">
+                        <label class="col-sm-8 too-long" for="">{{goodsUrl}}</label>
+                    </div>
+                </div>
+                <div class="col-sm-8 promport"></div>
+            </div>
+            <!-- <a href="javascript:;" class="a_blue_click" onclick="queryChatRecord('{{productCoverUrl}}')">查看</a> -->
+            <div class="col-sm-12">
+                <label class="col-sm-3 text-right" for="">商品封面图片：</label>
+                <div class="col-sm-8">
+                    <div class="clearfix">
+                        <label class="col-sm-8 too-long" for="">
+                            <img class="min_img" style="width:50px;height:50%;" src="{{getUrl productCoverUrl}}" />
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-8 promport"></div>
+            </div>
+            <div class="col-sm-12 goodsExplainImgClass hide">
+                <label class="col-sm-3 text-right" for="">商品说明图片：</label>
+                <div class="col-sm-8">
+                    <div class="clearfix">
+                        <label class="col-sm-8 too-long" for="">
+                            {{#if goodsExplainImg}}
+                            {{#each goodsExplainImg}}
+                            <img class="min_img" style="width:50px;height:60px;" src="{{getUrl filePath}}" />
+                            {{/each}} {{else}}
+                            <div class="col-sm-8">
+                                <div class="clearfix">
+                                    <label class="col-sm-8" for=""></label>
+                                </div>
+                            </div>
+                            {{/if}}
+                        </label>
                     </div>
                 </div>
                 <div class="col-sm-8 promport"></div>
@@ -244,6 +286,11 @@
                     </div>
                 </div>
                 <div class="col-sm-8 promport"></div>
+            </div>
+            <div id="outerdiv" style="position:fixed;top:0;left:0;background:rgba(0,0,0,0.7);z-index:2;width:100%;height:100%;display:none;">
+                　　<div id="innerdiv" style="position:absolute;">
+                　　　　<img id="bigimg" style="border:5px solid #fff;" src="" />
+                　　</div>
             </div>
         </form>
     </div>

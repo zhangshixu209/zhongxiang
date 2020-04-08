@@ -131,11 +131,12 @@
 	                        <th>零元秒杀窗口</th>
 	                        <th>免费兑换窗口</th>
 	                        <th>幸运购物窗口</th>
-	                        <th>审核状态</th>
 	                        <th>身份证正反照片</th>
-	                        <th>身份证手持照片</th>
+                            <th>身份证手持照片</th>
                             <th>申请时间</th>
-	                    </tr>
+                            <th>审核状态</th>
+                            <th>审核意见</th>
+                        </tr>
                     </thead>
                     <tbody id="J_tabletpl">
                     </tbody>
@@ -292,14 +293,15 @@
         <td>{{seckillWindow}}</td>
         <td>{{freeWindow}}</td>
         <td>{{luckyWindow}}</td>
-        <td>{{auditTypeCd authStatus}}</td>
         <td><a href="javascript:;" class="a_blue_click" onclick="queryChatRecord('{{cardNumUrl}}')">查看</a></td>
         <td><a href="javascript:;" class="a_blue_click" onclick="queryChatRecord('{{cardNumHalfUrl}}')">查看</a></td>
         <td>{{crtTime}}</td>
+        <td>{{auditTypeCd authStatus}}</td>
+        <td>{{auditOpinion}}</td>
     </tr>
     {{/each}} {{else}}
     <tr>
-        <td colspan="13">无数据</td>
+        <td colspan="14">无数据</td>
     </tr>
     {{/if}}
 </script>

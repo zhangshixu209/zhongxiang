@@ -159,7 +159,7 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 	public void updateCashAuditInfo(InputDTO input, OutputDTO output) throws NzbDataException {
 		Map<String, Object> params = input.getParams();
 		try {
-			params.put("realCashAmount", Double.valueOf(params.get("cashAmount") + "") * 0.99);
+			params.put("realCashAmount", Double.valueOf(params.get("cashAmount") + "") * 0.95);
 			int count = getBaseDao().update("CashAuditMapper.updateCashAuditInfo", params);
 			if (count < 1) {
 				output.setCode("-1");
@@ -178,7 +178,7 @@ public class CashAuditServiceImpl extends BaseServiceImpl implements ICashAuditS
 				walletMoneyInfo.put("walletInfoId", getSequence());
 				walletMoneyInfo.put("walletInfoAddOrMinus", "-");
 				walletMoneyInfo.put("walletInfoUserId", map.get("memberAccount"));
-				walletMoneyInfo.put("walletInfoMoney", Double.valueOf(cashAmount) * 0.01);
+				walletMoneyInfo.put("walletInfoMoney", Double.valueOf(cashAmount) * 0.05);
 				walletMoneyInfo.put("walletInfoFrom", "提现手续费");
 				getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
 			} else if ("2".equals(auditType)) {
