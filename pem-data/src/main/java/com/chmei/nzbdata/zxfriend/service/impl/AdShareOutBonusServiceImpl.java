@@ -564,12 +564,20 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 					output.setMsg("此用户不具备推荐资格！");
 					return;
 				} else {
-					BigDecimal adShareOutBonusMoney = (BigDecimal) shareOutBonus.get("adShareOutBonusMoney");
-					System.out.println(adShareOutBonusMoney);
-					if (adShareOutBonusMoney.doubleValue() == 0) {
+					params.put("advertisingInfoFrom", "追加分红");
+					// 追加分红
+					int share = getBaseDao().getTotalCount("AdvertisingMoneyInfoMapper.queryAdvertisingMoney", params);
+					if (share == 0) {
 						output.setCode("-1");
 						output.setMsg("此用户不具备推荐资格！");
 						return;
+//						BigDecimal adShareOutBonusMoney = (BigDecimal) shareOutBonus.get("adShareOutBonusMoney");
+//						System.out.println(adShareOutBonusMoney);
+//						if (adShareOutBonusMoney.doubleValue() == 0) {
+//							output.setCode("-1");
+//							output.setMsg("此用户不具备推荐资格！");
+//							return;
+//						}
 					}
 				}
 			} else {

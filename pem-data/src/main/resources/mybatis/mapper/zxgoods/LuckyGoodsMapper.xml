@@ -43,11 +43,11 @@
       <if test="memberAccount != null and memberAccount != ''">
         a.member_account = #{memberAccount}
       </if>
-      <if test="goodsStatus != null and goodsStatus !=''">
-        AND a.goods_status = #{goodsStatus}
-      </if>
       <if test="goodsTypeId != null and goodsTypeId !=''">
         AND a.goods_type_id = #{goodsTypeId}
+      </if>
+      <if test="goodsStatus != null and goodsStatus !=''">
+        AND a.goods_status = #{goodsStatus}
       </if>
       <if test="goodsDesc != null and goodsDesc !=''">
         AND a.goods_desc LIKE CONCAT('%',#{goodsDesc},'%')
@@ -76,6 +76,9 @@
     <where>
       <if test="memberAccount != null and memberAccount != ''">
         a.member_account = #{memberAccount}
+      </if>
+      <if test="goodsTypeId != null and goodsTypeId !=''">
+        AND a.goods_type_id = #{goodsTypeId}
       </if>
       <if test="goodsStatus != null and goodsStatus !=''">
         AND a.goods_status = #{goodsStatus}

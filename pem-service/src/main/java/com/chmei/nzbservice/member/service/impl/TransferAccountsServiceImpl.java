@@ -30,4 +30,18 @@ public class TransferAccountsServiceImpl extends BaseServiceImpl implements ITra
         input.setMethod("memberTransferAccounts");
         getNzbDataService().execute(input, output);
     }
+
+    /**
+     * 校验转账时是否显示广告费
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbServiceException 异常信息
+     */
+    @Override
+    public void checkIsAdvertisingFee(InputDTO input, OutputDTO output) throws NzbServiceException {
+        input.setService("transferAccountsService");
+        input.setMethod("checkIsAdvertisingFee");
+        getNzbDataService().execute(input, output);
+    }
 }

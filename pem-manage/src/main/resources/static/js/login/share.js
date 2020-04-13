@@ -91,7 +91,7 @@ function appRegister() {// 注册
 }
 
 function downloadApp() {
-	window.open('http://www.lhzxkj.cn:8080/pem-manage/api/appVersion/downloadQRCode');
+	window.open('http://www.lhzxkj.cn/pem-manage/api/appVersion/downloadQRCode');
 }
 
 //校验非空

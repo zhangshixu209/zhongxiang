@@ -131,6 +131,7 @@ public class TransferAccountsServiceImpl extends BaseServiceImpl implements ITra
             LOGGER.error("系统错误", e);
         }
     }
+
     //type 扣款类型  add 0增加 1减少
     private void addMessage(String memberAccount,Double money,String userName, String toName,String type,Integer add){
         if("0".equals(type)){
@@ -152,6 +153,44 @@ public class TransferAccountsServiceImpl extends BaseServiceImpl implements ITra
             adRecord.put("advertisingInfoMoney", money);
             adRecord.put("advertisingInfoFrom", add == 0 ? "收到"+userName+"转账" : "转账给"+toName);
             getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
+        }
+    }
+
+    /**
+     * 校验转账时是否显示广告费
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbDataException 异常信息
+     */
+    @Override
+    public void checkIsAdvertisingFee(InputDTO input, OutputDTO output) throws NzbDataException {
+        Map<String, Object> params = input.getParams();
+        try {
+            // 1、判断当前用户是否追加过分红
+            params.put("advertisingInfoFrom", "追加分红");
+            // 追加分红
+            int share = getBaseDao().getTotalCount("AdvertisingMoneyInfoMapper.queryAdvertisingMoney", params);
+            if (share > 0) {
+                output.setCode("0");
+                output.setMsg("显示广告费");
+                return;
+            }
+            // 2、判断所推荐的会员是否满足100实名
+            List<Map<String, Object>> list = getBaseDao().queryForList("MemberMapper.queryMyShareMemberList", params);
+            if(list.size() >= 100){
+                params.put("list", list);
+                int total = getBaseDao().getTotalCount("RealNameAuthMapper.checkCardNumTotal", params);
+                if (total >= list.size()) {
+                    output.setCode("0");
+                    output.setMsg("显示广告费");
+                    return;
+                }
+            }
+            output.setCode("-1");
+            output.setMsg("不显示广告费");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

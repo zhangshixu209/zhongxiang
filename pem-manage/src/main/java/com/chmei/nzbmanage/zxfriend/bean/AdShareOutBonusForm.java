@@ -73,6 +73,8 @@ public class AdShareOutBonusForm extends BaseForm {
 	 */
 	private Integer date;
 
+	private Long daySpan;
+
 	private static final long serialVersionUID = 1L;
 
 	public Long getAdShareOutBonusId() {
@@ -169,5 +171,13 @@ public class AdShareOutBonusForm extends BaseForm {
 
 	public void setDate(Integer date) {
 		this.date = date;
+	}
+
+	public Long getDaySpan() {
+		return daySpan;
+	}
+
+	public void setDaySpan(Long daySpan) {
+		this.daySpan = daySpan;
 	}
 }

@@ -459,4 +459,14 @@
     </where>
   </select>
 
+  <!-- 通过被推荐人账号查询推荐人信息 -->
+  <select id="queryMyShareMember" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT member_account AS memberAccount FROM zx_app_my_share_extend WHERE cover_member_account = #{coverMemberAccount}
+  </select>
+
+  <!-- 根据当前登录用户账号查询被推荐人 -->
+  <select id="queryMyShareMemberList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT cover_member_account AS coverMemberAccount FROM zx_app_my_share_extend WHERE member_account = #{memberAccount}
+  </select>
+
 </mapper>

@@ -21,4 +21,12 @@ public interface ITransferAccountsService {
      */
     void memberTransferAccounts(InputDTO input, OutputDTO output) throws NzbDataException;
 
+    /**
+     * 校验转账时是否显示广告费
+     *
+     * @param input 入参
+     * @param output 出参
+     * @throws NzbDataException 异常信息
+     */
+    void checkIsAdvertisingFee(InputDTO input, OutputDTO output) throws NzbDataException;
 }

@@ -107,4 +107,15 @@
     where advertising_info_id = #{advertisingInfoId,jdbcType=BIGINT}
   </update>
 
+  <!-- 查询是否追加过分红 -->
+  <select id="queryAdvertisingMoney" parameterType="java.util.Map" resultType="int">
+    select
+        COUNT(1)
+    from zx_app_advertising_money_info
+    <where>
+      advertising_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+      AND advertising_info_from = #{advertisingInfoFrom,jdbcType=VARCHAR}
+    </where>
+  </select>
+
 </mapper>

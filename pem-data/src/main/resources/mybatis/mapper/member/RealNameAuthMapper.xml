@@ -180,4 +180,13 @@
     SELECT COUNT(1) FROM t_real_name_authentic AS a WHERE a.card_num = #{cardNum}
   </select>
 
+  <!-- 校验实名总人数 -->
+  <select id="checkCardNumTotal" parameterType="java.util.Map" resultType="int">
+    SELECT COUNT(1) FROM t_real_name_authentic AS a
+    WHERE a.card_num != '' AND a.member_account IN
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item.coverMemberAccount}
+    </foreach>
+  </select>
+
 </mapper>

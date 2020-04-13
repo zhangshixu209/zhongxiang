@@ -9,6 +9,7 @@ import com.chmei.nzbdata.util.StringUtil;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -52,6 +53,7 @@ public class RealNameAuthServiceImpl extends BaseServiceImpl implements IRealNam
                 output.setCode("-1");
                 output.setMsg("新增失败");
             }
+            checkMyShare(params); // 校验是否需要赠送广告费
             output.setCode("0");
             output.setMsg("保存成功");
         } catch (Exception ex) {
@@ -87,6 +89,7 @@ public class RealNameAuthServiceImpl extends BaseServiceImpl implements IRealNam
                 output.setCode("-1");
                 output.setMsg("保存失败");
             }
+            checkMyShare(params); // 校验是否需要赠送广告费
             output.setCode("0");
             output.setMsg("保存成功");
             output.setTotal(total);
@@ -114,6 +117,66 @@ public class RealNameAuthServiceImpl extends BaseServiceImpl implements IRealNam
         } catch (Exception ex) {
             LOGGER.error("查询失败: " + ex);
         }
+    }
+
+    /**
+     * 校验是否需要增加注册赠送和分享赠送
+     * @param params
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    private int checkMyShare(Map<String, Object> params) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> item = (Map<String, Object>) getBaseDao().
+                queryForObject("RealNameAuthMapper.queryRealNameInfo", params);
+        if (null != item) {
+            String cardNum = (String) item.get("cardNum");
+            if (StringUtil.isNotEmpty(cardNum)) {
+                // 通过被推荐人账号查询推荐人信息
+                params.put("coverMemberAccount", params.get("memberAccount"));
+                Map<String, Object> map_ = (Map<String, Object>) getBaseDao().queryForObject(
+                        "MemberMapper.queryMyShareMember", params);
+                if (null != map_) { // 存在推荐关系，继续下一步
+                    params.put("advertisingInfoFrom", "注册赠送");
+                    int i = getBaseDao().getTotalCount("AdvertisingMoneyInfoMapper.queryAdvertisingMoney", params);
+                    if (i == 0) {
+                        // 查询注册人余额
+                        Map<String, Object> item_ = (Map<String, Object>) getBaseDao().
+                                queryForObject("MemberMapper.queryMemberBalanceDetail", params);
+                        Double adMoney = 10.00;
+                        Map<String, Object> user1 = new HashMap<>();
+                        user1.put("memberAccount", params.get("memberAccount"));
+                        user1.put("advertisingFee", Double.valueOf(item_.get("advertisingFee")+"") + adMoney);
+                        getBaseDao().update("MemberMapper.updateMemberBalance", user1);
+                        // 注册赠送记录:
+                        Map<String, Object> adRecord = new HashMap<>();
+                        adRecord.put("advertisingInfoId", getSequence());
+                        adRecord.put("advertisingInfoAddOrMinus", "+");
+                        adRecord.put("advertisingInfoUserId", params.get("memberAccount"));
+                        adRecord.put("advertisingInfoMoney", adMoney);
+                        adRecord.put("advertisingInfoFrom", "注册赠送");
+                        getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
+                        // 查询分享人余额
+                        Map<String, Object> item2 = (Map<String, Object>) getBaseDao().
+                                queryForObject("MemberMapper.queryMemberBalanceDetail", map_);
+                        Map<String, Object> user2 = new HashMap<>();
+                        user2.put("memberAccount", map_.get("memberAccount"));
+                        user2.put("advertisingFee", Double.valueOf(item2.get("advertisingFee")+"") + adMoney);
+                        getBaseDao().update("MemberMapper.updateMemberBalance", user2);
+                        // 分享赠送记录:
+                        Map<String, Object> adRecord_ = new HashMap<>();
+                        adRecord_.put("advertisingInfoId", getSequence());
+                        adRecord_.put("advertisingInfoAddOrMinus", "+");
+                        adRecord_.put("advertisingInfoUserId", map_.get("memberAccount"));
+                        adRecord_.put("advertisingInfoMoney", adMoney);
+                        adRecord_.put("advertisingInfoFrom", "分享赠送");
+                        getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord_);
+                        return 1;
+                    }
+                }
+            }
+        }
+        return 0;
     }
 
 }

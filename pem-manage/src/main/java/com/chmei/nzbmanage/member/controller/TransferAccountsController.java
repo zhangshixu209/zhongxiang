@@ -44,4 +44,23 @@ public class TransferAccountsController extends BaseController {
         return outputDTO;
     }
 
+    /**
+     * 校验是否显示广告费
+     *
+     * @param transferAccountsForm 封装实体类
+     * @return OutputDTO 出参
+     */
+    @RequestMapping("/checkIsAdvertisingFee")
+    public OutputDTO checkIsAdvertisingFee(@ModelAttribute TransferAccountsForm transferAccountsForm) {
+        OutputDTO outputDTO;
+        try {
+            Map<String, Object> map = BeanUtil.convertBean2Map(transferAccountsForm);
+            outputDTO = getOutputDTO(map, "transferAccountsService", "checkIsAdvertisingFee");
+        } catch (Exception e) {
+            LOGGER.error("保存失败", e);
+            outputDTO = new OutputDTO("1", "系统错误");
+        }
+        return outputDTO;
+    }
+
 }
