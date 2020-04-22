@@ -68,11 +68,6 @@ function queryList(pageno,limit){
         $("#J_tabletpl").html(dsa(data));
         //初始化分页数据(当前页码，总数，回调查询函数)
         initPaginator(pageno,data.total, queryList);
-        $("#sample-table-1").colResizable({ // 手动拖动表格
-			liveDrag:true, 
-			fixed:false,
-//			resizeMode:'overflow'
-		});
     });
 }
 
