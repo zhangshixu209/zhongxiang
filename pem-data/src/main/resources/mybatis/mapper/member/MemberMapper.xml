@@ -22,6 +22,7 @@
   </resultMap>
   <!-- 累计提现，累计充值，累计分红，累计投诉 -->
   <sql id="total_Column_List">
+    (SELECT COUNT(1) FROM zx_app_my_share_extend f WHERE f.member_account = a.member_account) shareTotal,
     (SELECT COUNT(1) FROM t_member_complaint_record w WHERE a.member_account = w.member_account AND w.`status` != '1001' AND w.`status` != '1002') AS complaintTotal,
 	(SELECT IFNULL(CAST(SUM(w.recharge_amount) AS CHAR), '0') FROM t_recharge_record w WHERE a.member_account = w.member_account
 	AND w.`status` != '1001' AND w.valid_sts_cd = '1') AS rechargeTotal,

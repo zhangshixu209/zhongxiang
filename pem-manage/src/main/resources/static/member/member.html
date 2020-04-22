@@ -128,7 +128,8 @@
 									<th>昵称</th>
 									<th>推荐人</th>
 									<th>实名信息</th>
-									<!--<th>团队人数</th>-->
+									<th>团队人数</th>
+									<th>分享人数</th>
 									<th>累计充值</th>
 									<th>累计分红</th>
 									<th>累计提现</th>
@@ -200,7 +201,8 @@
 						<td>{{nickname}}</td>
 						<td>{{recomNickname}}</td>
 						<td><a class="name noticeName" href="javascript:;" onclick="queryRealNameDetail('{{memberAccount}}')">{{realName}}</a></td>
-						<!--<td>{{teamNum}}</td>-->
+						<td>{{teamNum}}</td>
+						<td>{{shareTotal}}</td>
 						<td>{{rechargeTotal}}</td>
 						<td>{{bonusTotal}}</td>
 						<td>{{cashTotal}}</td>
@@ -213,7 +215,7 @@
 				{{/each}} 
 			{{else}}
 				<tr>
-					<td colspan="14" style="text-align: center">无数据</td>
+					<td colspan="15" style="text-align: center">无数据</td>
 				</tr>
 			{{/if}}
 		</script>

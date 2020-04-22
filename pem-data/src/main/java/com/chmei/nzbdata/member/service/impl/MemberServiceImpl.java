@@ -164,17 +164,17 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
             int total = getBaseDao().getTotalCount("MemberMapper.queryMemberCount", params);
             if (total > 0) {
                 List<Map<String, Object>> list = getBaseDao().queryForList("MemberMapper.queryMemberList", params);
-//                if (null != list && list.size() > 0) {
-//                    for (Map<String, Object> map : list) {
-//                        Map<String, Object> result = new HashMap<>();
-//                        result.put("memberAccount", map.get("memberAccount"));
-//                        InputDTO inputDTO = new InputDTO();
-//                        inputDTO.setParams(result);
-//                        // 根据当前用户ID 查询团队人数
-//                        int size1 = iZxMyTeamService.countMyTeam(inputDTO, output);
-//                        map.put("teamNum", size1); // 直推人数
-//                    }
-//                }
+                if (null != list && list.size() > 0) {
+                    for (Map<String, Object> map : list) {
+                        Map<String, Object> result = new HashMap<>();
+                        result.put("memberAccount", map.get("memberAccount"));
+                        InputDTO inputDTO = new InputDTO();
+                        inputDTO.setParams(result);
+                        // 根据当前用户ID 查询团队人数
+                        int size1 = iZxMyTeamService.countMyTeam(inputDTO, output);
+                        map.put("teamNum", size1); // 直推人数
+                    }
+                }
                 output.setItems(list);
             }
             output.setTotal(total);

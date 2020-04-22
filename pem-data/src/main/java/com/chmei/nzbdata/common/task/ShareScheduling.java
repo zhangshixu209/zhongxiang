@@ -83,7 +83,7 @@ public class ShareScheduling extends BaseServiceImpl {
                                     BigDecimal adShareOutBonusMoney = (BigDecimal) bonusMoney.get("adShareOutBonusMoney");
                                     record_.put("adShareOutBonusMoney", adShareOutBonusMoney.doubleValue() + adShareOutBonusInfoMoney.doubleValue());
                                     record_.put("adShareOutBonusUserId", map.get("adShareOutBonusInfoUserId"));
-                                    int j = getBaseDao().update("ShareOutBonusMapper.updateShareOutBonusInfo", record_);
+                                    getBaseDao().update("ShareOutBonusMapper.updateShareOutBonusInfo", record_);
                                     // 将交易表中的取消数据删除
                                     Map<String, Object> examplee = new HashMap<>();
                                     examplee.put("memberAccount", userRun.get("memberAccount"));
@@ -92,8 +92,6 @@ public class ShareScheduling extends BaseServiceImpl {
                                     LOGGER.info("用户{ " + map.get("adShareOutBonusInfoUserId") +" }分红任务结束");
                                 }
                             }
-                        } else {
-                            LOGGER.info("==============分红任务未开始！===============");
                         }
                     }
                 }
