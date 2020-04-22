@@ -70,7 +70,7 @@ function saveRotationChart(){
 		return false;
 	}
 	var partnerUrl = $("#partnerUrl").val();
-	var RegExp = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+	var RegExp = /^((ht|f)tps?):\/\/([\w-]+(\.[\w-]+)*\/?)+(\?([\w\-\.,@?^=%&:\/~\+#]*)+)?$/;
 	if (RegExp.test(partnerUrl) == false) {
 		Chief.layer.tips("您输入的链接格式不正确，请重新输入！");
 		return false;

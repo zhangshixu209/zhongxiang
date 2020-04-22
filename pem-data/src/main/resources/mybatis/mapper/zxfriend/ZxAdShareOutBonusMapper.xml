@@ -143,7 +143,9 @@
     FROM
         zx_app_ad_share_out_bonus_info AS a
     <where>
-      a.ad_share_out_bonus_info_user_id = #{memberAccount}
+      <if test="memberAccount != null and memberAccount != ''">
+        a.ad_share_out_bonus_info_user_id = #{memberAccount}
+      </if>
       <if test="adShareOutBonusInfoDoneS != null and adShareOutBonusInfoDoneS != ''" >
         AND a.ad_share_out_bonus_info_done = #{adShareOutBonusInfoDoneS}
       </if>

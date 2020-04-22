@@ -360,7 +360,8 @@
         b.goods_luck_star AS goodsLuckStar,
         DATE_FORMAT(b.crt_time,'%Y年%m月%d日') AS crtTime,
         IFNULL(c.head_img_url, '') AS headImgUrl,
-        IFNULL(c.nickname, c.member_account) AS nickname
+        IFNULL(c.nickname, c.member_account) AS nickname,
+        b.rotation_num AS rotationNum
     FROM
       zx_app_zero_seckill_info b
     LEFT JOIN zx_app_zero_seckill a ON a.id = b.goods_id
@@ -389,11 +390,11 @@
   <select id="queryPartakeHeadInfo" parameterType="java.util.Map" resultType="java.util.Map">
     SELECT
         a.lucky_order_number AS luckyOrderNumber,
-        (SELECT COUNT(1) FROM zx_app_zero_seckill_info b WHERE b.goods_id = #{goodsId}) AS partakeNumber,
-        (SELECT SUM(b.lucky_number) FROM zx_app_zero_seckill_info b WHERE b.goods_id = #{goodsId}) AS luckyNumber
+        (SELECT COUNT(1) FROM zx_app_zero_seckill_info b WHERE b.goods_id = #{goodsId} AND b.rotation_num = #{rotationNum}) AS partakeNumber,
+        (SELECT SUM(b.lucky_number) FROM zx_app_zero_seckill_info b WHERE b.goods_id = #{goodsId} AND b.rotation_num = #{rotationNum}) AS luckyNumber
     FROM
         zx_app_zero_seckill_info a
-    WHERE a.goods_id = #{goodsId} AND a.goods_luck_star = 1
+    WHERE a.goods_id = #{goodsId} AND a.goods_luck_star = 1 AND a.rotation_num = #{rotationNum}
   </select>
 
   <!-- 查询关注次数 -->

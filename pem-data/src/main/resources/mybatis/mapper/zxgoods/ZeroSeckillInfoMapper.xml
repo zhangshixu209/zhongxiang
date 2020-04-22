@@ -35,6 +35,9 @@
       <if test="buyMemberAccount != null and buyMemberAccount !=''">
         AND a.buy_member_account = #{buyMemberAccount}
       </if>
+      <if test="rotationNum != null and rotationNum !=''">
+        AND a.rotation_num = #{rotationNum}
+      </if>
     </where>
     ORDER BY a.lucky_order_number ASC
     <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
@@ -51,6 +54,9 @@
       goods_id = #{goodsId}
       <if test="buyMemberAccount != null and buyMemberAccount !=''">
         AND buy_member_account = #{buyMemberAccount}
+      </if>
+      <if test="rotationNum != null and rotationNum !=''">
+        AND rotation_num = #{rotationNum}
       </if>
     </where>
     ORDER BY lucky_order_number ASC

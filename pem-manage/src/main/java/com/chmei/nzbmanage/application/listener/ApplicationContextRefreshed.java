@@ -40,15 +40,15 @@ public class ApplicationContextRefreshed implements ApplicationListener<ContextR
 		redisTemplate.setValueSerializer(jdkAndStringValueRedisSerializer);
 		redisTemplate.setHashValueSerializer(jdkAndStringValueRedisSerializer);
 		
-		//ico初始化之后加载RSA非对称加解密钥匙
-		Map<String, String> sqlKey = RSAUtilSQL.getPrivateKey();
-		cacheService.setString(RSAUtilSQL.SQL_PUBLIC_KEY, sqlKey.get(RSAUtilSQL.SQL_PUBLIC_KEY));
-		cacheService.setString(RSAUtilSQL.SQL_PRIVATE_Key, sqlKey.get(RSAUtilSQL.SQL_PRIVATE_Key));
-		String publicKey = cacheService.getString(RSAUtilSQL.SQL_PUBLIC_KEY);
-		String privateKey = cacheService.getString(RSAUtilSQL.SQL_PRIVATE_Key);
-		LOGGER.info("SQL-RSA非对称密钥对初始化放入redis:SQL_PUBLIC_KEY:"+publicKey); 
-		LOGGER.info("--------------------------------------------------");
-		LOGGER.info("SQL-RSA非对称密钥对初始化放入redis:SQL_PRIVATE_KEY:"+privateKey); 
+//		//ico初始化之后加载RSA非对称加解密钥匙
+//		Map<String, String> sqlKey = RSAUtilSQL.getPrivateKey();
+//		cacheService.setString(RSAUtilSQL.SQL_PUBLIC_KEY, sqlKey.get(RSAUtilSQL.SQL_PUBLIC_KEY));
+//		cacheService.setString(RSAUtilSQL.SQL_PRIVATE_Key, sqlKey.get(RSAUtilSQL.SQL_PRIVATE_Key));
+//		String publicKey = cacheService.getString(RSAUtilSQL.SQL_PUBLIC_KEY);
+//		String privateKey = cacheService.getString(RSAUtilSQL.SQL_PRIVATE_Key);
+//		LOGGER.info("SQL-RSA非对称密钥对初始化放入redis:SQL_PUBLIC_KEY:"+publicKey);
+//		LOGGER.info("--------------------------------------------------");
+//		LOGGER.info("SQL-RSA非对称密钥对初始化放入redis:SQL_PRIVATE_KEY:"+privateKey);
 	}
 
 }

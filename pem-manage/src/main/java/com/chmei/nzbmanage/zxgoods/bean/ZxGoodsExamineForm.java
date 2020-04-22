@@ -110,6 +110,11 @@ public class ZxGoodsExamineForm extends BaseForm {
 
 	private String buyMemberAccount;
 
+	/**
+	 * 轮次
+	 */
+	private Long rotationNum;
+
 	private static final long serialVersionUID = 1L;
 
 	public Long getId() {
@@ -278,5 +283,13 @@ public class ZxGoodsExamineForm extends BaseForm {
 
 	public void setBuyMemberAccount(String buyMemberAccount) {
 		this.buyMemberAccount = buyMemberAccount;
+	}
+
+	public Long getRotationNum() {
+		return rotationNum;
+	}
+
+	public void setRotationNum(Long rotationNum) {
+		this.rotationNum = rotationNum;
 	}
 }
