@@ -77,19 +77,25 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				if (size > 0) {
 					if (size >= 2 && size < 5) {
 						// 额度增长1000:
-						limit = 1000D;
+						limit = 2000D;
 					} else if (size >= 5 && allPersonnel != null && (size1 >= 25 && size1 <50)) {
 						// 额度增长3000
-						limit = 3000D;
+						limit = 5000D;
 					} else if (size >= 5 && allPersonnel != null && size1 >= 50) {
 						// 额度增长5000
-						limit = 5000D;
+						limit = 10000D;
 					}
-					if (Constants.limit1.equals(adShareOutBonusLimit) && Constants.limit1.equals(limit) ||
-							Constants.limit2.equals(adShareOutBonusLimit) && Constants.limit3.equals(limit) ||
-							Constants.limit5.equals(adShareOutBonusLimit) && Constants.limit5.equals(limit)) {
-						outBonus.put("adShareOutBonusLimit", adShareOutBonusLimit + limit);
-						outBonus.put("adShareOutBonusResidueLimit", adShareOutBonusResidueLimit + limit);
+					Map<String, Object> moneyMap = new HashMap<>();
+					moneyMap.put("memberAccount", memberAccount);
+					moneyMap.put("advertisingInfoFrom", "追加分红");
+					Map<String, Object> money = (Map<String, Object>) getBaseDao().queryForObject(
+							"AdvertisingMoneyInfoMapper.queryAdvertisingMoneyTotal", moneyMap);
+					if (limit > 0) {
+						if (null != money) {
+							BigDecimal moneyTotal = (BigDecimal) money.get("moneyTotal");
+							outBonus.put("adShareOutBonusResidueLimit", limit - moneyTotal.doubleValue()); // 剩余额度
+							outBonus.put("adShareOutBonusLimit", limit); // 当前额度
+						}
 						int i = getBaseDao().update("ShareOutBonusMapper.updateShareOutBonusInfo", outBonus);
 						if (i <= 0) {
 							output.setCode("-1");
@@ -103,19 +109,10 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 				map.put("bonusId",shareOutBonus.get("adShareOutBonusId"));
 				// 用户ID
 				map.put("userId", shareOutBonus.get("adShareOutBonusUserId"));
-				if (Constants.limit1.equals(adShareOutBonusLimit) && Constants.limit1.equals(limit) ||
-						Constants.limit2.equals(adShareOutBonusLimit) && Constants.limit3.equals(limit) ||
-						Constants.limit5.equals(adShareOutBonusLimit) && Constants.limit5.equals(limit)) {
-					// 广告分红总额度:
-					map.put("adShareOutBonusLimit", adShareOutBonusLimit + limit);
-					// 剩余分红额度金额
-					map.put("adShareOutBonusResidueLimit", adShareOutBonusResidueLimit + limit);
-				} else {
-					// 广告分红总额度:
-					map.put("adShareOutBonusLimit", adShareOutBonusLimit);
-					// 剩余分红额度金额
-					map.put("adShareOutBonusResidueLimit", adShareOutBonusResidueLimit);
-				}
+				// 广告分红总额度:
+				map.put("adShareOutBonusLimit", adShareOutBonusLimit);
+				// 剩余分红额度金额
+				map.put("adShareOutBonusResidueLimit", adShareOutBonusResidueLimit);
 				// 分红任务金额
 				map.put("money", 0);
 				// 分红时间周期
@@ -214,69 +211,6 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 		}
 		return 0;
 	}
-
-//	/**
-//	 * 激活广告分红
-//	 * @param input 入参
-//	 * @param output 出参
-//	 * @return
-//	 */
-//	@SuppressWarnings("unchecked")
-//	private int activate(InputDTO input, OutputDTO output) {
-//		Map<String, Object> params = input.getParams();
-//		try {
-//			// 先扣除账户余额100元作为激活分红的手续费:
-//			// 查询当前用户信息
-//			Map<String, Object> item = (Map<String, Object>) getBaseDao().queryForObject(
-//					"MemberMapper.queryMemberDetail", params);
-//			Map<String, Object> map = new HashMap<>();
-//			if (Optional.ofNullable(item).isPresent()) {
-//				// 判断账户余额是否 > 100 元
-//				Double zxMyWalletAmount = Double.valueOf(item.get("walletBalance")+"");
-//				if (zxMyWalletAmount != null) {
-//					if (zxMyWalletAmount < Constants.MONEY) {
-//						output.setCode("-1");
-//						output.setMsg("钱包余额不足");
-//						return -1;
-//					}
-//					map.put("id", item.get("id")); // 用户ID
-//					map.put("memberAccount", item.get("memberAccount")); // 用户账户
-//					// 扣除账户中的余额 100 元
-//					map.put("walletBalance", zxMyWalletAmount - 100);
-//					// 设置用户信息中激活广告分红标志 1 : 已经激活, 0 : 未激活
-//					map.put("activateStatus", 1);
-//					int i = getBaseDao().update("MemberMapper.updateMemberBalance", map);
-//					if (i > 0) {
-//						// 记录激活分红进行扣除的钱包钱数:
-//						Map<String, Object> walletMoneyInfo = new HashMap<>();
-//						walletMoneyInfo.put("walletInfoId", getSequence());
-//						walletMoneyInfo.put("walletInfoAddOrMinus", "-");
-//						walletMoneyInfo.put("walletInfoUserId", item.get("memberAccount"));
-//						walletMoneyInfo.put("walletInfoMoney", 100.0);
-//						walletMoneyInfo.put("walletInfoFrom", "开通广告分红手续费");
-//						getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
-//						// 记录结束
-//						// 广告分红激活
-//						Map<String, Object> record = new HashMap<>();
-//						record.put("adShareOutBonusId", getSequence());
-//						record.put("adShareOutBonusUserId", item.get("memberAccount"));
-//						// 激活默认额度为 1000 元
-//						record.put("adShareOutBonusLimit", 1000D);
-//						// 分红额度也为 1000 元
-//						record.put("adShareOutBonusResidueLimit", 1000D);
-//						// 设置激活标志 Y 是 N 否
-//						record.put("adShareOutBonusType", "Y");
-//						// 新增广告分红激活信息
-//						int ii = getBaseDao().insert("ShareOutBonusMapper.saveShareOutBonusInfo", record);
-//						return ii;
-//					}
-//				}
-//			}
-//		} catch (Exception e) {
-//			LOGGER.error("系统异常", e);
-//		}
-//		return 0;
-//	}
 
 	/**
 	 * 追加广告分红
@@ -707,6 +641,7 @@ public class AdShareOutBonusServiceImpl extends BaseServiceImpl implements IAdSh
 			}
 			// 2.根据用户ID,查询此用户下有多少有效人员
 			int size = iZxMyTeamService.checkedDay(input, output);
+			input.getParams().put("memberAccount", userId);
 			// 2.1 查询完成了几个分红周期:
 			long count = findTaskCountByMemberAccount(input, output);
 			Map<String, Object> findTaskCount = findTaskCount(input, output);

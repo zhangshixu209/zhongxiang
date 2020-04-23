@@ -115,6 +115,10 @@
         <if test="teamRecommendedUserId != null and teamRecommendedUserId != ''">
           AND a.team_recommended_user_id = #{teamRecommendedUserId}
         </if>
+        <if test="teamType != null and teamType != ''">
+          AND a.team_type = #{teamType}
+        </if>
+
     </where>
   </select>
 
@@ -140,7 +144,6 @@
       <if test="teamType != null">
         team_type = #{teamType,jdbcType=VARCHAR},
       </if>
-        team_date = NOW(),
     </set>
     <where>
       <if test="teamParentId != null and teamParentId != ''">

@@ -118,4 +118,16 @@
     </where>
   </select>
 
+  <!-- 广告钱包金额统计 -->
+  <select id="queryAdvertisingMoneyTotal" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        SUM( advertising_info_money ) AS moneyTotal
+    FROM
+        zx_app_advertising_money_info
+    <where>
+      advertising_info_user_id = #{memberAccount,jdbcType=VARCHAR}
+      AND advertising_info_from = #{advertisingInfoFrom,jdbcType=VARCHAR}
+    </where>
+  </select>
+
 </mapper>
