@@ -80,6 +80,12 @@ function saveRotationChart(){
 	if(!flag) {
 		return false;
 	}
+	var linkAddress = $("#linkAddress").val();
+	var RegExp = /((ht|f)tps?:)\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/g;
+	if (RegExp.test(linkAddress) == false) {
+		Chief.layer.tips("您输入的链接格式不正确，请重新输入！");
+		return false;
+	}
 	var filePaths = $("#filePaths").val();
 	if(isDataNull(filePaths)){
 		Chief.layer.tips("请上传附件！");
@@ -170,6 +176,12 @@ $('.pull-right').on('click','#edit_btn', function (){
 function updateRotationChart(){
 	var flag = $("#editRotationChartForm").validate().form(); //若全部通过验证则form方法返回true
 	if(!flag) {
+		return false;
+	}
+	var linkAddress = $("#linkAddress_D").val();
+	var RegExp = /((ht|f)tps?:)\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/g;
+	if (RegExp.test(linkAddress) == false) {
+		Chief.layer.tips("您输入的链接格式不正确，请重新输入！");
 		return false;
 	}
 	var filePaths = $("#filePaths").val();

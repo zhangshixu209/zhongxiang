@@ -70,7 +70,7 @@ function saveRotationChart(){
 		return false;
 	}
 	var partnerUrl = $("#partnerUrl").val();
-	var RegExp = /^((ht|f)tps?):\/\/([\w-]+(\.[\w-]+)*\/?)+(\?([\w\-\.,@?^=%&:\/~\+#]*)+)?$/;
+	var RegExp = /((ht|f)tps?:)\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/g;
 	if (RegExp.test(partnerUrl) == false) {
 		Chief.layer.tips("您输入的链接格式不正确，请重新输入！");
 		return false;
@@ -164,7 +164,7 @@ function updateRotationChart(){
 		return false;
 	}
 	var partnerUrl = $("#partnerUrl_D").val();
-	var RegExp = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+	var RegExp = /((ht|f)tps?:)\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/g;
 	if (RegExp.test(partnerUrl) == false) {
 		Chief.layer.tips("您输入的链接格式不正确，请重新输入！");
 		return false;

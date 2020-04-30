@@ -115,6 +115,11 @@ public class ZxGoodsExamineForm extends BaseForm {
 	 */
 	private Long rotationNum;
 
+	/**
+	 * 商品状态后台查询使用
+	 */
+	private String goodsStatusHT;
+
 	private static final long serialVersionUID = 1L;
 
 	public Long getId() {
@@ -291,5 +296,13 @@ public class ZxGoodsExamineForm extends BaseForm {
 
 	public void setRotationNum(Long rotationNum) {
 		this.rotationNum = rotationNum;
+	}
+
+	public String getGoodsStatusHT() {
+		return goodsStatusHT;
+	}
+
+	public void setGoodsStatusHT(String goodsStatusHT) {
+		this.goodsStatusHT = goodsStatusHT;
 	}
 }

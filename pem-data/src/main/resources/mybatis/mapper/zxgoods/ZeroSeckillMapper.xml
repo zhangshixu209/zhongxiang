@@ -52,7 +52,10 @@
         AND a.goods_type_id = #{goodsTypeId}
       </if>
       <if test="goodsStatus != null and goodsStatus !=''">
-        AND a.goods_status = #{goodsStatus} OR (goods_status = '1005' AND goods_surplus_num &gt; 0)
+        AND a.goods_status = #{goodsStatus}
+      </if>
+      <if test="goodsStatusHT != null and goodsStatusHT !=''">
+        AND a.goods_status = #{goodsStatusHT}
       </if>
       <if test="goodsDesc != null and goodsDesc !=''">
         AND a.goods_desc LIKE CONCAT('%',#{goodsDesc},'%')
@@ -82,7 +85,10 @@
         AND goods_type_id = #{goodsTypeId}
       </if>
       <if test="goodsStatus != null and goodsStatus !=''">
-        AND goods_status = #{goodsStatus} OR (goods_status = '1005' AND goods_surplus_num &gt; 0)
+        AND goods_status = #{goodsStatus}
+      </if>
+      <if test="goodsStatusHT != null and goodsStatusHT !=''">
+        AND goods_status = #{goodsStatusHT}
       </if>
       <if test="goodsDesc != null and goodsDesc !=''">
         AND goods_desc LIKE CONCAT('%',#{goodsDesc},'%')
@@ -357,6 +363,7 @@
         a.needed_ad_fee AS neededAdFee,
         a.partake_number AS partakeNumber,
         a.product_cover_url AS productCoverUrl,
+        a.goods_url AS goodsUrl,
         b.goods_luck_star AS goodsLuckStar,
         DATE_FORMAT(b.crt_time,'%Y年%m月%d日') AS crtTime,
         IFNULL(c.head_img_url, '') AS headImgUrl,

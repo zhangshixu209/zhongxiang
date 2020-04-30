@@ -252,6 +252,7 @@
         a.order_type AS orderType,
         b.product_cover_url AS productCoverUrlMS,
         b.needed_ad_fee AS neededAdFeeMs,
+        b.goods_url AS goodsUrl,
         c.product_cover_url AS productCoverUrlFree,
         c.needed_ad_fee AS neededAdFeeFree,
         d.product_cover_url AS productCoverUrlLucky,
