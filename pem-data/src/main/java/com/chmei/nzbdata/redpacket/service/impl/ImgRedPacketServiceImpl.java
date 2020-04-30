@@ -570,10 +570,16 @@ public class ImgRedPacketServiceImpl extends BaseServiceImpl implements IImgRedP
 			String msg;
 			if(days >= 3) {
 				if (params.get("memberAccount").equals(redPacket.get("redPacketImgUserId"))) {
-					msg = "此红包已退回！";
-					output.setCode("-2"); // 4
-					output.setMsg(msg);
-					return;
+					if(0 == (int) redPacket.get("redPacketImgStock")) { // 判断红包剩余数量
+						output.setCode("-1"); // 5
+						output.setMsg("此红包已被领完！");
+						return;
+					} else {
+						msg = "此红包已退回！";
+						output.setCode("-2"); // 4
+						output.setMsg(msg);
+						return;
+					}
 				} else {
 					msg = "该红包已超过72小时，如果已领取，请在钱包记录中查询！";
 					output.setCode("-3"); // 4
