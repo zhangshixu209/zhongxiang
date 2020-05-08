@@ -156,9 +156,9 @@ public class RealNameAuthController extends BaseController {
             if (null != item) {
                 String cardNum = (String) item.get("cardNum");
                 if (StringUtil.isEmpty(cardNum)) {
-                    return  new OutputDTO("0", "新增实名信息"); // 第一次添加实名信息
+                    return  new OutputDTO("0", "编辑实名信息"); // 第一次添加实名信息
                 } else {
-                    return  new OutputDTO("1", "编辑实名信息"); // 如果身份证号存在代表实名信息已添加（请修改）
+                    return  new OutputDTO("1", "不操作实名信息"); // 如果身份证号存在代表实名信息已添加（请修改）
                 }
             } else {
                 return  new OutputDTO("2", "新增实名信息"); // 第一次添加实名信息

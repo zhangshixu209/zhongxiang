@@ -24,7 +24,7 @@ public class FilterConfiguration {
 		sessionFilter.initWhiteList("/login/login.html,/noRight.html,/login/share.html,/api/pb/admin/.*," +
 				"/api/member/.*,/api/recharge/.*,/api/rotation/.*,/api/friend/.*,/api/shareOutBonus/.*,/api/appVersion/.*," +
 				"/api/linkRedPacket/.*,/api/imgRedPacket/.*,/api/videoRedPacket/.*,/api/redPacket/.*");
-		sessionFilter.initWhitePostFix("js,css,png,jpg,gif,mp3,mp4,icon,ico");
+		sessionFilter.initWhitePostFix("js,css,png,jpg,jpeg,webp,gif,mp3,mp4,icon,ico");
 		sessionFilter.initNotLoginUrl("/login/login.html");
 		regBean.setFilter(sessionFilter);
 		regBean.setUrlPatterns(Arrays.asList("/*"));
@@ -44,7 +44,7 @@ public class FilterConfiguration {
 		rightFilter.initWhiteList("/index.html,/noRight.html,/login/login.html,/login/share.html," +
 				"/api/pb/admin/.*,/assets/.*,/api/adminRight/.*,/api/member/.*,/api/recharge/.*,/api/rotation/.*,/api/friend/.*,/api/shareOutBonus/.*,/api/appVersion/.*," +
 				"/api/linkRedPacket/.*,/api/imgRedPacket/.*,/api/videoRedPacket/.*,/api/redPacket/.*");
-		rightFilter.initWhitePostFix("js,css,png,jpg,gif,mp3,mp4,icon,ico");
+		rightFilter.initWhitePostFix("js,css,png,jpg,jpeg,webp,gif,mp3,mp4,icon,ico");
 		rightFilter.initNotLoginUrl("/login/login.html");
 		rightFilter.initNotRightUrl("/noRight.html");
 		regBean.setFilter(rightFilter);

@@ -305,15 +305,21 @@ public class MemberController extends BaseController {
 //            outputDTO.setMsg("输入手机号不一致!");
 //            return outputDTO;
 //        }
-        String code_ = (String) session.getAttribute(phoneNumber);
-        if (StringUtils.isNotEmpty(code_) && !code_.equals(code)) {
+        if (null != session) {
+            String code_ = (String) session.getAttribute(phoneNumber);
+            if (StringUtils.isNotEmpty(code_) && !code_.equals(code)) {
+                outputDTO.setCode("3");
+                outputDTO.setMsg("验证码输入错误!");
+                return outputDTO;
+            }
+            if (StringUtils.isEmpty(code_)) {
+                outputDTO.setCode("3");
+                outputDTO.setMsg("验证码已过期!");
+                return outputDTO;
+            }
+        } else {
             outputDTO.setCode("3");
             outputDTO.setMsg("验证码输入错误!");
-            return outputDTO;
-        }
-        if (StringUtils.isEmpty(code_)) {
-            outputDTO.setCode("3");
-            outputDTO.setMsg("验证码已过期!");
             return outputDTO;
         }
         outputDTO.setCode("0");

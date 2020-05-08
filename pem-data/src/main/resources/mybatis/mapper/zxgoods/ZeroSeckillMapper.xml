@@ -51,8 +51,11 @@
       <if test="goodsTypeId != null and goodsTypeId !=''">
         AND a.goods_type_id = #{goodsTypeId}
       </if>
-      <if test="goodsStatus != null and goodsStatus !=''">
-        AND a.goods_status = #{goodsStatus}
+      <if test="goodsStatus != null and goodsStatus !='' and goodsTypeId != null and goodsTypeId !=''">
+        AND a.goods_status = #{goodsStatus} OR (a.goods_status = '1005' AND a.goods_surplus_num &gt; 0 AND a.goods_type_id = #{goodsTypeId})
+      </if>
+      <if test="goodsStatus != null and goodsStatus !='' and goodsTypeId == null or goodsTypeId ==''">
+        AND a.goods_status = #{goodsStatus} OR (a.goods_status = '1005' AND a.goods_surplus_num &gt; 0)
       </if>
       <if test="goodsStatusHT != null and goodsStatusHT !=''">
         AND a.goods_status = #{goodsStatusHT}
@@ -84,8 +87,11 @@
       <if test="goodsTypeId != null and goodsTypeId !=''">
         AND goods_type_id = #{goodsTypeId}
       </if>
-      <if test="goodsStatus != null and goodsStatus !=''">
-        AND goods_status = #{goodsStatus}
+      <if test="goodsStatus != null and goodsStatus !='' and goodsTypeId != null and goodsTypeId !=''">
+        AND goods_status = #{goodsStatus} OR (goods_status = '1005' AND goods_surplus_num &gt; 0 AND goods_type_id = #{goodsTypeId})
+      </if>
+      <if test="goodsStatus != null and goodsStatus !='' and goodsTypeId == null or goodsTypeId ==''">
+        AND goods_status = #{goodsStatus} OR (goods_status = '1005' AND goods_surplus_num &gt; 0)
       </if>
       <if test="goodsStatusHT != null and goodsStatusHT !=''">
         AND goods_status = #{goodsStatusHT}

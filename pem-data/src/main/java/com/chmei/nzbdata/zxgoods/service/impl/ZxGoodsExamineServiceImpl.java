@@ -105,7 +105,7 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 				// 根据轮次和商品ID查询参与总人数
 				int isSeckill = getBaseDao().getTotalCount("ZeroSeckillInfoMapper.queryIsZeroSeckillInfo", map_);
 				int num = partakeNumber - isSeckill;
-				if (num == 0) {
+				if (num == 0 || isSeckill == 0) {
 					params.put("goodsSurplusNum", 0);
 					getBaseDao().update("GoodsExamineMapper.updateGoodsExamineNum", params);
 				} else {
