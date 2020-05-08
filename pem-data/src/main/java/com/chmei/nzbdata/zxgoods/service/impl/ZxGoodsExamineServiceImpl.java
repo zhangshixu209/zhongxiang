@@ -99,7 +99,7 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 			if (goodsSurplusNum > 0) {
 				Map<String, Object> map_ = new HashMap<>();
 				map_.put("goodsId", params.get("id"));
-				map_.put("rotationNum", goodsSurplusNum);
+				map_.put("rotationNum", result.get("rotationNum")); // 商品轮次
 //				int goodsReleaseNum = (int) result.get("goodsReleaseNum");   // 商品发布数量
 				int partakeNumber = (int) result.get("partakeNumber");   // 商品总需参与人数 partakeNumber
 				// 根据轮次和商品ID查询参与总人数
