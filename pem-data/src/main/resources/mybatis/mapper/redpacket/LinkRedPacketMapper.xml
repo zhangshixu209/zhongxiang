@@ -494,4 +494,30 @@
   <delete id="delRedPacketMoneyStock" parameterType="java.util.Map">
 	    DELETE FROM zx_app_link_red_packet_info WHERE red_packet_link_id = #{redPacketId}  AND red_packet_link_user_id IS NULL
     </delete>
+
+  <!-- 查询红包剩余数量大于0的红包信息 -->
+  <select id="queryRedPacketStockInfo" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      a.red_packet_link_id AS redPacketId,
+      a.member_account AS memberAccount,
+      a.red_packet_link_money_count AS redPacketMoneyCount,
+      a.red_packet_link_count AS redPacketCount,
+      a.red_packet_link_stock AS redPacketStock,
+      a.red_packet_link_url AS redPacketUrl,
+      a.red_packet_link_info AS redPacketInfo,
+      a.red_packet_link_luck_star AS redPacketLuckStar,
+      a.red_packet_link_start_time AS redPacketStartTime,
+      a.red_packet_link_end_time AS redPacketEndTime,
+      a.red_packet_link_question AS redPacketQuestion,
+      a.red_packet_link_options AS redPacketOptions,
+      a.red_packet_link_answer AS redPacketAnswer,
+      a.red_packet_link_sex AS redPacketSex,
+      a.red_packet_link_age_start AS redPacketAgeStart,
+      a.red_packet_link_age_end AS redPacketAgeEnd,
+      a.red_packet_link_date AS redPacketDate,
+      a.red_packet_link_type AS redPacketType
+    FROM
+      zx_app_link_red_packet a
+    WHERE a.red_packet_link_stock &gt; 0
+  </select>
 </mapper>

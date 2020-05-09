@@ -525,5 +525,30 @@
   <delete id="delRedPacketMoneyStock" parameterType="java.util.Map">
 	    DELETE FROM zx_app_video_red_packet_info WHERE red_packet_video_id = #{redPacketId}  AND red_packet_video_user_id IS NULL
     </delete>
-
+  <!-- 查询红包剩余数量大于0的红包信息 -->
+  <select id="queryRedPacketStockInfo" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        a.red_packet_video_id AS redPacketId,
+        a.red_packet_video_user_id AS memberAccount,
+        a.red_packet_video_money_count AS redPacketMoneyCount,
+        a.red_packet_video_count AS redPacketCount,
+        a.red_packet_video_stock AS redPacketStock,
+        a.red_packet_video_url AS redPacketUrl,
+        a.red_packet_video_img AS redPacketVideoImg,
+        a.red_packet_video_info AS redPacketInfo,
+        a.red_packet_video_luck_star AS redPacketLuckStar,
+        a.red_packet_video_start_time AS redPacketStartTime,
+        a.red_packet_video_end_time AS redPacketEndTime,
+        a.red_packet_video_question AS redPacketQuestion,
+        a.red_packet_video_options AS redPacketOptions,
+        a.red_packet_video_answer AS redPacketAnswer,
+        a.red_packet_video_sex AS redPacketSex,
+        a.red_packet_video_age_start AS redPacketAgeStart,
+        a.red_packet_video_age_end AS redPacketAgeEnd,
+        a.red_packet_video_date AS redPacketDate,
+        a.red_packet_video_type AS redPacketType
+    FROM
+	    zx_app_video_red_packet a
+	WHERE a.red_packet_video_stock &gt; 0
+  </select>
 </mapper>

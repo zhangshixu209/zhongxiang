@@ -142,7 +142,7 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 					List<Double> doubles = gradRedPacket(redPacketCount, redPacketMoneyCount.doubleValue());
 					int i = this.insertListRedPacketImgInfo(doubles, (Long) params.get("redPacketId"));
 					if(i > 0 && stringObjectMap != null){
-						sendBackRedPacketMoney(stringObjectMap); // 红包退回定时任务
+//						sendBackRedPacketMoney(stringObjectMap); // 红包退回定时任务
 						output.setCode("0");
 						output.setMsg("信息发布成功!");
 						output.setItem(stringObjectMap);
@@ -163,7 +163,7 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 	}
 
 	/**
-	 * 红包退回定时任务
+	 * 红包退回定时任务（不使用）
 	 * @param params 入参
 	 */
 	@SuppressWarnings("unchecked")
@@ -293,7 +293,14 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 				if(stock < count && stock == 1){
 					params.put("redPacketEndTime", date);
 				}
-				params.put("redPacketStock", stock < 0 ? 0 : stock - 1 );
+				@SuppressWarnings("unchecked")
+				Map<String, Object> map_ = (Map<String, Object>) getBaseDao().queryForObject(
+						"RedPacketMapper.queryRedPacketMoneyStock", params);
+				if (null == map_) {
+					params.put("redPacketStock", 0);
+				} else {
+					params.put("redPacketStock", stock < 0 ? 0 : stock - 1 );
+				}
 				int k = getBaseDao().update("RedPacketMapper.updateByExampleSelective", params);
 				if (k < 0) {
 					output.setCode("-1");
