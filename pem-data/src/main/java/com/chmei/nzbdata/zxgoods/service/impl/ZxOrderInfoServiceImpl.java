@@ -415,9 +415,10 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 		Map<String, Object> params = input.getParams();
 		KdniaoTrackQueryAPI api = new KdniaoTrackQueryAPI();
 		try {
-			String expCode = (String) params.get("expressName"); //第一个参数是快递公司简称（YD -- 韵达速递）
-			String expNo = (String) params.get("expressNumber");     //第二个参数是需要查询的快递单号
-			String result = api.getOrderTracesByJson(expCode, expNo);
+			String expCode = (String) params.get("expressName");      // 第一个参数是快递公司简称（YD -- 韵达速递）
+			String expNo = (String) params.get("expressNumber");      // 第二个参数是需要查询的快递单号
+			String customerName = (String) params.get("customerName");// 快递为JD或顺丰时必填
+			String result = api.getOrderTracesByJson(expCode, expNo, customerName);
 			JSONObject jsonObject = JSONObject.parseObject(result);
 			List<Map<String, Object>> list = new ArrayList<>();
 			if(jsonObject.containsKey("ShipperCode")){
@@ -443,6 +444,25 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 				}
 				return 1;
 			});
+			output.setItems(list);
+		} catch (Exception e) {
+			LOGGER.error("系统错误", e);
+		}
+	}
+
+	/**
+	 * 查询快递公司列表
+	 *
+	 * @param input  入參
+	 * @param output 返回对象
+	 * @return
+	 * @throws NzbDataException 自定义异常
+	 */
+	@Override
+	public void queryLogisticsCompanyList(InputDTO input, OutputDTO output) throws NzbDataException {
+		Map<String, Object> params = input.getParams();
+		try {
+			List<Map<String, Object>> list = getBaseDao().queryForList("OrderInfoMapper.queryLogisticsCompanyList", params);
 			output.setItems(list);
 		} catch (Exception e) {
 			LOGGER.error("系统错误", e);

@@ -32,9 +32,8 @@ public class KdniaoTrackQueryAPI {
 	public static void main(String[] args) {
 		KdniaoTrackQueryAPI api = new KdniaoTrackQueryAPI();
 		try {
-			String result = api.getOrderTracesByJson("ANE", "210001633605");
+			String result = api.getOrderTracesByJson("SF", "SF1074225009449", "2323");
 			System.out.print(result);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -51,13 +50,14 @@ public class KdniaoTrackQueryAPI {
 	 * Json方式 查询订单物流轨迹
 	 * @throws Exception
 	 */
-	public String getOrderTracesByJson(String expCode, String expNo) throws Exception{
-		String requestData= "{'OrderCode':'','ShipperCode':'" + expCode + "','LogisticCode':'" + expNo + "'}";
+	public String getOrderTracesByJson(String expCode, String expNo, String customerName) throws Exception{
+		String requestData= "{'OrderCode':'','ShipperCode':'" + expCode + "','LogisticCode':'" + expNo +
+				 "','CustomerName':'" + customerName + "'}";
 
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("RequestData", urlEncoder(requestData, "UTF-8"));
 		params.put("EBusinessID", EBusinessID);
-		params.put("RequestType", "1002");
+		params.put("RequestType", "8001");
 		String dataSign=encrypt(requestData, AppKey, "UTF-8");
 		params.put("DataSign", urlEncoder(dataSign, "UTF-8"));
 		params.put("DataType", "2");

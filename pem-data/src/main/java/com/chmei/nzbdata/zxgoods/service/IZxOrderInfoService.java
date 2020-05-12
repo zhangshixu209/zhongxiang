@@ -113,4 +113,14 @@ public interface IZxOrderInfoService {
 	 */
 	void queryOrderLogisticsInfo(InputDTO input, OutputDTO output) throws NzbDataException;
 
+	/**
+	 * 查询快递公司列表
+	 *
+	 * @param input 入參
+	 * @param output 返回对象
+	 * @throws NzbDataException 自定义异常
+	 * @return
+	 */
+	void queryLogisticsCompanyList(InputDTO input, OutputDTO output) throws NzbDataException;
+
 }

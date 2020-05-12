@@ -192,6 +192,7 @@
       a.consig_address AS consigAddress,
       a.express_name AS expressName,
       a.express_number AS expressNumber,
+      a.customer_name AS customerName,
       a.order_status AS orderStatus,
       a.order_type AS orderType,
       a.goods_id AS goodsId,
@@ -240,6 +241,9 @@
       <if test="orderStatus != null and orderStatus != ''">
         order_status = #{orderStatus,jdbcType=VARCHAR},
       </if>
+      <if test="customerName != null and customerName != ''">
+        customer_name = #{customerName,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -283,6 +287,16 @@
     <where>
       a.consig_goods_account = #{memberAccount}
     </where>
+  </select>
+
+  <!-- 查询快递公司列表 -->
+  <select id="queryLogisticsCompanyList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      logistics_name AS logisticsName,
+      logistics_code AS logisticsCode
+    FROM
+        logistics_company
+    WHERE STATUS = 1
   </select>
 
 </mapper>

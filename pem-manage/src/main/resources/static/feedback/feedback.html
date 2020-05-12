@@ -229,7 +229,8 @@
 		        <label class="col-sm-3 text-right"  ><span class="red f12"> * </span>回复：</label>
 		        <div class="col-sm-8">
 		            <div class="clearfix">
-		                <textarea cols="45" rows="10" id="replyContent" name="replyContent" maxlength="300" placeholder="最多支持300个字">{{replyContent}}</textarea>
+		                <textarea cols="45" rows="10" onkeyup="this.value=this.value.replace(/[, ]/g,'')"
+                                  id="replyContent" name="replyContent" maxlength="300" placeholder="最多支持300个字">{{replyContent}}</textarea>
 		            </div>
 		        </div>
 		        <div class="col-sm-8 promport"></div>

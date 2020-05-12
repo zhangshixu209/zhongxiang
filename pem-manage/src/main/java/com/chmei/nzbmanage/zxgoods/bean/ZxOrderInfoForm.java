@@ -79,6 +79,11 @@ public class ZxOrderInfoForm extends BaseForm {
 
 	private String goodsStatus;
 
+	/**
+	 * JD，SF快递使用
+	 */
+	private String customerName;
+
 	private static final long serialVersionUID = 1L;
 
 	public Long getId() {
@@ -207,5 +212,13 @@ public class ZxOrderInfoForm extends BaseForm {
 
 	public void setGoodsStatus(String goodsStatus) {
 		this.goodsStatus = goodsStatus;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
 	}
 }

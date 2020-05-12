@@ -445,6 +445,7 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 		Map<String, Object> params = input.getParams();
 		try {
 			String goodsType = (String) params.get("goodsType");
+			params.put("authStatus", "1003");
 			@SuppressWarnings("unchecked")
 			Map<String, Object> map = (Map<String, Object>) getBaseDao().queryForObject(
 					"BusinessAuthMapper.queryBusinessAuthDetail", params);
