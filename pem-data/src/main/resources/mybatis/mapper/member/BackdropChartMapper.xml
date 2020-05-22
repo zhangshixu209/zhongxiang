@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BackdropChartMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="backdrop_title" jdbcType="VARCHAR" property="backdropTitle" />
+    <result column="backdrop_url" jdbcType="VARCHAR" property="backdropUrl" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_user_name" jdbcType="VARCHAR" property="crtUserName" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+    <result column="modf_user_id" jdbcType="BIGINT" property="modfUserId" />
+    <result column="modf_user_name" jdbcType="VARCHAR" property="modfUserName" />
+    <result column="modf_time" jdbcType="TIMESTAMP" property="modfTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, backdrop_title, backdrop_url, remark, crt_user_id, crt_user_name, crt_time, modf_user_id, 
+    modf_user_name, modf_time
+  </sql>
+
+  <!-- 查询二维码背景图列表 -->
+  <select id="queryBackdropChartList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM t_backdrop_chart
+    <where>
+      <if test="crtUserName != null and crtUserName != ''">
+        crt_user_name LIKE concat('%',#{crtUserName},'%')
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+    ORDER BY crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 查询二维码背景图列表统计 -->
+  <select id="queryBackdropChartCount" parameterType="java.util.Map" resultType="int">
+    SELECT
+        COUNT(1)
+    FROM t_backdrop_chart
+    <where>
+      <if test="crtUserName != null and crtUserName != ''">
+        crt_user_name LIKE concat('%',#{crtUserName},'%')
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+  </select>
+
+  <!-- 删除二维码列表统计 -->
+  <delete id="deleteBackdropChartInfo" parameterType="java.lang.Long">
+    delete from t_backdrop_chart
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <!-- 新增二维码背景图 -->
+  <insert id="saveBackdropChartInfo" parameterType="java.util.Map">
+    insert into t_backdrop_chart
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="backdropTitle != null">
+        backdrop_title,
+      </if>
+      <if test="backdropUrl != null">
+        backdrop_url,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="crtUserId != null">
+        crt_user_id,
+      </if>
+      <if test="crtUserName != null">
+        crt_user_name,
+      </if>
+        crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="backdropTitle != null">
+        #{backdropTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="backdropUrl != null">
+        #{backdropUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="crtUserId != null">
+        #{crtUserId,jdbcType=BIGINT},
+      </if>
+      <if test="crtUserName != null">
+        #{crtUserName,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+
+  <!-- 更新二维码背景图片 -->
+  <update id="updateBackdropChartInfo" parameterType="java.util.Map">
+    update t_backdrop_chart
+    <set>
+      <if test="backdropTitle != null">
+        backdrop_title = #{backdropTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="backdropUrl != null">
+        backdrop_url = #{backdropUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="modfUserId != null">
+        modf_user_id = #{modfUserId,jdbcType=BIGINT},
+      </if>
+      <if test="modfUserName != null">
+        modf_user_name = #{modfUserName,jdbcType=VARCHAR},
+      </if>
+        modf_time = NOW(),
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <!-- 查询二维码背景图详情 -->
+  <select id="queryBackdropChartDetail" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM t_backdrop_chart
+    <where>
+     id = #{id}
+    </where>
+  </select>
+
+  <!-- 更新二维码背景图片 -->
+  <update id="setDefaultBackdropChartInfo" parameterType="java.util.Map">
+    update zx_app_my_share
+    <set>
+      <if test="backdropId != null">
+        backdrop_id = #{backdropId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where member_account = #{memberAccount,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="HelpArchiveMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="help_archive_title" jdbcType="VARCHAR" property="helpArchiveTitle" />
+    <result column="help_archive_url" jdbcType="VARCHAR" property="helpArchiveUrl" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_user_name" jdbcType="VARCHAR" property="crtUserName" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+    <result column="modf_user_id" jdbcType="BIGINT" property="modfUserId" />
+    <result column="modf_user_name" jdbcType="VARCHAR" property="modfUserName" />
+    <result column="modf_time" jdbcType="TIMESTAMP" property="modfTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, help_archive_title, help_archive_url, remark, crt_user_id, crt_user_name, crt_time, 
+    modf_user_id, modf_user_name, modf_time
+  </sql>
+
+  <!-- 查询帮助文档列表 -->
+  <select id="queryHelpArchiveList" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM t_help_archive
+    <where>
+      <if test="crtUserName != null and crtUserName != ''">
+        crt_user_name LIKE concat('%',#{crtUserName},'%')
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+    ORDER BY crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <!-- 查询帮助文档列表 -->
+  <select id="queryHelpArchiveCount" parameterType="java.lang.Long" resultType="int">
+    SELECT
+        COUNT(1)
+    FROM t_help_archive
+    <where>
+      <if test="crtUserName != null and crtUserName != ''">
+        crt_user_name LIKE concat('%',#{crtUserName},'%')
+      </if>
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+      <if test="endTime != null and endTime != ''">
+        AND DATE_FORMAT(crt_time,'%Y-%m-%d') &lt;= #{endTime}
+      </if>
+    </where>
+  </select>
+
+  <!-- 删除帮助文档信息 -->
+  <delete id="deleteHelpArchiveInfo" parameterType="java.lang.Long">
+    delete from t_help_archive
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <!-- 新增帮助文档 -->
+  <insert id="saveHelpArchiveInfo" parameterType="java.util.Map">
+    insert into t_help_archive
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="helpArchiveTitle != null">
+        help_archive_title,
+      </if>
+      <if test="helpArchiveUrl != null">
+        help_archive_url,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="crtUserId != null">
+        crt_user_id,
+      </if>
+      <if test="crtUserName != null">
+        crt_user_name,
+      </if>
+        crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="helpArchiveTitle != null">
+        #{helpArchiveTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="helpArchiveUrl != null">
+        #{helpArchiveUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="crtUserId != null">
+        #{crtUserId,jdbcType=BIGINT},
+      </if>
+      <if test="crtUserName != null">
+        #{crtUserName,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+
+  <!-- 更新帮助文档信息 -->
+  <update id="updateHelpArchiveInfo" parameterType="java.util.Map">
+    update t_help_archive
+    <set>
+      <if test="helpArchiveTitle != null">
+        help_archive_title = #{helpArchiveTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="helpArchiveUrl != null">
+        help_archive_url = #{helpArchiveUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="modfUserId != null">
+        modf_user_id = #{modfUserId,jdbcType=BIGINT},
+      </if>
+      <if test="modfUserName != null">
+        modf_user_name = #{modfUserName,jdbcType=VARCHAR},
+      </if>
+        modf_time = NOW(),
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <!-- 查询帮助文档列表 -->
+  <select id="queryHelpArchiveDetail" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM t_help_archive
+    <where>
+      id = #{id}
+    </where>
+  </select>
+
+  <!-- 保存附件 -->
+  <insert id="saveFile"  parameterType="map">
+    INSERT INTO t_help_archive_file (
+      id,
+      obj_id,
+      file_type_cd,
+      file_path,
+      file_name,
+      file_seqno,
+      `status`,
+      crt_user_id,
+      crt_time)
+    VALUES (
+        #{id,jdbcType=BIGINT},
+        #{objId,jdbcType=BIGINT},
+        #{fileTypeCd,jdbcType=VARCHAR},
+        #{filePath,jdbcType=VARCHAR},
+        #{fileName,jdbcType=VARCHAR},
+        #{fileSeqno,jdbcType=INTEGER},
+        '1',
+        #{crtUserId,jdbcType=BIGINT},
+        NOW())
+  </insert>
+  <!-- 删除附件 -->
+  <delete id="deleteFile" parameterType="java.lang.Long">
+    DELETE
+    	FROM t_help_archive_file
+    WHERE
+        obj_id = #{objId,jdbcType=BIGINT}
+  </delete>
+
+  <resultMap id="FileResultMap" type="map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="obj_id" jdbcType="BIGINT" property="objId" />
+    <result column="file_type_cd" jdbcType="VARCHAR" property="fileTypeCd" />
+    <result column="file_path" jdbcType="VARCHAR" property="filePath" />
+    <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="file_seqno" jdbcType="INTEGER" property="fileSeqno" />
+    <result column="crt_user_id" jdbcType="BIGINT" property="crtUserId" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+  </resultMap>
+  <!-- 附件查询 -->
+  <select id="queryFileList" parameterType="map" resultMap="FileResultMap">
+      SELECT
+         *
+      FROM
+      	t_help_archive_file
+      WHERE
+      	obj_id = #{objId}
+  </select>
+
+
+</mapper>

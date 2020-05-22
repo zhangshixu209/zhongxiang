@@ -229,6 +229,7 @@
       a.crt_time AS crtTime,
       IFNULL(a.zx_my_team_id, 0) as zxMyTeamId,
       a.activate_status AS activateStatus,
+      (SELECT COUNT(1) FROM t_wx_login_info f WHERE f.member_account = a.member_account) AS wxBind,
       (SELECT COUNT(1) FROM zx_app_friend f WHERE f.zx_friend_user_id = a.member_account AND f.zx_friend_friend_type = "Y") AS friendTotal,
       (SELECT COUNT(1) FROM zx_app_friend f WHERE f.zx_friend_friend_id = a.member_account AND f.zx_friend_notes_type = "Y") AS notesTotal,
       (SELECT COUNT(1) FROM zx_app_my_share_extend f WHERE f.member_account = a.member_account) shareTotal
@@ -449,10 +450,12 @@
     SELECT
       a.member_account AS memberAccount,
       a.extension_code AS extensionCode,
-      IFNULL( b.nickname, b.member_account ) AS nickName
+      IFNULL( b.nickname, b.member_account ) AS nickName,
+      IFNULL( c.backdrop_url, '' ) AS backdropUrl
     FROM
 	zx_app_my_share a
 	LEFT JOIN t_member b ON a.member_account = b.member_account
+    LEFT JOIN t_backdrop_chart c ON a.backdrop_id = c.id
     <where>
       <if test="memberAccount != null and memberAccount != ''">
         a.member_account = #{memberAccount}
@@ -468,6 +471,34 @@
   <!-- 根据当前登录用户账号查询被推荐人 -->
   <select id="queryMyShareMemberList" parameterType="java.util.Map" resultType="java.util.Map">
     SELECT cover_member_account AS coverMemberAccount FROM zx_app_my_share_extend WHERE member_account = #{memberAccount}
+  </select>
+
+  <!-- 查询我的分享实名认证信息列表 -->
+  <select id="queryMyShareList" resultType="java.util.Map" parameterType="java.util.Map">
+    SELECT
+         IFNULL(c.nickname, c.member_account) AS nickname,
+         CASE
+            WHEN b.card_num IS NULL THEN 0 ELSE 1
+         END cardNum,
+         c.crt_time AS crtTime
+    FROM
+        zx_app_my_share_extend a
+        LEFT JOIN t_real_name_authentic b ON a.cover_member_account = b.member_account
+        LEFT JOIN t_member c ON a.cover_member_account = c.member_account
+    WHERE
+        a.member_account = #{memberAccount}
+    ORDER BY a.crt_time DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+
+  <!-- 查询我的分享实名认证信息统计 -->
+  <select id="queryMyShareCount" resultType="int" parameterType="java.util.Map">
+    SELECT
+      COUNT(1)
+    FROM
+    zx_app_my_share_extend a
   </select>
 
 </mapper>

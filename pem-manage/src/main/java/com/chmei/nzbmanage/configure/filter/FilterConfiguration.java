@@ -21,10 +21,10 @@ public class FilterConfiguration {
 	public FilterRegistrationBean sessionFilter() {
 		FilterRegistrationBean regBean = new FilterRegistrationBean();
 		SessionFilter sessionFilter = new SessionFilter();
-		sessionFilter.initWhiteList("/login/login.html,/noRight.html,/login/share.html,/api/pb/admin/.*," +
+		sessionFilter.initWhiteList("/login/login.html,/noRight.html,/login/share.html,/login/myShare.html,/api/pb/admin/.*," +
 				"/api/member/.*,/api/recharge/.*,/api/rotation/.*,/api/friend/.*,/api/shareOutBonus/.*,/api/appVersion/.*," +
 				"/api/linkRedPacket/.*,/api/imgRedPacket/.*,/api/videoRedPacket/.*,/api/redPacket/.*");
-		sessionFilter.initWhitePostFix("js,css,png,jpg,jpeg,webp,gif,mp3,mp4,icon,ico");
+		sessionFilter.initWhitePostFix("js,css,png,jpg,jpeg,JPEG,webp,gif,mp3,mp4,icon,ico,otf,eot,svg,ttf,woff,woff2,scss");
 		sessionFilter.initNotLoginUrl("/login/login.html");
 		regBean.setFilter(sessionFilter);
 		regBean.setUrlPatterns(Arrays.asList("/*"));
@@ -41,10 +41,10 @@ public class FilterConfiguration {
 	public FilterRegistrationBean rightFilter() {
 		FilterRegistrationBean regBean = new FilterRegistrationBean();
 		RightFilter rightFilter = rightFilterBean();
-		rightFilter.initWhiteList("/index.html,/noRight.html,/login/login.html,/login/share.html," +
+		rightFilter.initWhiteList("/index.html,/noRight.html,/login/login.html,/login/share.html,/login/myShare.html," +
 				"/api/pb/admin/.*,/assets/.*,/api/adminRight/.*,/api/member/.*,/api/recharge/.*,/api/rotation/.*,/api/friend/.*,/api/shareOutBonus/.*,/api/appVersion/.*," +
 				"/api/linkRedPacket/.*,/api/imgRedPacket/.*,/api/videoRedPacket/.*,/api/redPacket/.*");
-		rightFilter.initWhitePostFix("js,css,png,jpg,jpeg,webp,gif,mp3,mp4,icon,ico");
+		rightFilter.initWhitePostFix("js,css,png,jpg,jpeg,JPEG,webp,gif,mp3,mp4,icon,ico,otf,eot,svg,ttf,woff,woff2,scss");
 		rightFilter.initNotLoginUrl("/login/login.html");
 		rightFilter.initNotRightUrl("/noRight.html");
 		regBean.setFilter(rightFilter);

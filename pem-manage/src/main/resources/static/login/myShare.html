@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>跳转到浏览器打开</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+</head>
+<body class="is-preload">
+<header id="header">
+    <div class="content">
+        <h1><a href="#">众享科技</a></h1>
+        <p>众享专属APP下载 <a href="javascript:;">众享科技</a></p>
+        <ul class="actions">
+            <li><a href="http://www.lhzxkj.cn/pem-manage/api/appVersion/downloadQRCode" class="button primary icon fa-download">APP下载</a></li>
+            <li><a href="javascript:;" onclick="openClientAPP();" class="button icon fa-chevron-down scrolly">打开APP</a></li>
+        </ul>
+    </div>
+    <div style="font-size: 0.6em;max-width: 50vw;"><div class=""><img src="../assets/img/dg23.png" alt="" /></div></div>
+</header>
+
+<style type="text/css">
+    *{margin:0; padding:0;}
+    img{max-width: 100%; height: auto;}
+    .test{height: 600px; max-width: 600px; font-size: 40px;}
+</style>
+<script src="../assets/js/jquery.min.js"></script>
+<script src="../assets/js/jquery.scrolly.min.js"></script>
+<script src="../assets/js/browser.min.js"></script>
+<script src="../assets/js/breakpoints.min.js"></script>
+<script src="../assets/js/util.js"></script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/lib/layer/layer.min.js"></script>
+<script src="../assets/lib/common.js?v=#scriptversion#"></script>
+<script type="text/javascript">
+    function is_weixin() {
+        var ua = navigator.userAgent.toLowerCase();
+        if (ua.match(/MicroMessenger/i) == "micromessenger") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function openClientAPP() { //判断在规定时间内是否可以打开app，如果超时就代码没有安装对应的app 跳到下载页面。
+        let extensionCode = getUrlParam("id");
+        window.location = "zhongxiang://?id="+extensionCode;
+        var startTime = Date.now();
+        var t = setTimeout(function() {
+            var endTime = Date.now();
+            // 显示页面内容
+            if (endTime - startTime < 3200) {
+                Chief.layer.tips("没有安装众享APP，请下载！", 800);
+                return false;
+            } else {
+                // window.close();
+            }
+        }, 3000);
+        window.onblur = function() {
+            clearTimeout(t);
+        }
+    }
+    var isWeixin = is_weixin();
+    var winHeight = typeof window.innerHeight != 'undefined' ? window.innerHeight : document.documentElement.clientHeight;
+    var weixinTip = $('<div id="weixinTip"><p><img src="../assets/img/live_weixin.png" alt="微信打开"/></p></div>');
+    if(!isWeixin){
+        (function(){
+            function openclient() { //判断在规定时间内是否可以打开app，如果超时就代码没有安装对应的app 跳到下载页面。
+                let extensionCode = getUrlParam("id");
+                window.location = "zhongxiang://?id="+extensionCode;
+            }
+            window.addEventListener("DOMContentLoaded", function(){ //添加监听事件
+                openclient();
+            }, false);
+        })();
+    } else {
+        $("body").append(weixinTip);
+    }
+    $("#weixinTip").css({
+        "position":"fixed",
+        "left":"0",
+        "top":"0",
+        "height":winHeight,
+        "width":"100%",
+        "z-index":"1000",
+        "background-color":"rgba(0,0,0,0.8)",
+        "filter":"alpha(opacity=80)",
+    });
+    $("#weixinTip p").css({
+        "text-align":"center",
+        "margin-top":"10%",
+        "padding-left":"5%",
+        "padding-right":"5%"
+    });
+</script>
+</body>
+</html>

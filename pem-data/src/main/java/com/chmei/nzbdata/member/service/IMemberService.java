@@ -136,4 +136,36 @@ public interface IMemberService {
      */
     void saveZxAppMyShare(InputDTO input, OutputDTO output) throws NzbDataException;
 
+    /**
+     * 查询我的分享人实名认证信息
+     * @param input 入参
+     * @param output 出参
+     * @throws NzbDataException 自定义异常
+     */
+    void queryMyShareList(InputDTO input, OutputDTO output) throws NzbDataException;
+
+    /**
+     * 查询微信登录信息
+     * @param input 入参
+     * @param output 出参
+     * @throws NzbDataException 自定义异常
+     */
+    void queryWxLoginInfo(InputDTO input, OutputDTO output) throws NzbDataException;
+
+    /**
+     * 绑定微信登录信息
+     * @param input 入参
+     * @param output 出参
+     * @throws NzbDataException 自定义异常
+     */
+    void saveWxLoginInfo(InputDTO input, OutputDTO output) throws NzbDataException;
+
+    /**
+     * 解绑微信登录信息
+     * @param input 入参
+     * @param output 出参
+     * @throws NzbDataException 自定义异常
+     */
+    void delWxLoginInfo(InputDTO input, OutputDTO output) throws NzbDataException;
+
 }

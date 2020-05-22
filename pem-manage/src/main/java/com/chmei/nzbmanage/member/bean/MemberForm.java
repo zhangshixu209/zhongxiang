@@ -195,6 +195,11 @@ public class MemberForm extends BaseForm {
      */
     private String extensionCode;
 
+    private String wxOpenId;
+    private String wxNickname;
+    private String wxHeadImg;
+    private String realPwd;
+
     public String getUsername() {
         return username;
     }
@@ -539,5 +544,37 @@ public class MemberForm extends BaseForm {
 
     public void setExtensionCode(String extensionCode) {
         this.extensionCode = extensionCode;
+    }
+
+    public String getWxOpenId() {
+        return wxOpenId;
+    }
+
+    public void setWxOpenId(String wxOpenId) {
+        this.wxOpenId = wxOpenId;
+    }
+
+    public String getWxNickname() {
+        return wxNickname;
+    }
+
+    public void setWxNickname(String wxNickname) {
+        this.wxNickname = wxNickname;
+    }
+
+    public String getWxHeadImg() {
+        return wxHeadImg;
+    }
+
+    public void setWxHeadImg(String wxHeadImg) {
+        this.wxHeadImg = wxHeadImg;
+    }
+
+    public String getRealPwd() {
+        return realPwd;
+    }
+
+    public void setRealPwd(String realPwd) {
+        this.realPwd = realPwd;
     }
 }

@@ -285,6 +285,11 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
                     // 调用环信修改IM用户密码接口
                     Object result = easemobIMUsers.modifyIMUserPasswordWithAdminToken(memberAccount, newPassword);
                     LOGGER.info("newPassword============:"+gson.toJson(result));
+                    // 更新微信登录信息密码
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("realPwd", params.get("newPassword"));
+                    map.put("memberAccount", memberAccount);
+                    getBaseDao().update("WxLoginInfoMapper.updateWxLoginPwd", map);
                 }
                 output.setCode("0");
                 output.setMsg("设置成功");
@@ -584,6 +589,97 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
             }
         } catch (Exception ex) {
             LOGGER.error("保存失败", ex);
+        }
+    }
+
+    /**
+     * 查询我的分享人实名认证信息
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbDataException 自定义异常
+     */
+    @Override
+    public void queryMyShareList(InputDTO input, OutputDTO output) throws NzbDataException {
+        Map<String, Object> params = input.getParams();
+        try {
+            int total = getBaseDao().getTotalCount("MemberMapper.queryMyShareCount", params);
+            if (total > 0) {
+                List<Map<String, Object>> list = getBaseDao().queryForList("MemberMapper.queryMyShareList", params);
+                output.setItems(list);
+            }
+            output.setTotal(total);
+        } catch (Exception ex) {
+            LOGGER.error("查询失败" + ex);
+        }
+    }
+
+    /**
+     * 查询微信登录信息
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbDataException 自定义异常
+     */
+    @Override
+    public void queryWxLoginInfo(InputDTO input, OutputDTO output) throws NzbDataException {
+        Map<String, Object> params = input.getParams();
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> item = (Map<String, Object>) getBaseDao().
+                    queryForObject("WxLoginInfoMapper.queryWxLoginInfo", params);
+            output.setItem(item);
+        } catch (Exception ex) {
+            LOGGER.error("查询失败: " + ex);
+        }
+    }
+
+    /**
+     * 绑定微信登录信息
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbDataException 自定义异常
+     */
+    @Override
+    public void saveWxLoginInfo(InputDTO input, OutputDTO output) throws NzbDataException {
+        Map<String, Object> params = input.getParams();
+        try {
+            params.put("id", getSequence());
+            int count = getBaseDao().insert("WxLoginInfoMapper.saveWxLoginInfo", params);
+            if (count < 1) {
+                output.setCode("-1");
+                output.setMsg("绑定失败");
+                return;
+            }
+            output.setCode("0");
+            output.setMsg("绑定成功");
+        } catch (Exception ex) {
+            LOGGER.error("绑定失败", ex);
+        }
+    }
+
+    /**
+     * 解绑微信登录信息
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbDataException 自定义异常
+     */
+    @Override
+    public void delWxLoginInfo(InputDTO input, OutputDTO output) throws NzbDataException {
+        Map<String, Object> params = input.getParams();
+        try {
+            int count = getBaseDao().delete("WxLoginInfoMapper.delWxLoginInfo", params);
+            if (count < 1) {
+                output.setCode("-1");
+                output.setMsg("解绑失败");
+                return;
+            }
+            output.setCode("0");
+            output.setMsg("解绑成功");
+        } catch (Exception ex) {
+            LOGGER.error("解绑失败", ex);
         }
     }
 

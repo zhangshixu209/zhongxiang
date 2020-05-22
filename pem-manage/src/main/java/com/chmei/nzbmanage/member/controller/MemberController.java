@@ -910,4 +910,80 @@ public class MemberController extends BaseController {
         return outputDTO;
     }
 
+    /**
+     * 查询我的分享人实名认证信息
+     *
+     * @param memberForm 封装实体类
+     * @return OutputDTO 出参
+     */
+    @RequestMapping("/queryMyShareList")
+    public OutputDTO queryMyShareList(@ModelAttribute MemberForm memberForm) {
+        OutputDTO outputDTO;
+        try {
+            Map<String, Object> map = BeanUtil.convertBean2Map(memberForm);
+            outputDTO = getOutputDTO(map, "memberService", "queryMyShareList");
+        } catch (Exception e) {
+            LOGGER.error("查询失败", e);
+            outputDTO = new OutputDTO("1", "系统错误");
+        }
+        return outputDTO;
+    }
+
+    /**
+     * 查询微信登录信息
+     *
+     * @param memberForm 封装实体类
+     * @return OutputDTO 出参
+     */
+    @RequestMapping("/queryWxLoginInfo")
+    public OutputDTO queryWxLoginInfo(@ModelAttribute MemberForm memberForm) {
+        OutputDTO outputDTO;
+        try {
+            Map<String, Object> map = BeanUtil.convertBean2Map(memberForm);
+            outputDTO = getOutputDTO(map, "memberService", "queryWxLoginInfo");
+        } catch (Exception e) {
+            LOGGER.error("查询失败", e);
+            outputDTO = new OutputDTO("1", "系统错误");
+        }
+        return outputDTO;
+    }
+
+    /**
+     * 新增微信登录信息
+     *
+     * @param memberForm 封装实体类
+     * @return OutputDTO 出参
+     */
+    @RequestMapping("/saveWxLoginInfo")
+    public OutputDTO saveWxLoginInfo(@ModelAttribute MemberForm memberForm) {
+        OutputDTO outputDTO;
+        try {
+            Map<String, Object> map = BeanUtil.convertBean2Map(memberForm);
+            outputDTO = getOutputDTO(map, "memberService", "saveWxLoginInfo");
+        } catch (Exception e) {
+            LOGGER.error("绑定失败", e);
+            outputDTO = new OutputDTO("1", "系统错误");
+        }
+        return outputDTO;
+    }
+
+    /**
+     * 解绑微信登录信息
+     *
+     * @param memberForm 封装实体类
+     * @return OutputDTO 出参
+     */
+    @RequestMapping("/delWxLoginInfo")
+    public OutputDTO delWxLoginInfo(@ModelAttribute MemberForm memberForm) {
+        OutputDTO outputDTO;
+        try {
+            Map<String, Object> map = BeanUtil.convertBean2Map(memberForm);
+            outputDTO = getOutputDTO(map, "memberService", "delWxLoginInfo");
+        } catch (Exception e) {
+            LOGGER.error("解绑失败", e);
+            outputDTO = new OutputDTO("1", "系统错误");
+        }
+        return outputDTO;
+    }
+
 }

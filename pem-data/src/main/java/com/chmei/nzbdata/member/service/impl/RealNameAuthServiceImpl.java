@@ -173,6 +173,28 @@ public class RealNameAuthServiceImpl extends BaseServiceImpl implements IRealNam
                         getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord_);
                         return 1;
                     }
+                } else {
+                    // 不存在推荐关系，实名认证后也赠送10广告费
+                    params.put("advertisingInfoFrom", "注册赠送");
+                    int i = getBaseDao().getTotalCount("AdvertisingMoneyInfoMapper.queryAdvertisingMoney", params);
+                    if (i == 0) {
+                        // 查询注册人余额
+                        Map<String, Object> item_ = (Map<String, Object>) getBaseDao().
+                                queryForObject("MemberMapper.queryMemberBalanceDetail", params);
+                        Double adMoney = 10.00;
+                        Map<String, Object> user1 = new HashMap<>();
+                        user1.put("memberAccount", params.get("memberAccount"));
+                        user1.put("advertisingFee", Double.valueOf(item_.get("advertisingFee")+"") + adMoney);
+                        getBaseDao().update("MemberMapper.updateMemberBalance", user1);
+                        // 注册赠送记录:
+                        Map<String, Object> adRecord = new HashMap<>();
+                        adRecord.put("advertisingInfoId", getSequence());
+                        adRecord.put("advertisingInfoAddOrMinus", "+");
+                        adRecord.put("advertisingInfoUserId", params.get("memberAccount"));
+                        adRecord.put("advertisingInfoMoney", adMoney);
+                        adRecord.put("advertisingInfoFrom", "注册赠送");
+                        getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
+                    }
                 }
             }
         }

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WxLoginInfoMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="member_account" jdbcType="VARCHAR" property="memberAccount" />
+    <result column="wx_open_id" jdbcType="VARCHAR" property="wxOpenId" />
+    <result column="wx_nickname" jdbcType="VARCHAR" property="wxNickname" />
+    <result column="wx_head_img" jdbcType="VARCHAR" property="wxHeadImg" />
+    <result column="crt_time" jdbcType="TIMESTAMP" property="crtTime" />
+    <result column="real_pwd" jdbcType="VARCHAR" property="realPwd" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, member_account, wx_open_id, wx_nickname, wx_head_img, crt_time, real_pwd
+  </sql>
+  <!-- 查询微信登录信息 -->
+  <select id="queryWxLoginInfo" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_wx_login_info
+    <where>
+      <if test="wxOpenId != null and wxOpenId != ''">
+        wx_open_id = #{wxOpenId,jdbcType=VARCHAR}
+      </if>
+      <if test="memberAccount != null and memberAccount != ''">
+        AND member_account = #{memberAccount,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+
+  <!-- 微信解除绑定 -->
+  <delete id="delWxLoginInfo" parameterType="java.util.Map">
+    delete from t_wx_login_info
+    where member_account = #{memberAccount,jdbcType=VARCHAR}
+  </delete>
+
+  <!-- 微信登录信息新增 -->
+  <insert id="saveWxLoginInfo" parameterType="java.util.Map">
+    insert into t_wx_login_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+      <if test="wxOpenId != null">
+        wx_open_id,
+      </if>
+      <if test="wxNickname != null">
+        wx_nickname,
+      </if>
+      <if test="wxHeadImg != null">
+        wx_head_img,
+      </if>
+      <if test="realPwd != null">
+        real_pwd,
+      </if>
+        crt_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="wxOpenId != null">
+        #{wxOpenId,jdbcType=VARCHAR},
+      </if>
+      <if test="wxNickname != null">
+        #{wxNickname,jdbcType=VARCHAR},
+      </if>
+      <if test="wxHeadImg != null">
+        #{wxHeadImg,jdbcType=VARCHAR},
+      </if>
+      <if test="realPwd != null">
+        #{realPwd,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <update id="updateWxLoginInfo" parameterType="java.util.Map">
+    update t_wx_login_info
+    <set>
+      <if test="memberAccount != null">
+        member_account = #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="wxOpenId != null">
+        wx_open_id = #{wxOpenId,jdbcType=VARCHAR},
+      </if>
+      <if test="wxNickname != null">
+        wx_nickname = #{wxNickname,jdbcType=VARCHAR},
+      </if>
+      <if test="wxHeadImg != null">
+        wx_head_img = #{wxHeadImg,jdbcType=VARCHAR},
+      </if>
+      <if test="crtTime != null">
+        crt_time = #{crtTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <!-- 修改微信登录信息密码 -->
+  <update id="updateWxLoginPwd" parameterType="java.util.Map">
+    update t_wx_login_info
+    <set>
+      <if test="realPwd != null">
+        real_pwd = #{realPwd,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where member_account = #{memberAccount,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

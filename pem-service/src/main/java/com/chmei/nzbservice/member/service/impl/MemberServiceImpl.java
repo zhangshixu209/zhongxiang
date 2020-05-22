@@ -263,4 +263,60 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
         getNzbDataService().execute(input, output);
     }
 
+    /**
+     * 查询我的分享人实名认证信息
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbServiceException 自定义异常
+     */
+    @Override
+    public void queryMyShareList(InputDTO input, OutputDTO output) throws NzbServiceException {
+        input.setService("memberService");
+        input.setMethod("queryMyShareList");
+        getNzbDataService().execute(input, output);
+    }
+
+    /**
+     * 查询微信登录信息
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbServiceException 自定义异常
+     */
+    @Override
+    public void queryWxLoginInfo(InputDTO input, OutputDTO output) throws NzbServiceException {
+        input.setService("memberService");
+        input.setMethod("queryWxLoginInfo");
+        getNzbDataService().execute(input, output);
+    }
+
+    /**
+     * 绑定微信登录信息
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbServiceException 自定义异常
+     */
+    @Override
+    public void saveWxLoginInfo(InputDTO input, OutputDTO output) throws NzbServiceException {
+        input.setService("memberService");
+        input.setMethod("saveWxLoginInfo");
+        getNzbDataService().execute(input, output);
+    }
+
+    /**
+     * 解绑微信登录信息
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbServiceException 自定义异常
+     */
+    @Override
+    public void delWxLoginInfo(InputDTO input, OutputDTO output) throws NzbServiceException {
+        input.setService("memberService");
+        input.setMethod("delWxLoginInfo");
+        getNzbDataService().execute(input, output);
+    }
+
 }
