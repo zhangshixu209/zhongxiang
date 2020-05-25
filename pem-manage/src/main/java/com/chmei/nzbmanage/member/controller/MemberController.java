@@ -16,6 +16,7 @@ import com.chmei.nzbmanage.redpacket.bean.RedPacketForm;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.*;
@@ -375,6 +376,8 @@ public class MemberController extends BaseController {
             // 匹配
             getSession().setAttribute(Constants.SESSION_USER.ID, output.getItem().get("id"));
             getSession().setAttribute(Constants.SESSION_USER.ROLE_IDS, Constants.ROOT_ROLE);
+            // 登录成功之后 设置session时间为2小时 单位为毫秒
+            SecurityUtils.getSubject().getSession().setTimeout(24 * 60 * 60 * 100L);
             outputDTO.setCode("0");
             outputDTO.setMsg("登录成功");
             output.getItem().put("jsessionId", jsessionId);

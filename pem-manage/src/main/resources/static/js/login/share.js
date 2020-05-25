@@ -5,6 +5,11 @@ $(document).ready(function(){
 	$(".lsh_list_innerbox .sex_box a").click(function(){
 		$(this).addClass("cur").siblings().removeClass("cur");
 	})
+	var isWeixin = is_weixin();
+	if (!isWeixin) {
+		$(".tztClass").hide();
+		$(".state_wor").removeAttr("style");
+	}
 });
 
 // 发送短信验证码
@@ -88,6 +93,15 @@ function appRegister() {// 注册
 			Chief.layer.tips(data.msg);
 		}
 	});
+}
+
+function is_weixin() {
+	var ua = navigator.userAgent.toLowerCase();
+	if (ua.match(/MicroMessenger/i) == "micromessenger") {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 function downloadApp() {
