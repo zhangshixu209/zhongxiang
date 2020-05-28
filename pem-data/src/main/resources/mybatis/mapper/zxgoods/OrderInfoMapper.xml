@@ -52,6 +52,9 @@
       <if test="consigGoodsAccount != null and consigGoodsAccount != ''">
         AND a.consig_goods_account = #{consigGoodsAccount}
       </if>
+      <if test="orderStatus != null and orderStatus != ''">
+        AND a.order_status = #{orderStatus}
+      </if>
     </where>
     ORDER BY a.crt_time DESC
     <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
@@ -75,6 +78,9 @@
       </if>
       <if test="consigGoodsAccount != null and consigGoodsAccount != ''">
         AND consig_goods_account = #{consigGoodsAccount}
+      </if>
+      <if test="orderStatus != null and orderStatus != ''">
+        AND a.order_status = #{orderStatus}
       </if>
     </where>
   </select>

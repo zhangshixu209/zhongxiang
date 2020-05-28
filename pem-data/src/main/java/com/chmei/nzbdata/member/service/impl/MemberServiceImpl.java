@@ -645,6 +645,12 @@ public class MemberServiceImpl extends BaseServiceImpl implements IMemberService
     public void saveWxLoginInfo(InputDTO input, OutputDTO output) throws NzbDataException {
         Map<String, Object> params = input.getParams();
         try {
+            int total =  getBaseDao().getTotalCount("WxLoginInfoMapper.queryWxLoginTotal", params);
+            if (total > 0) {
+                output.setCode("-1");
+                output.setMsg("微信已绑定其他账号！");
+                return;
+            }
             params.put("id", getSequence());
             int count = getBaseDao().insert("WxLoginInfoMapper.saveWxLoginInfo", params);
             if (count < 1) {

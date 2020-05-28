@@ -113,4 +113,15 @@
     where member_account = #{memberAccount,jdbcType=VARCHAR}
   </update>
 
+  <select id="queryWxLoginTotal" parameterType="java.lang.Long" resultType="int">
+    select
+        COUNT(1)
+    from t_wx_login_info
+    <where>
+      <if test="wxOpenId != null and wxOpenId != ''">
+        wx_open_id = #{wxOpenId,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+
 </mapper>

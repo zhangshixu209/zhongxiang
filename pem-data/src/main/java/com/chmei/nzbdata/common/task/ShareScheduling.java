@@ -1,9 +1,13 @@
 package com.chmei.nzbdata.common.task;
 
+import com.chmei.nzbcommon.cmbean.InputDTO;
+import com.chmei.nzbcommon.cmbean.OutputDTO;
 import com.chmei.nzbdata.common.service.impl.BaseServiceImpl;
 import com.chmei.nzbdata.util.StringUtil;
+import com.chmei.nzbdata.zxgoods.service.impl.ZxOrderInfoServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -25,6 +29,9 @@ import java.util.Map;
 @EnableScheduling
 @Component
 public class ShareScheduling extends BaseServiceImpl {
+
+    @Autowired
+    private ZxOrderInfoServiceImpl zxOrderInfoServiceImpl;
 
     /**
      * log對象
@@ -567,6 +574,44 @@ public class ShareScheduling extends BaseServiceImpl {
             }
         } catch (Exception e) {
             LOGGER.error("系统异常！", e);
+        }
+    }
+
+    /**
+     * 确认发货定时任务
+     */
+    @Scheduled(cron = "0 20 0 * * ?")
+    public void userConfirmReceiptTask(){
+        Map<String, Object> params = new HashMap<>();
+        try {
+            params.put("orderStatus", "1002"); // 查询已发货的订单列表
+            List<Map<String, Object>> list = getBaseDao().queryForList("OrderInfoMapper.queryOrderInfoList", params);
+            if (null != list && list.size() > 0) {
+                for (Map<String, Object> map : list) {
+                    Date startDate = (Date) map.get("crtTime"); // 订单创建时间
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    if (StringUtil.isNotEmpty(startDate.toString())) {
+                        ParsePosition pos = new ParsePosition(0);
+                        Date starToDate = formatter.parse(startDate.toString(), pos);
+                        long orderTime = starToDate.getTime(); // 订单创建时间
+                        long nowTime = new Date().getTime(); // 当前时间
+                        long day = nowTime - orderTime;
+                        long endTime = day / 86400000;
+                        if (endTime > 30) {
+                            LOGGER.info("==============="+endTime);
+                            InputDTO inputDTO = new InputDTO();
+                            OutputDTO outputDTO = new OutputDTO();
+                            LOGGER.info("============执行确认收货定时任务开始============");
+                            inputDTO.getParams().put("id", map.get("id"));
+                            // 调用确认收货接口
+                            zxOrderInfoServiceImpl.userConfirmReceipt(inputDTO, outputDTO);
+                            LOGGER.info("============执行确认收货定时任务结束============");
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("确认收货定时任务系统异常！", e);
         }
     }
 
