@@ -69,11 +69,11 @@ function saveHelpArchive(){
 	if(!flag) {
 		return false;
 	}
-	var filePaths = $("#filePaths").val();
-	if(isDataNull(filePaths)){
-		Chief.layer.tips("请上传附件！");
-		return false;
-	}
+	// var filePaths = $("#filePaths").val();
+	// if(isDataNull(filePaths)){
+	// 	Chief.layer.tips("请上传附件！");
+	// 	return false;
+	// }
 	//获取表单数据
 	var data = $('#addHelpArchiveForm').serialize();
 	//发起请求
@@ -160,11 +160,11 @@ function updateHelpArchive(){
 	if(!flag) {
 		return false;
 	}
-	var filePaths = $("#filePaths").val();
-	if(isDataNull(filePaths)){
-		Chief.layer.tips("请上传附件！");
-		return false;
-	}
+	// var filePaths = $("#filePaths").val();
+	// if(isDataNull(filePaths)){
+	// 	Chief.layer.tips("请上传附件！");
+	// 	return false;
+	// }
 	//获取表单数据
 	var data = $('#editHelpArchiveForm').serialize();
 	//发起请求

@@ -57,7 +57,8 @@ public class ShareScheduling extends BaseServiceImpl {
                         ParsePosition pos = new ParsePosition(0);
                         Date starToDate = formatter.parse(startDate.toString(), pos);
                         int endDay = (int) map.get("adShareOutBonusInfoDayNum"); // 分红天数
-                        long endTime = starToDate.getTime() + (endDay * 24 * 3600 * 1000); // 结束时间
+                        long day = (long) endDay;
+                        long endTime = starToDate.getTime() + (day * 24 * 3600 * 1000); // 结束时间
                         long nowTime = new Date().getTime(); // 当前时间
                         if (nowTime >= endTime) {
                             LOGGER.info("用户{ " + map.get("adShareOutBonusInfoUserId") +" }分红任务开始");

@@ -415,7 +415,17 @@ public class ZxLuckyGoodsServiceImpl extends BaseServiceImpl implements IZxLucky
 			int i = getBaseDao().getTotalCount("LuckyGoodsMapper.queryLuckyCount", params);
 			if (i > 0) {
 				List<Map<String, Object>> list = getBaseDao().queryForList("LuckyGoodsMapper.queryLuckyList", params);
-				output.setItems(list);
+				if (null != list && list.size() > 0) {
+					for (Map<String, Object> map : list) {
+						@SuppressWarnings("unchecked")
+						Map<String, Object> timeMap = (Map<String, Object>) getBaseDao().queryForObject(
+								"LuckyGoodsMapper.queryLuckyDay", map);
+						if (null != timeMap) {
+							map.put("crtTime", timeMap.get("crtTime"));
+						}
+					}
+					output.setItems(list);
+				}
 			}
 			output.setTotal(i);
 		} catch (Exception e) {

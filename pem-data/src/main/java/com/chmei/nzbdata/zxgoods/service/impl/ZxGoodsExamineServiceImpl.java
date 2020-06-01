@@ -361,6 +361,14 @@ public class ZxGoodsExamineServiceImpl extends BaseServiceImpl implements IZxGoo
 			if (i > 0) {
 				List<Map<String, Object>> list = getBaseDao().queryForList("GoodsExamineMapper.queryZeroSeckillLuckyList", params);
 				if (null != list && list.size() > 0) {
+					for (Map<String, Object> map : list) {
+						@SuppressWarnings("unchecked")
+						Map<String, Object> timeMap = (Map<String, Object>) getBaseDao().queryForObject(
+								"GoodsExamineMapper.queryLuckyDay", map);
+						if (null != timeMap) {
+							map.put("crtTime", timeMap.get("crtTime"));
+						}
+					}
 					output.setItems(list);
 				}
 			}

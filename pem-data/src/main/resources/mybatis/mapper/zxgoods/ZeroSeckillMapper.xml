@@ -445,4 +445,15 @@
       </if>
     </trim>
   </insert>
+  <!-- 根据轮次查询幸运榜列表开奖时间 -->
+  <select id="queryLuckyDay" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+      DATE_FORMAT( b.crt_time, '%Y年%m月%d日' ) AS crtTime
+    FROM
+    zx_app_zero_seckill_info b
+    WHERE
+        b.rotation_num = #{rotationNum}
+    ORDER BY
+    b.crt_time DESC LIMIT 1
+  </select>
 </mapper>
