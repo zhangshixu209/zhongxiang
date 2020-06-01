@@ -110,11 +110,11 @@
 	                        <th class="center">
 	                        	选择
                         	</th>
-	                        <th>帮助文档ID</th>
-	                        <th>帮助文档标题</th>
+	                        <th>帮助文件ID</th>
+	                        <th>帮助文件标题</th>
 	                        <th>创建人</th>
 	                        <th>创建时间</th>
-	                        <th>帮助文档描述</th>
+	                        <th>帮助文件描述</th>
                             <th>操作</th>
 	                    </tr>
                     </thead>
@@ -161,12 +161,12 @@
 <script src="../js/common/right_button.js?v=#scriptversion#" type="text/javascript" charset="utf-8"></script>
 <script src="../js/member/help.js?v=#scriptversion#"></script>
 
-<!-- 帮助文档新增 -->
+<!-- 帮助文件新增 -->
 <script id="T_addHelpArchive" type="text/x-handlebars-template">
     <div class="popup_outline">
         <form class="clearfix" id="addHelpArchiveForm" name="addHelpArchiveForm" style="padding-top:18px;">
             <div class="col-sm-12">
-                <label class="col-sm-3 text-right" for=""><span class="red f12"> * </span>帮助文档标题：</label>
+                <label class="col-sm-3 text-right" for=""><span class="red f12"> * </span>帮助文件标题：</label>
                 <div class="col-sm-8">
                     <div class="clearfix">
                         <input type="text" class="col-sm-8" required="true" value="" name="helpArchiveTitle" maxlength="50">
@@ -175,7 +175,7 @@
                 <div class="col-sm-8 promport"></div>
             </div>
             <div class="col-sm-12">
-                <label class="col-sm-3 text-right" for="">帮助文档描述：</label>
+                <label class="col-sm-3 text-right" for="">帮助文件描述：</label>
                 <div class="col-sm-8">
                     <div class="clearfix">
                         <textarea class="" cols="45" rows="5" name="remark" maxlength="500" placeholder="最多支持500个字">{{remark}}</textarea>
@@ -206,7 +206,7 @@
         <form class="clearfix" id="editHelpArchiveForm" name="editHelpArchiveForm" style="padding-top:18px;">
             <input type="hidden" value="{{id}}" name="id">
             <div class="col-sm-12">
-                <label class="col-sm-3 text-right" for=""><span class="red f12"> * </span>帮助文档标题：</label>
+                <label class="col-sm-3 text-right" for=""><span class="red f12"> * </span>帮助文件标题：</label>
                 <div class="col-sm-8">
                     <div class="clearfix">
                         <input type="text" class="col-sm-8" required="true"
@@ -216,7 +216,7 @@
                 <div class="col-sm-8 promport"></div>
             </div>
             <div class="col-sm-12">
-                <label class="col-sm-3 text-right" for="">帮助文档描述：</label>
+                <label class="col-sm-3 text-right" for="">帮助文件描述：</label>
                 <div class="col-sm-8">
                     <div class="clearfix">
                         <textarea class="" cols="45" rows="5" name="remark" maxlength="500" placeholder="最多支持500个字">{{remark}}</textarea>
@@ -250,13 +250,13 @@
     </div>
 </script>
 
-<!-- 帮助文档详情 -->
+<!-- 帮助文件详情 -->
 <script id="T_helpArchiveDetail" type="text/x-handlebars-template">
     <div class="popup_outline">
         <div id="detailWorkOrder" style="padding-top:18px;">
             <input type="hidden" value="{{id}}" name="id" id="id">
             <div class="col-sm-12">
-                <label class="col-sm-3 text-right" for="">帮助文档标题：</label>
+                <label class="col-sm-3 text-right" for="">帮助文件标题：</label>
                 <div class="col-sm-8">
                     <div class="clearfix">
                         <label class="col-sm-8 too-long" for="">{{helpArchiveTitle}}</label>
@@ -265,7 +265,7 @@
                 <div class="col-sm-8 promport"></div>
             </div>
             <div class="col-sm-12">
-                <label class="col-sm-3 text-right" for="">帮助文档描述：</label>
+                <label class="col-sm-3 text-right" for="">帮助文件描述：</label>
                 <div class="col-sm-8">
                     <div class="clearfix">
                         <label class="col-sm-8 too-long" for="">{{remark}}</label>
