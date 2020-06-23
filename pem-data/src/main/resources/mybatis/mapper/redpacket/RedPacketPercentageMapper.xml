@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RedPacketPercentageMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="member_account" jdbcType="VARCHAR" property="memberAccount" />
+    <result column="red_packet_money" jdbcType="DECIMAL" property="redPacketMoney" />
+    <result column="percentage" jdbcType="VARCHAR" property="percentage" />
+    <result column="first_release" jdbcType="VARCHAR" property="firstRelease" />
+    <result column="sys_stock_right" jdbcType="VARCHAR" property="sysStockRight" />
+    <result column="advert_coin_date" jdbcType="TIMESTAMP" property="advertCoinDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, member_account, red_packet_money, percentage, first_release, sys_stock_right, advert_coin_date
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from zx_app_red_packet_percentage
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.util.Map">
+    delete from zx_app_red_packet_percentage
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <!-- 查询用户发布红包金额及提成表 -->
+  <select id="queryRedPacketPercentageInfo" resultType="java.util.Map" parameterType="java.util.Map">
+    SELECT
+      a.id AS id,
+      a.member_account AS memberAccount,
+      a.red_packet_money AS redPacketMoney,
+      IFNULL(a.percentage, '0') AS percentage,
+      a.first_release AS firstRelease,
+      a.sys_stock_right AS sysStockRight,
+      a.advert_coin_date AS advertCoinDate
+    FROM
+    zx_app_red_packet_percentage AS a
+    <where>
+      a.member_account = #{redPacketUserId,jdbcType=VARCHAR}
+    </where>
+  </select>
+
+  <!-- 查询是否是第一次发布红包 queryFirstReleaseInfo -->
+  <select id="queryFirstReleaseInfo" resultType="int" parameterType="java.util.Map">
+    SELECT
+        COUNT(1)
+    FROM
+    zx_app_red_packet_percentage AS a
+    <where>
+      a.member_account = #{memberAccount,jdbcType=VARCHAR}
+    </where>
+  </select>
+
+  <!-- 用户发布红包金额及提成表新增 -->
+  <insert id="saveRedPacketPercentage" parameterType="java.util.Map">
+    insert into zx_app_red_packet_percentage
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="memberAccount != null">
+        member_account,
+      </if>
+      <if test="redPacketMoney != null">
+        red_packet_money,
+      </if>
+      <if test="percentage != null">
+        percentage,
+      </if>
+      <if test="firstRelease != null">
+        first_release,
+      </if>
+      <if test="sysStockRight != null">
+        sys_stock_right,
+      </if>
+        advert_coin_date,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="memberAccount != null">
+        #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketMoney != null">
+        #{redPacketMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="percentage != null">
+        #{percentage,jdbcType=VARCHAR},
+      </if>
+      <if test="firstRelease != null">
+        #{firstRelease,jdbcType=VARCHAR},
+      </if>
+      <if test="sysStockRight != null">
+        #{sysStockRight,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+
+  <!-- 用户发布红包金额及提成表编辑 -->
+  <update id="updateRedPacketPercentage" parameterType="java.util.Map">
+    update zx_app_red_packet_percentage
+    <set>
+      <if test="memberAccount != null">
+        member_account = #{memberAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="redPacketMoney != null">
+        red_packet_money = #{redPacketMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="percentage != null">
+        percentage = #{percentage,jdbcType=VARCHAR},
+      </if>
+      <if test="firstRelease != null">
+        first_release = #{firstRelease,jdbcType=VARCHAR},
+      </if>
+      <if test="sysStockRight != null">
+        sys_stock_right = #{sysStockRight,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

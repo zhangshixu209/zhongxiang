@@ -8,7 +8,9 @@ import com.chmei.nzbdata.member.service.IMemberAssetsService;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -155,6 +157,90 @@ public class MemberAssetsServiceImpl extends BaseServiceImpl implements IMemberA
             output.setTotal(listAll.size());
         } catch (Exception e) {
             LOGGER.error("查询失败" + e);
+        }
+    }
+
+    /**
+     * 查询广告币收支明细
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbDataException 异常信息
+     */
+    @Override
+    public void queryAdvertCoinInfo(InputDTO input, OutputDTO output) throws NzbDataException {
+        Map<String, Object> params = input.getParams();
+        try {
+            int total = getBaseDao().getTotalCount("AdvertCoinMapper.queryAdvertCoinCount", params);
+            if (total > 0) {
+                List<Map<String, Object>> list = getBaseDao().queryForList("AdvertCoinMapper.queryAdvertCoinList", params);
+                output.setItems(list);
+            }
+            output.setTotal(total);
+        } catch (Exception e) {
+            LOGGER.error("查询失败" + e);
+        }
+    }
+
+    /**
+     * 新增广告币兑换钱包余额信息
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbDataException 异常信息
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void saveAdvertCoinExchangeMoney(InputDTO input, OutputDTO output) throws NzbDataException {
+        Map<String, Object> params = input.getParams();
+        try {
+            // 查询当前用户钱包余额，广告币余额
+            Map<String, Object> item2 = (Map<String, Object>) getBaseDao().
+                    queryForObject("MemberMapper.queryMemberBalanceDetail", params);
+            // 兑换钱包余额消耗广告币
+            Double exchangeMoney = Double.valueOf((String) params.get("exchangeMoney"));
+            Double exchangeAdvertCoin = Double.valueOf((String) params.get("exchangeAdvertCoin"));
+            // 我的钱包余额和广告币
+            Double advertCoin = Double.valueOf((String) item2.get("advertCoin"));
+            Double walletBalance = Double.valueOf((String) item2.get("walletBalance"));
+            if (exchangeAdvertCoin > advertCoin) {
+                output.setCode("-1");
+                output.setMsg("广告币不足！");
+                return;
+            }
+            Map<String, Object> user2 = new HashMap<>();
+            user2.put("memberAccount", params.get("memberAccount"));
+            user2.put("advertCoin", advertCoin - exchangeAdvertCoin);  // 减去兑换的广告币
+            user2.put("walletBalance", walletBalance + exchangeMoney); // 增加广告币兑换的钱包余额
+            int i = getBaseDao().update("MemberMapper.updateMemberBalance", user2);
+            if (i > 0) {
+                // 减去兑换的广告币钱包记录
+                Map<String, Object> advertCoinMap = new HashMap<>();
+                advertCoinMap.put("advertCoinId", getSequence());
+                advertCoinMap.put("advertCoinAddOrMinus", "-");
+                advertCoinMap.put("advertCoinUserId", params.get("memberAccount"));
+                advertCoinMap.put("advertCoinMoney", exchangeAdvertCoin);
+                advertCoinMap.put("advertCoinFrom", "广告币兑换");
+                getBaseDao().insert("AdvertCoinMapper.saveAdvertCoinInfo", advertCoinMap);
+                // 增加广告币兑换的钱包余额记录
+                Map<String, Object> walletMoneyInfo = new HashMap<>();
+                walletMoneyInfo.put("walletInfoId", getSequence());
+                walletMoneyInfo.put("walletInfoAddOrMinus", "+");
+                walletMoneyInfo.put("walletInfoUserId", params.get("memberAccount"));
+                walletMoneyInfo.put("walletInfoMoney", exchangeMoney);
+                walletMoneyInfo.put("walletInfoFrom", "广告币兑换");
+                getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
+                Map<String, Object> map = new HashMap<>();
+                map.put("advertCoin", user2.get("advertCoin")+"");
+                output.setCode("0");
+                output.setMsg("兑换成功");
+                output.setItem(map);
+            } else {
+                output.setCode("-1");
+                output.setMsg("兑换失败！");
+            }
+        } catch (Exception e) {
+            LOGGER.error("兑换失败" + e);
         }
     }
 

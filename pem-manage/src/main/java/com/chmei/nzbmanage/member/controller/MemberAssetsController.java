@@ -116,4 +116,18 @@ public class MemberAssetsController extends BaseController {
         return map;
     }
 
+    /**
+     * 新增广告币兑换钱包余额信息
+     *
+     * @param memberAssetsForm 封装实体类
+     * @return OutputDTO 出参
+     */
+    @RequestMapping("/saveAdvertCoinExchangeMoney")
+    public OutputDTO saveAdvertCoinExchangeMoney(@ModelAttribute MemberAssetsForm memberAssetsForm) {
+        OutputDTO outputDTO;
+        Map<String, Object> map = BeanUtil.convertBean2Map(memberAssetsForm);
+        outputDTO = getOutputDTO(map, "memberAssetsService", "saveAdvertCoinExchangeMoney");
+        return outputDTO;
+    }
+
 }

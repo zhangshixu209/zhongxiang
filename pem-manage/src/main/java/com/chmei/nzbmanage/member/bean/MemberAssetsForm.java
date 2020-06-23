@@ -30,6 +30,16 @@ public class MemberAssetsForm extends BaseForm {
 
     private String startTime;
 
+    /**
+     * 兑换钱包余额
+     */
+    private String exchangeMoney;
+
+    /**
+     * 兑换所需广告币
+     */
+    private String exchangeAdvertCoin;
+
     public Long getId() {
         return id;
     }
@@ -60,5 +70,21 @@ public class MemberAssetsForm extends BaseForm {
 
     public void setStartTime(String startTime) {
         this.startTime = startTime;
+    }
+
+    public String getExchangeMoney() {
+        return exchangeMoney;
+    }
+
+    public void setExchangeMoney(String exchangeMoney) {
+        this.exchangeMoney = exchangeMoney;
+    }
+
+    public String getExchangeAdvertCoin() {
+        return exchangeAdvertCoin;
+    }
+
+    public void setExchangeAdvertCoin(String exchangeAdvertCoin) {
+        this.exchangeAdvertCoin = exchangeAdvertCoin;
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -143,6 +144,17 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 					int i = this.insertListRedPacketImgInfo(doubles, (Long) params.get("redPacketId"));
 					if(i > 0 && stringObjectMap != null){
 //						sendBackRedPacketMoney(stringObjectMap); // 红包退回定时任务
+						@SuppressWarnings("unchecked")
+						Map<String, Object> _item = (Map<String, Object>) getBaseDao().queryForObject(
+								"RedPacketPercentageMapper.queryRedPacketPercentageInfo", params);
+						if (null == _item) {
+							// 用户发布红包金额及提成表新增
+							Map<String, Object> _map = new HashMap<>();
+							_map.put("id", getSequence()); // 主键ID
+							_map.put("memberAccount", params.get("memberAccount")); // 红包发布人账号
+							_map.put("firstRelease", "1"); // 是否第一次发布（1-是，2否）
+							getBaseDao().insert("RedPacketPercentageMapper.saveRedPacketPercentage", _map);
+						}
 						output.setCode("0");
 						output.setMsg("信息发布成功!");
 						output.setItem(stringObjectMap);
@@ -302,7 +314,14 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 					params.put("redPacketStock", stock < 0 ? 0 : stock - 1 );
 				}
 				int k = getBaseDao().update("RedPacketMapper.updateByExampleSelective", params);
-				if (k < 0) {
+				if (k > 0) {
+					// TODO 提成股权校验  queryFirstReleaseInfo
+					// 红包剩余数量为0时触发。计算是否增加提成及股权、计算后根据情况分配提成
+					int redPacketStock = (int) params.get("redPacketStock");
+					if (redPacketStock == 0 && "0".equals(packet.get("redPacketType"))) {
+						redPacketPercentageInfo(packet);
+					}
+				} else {
 					output.setCode("-1");
 					output.setMsg("抢红包失败");
 					return -1;
@@ -310,6 +329,80 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 			}
 		}
 		return 0;
+	}
+
+	/**
+	 * 红包剩余数量为0时触发。计算是否增加提成及股权、计算后根据情况分配提成
+	 * @param params
+	 */
+	@SuppressWarnings("unchecked")
+	private void redPacketPercentageInfo (Map<String, Object> packet) {
+		Map<String, Object> item = (Map<String, Object>) getBaseDao().queryForObject(
+				"RedPacketPercentageMapper.queryRedPacketPercentageInfo", packet);
+		if (null != item) {
+			Date startDate = (Date) item.get("advertCoinDate"); // 第一次发布红包时间
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			ParsePosition pos = new ParsePosition(0);
+			Date starToDate = formatter.parse(startDate.toString(), pos);
+			long day = 3; // 第一次发布红包，活动期限为3天
+			long endTime = starToDate.getTime() + (day * 24 * 3600 * 1000); // 结束时间
+			Date redPacketDate = (Date) packet.get("redPacketDate");        // 当前红包发布时间
+			if (redPacketDate.getTime() >= endTime) {
+				// 大于时间后不在赠送股权，只计算提成、提成最高10%
+				// 提成小于10%执行
+				int percentage = Integer.valueOf((String) item.get("percentage"));
+				if (percentage < 10) {
+					Map<String, Object> map = new HashMap<>();
+					BigDecimal redPacketMoneyCount = (BigDecimal) packet.get("redPacketMoneyCount"); // 红包发布金额
+					map.put("memberAccount", packet.get("redPacketUserId")); // 红包发布人账号
+					int moneyCount = (int) (redPacketMoneyCount.doubleValue() * 0.01);
+					percentage += moneyCount * 1.6;
+					if (percentage > 10) { // 最高10%的提成
+						percentage = 10;
+					}
+					map.put("redPacketMoney", redPacketMoneyCount);
+					map.put("percentage", percentage);
+					getBaseDao().update("RedPacketPercentageMapper.updateRedPacketPercentage", map);
+				}
+			} else {
+				// 提成小于10%执行
+				int percentage1 = Integer.valueOf((String) item.get("percentage")); // 当前百分比提成
+				if (percentage1 < 10) {
+					Map<String, Object> map = new HashMap<>();
+					BigDecimal redPacketMoneyCount = (BigDecimal) packet.get("redPacketMoneyCount"); // 红包发布金额
+					map.put("memberAccount", packet.get("redPacketUserId")); // 红包发布人账号
+					// 系统赠送股权，防止3天内买卖股权后计算出问题
+					int sysStockRight = (int) item.get("sysStockRight");
+					int stockRightTotal = (int) (redPacketMoneyCount.doubleValue() / 2);
+					sysStockRight += stockRightTotal; // 计算当前股权和系统赠送股权相加是否大于100
+					if (sysStockRight < 100) { // 最高赠送100股权
+						// 强转成int类型，去除小数位。
+						map.put("stockRight", sysStockRight);    // 每2元赠送1股权
+						map.put("sysStockRight", sysStockRight); // 同步更新系统赠送股权字段
+					} else {
+						// 强转成int类型，去除小数位。大于100，为100股权
+						map.put("stockRight",  "100");
+						map.put("sysStockRight", "100");
+					}
+					// 更新我的期权股余额
+					getBaseDao().update("MemberMapper.updateMemberBalance", map);
+					// 累计发布红包金额
+					BigDecimal redPacketMoney = (BigDecimal) item.get("redPacketMoney");
+					double money = redPacketMoney.doubleValue() + redPacketMoneyCount.doubleValue();
+					int moneyCount = (int) (money * 0.01);
+					if (percentage1 == 0) {
+						percentage1 = 2; // 默认10元赠送2%
+					}
+					percentage1 += moneyCount * 1.6;
+					if (percentage1 > 10) { // 最高10%的提成
+						percentage1 = 10;
+					}
+					map.put("redPacketMoney", redPacketMoneyCount);
+					map.put("percentage", percentage1);
+					getBaseDao().update("RedPacketPercentageMapper.updateRedPacketPercentage", map);
+				}
+			}
+		}
 	}
 
 	/**
@@ -393,14 +486,11 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 							// 给抢红包的用户进行金额的更新,抢到的红包放入到红包金额中
 							updateUser.put("memberAccount", params.get("robUserId"));
 							// 使用那个发布的就进入那个钱包
+							// ==========================2020年6月22日 15点02分=============================
+							// 抢到的红包都进广告币钱包
 							BigDecimal money = (BigDecimal) maps.get("redPacketMoney");
-							String walletBalance = (String) appUser.get("walletBalance");
-							String advertisingFee = (String) appUser.get("advertisingFee");
-							if ("0".equals(redPacket.get("redPacketType"))) {
-								updateUser.put("walletBalance", BigDecimal.valueOf(Double.valueOf(walletBalance)).doubleValue() + money.doubleValue());
-							} else {
-								updateUser.put("advertisingFee", BigDecimal.valueOf(Double.valueOf(advertisingFee)).doubleValue() + money.doubleValue());
-							}
+							String advertCoin = (String) appUser.get("advertCoin"); // 广告币钱包
+							updateUser.put("advertCoin", BigDecimal.valueOf(Double.valueOf(advertCoin)).doubleValue() + money.doubleValue());
 							int i = getBaseDao().update("MemberMapper.updateMemberBalance", updateUser);
 							if (i > 0) {
 								Map<String, Object> redPac = new HashMap<>();
@@ -408,26 +498,16 @@ public class RedPacketServiceImpl extends BaseServiceImpl implements IRedPacketS
 								Map<String, Object> zxAppUser1 = (Map<String, Object>) getBaseDao().queryForObject(
 										"MemberMapper.queryMemberDetail", redPac);
 								if (null != zxAppUser1) {
-									if ("0".equals(redPacket.get("redPacketType"))) {
-										// 钱包记录
-										Map<String, Object> walletMoneyInfo = new HashMap<>();
-										walletMoneyInfo.put("walletInfoId", getSequence());
-										walletMoneyInfo.put("walletInfoAddOrMinus", "+");
-										walletMoneyInfo.put("walletInfoUserId", robUserId);
-										walletMoneyInfo.put("walletInfoMoney", money);
-										walletMoneyInfo.put("walletInfoFrom", "众享广告红包--来自" + zxAppUser1.get("nickname"));
-										getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
-									} else {
-										// 广告钱包记录
-										Map<String, Object> adRecord = new HashMap<>();
-										adRecord.put("advertisingInfoId", getSequence());
-										adRecord.put("advertisingInfoAddOrMinus", "+");
-										adRecord.put("advertisingInfoUserId", robUserId);
-										adRecord.put("advertisingInfoMoney", money);
-										adRecord.put("advertisingInfoFrom", "众享广告红包--来自" + zxAppUser1.get("nickname"));
-										getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
-									}
+									// 广告币钱包记录
+									Map<String, Object> advertCoinMap = new HashMap<>();
+									advertCoinMap.put("advertCoinId", getSequence());
+									advertCoinMap.put("advertCoinAddOrMinus", "+");
+									advertCoinMap.put("advertCoinUserId", robUserId);
+									advertCoinMap.put("advertCoinMoney", money);
+									advertCoinMap.put("advertCoinFrom", "众享广告红包--来自" + zxAppUser1.get("nickname"));
+									getBaseDao().insert("AdvertCoinMapper.saveAdvertCoinInfo", advertCoinMap);
 								}
+								// ==========================2020年6月22日 15点02分=============================
 								maps = (Map<String, Object>) getBaseDao().queryForObject("RedPacketMapper.selectRedPacketInfoByInfoId", maps);
 								output.setCode("0"); // 3
 								output.setMsg("返回单个红包金额信息!");

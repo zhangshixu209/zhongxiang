@@ -156,21 +156,26 @@ public class RealNameAuthServiceImpl extends BaseServiceImpl implements IRealNam
                         adRecord.put("advertisingInfoMoney", adMoney);
                         adRecord.put("advertisingInfoFrom", "注册赠送");
                         getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
+                        Double adCoin = 5.00; // 广告币
                         // 查询分享人余额
                         Map<String, Object> item2 = (Map<String, Object>) getBaseDao().
                                 queryForObject("MemberMapper.queryMemberBalanceDetail", map_);
                         Map<String, Object> user2 = new HashMap<>();
                         user2.put("memberAccount", map_.get("memberAccount"));
-                        user2.put("advertisingFee", Double.valueOf(item2.get("advertisingFee")+"") + adMoney);
+//                        user2.put("advertisingFee", Double.valueOf(item2.get("advertisingFee")+"") + adMoney);
+                        user2.put("advertCoin", Double.valueOf(item2.get("advertCoin")+"") + adCoin);
                         getBaseDao().update("MemberMapper.updateMemberBalance", user2);
+                        // ==========================2020年6月22日 15点10分=======================================
                         // 分享赠送记录:
-                        Map<String, Object> adRecord_ = new HashMap<>();
-                        adRecord_.put("advertisingInfoId", getSequence());
-                        adRecord_.put("advertisingInfoAddOrMinus", "+");
-                        adRecord_.put("advertisingInfoUserId", map_.get("memberAccount"));
-                        adRecord_.put("advertisingInfoMoney", adMoney);
-                        adRecord_.put("advertisingInfoFrom", "分享赠送");
-                        getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord_);
+                        // 广告币钱包记录
+                        Map<String, Object> advertCoinMap = new HashMap<>();
+                        advertCoinMap.put("advertCoinId", getSequence());
+                        advertCoinMap.put("advertCoinAddOrMinus", "+");
+                        advertCoinMap.put("advertCoinUserId", map_.get("memberAccount"));
+                        advertCoinMap.put("advertCoinMoney", adCoin);
+                        advertCoinMap.put("advertCoinFrom", "分享赠送");
+                        getBaseDao().insert("AdvertCoinMapper.saveAdvertCoin", advertCoinMap);
+                        // ==========================2020年6月22日 15点10分=======================================
                         return 1;
                     }
                 } else {

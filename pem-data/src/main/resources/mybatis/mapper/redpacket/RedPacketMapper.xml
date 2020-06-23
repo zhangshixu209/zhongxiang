@@ -534,5 +534,4 @@
           zx_app_red_packet a
         WHERE a.red_packet_stock &gt; 0
     </select>
-
 </mapper>

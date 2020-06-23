@@ -131,7 +131,8 @@ public class ShareScheduling extends BaseServiceImpl {
                     if (StringUtil.isNotEmpty(startDate.toString())) {
                         ParsePosition pos = new ParsePosition(0);
                         Date starToDate = formatter.parse(startDate.toString(), pos);
-                        long endTime = starToDate.getTime() + (24 * 3600 * 1000 * 3); // 结束时间
+//                        long endTime = starToDate.getTime() + (24 * 3600 * 1000 * 3); // 结束时间
+                        long endTime = starToDate.getTime() + (24 * 3600 * 1000); // 结束时间
                         long nowTime = new Date().getTime(); // 当前时间
                         if (nowTime >= endTime) {
                             Map<String, Object> map_ = (Map<String, Object>) getBaseDao().queryForObject(
@@ -214,6 +215,7 @@ public class ShareScheduling extends BaseServiceImpl {
                                             default:
                                                 break;
                                         }
+                                        // TODO 调用计算提成及股权接口
                                         if (flag) {
                                             LOGGER.error("红包退回失败!");
                                         }
@@ -247,7 +249,8 @@ public class ShareScheduling extends BaseServiceImpl {
                     if (StringUtil.isNotEmpty(startDate.toString())) {
                         ParsePosition pos = new ParsePosition(0);
                         Date starToDate = formatter.parse(startDate.toString(), pos);
-                        long endTime = starToDate.getTime() + (24 * 3600 * 1000 * 3); // 结束时间
+//                        long endTime = starToDate.getTime() + (24 * 3600 * 1000 * 3); // 结束时间
+                        long endTime = starToDate.getTime() + (24 * 3600 * 1000); // 结束时间
                         long nowTime = new Date().getTime(); // 当前时间
                         if (nowTime >= endTime) {
                             Map<String, Object> map_ = (Map<String, Object>) getBaseDao().queryForObject(
@@ -330,6 +333,7 @@ public class ShareScheduling extends BaseServiceImpl {
                                             default:
                                                 break;
                                         }
+                                        // TODO 调用计算提成及股权接口
                                         if (flag) {
                                             LOGGER.error("红包退回失败!");
                                         }
@@ -363,7 +367,8 @@ public class ShareScheduling extends BaseServiceImpl {
                     if (StringUtil.isNotEmpty(startDate.toString())) {
                         ParsePosition pos = new ParsePosition(0);
                         Date starToDate = formatter.parse(startDate.toString(), pos);
-                        long endTime = starToDate.getTime() + (24 * 3600 * 1000 * 3); // 结束时间
+//                        long endTime = starToDate.getTime() + (24 * 3600 * 1000 * 3); // 结束时间 3天
+                        long endTime = starToDate.getTime() + (24 * 3600 * 1000); // 结束时间 1天
                         long nowTime = new Date().getTime(); // 当前时间
                         if (nowTime >= endTime) {
                             Map<String, Object> map_ = (Map<String, Object>) getBaseDao().queryForObject(
@@ -446,6 +451,7 @@ public class ShareScheduling extends BaseServiceImpl {
                                             default:
                                                 break;
                                         }
+                                        // TODO 调用计算提成及股权接口
                                         if (flag) {
                                             LOGGER.error("红包退回失败!");
                                         }
@@ -479,7 +485,8 @@ public class ShareScheduling extends BaseServiceImpl {
                     if (StringUtil.isNotEmpty(startDate.toString())) {
                         ParsePosition pos = new ParsePosition(0);
                         Date starToDate = formatter.parse(startDate.toString(), pos);
-                        long endTime = starToDate.getTime() + (24 * 3600 * 1000 * 3); // 结束时间
+//                        long endTime = starToDate.getTime() + (24 * 3600 * 1000 * 3); // 结束时间 3天
+                        long endTime = starToDate.getTime() + (24 * 3600 * 1000); // 结束时间 1天
                         long nowTime = new Date().getTime(); // 当前时间
                         if (nowTime >= endTime) {
                             Map<String, Object> map_ = (Map<String, Object>) getBaseDao().queryForObject(
@@ -562,6 +569,7 @@ public class ShareScheduling extends BaseServiceImpl {
                                             default:
                                                 break;
                                         }
+                                        // TODO 调用计算提成及股权接口
                                         if (flag) {
                                             LOGGER.error("红包退回失败!");
                                         }

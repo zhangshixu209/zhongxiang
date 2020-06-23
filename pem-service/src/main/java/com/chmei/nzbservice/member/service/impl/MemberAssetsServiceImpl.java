@@ -93,9 +93,14 @@ public class MemberAssetsServiceImpl extends BaseServiceImpl implements IMemberA
             if ("1001".equals(assetsType)) {
                 queryWalletMoneyInfo(input, output);      // 钱包明细
             } else if ("1002".equals(assetsType)) {
-                queryIntegralMoneyInfo(input, output);   // 积分明细
-            } else {
+                queryIntegralMoneyInfo(input, output);    // 积分明细
+            } else if ("1003".equals(assetsType)){
                 queryAdvertisingMoneyInfo(input, output); // 广告费明细
+            } else if ("1004".equals(assetsType)){
+                queryAdvertCoinInfo(input, output);       // 广告币明细
+            } else if ("1005".equals(assetsType)){
+//                queryAdvertCoinInfo(input, output); // 期权股明细
+                // TODO 期权股明细查询
             }
         } catch (Exception e) {
             LOGGER.error("系统错误", e);
@@ -113,6 +118,34 @@ public class MemberAssetsServiceImpl extends BaseServiceImpl implements IMemberA
     public void queryMemberMoneyTotalList(InputDTO input, OutputDTO output) throws NzbServiceException {
         input.setService("memberAssetsService");
         input.setMethod("queryMemberMoneyTotalList");
+        getNzbDataService().execute(input, output);
+    }
+
+    /**
+     * 查询广告币收支明细
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbServiceException 异常信息
+     */
+    @Override
+    public void queryAdvertCoinInfo(InputDTO input, OutputDTO output) throws NzbServiceException {
+        input.setService("memberAssetsService");
+        input.setMethod("queryAdvertCoinInfo");
+        getNzbDataService().execute(input, output);
+    }
+
+    /**
+     * 新增广告币兑换钱包余额信息
+     *
+     * @param input  入参
+     * @param output 出参
+     * @throws NzbServiceException 异常信息
+     */
+    @Override
+    public void saveAdvertCoinExchangeMoney(InputDTO input, OutputDTO output) throws NzbServiceException {
+        input.setService("memberAssetsService");
+        input.setMethod("saveAdvertCoinExchangeMoney");
         getNzbDataService().execute(input, output);
     }
 

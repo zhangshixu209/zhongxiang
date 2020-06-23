@@ -60,4 +60,20 @@ public interface IMemberAssetsService {
      */
     void queryMemberMoneyTotalList(InputDTO input, OutputDTO output) throws NzbServiceException;
 
+    /**
+     * 查询广告币收支明细
+     * @param input 入参
+     * @param output 出参
+     * @throws NzbServiceException 异常信息
+     */
+    void queryAdvertCoinInfo(InputDTO input, OutputDTO output) throws NzbServiceException;
+
+    /**
+     * 新增广告币兑换钱包余额信息
+     *
+     * @param input 入参
+     * @param output 出参
+     * @throws NzbServiceException 异常信息
+     */
+    void saveAdvertCoinExchangeMoney(InputDTO input, OutputDTO output) throws NzbServiceException;
 }

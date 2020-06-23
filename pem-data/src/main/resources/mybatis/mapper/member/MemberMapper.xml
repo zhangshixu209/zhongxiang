@@ -224,6 +224,8 @@
       IFNULL( a.red_enve_balance, '0' ) AS redEnveBalance,
       IFNULL( a.advertising_fee, '0' ) AS advertisingFee,
       IFNULL( a.integral_money, '0' ) AS integralMoney,
+      IFNULL( a.stock_right, '0' ) AS stockRight,
+      IFNULL( a.advert_coin, '0' ) AS advertCoin,
       IFNULL( a.STATUS, '' ) AS status,
       IFNULL( a.bind_phone, '' ) AS bindPhone,
       a.crt_time AS crtTime,
@@ -309,6 +311,12 @@
       <if test="integralMoney != null or integralMoney == 0 ">
         integral_money = #{integralMoney,jdbcType=VARCHAR},
       </if>
+      <if test="stockRight != null or stockRight == 0 ">
+        stock_right = #{stockRight},
+      </if>
+      <if test="advertCoin != null or advertCoin == 0 ">
+        advert_coin = #{advertCoin},
+      </if>
       modf_user_time = NOW(),
     </set>
     where member_account = #{memberAccount,jdbcType=VARCHAR}
@@ -325,6 +333,8 @@
       IFNULL( a.wallet_balance, '0' ) AS walletBalance,
       IFNULL( a.red_enve_balance, '0' ) AS redEnveBalance,
       IFNULL( a.advertising_fee, '0' ) AS advertisingFee,
+      IFNULL( a.advert_coin, '0' ) AS advertCoin,
+      IFNULL( a.stock_right, '0' ) AS stockRight,
       IFNULL( a.STATUS, '' ) AS status,
       a.crt_time AS crtTime
     FROM

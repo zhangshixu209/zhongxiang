@@ -314,7 +314,8 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 				// 查询用户信息
 				Map<String, Object> item = (Map<String, Object>) getBaseDao().
 						queryForObject("MemberMapper.queryMemberDetail", user_);
-				String advertisingMoney = (String) item.get("advertisingFee"); // 广告费
+//				String advertisingMoney = (String) item.get("advertisingFee"); // 广告费
+				String advertCoin = (String) item.get("advertCoin"); // 广告币
 				String orderType = (String) map.get("orderType");
 				if ("1001".equals(orderType)) {
 					Map<String, Object> seckill = new HashMap<>();
@@ -324,17 +325,20 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 					// 增加商家广告费金额
 					Map<String, Object> user1 = new HashMap<>();
 					user1.put("memberAccount", map.get("sendGoodsAccount"));
-					user1.put("advertisingFee", Double.valueOf(advertisingMoney) + Double.valueOf(result1.get("neededAdFeeTotal")+""));
+//					user1.put("advertisingFee", Double.valueOf(advertisingMoney) + Double.valueOf(result1.get("neededAdFeeTotal")+""));
+					user1.put("advertCoin", Double.valueOf(advertCoin) + Double.valueOf(result1.get("neededAdFeeTotal")+""));
 					int m = getBaseDao().update("MemberMapper.updateMemberBalance", user1);
 					if(m > 0) {
-						// 记录广告费增加记录:
-						Map<String, Object> adRecord1 = new HashMap<>();
-						adRecord1.put("advertisingInfoId", getSequence());
-						adRecord1.put("advertisingInfoAddOrMinus", "+");
-						adRecord1.put("advertisingInfoUserId", map.get("sendGoodsAccount"));
-						adRecord1.put("advertisingInfoMoney", Double.valueOf(result1.get("neededAdFeeTotal")+""));
-						adRecord1.put("advertisingInfoFrom", "发布秒杀商品");
-						getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord1);
+						// ==========================2020年6月22日 15点10分=======================================
+						// 广告币钱包记录
+						Map<String, Object> advertCoinMap = new HashMap<>();
+						advertCoinMap.put("advertCoinId", getSequence());
+						advertCoinMap.put("advertCoinAddOrMinus", "+");
+						advertCoinMap.put("advertCoinUserId", map.get("sendGoodsAccount"));
+						advertCoinMap.put("advertCoinMoney", Double.valueOf(result1.get("neededAdFeeTotal")+""));
+						advertCoinMap.put("advertCoinFrom", "发布秒杀商品");
+						getBaseDao().insert("AdvertCoinMapper.saveAdvertCoinInfo", advertCoinMap);
+						// ==========================2020年6月22日 15点10分=======================================
 					}
 				} else if ("1002".equals(orderType)){
 					Map<String, Object> free = new HashMap<>();
@@ -344,17 +348,20 @@ public class ZxOrderInfoServiceImpl extends BaseServiceImpl implements IZxOrderI
 					// 增加商家广告费金额
 					Map<String, Object> user1 = new HashMap<>();
 					user1.put("memberAccount", map.get("sendGoodsAccount"));
-					user1.put("advertisingFee", Double.valueOf(advertisingMoney) + Double.valueOf(result2.get("neededAdFee")+""));
+//					user1.put("advertisingFee", Double.valueOf(advertisingMoney) + Double.valueOf(result2.get("neededAdFee")+""));
+					user1.put("advertCoin", Double.valueOf(advertCoin) + Double.valueOf(result2.get("neededAdFee")+""));
 					int m = getBaseDao().update("MemberMapper.updateMemberBalance", user1);
 					if (m > 0) {
-						// 记录广告费增加记录:
-						Map<String, Object> adRecord_ = new HashMap<>();
-						adRecord_.put("advertisingInfoId", getSequence());
-						adRecord_.put("advertisingInfoAddOrMinus", "+");
-						adRecord_.put("advertisingInfoUserId", map.get("sendGoodsAccount"));
-						adRecord_.put("advertisingInfoMoney", Double.valueOf(result2.get("neededAdFee")+""));
-						adRecord_.put("advertisingInfoFrom", "发布兑换商品");
-						getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord_);
+						// ==========================2020年6月22日 15点10分=======================================
+						// 广告币钱包记录
+						Map<String, Object> advertCoinMap = new HashMap<>();
+						advertCoinMap.put("advertCoinId", getSequence());
+						advertCoinMap.put("advertCoinAddOrMinus", "+");
+						advertCoinMap.put("advertCoinUserId", map.get("sendGoodsAccount"));
+						advertCoinMap.put("advertCoinMoney", Double.valueOf(result2.get("neededAdFee")+""));
+						advertCoinMap.put("advertCoinFrom", "发布兑换商品");
+						getBaseDao().insert("AdvertCoinMapper.saveAdvertCoinInfo", advertCoinMap);
+						// ==========================2020年6月22日 15点10分=======================================
 					}
 				} else if ("1003".equals(orderType)) {
 					Map<String, Object> lucky = new HashMap<>();

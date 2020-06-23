@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdvertCoinMapper">
+  <resultMap id="BaseResultMap" type="java.util.Map">
+    <id column="advert_coin_id" jdbcType="BIGINT" property="advertCoinId" />
+    <result column="advert_coin_user_id" jdbcType="VARCHAR" property="advertCoinUserId" />
+    <result column="advert_coin_from" jdbcType="VARCHAR" property="advertCoinFrom" />
+    <result column="advert_coin_add_or_minus" jdbcType="VARCHAR" property="advertCoinAddOrMinus" />
+    <result column="advert_coin_money" jdbcType="DECIMAL" property="advertCoinMoney" />
+    <result column="advert_coin_date" jdbcType="TIMESTAMP" property="advertCoinDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    advert_coin_id, advert_coin_user_id, advert_coin_from, advert_coin_add_or_minus, 
+    advert_coin_money, advert_coin_date
+  </sql>
+
+  <!-- 查询广告币钱包明细 -->
+  <select id="queryAdvertCoinList" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+        a.advert_coin_id AS advertCoinId,
+        a.advert_coin_add_or_minus AS addOrMinus,
+        a.advert_coin_money AS advertCoinMoney,
+        a.advert_coin_date AS advertCoinDate,
+        a.advert_coin_from AS advertCoinFrom
+    FROM
+        zx_app_advert_coin a
+    <where>
+      a.advert_coin_user_id = #{memberAccount,jdbcType=VARCHAR}
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(a.advert_coin_date,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+    </where>
+    ORDER BY a.advert_coin_date DESC
+    <if test="start != null and start != '' and limit != null and limit != '' or start ==0">
+      LIMIT #{start}, #{limit}
+    </if>
+  </select>
+  <select id="queryAdvertCoinCount" parameterType="java.util.Map" resultType="int">
+    select
+        COUNT(1)
+    from zx_app_advert_coin
+    <where>
+      advert_coin_user_id = #{memberAccount,jdbcType=VARCHAR}
+      <if test="startTime != null and startTime != ''">
+        AND DATE_FORMAT(advert_coin_date,'%Y-%m-%d') &gt;= #{startTime}
+      </if>
+    </where>
+  </select>
+
+  <insert id="saveAdvertCoinInfo" parameterType="java.util.Map">
+    insert into zx_app_advert_coin
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="advertCoinId != null">
+        advert_coin_id,
+      </if>
+      <if test="advertCoinUserId != null">
+        advert_coin_user_id,
+      </if>
+      <if test="advertCoinFrom != null">
+        advert_coin_from,
+      </if>
+      <if test="advertCoinAddOrMinus != null">
+        advert_coin_add_or_minus,
+      </if>
+      <if test="advertCoinMoney != null">
+        advert_coin_money,
+      </if>
+        advert_coin_date,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="advertCoinId != null">
+        #{advertCoinId,jdbcType=BIGINT},
+      </if>
+      <if test="advertCoinUserId != null">
+        #{advertCoinUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="advertCoinFrom != null">
+        #{advertCoinFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="advertCoinAddOrMinus != null">
+        #{advertCoinAddOrMinus,jdbcType=VARCHAR},
+      </if>
+      <if test="advertCoinMoney != null">
+        #{advertCoinMoney,jdbcType=DECIMAL},
+      </if>
+        NOW(),
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
+    update zx_app_advert_coin
+    <set>
+      <if test="advertCoinUserId != null">
+        advert_coin_user_id = #{advertCoinUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="advertCoinFrom != null">
+        advert_coin_from = #{advertCoinFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="advertCoinAddOrMinus != null">
+        advert_coin_add_or_minus = #{advertCoinAddOrMinus,jdbcType=VARCHAR},
+      </if>
+      <if test="advertCoinMoney != null">
+        advert_coin_money = #{advertCoinMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="advertCoinDate != null">
+        advert_coin_date = #{advertCoinDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where advert_coin_id = #{advertCoinId,jdbcType=BIGINT}
+  </update>
+
+</mapper>

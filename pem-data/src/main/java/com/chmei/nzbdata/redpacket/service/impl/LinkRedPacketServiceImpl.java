@@ -392,14 +392,11 @@ public class LinkRedPacketServiceImpl extends BaseServiceImpl implements ILinkRe
 							// 给抢红包的用户进行金额的更新,抢到的红包放入到红包金额中
 							updateUser.put("memberAccount", params.get("robUserId"));
 							// 使用那个发布的就进入那个钱包
+							// ==========================2020年6月22日 15点02分=============================
+							// 抢到的红包都进广告币钱包
 							BigDecimal money = (BigDecimal) maps.get("redPacketMoney");
-							String walletBalance = (String) appUser.get("walletBalance");
-							String advertisingFee = (String) appUser.get("advertisingFee");
-							if ("0".equals(redPacket.get("redPacketLinkType"))) {
-								updateUser.put("walletBalance", BigDecimal.valueOf(Double.valueOf(walletBalance)).doubleValue() + money.doubleValue());
-							} else {
-								updateUser.put("advertisingFee", BigDecimal.valueOf(Double.valueOf(advertisingFee)).doubleValue() + money.doubleValue());
-							}
+							String advertCoin = (String) appUser.get("advertCoin"); // 广告币钱包
+							updateUser.put("advertCoin", BigDecimal.valueOf(Double.valueOf(advertCoin)).doubleValue() + money.doubleValue());
 							int i = getBaseDao().update("MemberMapper.updateMemberBalance", updateUser);
 							if (i > 0) {
 								Map<String, Object> redPac = new HashMap<>();
@@ -407,26 +404,16 @@ public class LinkRedPacketServiceImpl extends BaseServiceImpl implements ILinkRe
 								Map<String, Object> zxAppUser1 = (Map<String, Object>) getBaseDao().queryForObject(
 										"MemberMapper.queryMemberDetail", redPac);
 								if (null != zxAppUser1) {
-									if ("0".equals(redPacket.get("redPacketLinkType"))) {
-										// 钱包记录
-										Map<String, Object> walletMoneyInfo = new HashMap<>();
-										walletMoneyInfo.put("walletInfoId", getSequence());
-										walletMoneyInfo.put("walletInfoAddOrMinus", "+");
-										walletMoneyInfo.put("walletInfoUserId", robUserId);
-										walletMoneyInfo.put("walletInfoMoney", money);
-										walletMoneyInfo.put("walletInfoFrom", "链接广告红包--来自" + zxAppUser1.get("nickname"));
-										getBaseDao().insert("WalletMoneyInfoMapper.saveWalletMoneyInfo", walletMoneyInfo);
-									} else {
-										// 广告钱包记录
-										Map<String, Object> adRecord = new HashMap<>();
-										adRecord.put("advertisingInfoId", getSequence());
-										adRecord.put("advertisingInfoAddOrMinus", "+");
-										adRecord.put("advertisingInfoUserId", robUserId);
-										adRecord.put("advertisingInfoMoney", money);
-										adRecord.put("advertisingInfoFrom", "链接广告红包--来自" + zxAppUser1.get("nickname"));
-										getBaseDao().insert("AdvertisingMoneyInfoMapper.saveAdvertisingMoneyInfo", adRecord);
-									}
+									// 广告币钱包记录
+									Map<String, Object> advertCoinMap = new HashMap<>();
+									advertCoinMap.put("advertCoinId", getSequence());
+									advertCoinMap.put("advertCoinAddOrMinus", "+");
+									advertCoinMap.put("advertCoinUserId", robUserId);
+									advertCoinMap.put("advertCoinMoney", money);
+									advertCoinMap.put("advertCoinFrom", "链接广告红包--来自" + zxAppUser1.get("nickname"));
+									getBaseDao().insert("AdvertCoinMapper.saveAdvertCoinInfo", advertCoinMap);
 								}
+								// ==========================2020年6月22日 15点02分=============================
 								maps = (Map<String, Object>) getBaseDao().queryForObject("LinkRedPacketMapper.selectRedPacketInfoByInfoId", maps);
 								output.setCode("0"); // 3
 								output.setMsg("返回单个红包金额信息!");
