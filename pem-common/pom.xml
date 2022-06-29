@@ -31,7 +31,7 @@
 		<dubbo.version>2.5.10</dubbo.version>
 		<curator.version>4.0.0</curator.version>
 		<zookeeper.version>3.4.13</zookeeper.version>
-		<poi.version>3.15</poi.version>
+		<poi.version>4.1.1</poi.version>
 		<jxl.version>2.6.12</jxl.version>
 		<tika.version>1.7</tika.version>
 		<commons-beanutils.version>1.9.3</commons-beanutils.version>
